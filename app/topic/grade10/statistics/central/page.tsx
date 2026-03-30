@@ -68,7 +68,7 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setC(true); setTimeout(() => setC(false), 2000); }}
-      style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.25)", color: "#1A1A1A", fontWeight: 500, cursor: "pointer" }}
+      style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "10px 16px", borderRadius: 12, fontSize: 13, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.25)", color: "#1A1A1A", fontWeight: 500, cursor: "pointer", width: "100%" }}
     >
       {c ? <Check size={13} /> : <Copy size={13} />}{c ? "הועתק!" : label}
     </button>
@@ -77,12 +77,12 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
 
 function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "16,185,129", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
   return (
-    <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)` }}>
+    <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)`, width: "100%", boxSizing: "border-box" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span>✨</span>
         <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
       </div>
-      <p style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
+      <p style={{ color: "#1A1A1A", fontSize: 13, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500, wordBreak: "break-word", overflowWrap: "break-word" }}>{prompt}</p>
       <CopyBtn text={prompt} label="העתק פרומפט מלא" />
     </div>
   );
@@ -992,7 +992,19 @@ function DistributionLab() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CentralTendencyPage() {
-  const [selectedLevel, setSelectedLevel] = useState<"basic" | "medium" | "advanced">("basic");
+  const [selectedLevel, setSelectedLevel] = useState<"basic" | "medium" | "advanced">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("math-progress:central-level");
+      if (saved === "basic" || saved === "medium" || saved === "advanced") return saved;
+    }
+    return "basic";
+  });
+
+  const handleLevelChange = (level: "basic" | "medium" | "advanced") => {
+    setSelectedLevel(level);
+    try { localStorage.setItem("math-progress:central-level", level); } catch {}
+  };
+
   const ex = exercises.find(e => e.id === selectedLevel)!;
   const lvlRgb = selectedLevel === "basic" ? "45,90,39" : selectedLevel === "medium" ? "163,79,38" : "139,38,53";
 
@@ -1020,13 +1032,13 @@ export default function CentralTendencyPage() {
 
       {/* ── Header ── */}
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
-        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 0.75rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem" }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>📊 מדדי מרכז</h1>
             <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>ממוצע, חציון ושכיח — ואיך לשאול AI את השאלות הנכונות</p>
           </div>
           <Link
-            href="/topic/grade10/statistics"
+            href="/"
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#4A4A4A", border: "1px solid #333", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#FFFFFF", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#2D2D2D"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#4A4A4A"; }}
@@ -1037,14 +1049,14 @@ export default function CentralTendencyPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
+      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "1.5rem 0.5rem 4rem" }}>
 
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
           {TABS.map(tab => {
             const active = selectedLevel === tab.id;
             return (
-              <button key={tab.id} onClick={() => setSelectedLevel(tab.id as typeof selectedLevel)}
+              <button key={tab.id} onClick={() => handleLevelChange(tab.id as typeof selectedLevel)}
                 className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-semibold transition-all duration-200 ${active ? `${tab.bg} border ${tab.border} ${tab.textColor}` : "text-stone-500 hover:text-stone-800"}`}
                 style={active ? { boxShadow: `0 0 14px ${tab.glowColor}` } : undefined}>
                 {tab.label}

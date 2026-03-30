@@ -351,23 +351,20 @@ function RandomChallenge() {
   }, []);
   if (pick) {
     return (
-      <div className="flex items-center gap-3 bg-[#00d4ff]/5 border border-[#00d4ff]/30 rounded-2xl px-5 py-4 animate-[fadeSlideIn_0.3s_ease-out]">
+      <div className="flex-1 flex items-center gap-2 bg-[#00d4ff]/5 border border-[#00d4ff]/30 rounded-xl px-3 py-2.5 animate-[fadeSlideIn_0.3s_ease-out]">
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-slate-500 mb-0.5">{pick.topic}</p>
-          <p className="text-sm font-semibold text-white truncate">{pick.label}</p>
+          <p className="text-[10px] text-slate-500">{pick.topic}</p>
+          <p className="text-xs font-semibold text-white truncate">{pick.label}</p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-1.5 shrink-0">
           <Link
             href={pick.href}
-            className="bg-[#00d4ff] text-[#0f172a] font-bold text-xs px-4 py-2 rounded-xl hover:bg-[#00b8d9] transition-colors"
+            className="bg-[#00d4ff] text-[#0f172a] font-bold text-[10px] px-2.5 py-1.5 rounded-lg hover:bg-[#00b8d9] transition-colors"
           >
-            התחל ←
+            התחל
           </Link>
-          <button
-            onClick={roll}
-            className="border border-slate-600 text-slate-400 hover:text-white text-xs px-3 py-2 rounded-xl transition-colors"
-          >
-            <Shuffle size={14} />
+          <button onClick={roll} className="border border-slate-600 text-slate-400 hover:text-white p-1.5 rounded-lg transition-colors">
+            <Shuffle size={12} />
           </button>
         </div>
       </div>
@@ -376,16 +373,10 @@ function RandomChallenge() {
   return (
     <button
       onClick={roll}
-      className="w-full flex items-center gap-3 bg-[#00d4ff]/10 hover:bg-[#00d4ff]/15 border border-[#00d4ff]/30 hover:border-[#00d4ff]/60 text-[#00d4ff] rounded-2xl px-5 py-4 transition-all duration-200 group"
+      className="flex-1 flex items-center justify-center gap-2 bg-[#00d4ff]/10 hover:bg-[#00d4ff]/15 border border-[#00d4ff]/30 hover:border-[#00d4ff]/60 text-[#00d4ff] rounded-xl px-3 py-2.5 transition-all duration-200 group"
     >
-      <div className="w-9 h-9 rounded-xl bg-[#00d4ff]/20 flex items-center justify-center shrink-0">
-        <Zap size={17} />
-      </div>
-      <div className="text-right flex-1">
-        <p className="font-bold text-sm">תרגיל אקראי</p>
-        <p className="text-xs text-[#00d4ff]/60">הגרל שאלה מתקדמת מהבנק</p>
-      </div>
-      <Shuffle size={16} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+      <Zap size={14} />
+      <span className="text-xs font-medium">תרגיל אקראי</span>
     </button>
   );
 }
@@ -416,7 +407,7 @@ function NameGreeting() {
           value={draft}
           onChange={e => setDraft(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
-          className="bg-slate-800 border border-[#00d4ff]/50 rounded-lg px-3 py-1 text-white text-2xl font-bold w-32 focus:outline-none"
+          className="bg-slate-800 border border-[#00d4ff]/50 rounded-lg px-2 py-0.5 text-white text-xl font-bold w-28 focus:outline-none"
           dir="rtl"
         />
         <button onClick={save} className="text-emerald-400 hover:text-emerald-300"><Check size={18} /></button>
@@ -444,16 +435,14 @@ function LastVisitedCard() {
   return (
     <Link
       href={last.href}
-      className="flex items-center gap-3 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 rounded-2xl px-5 py-4 transition-all duration-200 group"
+      className="flex items-center gap-2.5 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-[#00d4ff]/30 rounded-xl px-3 py-2.5 transition-all duration-200 group"
     >
-      <div className="w-9 h-9 rounded-xl bg-slate-700 flex items-center justify-center shrink-0">
-        <Clock size={16} className="text-slate-400" />
-      </div>
+      <Clock size={13} className="text-slate-500 shrink-0" />
       <div className="flex-1 min-w-0 text-right">
-        <p className="text-xs text-slate-500 mb-0.5">המשך מאיפה שעצרת</p>
-        <p className="text-sm font-semibold text-slate-200 truncate">{last.topicTitle}</p>
+        <p className="text-[10px] text-slate-500">המשך מאיפה שעצרת</p>
+        <p className="text-xs font-semibold text-slate-200 truncate">{last.topicTitle}</p>
       </div>
-      <ArrowLeft size={16} className="text-slate-600 group-hover:text-white transition-colors shrink-0" />
+      <ArrowLeft size={13} className="text-slate-600 group-hover:text-white transition-colors shrink-0" />
     </Link>
   );
 }
@@ -512,70 +501,96 @@ export default function Dashboard({ initialGrade, initialUsername }: { initialGr
   return (
     <div className="min-h-screen bg-[#0a0f1e] text-white" dir="rtl">
 
-      {/* ── Sticky nav ── */}
-      <header className="sticky top-0 z-30 bg-[#0a0f1e]/90 backdrop-blur-md border-b border-slate-800">
-        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Brain size={20} className="text-[#00d4ff]" />
-            <span className="font-bold text-white">מתמטיקה + AI</span>
+      {/* ── Floating obsidian toolbar ── */}
+      <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-sm border-b border-slate-800/60">
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Brain size={16} className="text-[#00d4ff]" />
+            <span className="font-semibold text-white text-xs">מתמטיקה + AI</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-400 font-medium">
+            <span className="text-[#00d4ff]/80">{gradeLabel}</span>
+            <span className="text-slate-600">•</span>
+            <span>4 יח&quot;ל</span>
+          </div>
+          <div className="flex items-center gap-2">
             <ShareButton />
-            <Link href="/onboarding" className="text-slate-400 hover:text-slate-200 text-sm transition-colors flex items-center gap-1">
+            <Link href="/onboarding" className="text-slate-500 hover:text-slate-200 transition-colors p-1">
               <Settings size={14} />
-              <span className="hidden sm:inline">שנה כיתה</span>
             </Link>
-            <button
-              onClick={handleLogout}
-              className="text-slate-400 hover:text-red-400 text-sm transition-colors flex items-center gap-1"
-            >
+            <button onClick={handleLogout} className="text-slate-500 hover:text-red-400 transition-colors p-1">
               <LogOut size={14} />
-              <span className="hidden sm:inline">יציאה</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-10 space-y-8 sm:space-y-12">
+      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-6 sm:space-y-10">
 
-        {/* ── Welcome hero ── */}
-        <section className="space-y-4 sm:space-y-6">
-          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[#00d4ff]/20 bg-gradient-to-l from-[#00d4ff]/5 to-[#3b82f6]/5 p-5 sm:p-8">
-            <div
-              className="absolute inset-0 opacity-10 pointer-events-none"
-              style={{ backgroundImage: "radial-gradient(circle at 5% 50%, #00d4ff 0%, transparent 55%), radial-gradient(circle at 90% 20%, #3b82f6 0%, transparent 50%)" }}
-            />
-            <div className="relative">
-              <p className="text-[#00d4ff] text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-2 sm:mb-3">{gradeLabel} • 4 יח&quot;ל מהדורה חדשה</p>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-1.5 sm:mb-2 leading-snug">
-                שלום, <NameGreeting /> —
-                <br />
-                <span className="text-[#00d4ff]">מוכן להמשיך לתרגל?</span>
-              </h1>
-              <p className="text-slate-400 mt-1.5 sm:mt-2 text-xs sm:text-sm">בחר נושא-משנה, פתור שלב אחר שלב, קבל עזרה מה-AI בדיוק כשצריך.</p>
+        {/* ── High-tech hero ── */}
+        <section className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-sm">
+          {/* Glow effects */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: "radial-gradient(ellipse 50% 60% at 15% 50%, rgba(0,212,255,0.08) 0%, transparent 70%), radial-gradient(ellipse 40% 50% at 85% 30%, rgba(52,211,153,0.06) 0%, transparent 70%)"
+          }} />
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+            backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+            backgroundSize: "40px 40px"
+          }} />
+
+          <div className="relative p-4 sm:p-6">
+            {/* Multi-column layout: stacked mobile, 3-col desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-4 sm:gap-6 items-start">
+
+              {/* Col 1: Greeting + Status */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[10px] text-emerald-400/80 font-medium uppercase tracking-wider">סטטוס: לומד פעיל</span>
+                </div>
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight">
+                    שלום, <NameGreeting />
+                  </h1>
+                  <p className="text-[#00d4ff]/70 text-sm font-medium mt-0.5">מוכן להמשיך לתרגל?</p>
+                </div>
+                <p className="text-slate-500 text-[11px] sm:text-xs">בחר נושא-משנה, פתור שלב אחר שלב, קבל עזרה מה-AI בדיוק כשצריך.</p>
+              </div>
+
+              {/* Divider (desktop only) */}
+              <div className="hidden sm:block w-px self-stretch bg-slate-700/60" />
+
+              {/* Col 2: Quick actions (compact glass buttons) */}
+              <div className="space-y-2">
+                {/* Last visited */}
+                <LastVisitedCard />
+                {/* Action row */}
+                <div className="flex gap-2">
+                  <RandomChallenge />
+                  <button
+                    onClick={() => openChat()}
+                    className="flex-1 flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-[#00d4ff]/40 rounded-xl px-3 py-2.5 transition-all duration-200 group"
+                  >
+                    <MessageSquare size={14} className="text-slate-400 group-hover:text-[#00d4ff] transition-colors shrink-0" />
+                    <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">שאל את ה-AI</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* AI search bar */}
+            <div className="mt-4 sm:mt-5">
+              <button
+                onClick={() => openChat()}
+                className="w-full flex items-center gap-2.5 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/50 hover:border-[#00d4ff]/30 rounded-xl px-4 py-2.5 transition-all duration-200 group"
+              >
+                <Zap size={13} className="text-[#00d4ff]/50 group-hover:text-[#00d4ff] transition-colors shrink-0" />
+                <span className="text-xs text-slate-500 group-hover:text-slate-300 transition-colors text-right flex-1">שאל שאלה... צלם תמונה... בקש עזרה מה-AI</span>
+                <span className="text-[10px] text-slate-600 font-medium bg-slate-800 px-2 py-0.5 rounded-md hidden sm:inline">⌘K</span>
+              </button>
             </div>
           </div>
-
-          {/* Quick actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-            <RandomChallenge />
-            <button
-              onClick={() => openChat()}
-              className="flex items-center gap-3 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-[#00d4ff]/40 rounded-2xl px-4 sm:px-5 py-3.5 sm:py-4 transition-all duration-200 group w-full text-right"
-            >
-              <div className="w-9 h-9 rounded-xl bg-slate-700 group-hover:bg-[#00d4ff]/15 flex items-center justify-center shrink-0 transition-colors">
-                <MessageSquare size={17} className="text-slate-300 group-hover:text-[#00d4ff] transition-colors" />
-              </div>
-              <div className="flex-1 text-right">
-                <p className="font-bold text-sm text-white">שאל את ה-AI</p>
-                <p className="text-xs text-slate-500">צ&apos;אט עם מורה AI • צלם שאלה מהמחברת</p>
-              </div>
-              <MessageSquare size={14} className="text-slate-600 group-hover:text-[#00d4ff] transition-colors shrink-0" />
-            </button>
-          </div>
-
-          {/* Last visited */}
-          <LastVisitedCard />
         </section>
 
         {/* ── Topic grid ── */}

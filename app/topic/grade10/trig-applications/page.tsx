@@ -412,7 +412,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
     setTimeout(() => setCopiedProblem(false), 2000);
   }
   return (
-    <section style={{ borderRadius: 32, border: `2px solid rgba(${s.borderRgb},0.5)`, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", padding: "2.5rem", marginBottom: "2rem", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: `0 10px 15px -3px rgba(60,54,42,0.1), 0 0 24px rgba(${s.borderRgb},0.08)` }}>
+    <section style={{ borderRadius: 32, border: `2px solid rgba(${s.borderRgb},0.5)`, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", padding: "2.5rem", marginBottom: "2rem", marginLeft: "auto", marginRight: "auto", boxShadow: `0 10px 15px -3px rgba(60,54,42,0.1), 0 0 24px rgba(${s.borderRgb},0.08)` }}>
 
       {/* Formula bar */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", alignItems: "flex-start", justifyContent: "space-between", borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.4)`, background: "rgba(255,255,255,0.88)", padding: "1rem 1.5rem", marginBottom: "2rem" }}>
@@ -481,7 +481,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       </div>
 
       {/* Prompt Ladder */}
-      <div style={{ borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.45)`, background: "rgba(255,255,255,0.88)", padding: "1.5rem", boxShadow: s.glowShadow }}>
+      <div style={{ borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.45)`, background: "rgba(255,255,255,0.88)", padding: 6, boxShadow: s.glowShadow }}>
         <div style={{ color: `rgb(${s.borderRgb})`, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase     steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium   steps={ex.steps} goldenPrompt={ex.goldenPrompt} borderRgb={s.borderRgb} />}
@@ -506,7 +506,7 @@ function SurveyorLab({ levelId }: { levelId: "basic" | "medium" }) {
   const Ty = Math.max(Oy - Math.min(height * scale, Oy - 16), 16);
 
   return (
-    <section style={{ border: `2px solid rgba(${st.borderRgb},0.5)`, borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: `0 10px 15px -3px rgba(60,54,42,0.1), 0 0 24px rgba(${st.borderRgb},0.08)` }}>
+    <section style={{ border: `2px solid rgba(${st.borderRgb},0.5)`, borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: `0 10px 15px -3px rgba(60,54,42,0.1), 0 0 24px rgba(${st.borderRgb},0.08)` }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת הסוקר</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה מרחק וזווית — ראה כיצד הגובה מתעדכן בזמן אמת</p>
 
@@ -590,7 +590,7 @@ export default function TrigApplicationsPage() {
 
       {/* Header */}
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
-        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+        <div style={{ margin: "0 auto", padding: "0.75rem 6px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>טריגונומטריה — יישומים עם AI</h1>
             <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>זוויות עלייה, מרחקים וגבהים — ואיך לנסח שאלות מציאותיות ל-AI</p>
@@ -607,7 +607,7 @@ export default function TrigApplicationsPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
+      <div style={{ margin: "0 auto", padding: "1rem 4px 3rem" }}>
 
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>

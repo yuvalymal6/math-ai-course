@@ -366,7 +366,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
     setTimeout(() => setCopiedProblem(false), 2000);
   }
   return (
-    <section style={{ border: "8px solid #334155", borderRadius: "40px", padding: "3rem", background: "#020617", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem" }}>
+    <section style={{ border: "8px solid #334155", borderRadius: 12, padding: 6, background: "#020617", marginLeft: "auto", marginRight: "auto" }}>
 
       {/* Formula bar */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", alignItems: "center", justifyContent: "center", borderRadius: 16, border: "1px solid #1e3a5f", background: "rgba(0,0,0,0.5)", padding: "12px 24px", marginBottom: "2rem" }}>
@@ -478,7 +478,7 @@ function PolynomialLab() {
   const dExpr = `${3*a}x² ${sign(2*b)}x ${sign(c)}`.replace("+-", "−").replace(/\+0x[²]/g, "").replace(/\+0x/g, "").replace(/\+0$/, "");
 
   return (
-    <section style={{ border: "8px solid #334155", borderRadius: "40px", padding: "3rem", background: "#020617", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", marginTop: "2rem" }}>
+    <section style={{ border: "8px solid #334155", borderRadius: 12, padding: 6, background: "#020617", marginLeft: "auto", marginRight: "auto", marginTop: "2rem" }}>
       <h3 style={{ color: "white", fontSize: 22, fontWeight: 700, textAlign: "center", marginBottom: 8 }}>מעבדת פולינום אינטראקטיבית</h3>
       <p style={{ color: "#64748b", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
         שנה מקדמים וצפה בנקודות הסטציונריות מתעדכנות בזמן אמת
@@ -545,7 +545,7 @@ export default function FullInvestigationPage() {
     <main style={{ minHeight: "100vh", background: "#000000", color: "white" }} dir="rtl">
 
       <div style={{ borderBottom: "1px solid #1e293b", background: "#0a0f1e" }}>
-        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "1.25rem 1.5rem" }}>
+        <div style={{ margin: "0 auto", padding: "1.25rem 1.5rem" }}>
           <Link href="/topic/grade12/calculus-polynomial" style={{ color: "#64748b", fontSize: 14, textDecoration: "none", display: "inline-block", marginBottom: 8 }}
             className="hover:text-violet-400 transition-colors">← פולינומים ונגזרות</Link>
           <h1 style={{ color: "white", fontSize: 22, fontWeight: 700 }}>חקירה מלאה וגרפים</h1>
@@ -553,7 +553,7 @@ export default function FullInvestigationPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
+      <div style={{ margin: "0 auto", padding: "1rem 4px 3rem" }}>
 
         {/* Level Selector */}
         <div className="flex gap-1 bg-slate-900/60 border border-slate-700 rounded-xl p-1 mb-8">

@@ -536,7 +536,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
     setTimeout(() => setCopiedProblem(false), 2000);
   }
   return (
-    <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+    <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
 
       {/* Formula bar — rose accent #e11d48 */}
       <div style={{ borderRadius: 16, border: "1px solid rgba(225,29,72,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.25rem 1.5rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(225,29,72,0.12)" }}>
@@ -608,7 +608,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       </div>
 
       {/* Prompt Ladder */}
-      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", boxShadow: s.glowShadow }}>
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: 6, boxShadow: s.glowShadow }}>
         <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase     steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} problemText={ex.problem} />}
@@ -636,7 +636,7 @@ function RectangleLab() {
   const toY = (v: number) => originY - v * scale;
 
   return (
-    <section style={{ border: "1px solid rgba(225,29,72,0.35)", borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+    <section style={{ border: "1px solid rgba(225,29,72,0.35)", borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המלבן</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה רוחב וגובה כדי לראות אלכסונים, מרכז, שטח והיקף.</p>
 
@@ -740,7 +740,7 @@ function ParallelogramLab() {
   const toY = (v: number) => originY - v * scale;
 
   return (
-    <section style={{ border: "1px solid rgba(225,29,72,0.35)", borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+    <section style={{ border: "1px solid rgba(225,29,72,0.35)", borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המקבילית</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את וקטורי AB ו-AD כדי לראות את המקבילית, האלכסונים והסיווג.</p>
 
@@ -899,7 +899,7 @@ function SquareBuilderLab() {
   const ra3y = raBy + sz * uBCsy;
 
   return (
-    <section style={{ border: "1px solid rgba(225,29,72,0.35)", borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+    <section style={{ border: "1px solid rgba(225,29,72,0.35)", borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת בניית ריבוע</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>בחר נקודות A ו-B, בחר כיוון סיבוב, ובנה ריבוע!</p>
 
@@ -1039,7 +1039,7 @@ export default function ProblemsPage() {
 
       {/* ── Header ── */}
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
-        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+        <div style={{ margin: "0 auto", padding: "0.75rem 6px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>🧩 בעיות גאומטריות</h1>
             <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>מלבנים, מקביליות וריבועים — מציאת קודקודים, סיווג וחישוב שטחים</p>
@@ -1056,7 +1056,7 @@ export default function ProblemsPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
+      <div style={{ margin: "0 auto", padding: "1rem 4px 3rem" }}>
 
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>

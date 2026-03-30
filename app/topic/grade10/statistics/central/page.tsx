@@ -77,7 +77,7 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
 
 function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "16,185,129", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
   return (
-    <div className="w-full" style={{ borderRadius: 10, background: "rgba(255,255,255,0.82)", padding: 8, marginBottom: 8, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 8px rgba(${borderRgb},0.1)`, boxSizing: "border-box" }}>
+    <div className="w-full mobile-full-width golden-prompt-debug" style={{ borderRadius: 10, background: "rgba(255,255,255,0.82)", padding: 8, marginBottom: 8, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 8px rgba(${borderRgb},0.1)`, boxSizing: "border-box" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <span>✨</span>
         <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>

@@ -155,7 +155,7 @@ function TangentLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
 
   return (
     <section style={{
-      border: `1px solid ${st.glowBorder}`, borderRadius: "40px", padding: "3rem",
+      border: `1px solid ${st.glowBorder}`, borderRadius: 12, padding: 6,
       background: "rgba(255,255,255,0.82)", boxShadow: st.glowShadow, marginBottom: "2rem",
     }}>
       <h3 style={{ fontSize: 18, fontWeight: 800, color: st.accentColor, textAlign: "center", marginBottom: 16 }}>מעבדת משיקים</h3>
@@ -508,7 +508,7 @@ export default function TangentPage() {
       <main dir="rtl" style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px", paddingBottom: "4rem" }}>
         {/* Header */}
         <div style={{ background: "#F3EFE0", borderBottom: "1px solid rgba(60,54,42,0.15)", marginBottom: "2rem" }}>
-          <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+          <div style={{ margin: "0 auto", padding: "0.75rem 6px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
             <div>
               <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>משיקים למעגל עם AI</h1>
               <p style={{ color: "#64748b", fontSize: 13, margin: "3px 0 0" }}>ניצבות, משוואת משיק והוכחת משיקות — ואיך לשאול AI את השאלות הנכונות</p>
@@ -525,7 +525,7 @@ export default function TangentPage() {
           </div>
         </div>
 
-        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0 1.5rem" }}>
+        <div style={{ margin: "0 auto", padding: "0 1.5rem" }}>
           {/* Tabs */}
           <div style={{ display: "flex", gap: 8, marginBottom: "1.5rem" }}>
             {TABS.map(tab => {
@@ -540,7 +540,7 @@ export default function TangentPage() {
           </div>
 
           {/* Island */}
-          <section style={{ border: `1px solid ${st.glowBorder}`, borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", boxShadow: st.glowShadow, marginBottom: "2rem" }}>
+          <section style={{ border: `1px solid ${st.glowBorder}`, borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", boxShadow: st.glowShadow, marginBottom: "2rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
               <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 12px", borderRadius: 20 }} className={st.badgeCls}>{st.badge}</span>
               <span style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>{st.stationName}</span>

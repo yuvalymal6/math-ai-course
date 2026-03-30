@@ -363,7 +363,7 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
 function LadderBase({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
   const st = STATION[ex.id as keyof typeof STATION];
   return (
-    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
+    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: 6, boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
       <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
       <GoldenPromptCard prompt={ex.goldenPrompt} title="פרומפט ראשי" glowRgb={accentRgb} borderRgb={st.borderRgb} />
       {ex.steps.map((s, i) => (
@@ -377,7 +377,7 @@ function LadderMedium({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentC
   const st = STATION[ex.id as keyof typeof STATION];
   const [passed, setPassed] = useState<boolean[]>(Array(ex.steps.length).fill(false));
   return (
-    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
+    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: 6, boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
       <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
       <GoldenPromptCard prompt={ex.goldenPrompt} glowRgb={accentRgb} borderRgb={st.borderRgb} />
       <div style={{ borderRadius: 12, background: "rgba(255,251,235,1)", border: "1px solid rgba(217,119,6,0.3)", padding: "10px 14px", marginBottom: 12, fontSize: 12, color: "#92400e" }}>
@@ -402,7 +402,7 @@ function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accen
   const allPassed = stepsPassed.every(Boolean) && masterPassed;
 
   return (
-    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
+    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: 6, boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
       <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
       <MasterPromptGate
         onPass={() => setMasterPassed(true)}
@@ -473,7 +473,7 @@ function ParabolaViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
   const maxDotY = SH - CP - (AMax / maxAG) * (SH - CP * 2);
 
   return (
-    <section style={{ borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", border: `1px solid ${st.glowBorder}`, boxShadow: st.glowShadow, marginBottom: "2rem", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem" }}>
+    <section style={{ borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", border: `1px solid ${st.glowBorder}`, boxShadow: st.glowShadow, marginBottom: "2rem", marginLeft: "auto", marginRight: "auto" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: "#2D3436", margin: 0 }}>מלבן בפרבולה — מעבדה אינטראקטיבית</h2>
         {atMax && <span className="text-green-400" style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מקסימום!</span>}
@@ -580,7 +580,7 @@ function DistanceViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
   const minDotYd = SH - CP - (D2Min / maxD2) * (SH - CP * 2);
 
   return (
-    <section style={{ borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", border: `1px solid ${st.glowBorder}`, boxShadow: st.glowShadow, marginBottom: "2rem", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem" }}>
+    <section style={{ borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", border: `1px solid ${st.glowBorder}`, boxShadow: st.glowShadow, marginBottom: "2rem", marginLeft: "auto", marginRight: "auto" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: "#2D3436", margin: 0 }}>מרחק מינימלי — מעבדה אינטראקטיבית</h2>
         {atMin && <span className="text-amber-400" style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מינימום!</span>}
@@ -701,7 +701,7 @@ function TwoParabolasViz({ levelId }: { levelId: "basic" | "medium" | "advanced"
   const maxDotYa = SH - CP - (AMax / maxAG) * (SH - CP * 2);
 
   return (
-    <section style={{ borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", border: `1px solid ${st.glowBorder}`, boxShadow: st.glowShadow, marginBottom: "2rem", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem" }}>
+    <section style={{ borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", border: `1px solid ${st.glowBorder}`, boxShadow: st.glowShadow, marginBottom: "2rem", marginLeft: "auto", marginRight: "auto" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: "#2D3436", margin: 0 }}>מלבן בין פרבולות — מעבדה אינטראקטיבית</h2>
         {atMax && <span className="text-rose-400" style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מקסימום!</span>}
@@ -902,7 +902,7 @@ export default function KitzunFunctionsPage() {
 
       {/* Header */}
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
-        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+        <div style={{ margin: "0 auto", padding: "0.75rem 6px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>בעיות קיצון — פונקציות וגרפים עם AI</h1>
             <p style={{ color: "#64748b", fontSize: 13, margin: "3px 0 0" }}>מלבנים חסומים, מרחקים ועקומות — תרגם גרף לפונקציה</p>
@@ -919,7 +919,7 @@ export default function KitzunFunctionsPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
+      <div style={{ margin: "0 auto", padding: "1rem 4px 3rem" }}>
 
         {/* Tab selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
@@ -939,7 +939,7 @@ export default function KitzunFunctionsPage() {
         </div>
 
         {/* Active exercise island */}
-        <section style={{ border: `1px solid ${st.glowBorder}`, borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginBottom: "2rem" }}>
+        <section style={{ border: `1px solid ${st.glowBorder}`, borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginBottom: "2rem" }}>
 
           {/* Station badge + title */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1.5rem" }}>
@@ -956,7 +956,7 @@ export default function KitzunFunctionsPage() {
           </div>
 
           {/* Problem statement */}
-          <div style={{ borderRadius: 16, border: `1px solid rgba(${st.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", marginBottom: "1.5rem" }}>
+          <div style={{ borderRadius: 16, border: `1px solid rgba(${st.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: 6, marginBottom: 10 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
               <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>📝 השאלה</div>
               <button

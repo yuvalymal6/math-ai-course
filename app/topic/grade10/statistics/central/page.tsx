@@ -77,12 +77,12 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
 
 function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "16,185,129", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
   return (
-    <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.82)", padding: "0.75rem", marginBottom: 12, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)`, width: "100%", boxSizing: "border-box" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+    <div className="w-full" style={{ borderRadius: 10, background: "rgba(255,255,255,0.82)", padding: 8, marginBottom: 8, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 8px rgba(${borderRgb},0.1)`, boxSizing: "border-box" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <span>✨</span>
         <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
       </div>
-      <p style={{ color: "#1A1A1A", fontSize: 13, lineHeight: 1.7, marginBottom: 12, whiteSpace: "pre-line", fontWeight: 500, wordBreak: "break-word", overflowWrap: "break-word", width: "100%", padding: 0, margin: "0 0 12px 0" }}>{prompt}</p>
+      <p className="w-full" style={{ color: "#1A1A1A", fontSize: 13, lineHeight: 1.7, margin: "0 0 8px 0", whiteSpace: "pre-line", fontWeight: 500, wordBreak: "break-word", overflowWrap: "break-word", padding: 0 }}>{prompt}</p>
       <CopyBtn text={prompt} label="העתק פרומפט מלא" />
     </div>
   );
@@ -494,10 +494,10 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
     setTimeout(() => setCopiedProblem(false), 2000);
   }
   return (
-    <section className="exercise-section" style={{ border: `1px solid ${s.glowBorder}`, borderRadius: "24px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+    <section className="exercise-section" style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
 
       {/* Formula bar — central tendency (KaTeX) */}
-      <div style={{ borderRadius: 12, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: "0.75rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
+      <div style={{ borderRadius: 12, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: 6, marginBottom: 10, boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
         <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
 
         {/* Context: variable definitions */}
@@ -539,11 +539,11 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
       {/* Diagram */}
       {ex.diagram && (
-        <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "0.75rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.25rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
+        <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, boxShadow: s.glowShadow }}>{ex.diagram}</div>
       )}
 
       {/* Problem */}
-      <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "0.75rem", marginBottom: "1.25rem" }}>
+      <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: 6, marginBottom: 10 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>📝 השאלה</div>
           <button onClick={handleCopyProblem} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.1)" : "rgba(107,114,128,0.08)", border: "1px solid rgba(107,114,128,0.2)", color: copiedProblem ? "#15803d" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
@@ -566,7 +566,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       </div>
 
       {/* Prompt Ladder */}
-      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "0.75rem", boxShadow: s.glowShadow }}>
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: 6, boxShadow: s.glowShadow }}>
         <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase     steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} problemText={ex.problem} />}
@@ -765,7 +765,7 @@ function MissingScoreLab() {
   const toX = (v: number) => padL + ((v - lineMin) / (lineMax - lineMin)) * (w - padL - padR);
 
   return (
-    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "20px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "1.5rem" }}>
+    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "20px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "1.5rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת הציון החסר</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את הציון החמישי והממוצע הרצוי כדי לראות את ההשפעה.</p>
 
@@ -882,7 +882,7 @@ function DistributionLab() {
   const totalW = padL + groupW + 40 + groupW + padL;
 
   return (
-    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "20px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "1.5rem" }}>
+    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "20px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "1.5rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת השוואת התפלגויות</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה ציונים בשתי הכיתות וראה את ההבדלים במדדי המרכז.</p>
 
@@ -991,6 +991,14 @@ function DistributionLab() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+// Grade label map for dynamic prompt injection
+const GRADE_MAP: Record<string, string> = { "10": "י׳", "11": 'י"א', "12": 'י"ב' };
+
+function injectGrade(text: string, grade: string): string {
+  const label = GRADE_MAP[grade] || "י׳";
+  return text.replace(/כיתה י['׳]/g, `כיתה ${label}`);
+}
+
 export default function CentralTendencyPage() {
   const [selectedLevel, setSelectedLevel] = useState<"basic" | "medium" | "advanced">(() => {
     if (typeof window !== "undefined") {
@@ -1000,12 +1008,21 @@ export default function CentralTendencyPage() {
     return "basic";
   });
 
+  // Read saved grade for dynamic prompts
+  const [userGrade, setUserGrade] = useState("10");
+  useEffect(() => {
+    const g = localStorage.getItem("math-grade");
+    if (g) setUserGrade(g);
+  }, []);
+
   const handleLevelChange = (level: "basic" | "medium" | "advanced") => {
     setSelectedLevel(level);
     try { localStorage.setItem("math-progress:central-level", level); } catch {}
   };
 
   const ex = exercises.find(e => e.id === selectedLevel)!;
+  // Inject saved grade into golden prompt
+  const dynamicEx = { ...ex, goldenPrompt: injectGrade(ex.goldenPrompt, userGrade) };
   const lvlRgb = selectedLevel === "basic" ? "45,90,39" : selectedLevel === "medium" ? "163,79,38" : "139,38,53";
 
   return (
@@ -1032,7 +1049,7 @@ export default function CentralTendencyPage() {
 
       {/* ── Header ── */}
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
-        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 0.75rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem" }}>
+        <div style={{ margin: "0 auto", padding: "0.75rem 6px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem" }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>📊 מדדי מרכז</h1>
             <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>ממוצע, חציון ושכיח — ואיך לשאול AI את השאלות הנכונות</p>
@@ -1049,7 +1066,7 @@ export default function CentralTendencyPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "1.5rem 0.5rem 4rem" }}>
+      <div style={{ margin: "0 auto", padding: "1rem 4px 3rem" }}>
 
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
@@ -1067,7 +1084,7 @@ export default function CentralTendencyPage() {
 
         {/* Active card */}
         <motion.div key={selectedLevel} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
-          <ExerciseCard ex={ex} />
+          <ExerciseCard ex={dynamicEx} />
         </motion.div>
 
         {/* Lab — each level gets its own lab */}

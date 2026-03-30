@@ -5,7 +5,8 @@ import Link from "next/link";
 import {
   Brain, TrendingUp, Circle, Maximize2, BarChart2, GitBranch,
   ChevronRight, Zap, MessageSquare, Shuffle, Clock, Pencil,
-  Check, X, BookOpen, ArrowLeft, Share2,
+  Check, X, BookOpen, ArrowLeft, Share2, LogOut, Settings,
+  Sigma, Box, LineChart, PieChart, Percent, Calculator,
 } from "lucide-react";
 import { useChat } from "./chat-context";
 
@@ -124,6 +125,78 @@ const RANDOM_POOL = [
   { label: "מבחן שתי שאלות — הסתברות מותנית (מתקדם)",  href: "/topic/probability/table",     topic: "הסתברות" },
   { label: "שינוי לינארי: +5 לכל ציון (מתקדם)",        href: "/topic/statistics/dispersion",  topic: "סטטיסטיקה" },
 ];
+
+// ─── Grade-specific topic sets ────────────────────────────────────────────────
+
+const TOPICS_10 = [
+  {
+    id: "grade10", title: "כיתה י׳ — כל הנושאים", subtitle: "אלגברה, גיאומטריה, טריגונומטריה, סטטיסטיקה",
+    icon: Calculator,
+    subtopicLinks: [
+      { label: "פרבולה ואלגברה", href: "/topic/grade10/algebra-parabola" },
+      { label: "גיאומטריה", href: "/topic/grade10/geometry" },
+      { label: "טריגונומטריה", href: "/topic/grade10/trig" },
+      { label: "סטטיסטיקה", href: "/topic/grade10/statistics" },
+      { label: "גיאומטריה אנליטית", href: "/topic/grade10/analytic" },
+    ],
+    color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", hover: "hover:border-emerald-500/70 hover:shadow-[0_0_32px_rgba(16,185,129,0.18)]", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300", bar: "bg-emerald-500", badge: "bg-emerald-900/60 text-emerald-300 border-emerald-700/50" },
+  },
+];
+
+const TOPICS_11 = TOPICS; // existing topics are grade 11
+
+const TOPICS_12 = [
+  {
+    id: "grade12-series", title: "סדרות", subtitle: "סדרות חשבוניות, הנדסיות ורקורסיביות",
+    icon: Sigma,
+    subtopicLinks: [
+      { label: "סדרה חשבונית", href: "/topic/grade12/series-arithmetic" },
+      { label: "סדרה הנדסית", href: "/topic/grade12/series-geometric" },
+      { label: "נוסחת רקורסיה", href: "/topic/grade12/series/recursion" },
+    ],
+    color: { bg: "bg-amber-950/40", border: "border-amber-800/50", hover: "hover:border-amber-500/70 hover:shadow-[0_0_32px_rgba(245,158,11,0.18)]", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300", bar: "bg-amber-500", badge: "bg-amber-900/60 text-amber-300 border-amber-700/50" },
+  },
+  {
+    id: "grade12-space", title: "גיאומטריה מרחבית", subtitle: "תיבה, פירמידה ומשולשים במרחב",
+    icon: Box,
+    subtopicLinks: [
+      { label: "תיבה", href: "/topic/grade12/space-geometry/box" },
+      { label: "פירמידה", href: "/topic/grade12/space-geometry/pyramid" },
+    ],
+    color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", hover: "hover:border-emerald-500/70 hover:shadow-[0_0_32px_rgba(16,185,129,0.18)]", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300", bar: "bg-emerald-500", badge: "bg-emerald-900/60 text-emerald-300 border-emerald-700/50" },
+  },
+  {
+    id: "grade12-growth", title: "גדילה ודעיכה", subtitle: "מודלים מעריכיים ולוגריתמיים",
+    icon: LineChart,
+    subtopicLinks: [
+      { label: "גדילה ודעיכה", href: "/topic/grade12/growth-decay" },
+    ],
+    color: { bg: "bg-rose-950/40", border: "border-rose-800/50", hover: "hover:border-rose-500/70 hover:shadow-[0_0_32px_rgba(244,63,94,0.18)]", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300", bar: "bg-rose-500", badge: "bg-rose-900/60 text-rose-300 border-rose-700/50" },
+  },
+  {
+    id: "grade12-calculus", title: 'חדו"א מתקדם', subtitle: "אקספוננט, לוגריתם, אינטגרלים",
+    icon: TrendingUp,
+    subtopicLinks: [
+      { label: "פולינומים", href: "/topic/grade12/calculus-polynomial" },
+      { label: "אקספוננט", href: "/topic/grade12/calculus/exponential" },
+      { label: "לוגריתם", href: "/topic/grade12/calculus/ln" },
+      { label: "אינטגרלים", href: "/topic/grade12/calculus/integral" },
+    ],
+    color: { bg: "bg-indigo-950/40", border: "border-indigo-800/50", hover: "hover:border-indigo-500/70 hover:shadow-[0_0_32px_rgba(99,102,241,0.18)]", accent: "text-indigo-400", icon: "bg-indigo-900/60 text-indigo-300", bar: "bg-indigo-500", badge: "bg-indigo-900/60 text-indigo-300 border-indigo-700/50" },
+  },
+];
+
+const GRADE_TOPICS: Record<string, typeof TOPICS> = {
+  "10": TOPICS_10,
+  "11": TOPICS_11,
+  "12": TOPICS_12,
+};
+
+const GRADE_LABELS: Record<string, string> = {
+  "10": 'כיתה י׳',
+  "11": 'כיתה י"א',
+  "12": 'כיתה י"ב',
+};
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -371,6 +444,28 @@ function ShareButton() {
 
 export default function Dashboard() {
   const { openChat } = useChat();
+  const [userGrade, setUserGrade] = useState<string>("11");
+  const [username, setUsername] = useState<string>("");
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then(r => r.json())
+      .then(data => {
+        if (data.grade) setUserGrade(data.grade);
+        if (data.username) setUsername(data.username);
+      })
+      .catch(() => {});
+  }, []);
+
+  const gradeTopics = GRADE_TOPICS[userGrade] || TOPICS;
+  const gradeLabel = GRADE_LABELS[userGrade] || 'כיתה י"א';
+
+  const handleLogout = async () => {
+    document.cookie = "math-auth=; path=/; max-age=0";
+    document.cookie = "math-grade=; path=/; max-age=0";
+    window.location.href = "/login";
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0f1e] text-white" dir="rtl">
 
@@ -383,16 +478,17 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-3">
             <ShareButton />
-            <Link href="/wizard" className="text-slate-400 hover:text-slate-200 text-sm transition-colors flex items-center gap-1">
-              <BookOpen size={14} />
-              <span className="hidden sm:inline">בחר נושא</span>
+            <Link href="/onboarding" className="text-slate-400 hover:text-slate-200 text-sm transition-colors flex items-center gap-1">
+              <Settings size={14} />
+              <span className="hidden sm:inline">שנה כיתה</span>
             </Link>
-            <Link
-              href="/wizard"
-              className="bg-[#00d4ff]/10 hover:bg-[#00d4ff]/20 border border-[#00d4ff]/30 text-[#00d4ff] text-sm font-medium px-4 py-1.5 rounded-full transition-colors"
+            <button
+              onClick={handleLogout}
+              className="text-slate-400 hover:text-red-400 text-sm transition-colors flex items-center gap-1"
             >
-              כניסת תלמידים
-            </Link>
+              <LogOut size={14} />
+              <span className="hidden sm:inline">יציאה</span>
+            </button>
           </div>
         </div>
       </header>
@@ -407,7 +503,7 @@ export default function Dashboard() {
               style={{ backgroundImage: "radial-gradient(circle at 5% 50%, #00d4ff 0%, transparent 55%), radial-gradient(circle at 90% 20%, #3b82f6 0%, transparent 50%)" }}
             />
             <div className="relative">
-              <p className="text-[#00d4ff] text-xs font-semibold uppercase tracking-widest mb-3">כיתה י&quot;א • 4 יח&quot;ל מהדורה חדשה</p>
+              <p className="text-[#00d4ff] text-xs font-semibold uppercase tracking-widest mb-3">{gradeLabel} • 4 יח&quot;ל מהדורה חדשה</p>
               <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 leading-snug">
                 שלום, <NameGreeting /> —
                 <br />
@@ -443,11 +539,11 @@ export default function Dashboard() {
         <section className="space-y-5">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white">הנושאים שלך</h2>
-            <span className="text-slate-600 text-sm">{TOPICS.length} יחידות</span>
+            <span className="text-slate-600 text-sm">{gradeTopics.length} יחידות</span>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {TOPICS.map(t => <TopicCard key={t.id} topic={t} />)}
+            {gradeTopics.map(t => <TopicCard key={t.id} topic={t} />)}
           </div>
         </section>
 
@@ -455,11 +551,10 @@ export default function Dashboard() {
         <footer className="border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-600">
           <div className="flex items-center gap-2">
             <Brain size={16} className="text-[#00d4ff]" />
-            <span>מתמטיקה + AI © 2026</span>
+            <span>מתמטיקה + AI &copy; 2026</span>
           </div>
           <div className="flex items-center gap-5">
-            <Link href="/wizard" className="hover:text-slate-300 transition-colors">בחר נושא</Link>
-            <Link href="/wizard" className="hover:text-slate-300 transition-colors">כניסת תלמידים</Link>
+            <Link href="/onboarding" className="hover:text-slate-300 transition-colors">שנה כיתה</Link>
             <a href="mailto:info@math-ai.co.il" className="hover:text-slate-300 transition-colors">צור קשר</a>
           </div>
         </footer>

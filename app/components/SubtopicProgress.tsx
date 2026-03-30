@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { getCompletedLevels } from "@/app/lib/progress";
+import { getCompletedLevels, syncFromSupabase } from "@/app/lib/progress";
 
 export default function SubtopicProgress({ subtopicId }: { subtopicId: string }) {
   const [completed, setCompleted] = useState(0);
@@ -19,6 +19,10 @@ export default function SubtopicProgress({ subtopicId }: { subtopicId: string })
   }, [subtopicId, completed]);
 
   useEffect(() => {
+    // Sync from Supabase on mount, then read localStorage
+    syncFromSupabase().then(() => {
+      setCompleted(getCompletedLevels(subtopicId));
+    });
     setCompleted(getCompletedLevels(subtopicId));
     window.addEventListener("math-progress-update", refresh);
     return () => window.removeEventListener("math-progress-update", refresh);

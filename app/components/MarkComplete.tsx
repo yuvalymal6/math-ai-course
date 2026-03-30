@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, Circle } from "lucide-react";
-import { getSubtopicProgress, toggleLevel, type LevelId } from "@/app/lib/progress";
+import { Check } from "lucide-react";
+import { getSubtopicProgress, toggleLevel, syncFromSupabase, type LevelId } from "@/app/lib/progress";
 
 export default function MarkComplete({
   subtopicId,
@@ -14,11 +14,22 @@ export default function MarkComplete({
   onToggle?: (completed: boolean) => void;
 }) {
   const [done, setDone] = useState(false);
+  const [synced, setSynced] = useState(false);
 
   useEffect(() => {
-    const p = getSubtopicProgress(subtopicId);
-    setDone(p[level]);
-  }, [subtopicId, level]);
+    // On first mount, sync from Supabase then read localStorage
+    if (!synced) {
+      syncFromSupabase().then(() => {
+        const p = getSubtopicProgress(subtopicId);
+        setDone(p[level]);
+        setSynced(true);
+        window.dispatchEvent(new Event("math-progress-update"));
+      });
+    } else {
+      const p = getSubtopicProgress(subtopicId);
+      setDone(p[level]);
+    }
+  }, [subtopicId, level, synced]);
 
   const handleClick = () => {
     const newState = toggleLevel(subtopicId, level);
@@ -44,7 +55,6 @@ export default function MarkComplete({
       onClick={handleClick}
       className="group flex items-center justify-center gap-2.5 w-full py-2 sm:py-3 rounded-xl text-sm transition-all duration-200 bg-transparent border border-emerald-200/60 text-slate-600 hover:border-emerald-400 hover:text-emerald-700 hover:bg-emerald-50/40"
     >
-      {/* Dashed circle indicator */}
       <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-emerald-300 group-hover:border-emerald-400 transition-colors shrink-0" />
       <span className="font-medium">סמן כהושלם</span>
     </button>

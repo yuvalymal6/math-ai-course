@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabaseClient";
 
-const ADMIN_EMAIL = "yuvaymal6@gmail.com";
+const ADMIN_EMAIL = "yuvalymal6@gmail.com";
 const FALLBACK_PASSWORD = "math2026";
 
 export async function POST(req: NextRequest) {

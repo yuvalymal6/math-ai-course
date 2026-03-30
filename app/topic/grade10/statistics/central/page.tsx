@@ -497,35 +497,33 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
     <section className="exercise-section" style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
 
       {/* Formula bar — central tendency (KaTeX) */}
-      <div style={{ borderRadius: 12, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
-        <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
+      <div className="formula-bar" style={{ borderRadius: 12, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
+        <div className="formula-title" style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
 
         {/* Context: variable definitions */}
         <div style={{ borderRadius: 10, background: "rgba(244,63,94,0.05)", border: "1px solid rgba(244,63,94,0.15)", padding: "10px 14px", marginBottom: 16, textAlign: "center" }}>
-          <div style={{ color: "#2D3436", fontSize: 13, lineHeight: 1.8 }}>
+          <div className="formula-label" style={{ color: "#2D3436", fontSize: 13, lineHeight: 1.8 }}>
             <Tex>{String.raw`\bar{x}`}</Tex> — ממוצע &nbsp;&nbsp;·&nbsp;&nbsp;
             <Tex>{String.raw`Me`}</Tex> — חציון &nbsp;&nbsp;·&nbsp;&nbsp;
             <Tex>{String.raw`Mo`}</Tex> — שכיח
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 20, alignItems: "center" }}>
+        <div className="formula-grid-stats">
           {/* Mean */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
-            <div style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>📊 ממוצע</div>
+          <div className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
+            <div className="formula-label" style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>📊 ממוצע</div>
             <div style={{ color: "#f43f5e" }}><TexBlock>{String.raw`\bar{x} = \frac{\sum x_i}{n}`}</TexBlock></div>
           </div>
-          <div style={{ width: "80%", height: 1, background: "rgba(60,54,42,0.08)" }} />
           {/* Median */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
-            <div style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>📏 חציון</div>
-            <div style={{ color: "#f43f5e" }}><TexBlock>{String.raw`Me = \text{median}(x_1, x_2, \ldots, x_n)`}</TexBlock></div>
+          <div className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
+            <div className="formula-label" style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>📏 חציון</div>
+            <div style={{ color: "#f43f5e" }}><TexBlock>{String.raw`Me = \text{median}(x_1, \ldots, x_n)`}</TexBlock></div>
           </div>
-          <div style={{ width: "80%", height: 1, background: "rgba(60,54,42,0.08)" }} />
           {/* Mode */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
-            <div style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>🔁 שכיח</div>
-            <div style={{ color: "#f43f5e" }}><TexBlock>{String.raw`Mo = \text{mode}(x_1, x_2, \ldots, x_n)`}</TexBlock></div>
+          <div className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
+            <div className="formula-label" style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>🔁 שכיח</div>
+            <div style={{ color: "#f43f5e" }}><TexBlock>{String.raw`Mo = \text{mode}(x_1, \ldots, x_n)`}</TexBlock></div>
           </div>
         </div>
       </div>

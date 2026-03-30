@@ -604,43 +604,43 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
     <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
 
       {/* Formula bar */}
-      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.25rem 1.5rem", marginBottom: "2rem", boxShadow: s.glowShadow }}>
-        <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 14, textAlign: "center" }}>נוסחאות מרכזיות</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1px 1fr", gap: "0 1.5rem", alignItems: "start" }}>
+      <div className="formula-bar" style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.25rem 1.5rem", marginBottom: "2rem", boxShadow: s.glowShadow }}>
+        <div className="formula-title" style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 14, textAlign: "center" }}>נוסחאות מרכזיות</div>
+        <div className="formula-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1px 1fr", gap: "0 1.5rem", alignItems: "start" }}>
 
           {/* עמודה ימנית — מאפייני הפרבולה */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ color: s.accentColor, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", textAlign: "right", marginBottom: 2 }}>מאפייני הפרבולה</div>
+          <div className="formula-col" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div className="formula-col-title" style={{ color: s.accentColor, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", textAlign: "right", marginBottom: 2 }}>מאפייני הפרבולה</div>
             {[
               { label: "קודקוד הפרבולה", tex: "x_v = \\dfrac{-b}{2a}" },
               { label: "ערך ה-y בקודקוד", tex: "y_v = f(x_v)" },
               { label: "חיתוך עם ציר y", tex: "(0,\\, c)" },
             ].map(({ label, tex }) => (
-              <div key={label} style={{ display: "flex", flexDirection: "column", gap: 3, textAlign: "right" }}>
-                <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{label}</span>
+              <div key={label} className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 3, textAlign: "right" }}>
+                <span className="formula-label" style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{label}</span>
                 <span style={{ display: "block", textAlign: "center", padding: "4px 0" }}><TexBlock>{tex}</TexBlock></span>
               </div>
             ))}
           </div>
 
           {/* מפריד */}
-          <div style={{ background: "rgba(60,54,42,0.12)", width: 1, alignSelf: "stretch" }} />
+          <div className="formula-divider" style={{ background: "rgba(60,54,42,0.12)", width: 1, alignSelf: "stretch" }} />
 
           {/* עמודה שמאלית — פתרון משוואות */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ color: s.accentColor, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", textAlign: "right", marginBottom: 2 }}>פתרון משוואות</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 3, textAlign: "right" }}>
-              <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>נוסחת השורשים</span>
+          <div className="formula-col" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div className="formula-col-title" style={{ color: s.accentColor, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", textAlign: "right", marginBottom: 2 }}>פתרון משוואות</div>
+            <div className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 3, textAlign: "right" }}>
+              <span className="formula-label" style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>נוסחת השורשים</span>
               <span style={{ display: "block", textAlign: "center", padding: "4px 0" }}><TexBlock>{"x_{1,2} = \\dfrac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"}</TexBlock></span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 3, textAlign: "right" }}>
-              <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>נקודות אפס</span>
+            <div className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 3, textAlign: "right" }}>
+              <span className="formula-label" style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>נקודות אפס</span>
               <span style={{ color: "#2D3436", fontSize: 12, lineHeight: 1.5, textAlign: "right" }}>
                 חיתוך עם ציר <Tex>{"x"}</Tex> כאשר <Tex>{"y=0"}</Tex>
               </span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 3, textAlign: "right" }}>
-              <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>חיוביות / שליליות</span>
+            <div className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 3, textAlign: "right" }}>
+              <span className="formula-label" style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>חיוביות / שליליות</span>
               <span style={{ color: "#2D3436", fontSize: 12, lineHeight: 1.5, textAlign: "right" }}>
                 בדיקת תחומים לפי צורת הפרבולה:<br />
                 <Tex>{"a>0"}</Tex> — מחייכת ∪ &nbsp;|&nbsp; <Tex>{"a<0"}</Tex> — בוכה ∩

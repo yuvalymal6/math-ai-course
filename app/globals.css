@@ -31,6 +31,14 @@ html {
   100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
 }
 
+/* ── Desktop defaults for formula grids ── */
+.formula-grid-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
 /* ════════════════════════════════════════════════════
    MOBILE-ONLY overrides  (<768px)
    Desktop stays UNTOUCHED — centered, max-w constrained
@@ -82,5 +90,52 @@ html {
   textarea {
     width: 100% !important;
     box-sizing: border-box !important;
+  }
+
+  /* ── Compact formula bar on mobile ── */
+  .formula-bar {
+    padding: 8px !important;
+    margin-bottom: 1rem !important;
+    border-radius: 12px !important;
+  }
+  .formula-title {
+    margin-bottom: 6px !important;
+    font-size: 9px !important;
+  }
+  .formula-grid {
+    gap: 0 6px !important;
+  }
+  .formula-col {
+    gap: 4px !important;
+  }
+  .formula-col-title {
+    font-size: 9px !important;
+    margin-bottom: 0 !important;
+  }
+  .formula-item {
+    gap: 1px !important;
+  }
+  .formula-item span[style*="padding"] {
+    padding: 1px 0 !important;
+  }
+  .formula-label {
+    font-size: 9px !important;
+  }
+  .formula-bar .katex {
+    font-size: 0.7em !important;
+  }
+
+  /* Stats formula grid: 2-col on mobile for compact height */
+  .formula-grid-stats {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+  .formula-grid-stats .formula-item {
+    gap: 2px !important;
+  }
+  .formula-grid-stats .formula-label {
+    font-size: 10px !important;
+    margin-bottom: 0 !important;
   }
 }

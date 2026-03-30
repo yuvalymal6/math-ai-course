@@ -11,12 +11,10 @@ export async function POST(req: NextRequest) {
 
   const res = NextResponse.json({ ok: true });
 
-  const isProduction = process.env.NODE_ENV === "production";
   res.cookies.set("math-grade", grade, {
-    sameSite: "lax",
-    secure: isProduction,
-    maxAge: 60 * 60 * 24 * 30,
     path: "/",
+    maxAge: 2592000,
+    sameSite: "lax",
   });
 
   return res;

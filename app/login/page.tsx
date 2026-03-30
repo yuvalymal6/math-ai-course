@@ -52,15 +52,15 @@ export default function LoginPage() {
         </div>
       </header>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
+      <div className="flex-1 flex items-center justify-center px-3 sm:px-4 py-8 sm:py-12">
         <div className="w-full max-w-md">
           {/* Login card */}
-          <div className="bg-[#0f172a] border border-slate-700 rounded-2xl p-8 shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
-            <div className="text-center space-y-2 mb-8">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00d4ff]/20 to-[#3b82f6]/20 border border-[#00d4ff]/30 flex items-center justify-center mx-auto mb-4">
-                <Brain size={28} className="text-[#00d4ff]" />
+          <div className="bg-[#0f172a] border border-slate-700 rounded-2xl p-5 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
+            <div className="text-center space-y-2 mb-6 sm:mb-8">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#00d4ff]/20 to-[#3b82f6]/20 border border-[#00d4ff]/30 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Brain size={24} className="text-[#00d4ff] sm:hidden" /><Brain size={28} className="text-[#00d4ff] hidden sm:block" />
               </div>
-              <h1 className="text-3xl font-extrabold text-white">ברוכים הבאים</h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">ברוכים הבאים</h1>
               <p className="text-slate-400 text-sm">הכנס את הפרטים כדי להתחיל ללמוד</p>
             </div>
 

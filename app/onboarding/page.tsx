@@ -70,25 +70,25 @@ export default function OnboardingPage() {
         </div>
       </header>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
+      <div className="flex-1 flex items-center justify-center px-3 sm:px-4 py-8 sm:py-12">
         <div className="w-full max-w-2xl">
           {/* Title */}
-          <div className="text-center space-y-3 mb-10">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00d4ff]/20 to-[#3b82f6]/20 border border-[#00d4ff]/30 flex items-center justify-center mx-auto mb-4">
-              <GraduationCap size={28} className="text-[#00d4ff]" />
+          <div className="text-center space-y-2 sm:space-y-3 mb-8 sm:mb-10">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#00d4ff]/20 to-[#3b82f6]/20 border border-[#00d4ff]/30 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <GraduationCap size={24} className="text-[#00d4ff]" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-white">באיזו כיתה אתה?</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">באיזו כיתה אתה?</h1>
             <p className="text-slate-400 text-sm max-w-md mx-auto">נתאים את הנושאים והתרגילים בדיוק לרמה שלך</p>
           </div>
 
-          {/* Grade cards — side by side on desktop, stacked on mobile */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Grade cards — stacked on mobile, 3-col on desktop */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             {GRADES.map((g) => (
               <button
                 key={g.id}
                 onClick={() => selectGrade(g.id)}
                 disabled={loading !== null}
-                className={`group relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 bg-gradient-to-br ${g.color} ${g.border} ${g.glow} text-right disabled:opacity-50 disabled:hover:scale-100`}
+                className={`group relative overflow-hidden rounded-2xl border p-5 sm:p-6 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 bg-gradient-to-br ${g.color} ${g.border} ${g.glow} text-right disabled:opacity-50 disabled:hover:scale-100 w-full`}
               >
                 <div className={`w-12 h-12 rounded-xl ${g.iconBg} flex items-center justify-center mb-4`}>
                   <GraduationCap size={22} className={g.accent} />

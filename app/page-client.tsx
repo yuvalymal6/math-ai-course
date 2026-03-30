@@ -283,24 +283,24 @@ function TopicCard({ topic }: { topic: typeof TOPICS[number] & { href?: string }
     <Link
       href={cardHref}
       onClick={() => markVisited(cardHref, topic.title, topic.title)}
-      className={`group block rounded-2xl border p-6 transition-all duration-300 hover:scale-[1.015] hover:-translate-y-0.5 ${c.bg} ${c.border} ${c.hover}`}
+      className={`group block rounded-2xl border p-4 sm:p-6 transition-all duration-300 hover:scale-[1.015] hover:-translate-y-0.5 ${c.bg} ${c.border} ${c.hover}`}
     >
       {/* Header row */}
-      <div className="flex items-start justify-between mb-4">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${c.icon}`}>
-          <Icon size={22} />
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
+        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 ${c.icon}`}>
+          <Icon size={20} />
         </div>
-        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${c.badge}`}>
+        <span className={`text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border ${c.badge}`}>
           4 יח&quot;ל
         </span>
       </div>
 
       {/* Title */}
-      <h3 className={`text-lg font-bold mb-0.5 ${c.accent}`}>{topic.title}</h3>
-      <p className="text-slate-400 text-xs mb-4 leading-relaxed">{topic.subtitle}</p>
+      <h3 className={`text-base sm:text-lg font-bold mb-0.5 ${c.accent}`}>{topic.title}</h3>
+      <p className="text-slate-400 text-[11px] sm:text-xs mb-3 sm:mb-4 leading-relaxed">{topic.subtitle}</p>
 
       {/* Sub-topic list */}
-      <div className="space-y-1.5 mb-5">
+      <div className="space-y-1 sm:space-y-1.5 mb-4 sm:mb-5">
         {topic.subtopicLinks.map((s) => (
           <div key={s.href} className="flex items-center gap-2 text-xs text-slate-400">
             <span className={`w-1 h-1 rounded-full shrink-0 ${c.bar}`} />
@@ -492,7 +492,7 @@ export default function Dashboard({ initialGrade, initialUsername }: { initialGr
 
       {/* ── Sticky nav ── */}
       <header className="sticky top-0 z-30 bg-[#0a0f1e]/90 backdrop-blur-md border-b border-slate-800">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Brain size={20} className="text-[#00d4ff]" />
             <span className="font-bold text-white">מתמטיקה + AI</span>
@@ -514,32 +514,32 @@ export default function Dashboard({ initialGrade, initialUsername }: { initialGr
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-10 space-y-12">
+      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-10 space-y-8 sm:space-y-12">
 
         {/* ── Welcome hero ── */}
-        <section className="space-y-6">
-          <div className="relative overflow-hidden rounded-3xl border border-[#00d4ff]/20 bg-gradient-to-l from-[#00d4ff]/5 to-[#3b82f6]/5 p-8">
+        <section className="space-y-4 sm:space-y-6">
+          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[#00d4ff]/20 bg-gradient-to-l from-[#00d4ff]/5 to-[#3b82f6]/5 p-5 sm:p-8">
             <div
               className="absolute inset-0 opacity-10 pointer-events-none"
               style={{ backgroundImage: "radial-gradient(circle at 5% 50%, #00d4ff 0%, transparent 55%), radial-gradient(circle at 90% 20%, #3b82f6 0%, transparent 50%)" }}
             />
             <div className="relative">
-              <p className="text-[#00d4ff] text-xs font-semibold uppercase tracking-widest mb-3">{gradeLabel} • 4 יח&quot;ל מהדורה חדשה</p>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 leading-snug">
+              <p className="text-[#00d4ff] text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-2 sm:mb-3">{gradeLabel} • 4 יח&quot;ל מהדורה חדשה</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-1.5 sm:mb-2 leading-snug">
                 שלום, <NameGreeting /> —
                 <br />
                 <span className="text-[#00d4ff]">מוכן להמשיך לתרגל?</span>
               </h1>
-              <p className="text-slate-400 mt-2 text-sm">בחר נושא-משנה, פתור שלב אחר שלב, קבל עזרה מה-AI בדיוק כשצריך.</p>
+              <p className="text-slate-400 mt-1.5 sm:mt-2 text-xs sm:text-sm">בחר נושא-משנה, פתור שלב אחר שלב, קבל עזרה מה-AI בדיוק כשצריך.</p>
             </div>
           </div>
 
           {/* Quick actions */}
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
             <RandomChallenge />
             <button
               onClick={() => openChat()}
-              className="flex items-center gap-3 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-[#00d4ff]/40 rounded-2xl px-5 py-4 transition-all duration-200 group w-full text-right"
+              className="flex items-center gap-3 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-[#00d4ff]/40 rounded-2xl px-4 sm:px-5 py-3.5 sm:py-4 transition-all duration-200 group w-full text-right"
             >
               <div className="w-9 h-9 rounded-xl bg-slate-700 group-hover:bg-[#00d4ff]/15 flex items-center justify-center shrink-0 transition-colors">
                 <MessageSquare size={17} className="text-slate-300 group-hover:text-[#00d4ff] transition-colors" />
@@ -557,13 +557,13 @@ export default function Dashboard({ initialGrade, initialUsername }: { initialGr
         </section>
 
         {/* ── Topic grid ── */}
-        <section className="space-y-5">
+        <section className="space-y-4 sm:space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">הנושאים שלך</h2>
-            <span className="text-slate-600 text-sm">{gradeTopics.length} יחידות</span>
+            <h2 className="text-lg sm:text-xl font-bold text-white">הנושאים שלך</h2>
+            <span className="text-slate-600 text-xs sm:text-sm">{gradeTopics.length} יחידות</span>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {gradeTopics.map(t => <TopicCard key={t.id} topic={t} />)}
           </div>
         </section>

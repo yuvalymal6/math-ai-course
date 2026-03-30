@@ -190,7 +190,7 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setC(true); setTimeout(() => setC(false), 2000); }}
-      style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.25)", color: "#1A1A1A", fontWeight: 500, cursor: "pointer" }}
+      style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "10px 16px", borderRadius: 12, fontSize: 13, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.25)", color: "#1A1A1A", fontWeight: 500, cursor: "pointer", width: "100%" }}
     >
       {c ? <Check size={13} /> : <Copy size={13} />}{c ? "הועתק!" : label}
     </button>
@@ -199,12 +199,12 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
 
 function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "22,163,74", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
   return (
-    <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)` }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+    <div className="golden-prompt-card" style={{ borderRadius: 14, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 14, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)`, width: "100%", boxSizing: "border-box" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
         <span>✨</span>
         <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
       </div>
-      <p style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
+      <p style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.7, margin: "0 0 14px 0", whiteSpace: "pre-line", fontWeight: 500, wordBreak: "break-word", overflowWrap: "break-word" }}>{prompt}</p>
       <CopyBtn text={prompt} label="העתק פרומפט מלא" />
     </div>
   );
@@ -700,9 +700,24 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+const GRADE_MAP: Record<string, string> = { "10": "י׳", "11": 'י"א', "12": 'י"ב' };
+
+function injectGrade(text: string, grade: string): string {
+  const label = GRADE_MAP[grade] || "י׳";
+  return text.replace(/כיתה י[׳']/g, `כיתה ${label}`);
+}
+
 export default function AlgebraParabolaPage() {
   const [selectedLevel, setSelectedLevel] = useState<"basic" | "medium" | "advanced">("basic");
+
+  const [userGrade, setUserGrade] = useState("10");
+  useEffect(() => {
+    const g = localStorage.getItem("math-grade");
+    if (g) setUserGrade(g);
+  }, []);
+
   const ex = exercises.find(e => e.id === selectedLevel)!;
+  const dynamicEx = { ...ex, goldenPrompt: injectGrade(ex.goldenPrompt, userGrade) };
   const lvlRgb = selectedLevel === "basic" ? "45,90,39" : selectedLevel === "medium" ? "163,79,38" : "139,38,53";
 
   return (
@@ -760,7 +775,7 @@ export default function AlgebraParabolaPage() {
 
         {/* Active exercise card */}
         <motion.div key={selectedLevel} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
-          <ExerciseCard ex={ex} />
+          <ExerciseCard ex={dynamicEx} />
         </motion.div>
 
         {/* Lab — all levels */}

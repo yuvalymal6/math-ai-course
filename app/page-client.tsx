@@ -255,16 +255,13 @@ function markVisited(href: string, label: string, topicTitle: string) {
 function ProgressBar({ topicId, total, subtopicHrefs, accentClass }: {
   topicId: string; total: number; subtopicHrefs: string[]; accentClass: string;
 }) {
-  const [done, setDone] = useState(0);
   const [tierDone, setTierDone] = useState(0);
 
   const refresh = useCallback(() => {
-    // Track visited subtopics
-    const v = getVisitedSubs();
-    setDone(subtopicHrefs.filter(h => v.includes(h)).length);
-    // Track 3-tier completions: convert href to subtopic ID
+    // Only count sub-topics where ALL 3 levels (basic+medium+advanced) are complete
     const completedCount = subtopicHrefs.filter(href => {
-      const id = href.replace(/^\/topic\//, "").replace(/\//g, "/");
+      // Convert "/topic/grade10/algebra-parabola" → "grade10/algebra-parabola"
+      const id = href.replace(/^\/topic\//, "");
       return isSubtopicComplete(id);
     }).length;
     setTierDone(completedCount);
@@ -276,12 +273,13 @@ function ProgressBar({ topicId, total, subtopicHrefs, accentClass }: {
     return () => window.removeEventListener("math-progress-update", refresh);
   }, [refresh, topicId]);
 
-  const pct = total > 0 ? (done / total) * 100 : 0;
+  // Progress bar fills ONLY based on fully-completed sub-topics (3/3 each)
+  const pct = total > 0 ? (tierDone / total) * 100 : 0;
   const allComplete = tierDone === total && total > 0;
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-slate-500">{tierDone > 0 ? `${tierDone}/${total} הושלמו` : `${done}/${total} נושאי משנה`}</span>
+        <span className="text-slate-500">{tierDone}/{total} נושאי משנה הושלמו</span>
         {allComplete && <span className="text-emerald-400 font-semibold">הושלם ✓</span>}
       </div>
       <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">

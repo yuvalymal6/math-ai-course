@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { supabase } from "@/app/lib/supabaseClient";
 
 const ADMIN_EMAIL = "yuvaymal6@gmail.com";
-const ADMIN_PASSWORD = "math2026";
+const FALLBACK_PASSWORD = "math2026";
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
@@ -14,13 +15,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "ההרשמה סגורה זמנית. רכישת הקורס תתאפשר בקרוב." }, { status: 403 });
   }
 
-  if (password !== ADMIN_PASSWORD) {
-    return NextResponse.json({ error: "סיסמה שגויה" }, { status: 401 });
+  // Try Supabase auth first
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.trim().toLowerCase(),
+    password,
+  });
+
+  let userId = data?.user?.id;
+
+  // Fallback: if Supabase user doesn't exist yet, accept hardcoded password
+  if (error && password === FALLBACK_PASSWORD) {
+    userId = "admin-local";
+  } else if (error) {
+    return NextResponse.json({ error: "פרטים שגויים" }, { status: 401 });
   }
 
-  const res = NextResponse.json({ ok: true });
+  const res = NextResponse.json({ ok: true, userId });
 
-  res.cookies.set("math-auth", email.trim().toLowerCase(), {
+  res.cookies.set("math-auth", userId!, {
     path: "/",
     maxAge: 2592000,
     sameSite: "lax",

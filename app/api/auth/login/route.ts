@@ -30,13 +30,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "פרטים שגויים" }, { status: 401 });
   }
 
-  const res = NextResponse.json({ ok: true, userId });
+  // Fetch saved grade from profiles table
+  let savedGrade: string | null = null;
+  if (userId && userId !== "admin-local") {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("grade")
+      .eq("id", userId)
+      .single();
+    savedGrade = profile?.grade || null;
+  }
 
+  const res = NextResponse.json({ ok: true, userId, grade: savedGrade });
+
+  // Set auth cookie
   res.cookies.set("math-auth", userId!, {
     path: "/",
     maxAge: 2592000,
     sameSite: "lax",
   });
+
+  // If grade already saved, set cookie so proxy skips onboarding
+  if (savedGrade) {
+    res.cookies.set("math-grade", savedGrade, {
+      path: "/",
+      maxAge: 2592000,
+      sameSite: "lax",
+    });
+  }
 
   return res;
 }

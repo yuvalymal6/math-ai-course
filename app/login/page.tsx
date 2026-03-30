@@ -33,7 +33,13 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/onboarding");
+      // If grade already saved in Supabase, go straight to dashboard
+      if (data.grade) {
+        try { localStorage.setItem("math-grade", data.grade); } catch {}
+        router.push("/");
+      } else {
+        router.push("/onboarding");
+      }
       router.refresh();
     } catch {
       setError("שגיאת רשת — נסה שוב");

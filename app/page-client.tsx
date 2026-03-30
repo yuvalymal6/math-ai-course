@@ -407,7 +407,7 @@ function NameGreeting() {
           value={draft}
           onChange={e => setDraft(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
-          className="bg-slate-800 border border-[#00d4ff]/50 rounded-lg px-2 py-0.5 text-white text-xl font-bold w-28 focus:outline-none"
+          className="bg-slate-800 border border-[#00d4ff]/50 rounded-lg px-3 py-1 text-white text-3xl sm:text-4xl font-extrabold w-36 sm:w-44 focus:outline-none"
           dir="rtl"
         />
         <button onClick={save} className="text-emerald-400 hover:text-emerald-300"><Check size={18} /></button>
@@ -429,25 +429,35 @@ function NameGreeting() {
 // ─── Last Visited Card ────────────────────────────────────────────────────────
 
 function LastVisitedCard() {
-  return null; // Replaced by LastVisitedCompact in command center
+  return null;
 }
 
-function LastVisitedCompact() {
+function ContinueCard() {
   const [last, setLast] = useState<{ label: string; href: string; topicTitle: string } | null>(null);
   useEffect(() => { setLast(getLastVisited()); }, []);
-  if (!last) return null;
+  if (!last) return (
+    <div className="rounded-2xl border border-slate-700/40 bg-slate-800/30 p-5 sm:p-6 text-center">
+      <p className="text-slate-500 text-sm">עדיין לא התחלת — בחר נושא למטה</p>
+    </div>
+  );
   return (
     <Link
       href={last.href}
-      className="flex items-center gap-2 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/50 hover:border-[#00d4ff]/30 rounded-lg px-3 py-2 transition-all group"
+      className="group flex items-center gap-4 rounded-2xl border border-cyan-500/20 bg-cyan-500/5 hover:bg-cyan-500/10 hover:border-cyan-500/40 p-5 sm:p-6 transition-all duration-200"
     >
-      <Clock size={12} className="text-[#00d4ff]/40 group-hover:text-[#00d4ff] shrink-0" />
-      <span className="text-[11px] text-slate-400 group-hover:text-white truncate max-w-[120px] sm:max-w-[180px]">{last.topicTitle}</span>
+      <div className="w-12 h-12 rounded-xl bg-cyan-500/10 group-hover:bg-cyan-500/20 flex items-center justify-center shrink-0 transition-colors">
+        <Clock size={22} className="text-cyan-400/70 group-hover:text-cyan-400" />
+      </div>
+      <div className="flex-1 min-w-0 text-right">
+        <p className="text-white font-bold text-sm sm:text-base">המשך מאיפה שעצרת</p>
+        <p className="text-cyan-400/60 text-xs sm:text-sm truncate mt-0.5">{last.topicTitle}</p>
+      </div>
+      <ArrowLeft size={18} className="text-cyan-500/30 group-hover:text-cyan-400 transition-colors shrink-0" />
     </Link>
   );
 }
 
-function RandomCompact() {
+function RandomCard() {
   const roll = useCallback(() => {
     const pick = RANDOM_POOL[Math.floor(Math.random() * RANDOM_POOL.length)];
     window.location.href = pick.href;
@@ -455,10 +465,16 @@ function RandomCompact() {
   return (
     <button
       onClick={roll}
-      className="flex items-center gap-2 bg-[#00d4ff]/5 hover:bg-[#00d4ff]/10 border border-[#00d4ff]/20 hover:border-[#00d4ff]/40 rounded-lg px-3 py-2 transition-all group"
+      className="group flex items-center gap-4 rounded-2xl border border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 hover:border-purple-500/40 p-5 sm:p-6 transition-all duration-200 w-full text-right"
     >
-      <Zap size={12} className="text-[#00d4ff]/50 group-hover:text-[#00d4ff] shrink-0" />
-      <span className="text-[11px] text-[#00d4ff]/60 group-hover:text-[#00d4ff] font-medium">הגרל תרגיל</span>
+      <div className="w-12 h-12 rounded-xl bg-purple-500/10 group-hover:bg-purple-500/20 flex items-center justify-center shrink-0 transition-colors">
+        <Zap size={22} className="text-purple-400/70 group-hover:text-purple-400" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-white font-bold text-sm sm:text-base">תרגיל אקראי</p>
+        <p className="text-purple-400/60 text-xs sm:text-sm mt-0.5">הגרל שאלה מהבנק</p>
+      </div>
+      <Shuffle size={16} className="text-purple-500/30 group-hover:text-purple-400 transition-colors shrink-0" />
     </button>
   );
 }
@@ -517,59 +533,62 @@ export default function Dashboard({ initialGrade, initialUsername }: { initialGr
   return (
     <div className="min-h-screen bg-[#0a0f1e] text-white" dir="rtl">
 
-      {/* ── Command center panel (toolbar + hero merged) ── */}
-      <div className="sticky top-0 z-40">
-        <div className="relative overflow-hidden bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50">
-          {/* Subtle glow */}
+      {/* ── Top nav bar ── */}
+      <header className="sticky top-0 z-40 bg-[#0a0f1e]/90 backdrop-blur-md border-b border-slate-800/50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Brain size={18} className="text-[#00d4ff]" />
+            <span className="font-bold text-white text-sm">מתמטיקה + AI</span>
+            <span className="text-slate-600 mx-1 hidden sm:inline">|</span>
+            <span className="text-[#00d4ff]/60 text-xs font-medium hidden sm:inline">{gradeLabel} • 4 יח&quot;ל</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ShareButton />
+            <Link href="/onboarding" className="text-slate-500 hover:text-slate-200 transition-colors p-1.5" title="שנה כיתה">
+              <Settings size={15} />
+            </Link>
+            <button onClick={handleLogout} className="text-slate-500 hover:text-red-400 transition-colors p-1.5" title="יציאה">
+              <LogOut size={15} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12">
+
+        {/* ── Premium hero ── */}
+        <section className="relative overflow-hidden rounded-3xl bg-slate-900/40 backdrop-blur-md border border-slate-800/60">
+          {/* Glow effects */}
           <div className="absolute inset-0 pointer-events-none" style={{
-            backgroundImage: "radial-gradient(ellipse 60% 80% at 20% 50%, rgba(0,212,255,0.04) 0%, transparent 60%), radial-gradient(ellipse 40% 60% at 80% 40%, rgba(52,211,153,0.03) 0%, transparent 60%)"
+            backgroundImage: "radial-gradient(ellipse 50% 70% at 10% 50%, rgba(0,212,255,0.06) 0%, transparent 60%), radial-gradient(ellipse 40% 60% at 90% 30%, rgba(139,92,246,0.04) 0%, transparent 60%)"
           }} />
 
-          <div className="relative max-w-5xl mx-auto px-3 sm:px-4">
-            {/* Top status line */}
-            <div className="flex items-center justify-between py-2 border-b border-slate-800/40">
-              <div className="flex items-center gap-1.5">
-                <Brain size={14} className="text-[#00d4ff]" />
-                <span className="font-semibold text-white text-[11px]">מתמטיקה + AI</span>
-                <span className="text-slate-600 text-[10px] mx-1">|</span>
-                <span className="text-[#00d4ff]/60 text-[10px] font-medium">{gradeLabel} • 4 יח&quot;ל</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="flex items-center gap-1.5 ml-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[9px] text-emerald-400/70 font-medium hidden sm:inline">לומד פעיל</span>
-                </div>
-                <ShareButton />
-                <Link href="/onboarding" className="text-slate-500 hover:text-slate-200 transition-colors p-1.5">
-                  <Settings size={13} />
-                </Link>
-                <button onClick={handleLogout} className="text-slate-500 hover:text-red-400 transition-colors p-1.5">
-                  <LogOut size={13} />
-                </button>
-              </div>
-            </div>
+          <div className="relative p-6 sm:p-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 items-center">
 
-            {/* Greeting + Actions row */}
-            <div className="flex items-center justify-between py-3 sm:py-4 gap-4">
-              {/* Greeting */}
-              <div className="shrink-0">
-                <h1 className="text-lg sm:text-xl font-bold text-white leading-tight">
+              {/* Right: Greeting */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[10px] text-emerald-400/70 font-semibold uppercase tracking-widest">לומד פעיל</span>
+                </div>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-2">
                   שלום, <NameGreeting />
                 </h1>
-                <p className="text-[#00d4ff]/60 text-xs font-medium mt-0.5">מוכן להמשיך לתרגל?</p>
+                <p className="text-cyan-400/80 text-lg sm:text-xl font-semibold">מוכן להמשיך לתרגל?</p>
+                <p className="text-slate-500 text-sm mt-2 hidden sm:block">בחר נושא, פתור שלב אחר שלב, קבל עזרה מה-AI כשצריך.</p>
               </div>
 
-              {/* Command buttons */}
-              <div className="flex gap-2 items-center">
-                <LastVisitedCompact />
-                <RandomCompact />
+              {/* Left: Action cards */}
+              <div className="flex flex-col gap-3 sm:gap-4">
+                {/* Continue card */}
+                <ContinueCard />
+                {/* Random card */}
+                <RandomCard />
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-6 sm:space-y-10">
+        </section>
 
         {/* ── Topic grid ── */}
         <section className="space-y-4 sm:space-y-5">

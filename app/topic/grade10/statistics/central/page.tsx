@@ -494,10 +494,10 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
     setTimeout(() => setCopiedProblem(false), 2000);
   }
   return (
-    <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+    <section className="exercise-section" style={{ border: `1px solid ${s.glowBorder}`, borderRadius: "24px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
 
       {/* Formula bar — central tendency (KaTeX) */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.25rem 1.5rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
+      <div style={{ borderRadius: 12, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: "0.75rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
         <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
 
         {/* Context: variable definitions */}
@@ -539,11 +539,11 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
       {/* Diagram */}
       {ex.diagram && (
-        <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
+        <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "0.75rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.25rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
       )}
 
       {/* Problem */}
-      <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", marginBottom: "2rem" }}>
+      <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "0.75rem", marginBottom: "1.25rem" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>📝 השאלה</div>
           <button onClick={handleCopyProblem} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.1)" : "rgba(107,114,128,0.08)", border: "1px solid rgba(107,114,128,0.2)", color: copiedProblem ? "#15803d" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
@@ -566,7 +566,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       </div>
 
       {/* Prompt Ladder */}
-      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", boxShadow: s.glowShadow }}>
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "0.75rem", boxShadow: s.glowShadow }}>
         <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase     steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} problemText={ex.problem} />}
@@ -607,9 +607,9 @@ function BarChartLab() {
     <section className="lab-section">
       <style>{`
         .lab-section {
-          border-radius: 24px; background: #f8fafc; margin: 2.5rem auto 0; max-width: 64rem;
+          border-radius: 16px; background: #f8fafc; margin: 1.5rem auto 0; max-width: 64rem;
           box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
-          border: 1px solid #e2e8f0; padding: 1.25rem;
+          border: 1px solid #e2e8f0; padding: 0.75rem;
         }
         .lab-two-col { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
         .lab-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -638,7 +638,7 @@ function BarChartLab() {
       `}</style>
 
       {/* Header with gradient */}
-      <div style={{ background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)", borderRadius: 16, padding: "1.25rem 1.5rem", marginBottom: "1.5rem", textAlign: "center" }}>
+      <div style={{ background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)", borderRadius: 16, padding: "0.75rem", marginBottom: "1.5rem", textAlign: "center" }}>
         <h3 style={{ color: "#fff", fontSize: 22, fontWeight: 800, margin: 0 }}>מעבדת מדדי מרכז</h3>
         <p style={{ color: "#94a3b8", fontSize: 13, margin: "6px 0 0" }}>שנה ציונים כדי לראות כיצד ממוצע, חציון ושכיח משתנים בזמן אמת.</p>
       </div>
@@ -765,7 +765,7 @@ function MissingScoreLab() {
   const toX = (v: number) => padL + ((v - lineMin) / (lineMax - lineMin)) * (w - padL - padR);
 
   return (
-    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "20px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "1.5rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת הציון החסר</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את הציון החמישי והממוצע הרצוי כדי לראות את ההשפעה.</p>
 
@@ -882,7 +882,7 @@ function DistributionLab() {
   const totalW = padL + groupW + 40 + groupW + padL;
 
   return (
-    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "40px", padding: "3rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "20px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", maxWidth: "56rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "1.5rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת השוואת התפלגויות</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה ציונים בשתי הכיתות וראה את ההבדלים במדדי המרכז.</p>
 

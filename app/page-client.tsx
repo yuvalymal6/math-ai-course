@@ -9,6 +9,7 @@ import {
   Sigma, Box, LineChart, PieChart, Percent, Calculator, Triangle, Compass,
 } from "lucide-react";
 import { useChat } from "./chat-context";
+import { isSubtopicComplete } from "./lib/progress";
 
 // ─── Topic data ────────────────────────────────────────────────────────────────
 
@@ -255,19 +256,36 @@ function ProgressBar({ topicId, total, subtopicHrefs, accentClass }: {
   topicId: string; total: number; subtopicHrefs: string[]; accentClass: string;
 }) {
   const [done, setDone] = useState(0);
-  useEffect(() => {
+  const [tierDone, setTierDone] = useState(0);
+
+  const refresh = useCallback(() => {
+    // Track visited subtopics
     const v = getVisitedSubs();
     setDone(subtopicHrefs.filter(h => v.includes(h)).length);
-  }, [subtopicHrefs, topicId]);
+    // Track 3-tier completions: convert href to subtopic ID
+    const completedCount = subtopicHrefs.filter(href => {
+      const id = href.replace(/^\/topic\//, "").replace(/\//g, "/");
+      return isSubtopicComplete(id);
+    }).length;
+    setTierDone(completedCount);
+  }, [subtopicHrefs]);
+
+  useEffect(() => {
+    refresh();
+    window.addEventListener("math-progress-update", refresh);
+    return () => window.removeEventListener("math-progress-update", refresh);
+  }, [refresh, topicId]);
+
   const pct = total > 0 ? (done / total) * 100 : 0;
+  const allComplete = tierDone === total && total > 0;
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-slate-500">{done}/{total} נושאי משנה</span>
-        {done === total && done > 0 && <span className="text-emerald-400 font-semibold">הושלם ✓</span>}
+        <span className="text-slate-500">{tierDone > 0 ? `${tierDone}/${total} הושלמו` : `${done}/${total} נושאי משנה`}</span>
+        {allComplete && <span className="text-emerald-400 font-semibold">הושלם ✓</span>}
       </div>
       <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all duration-700 ${accentClass}`} style={{ width: `${pct}%` }} />
+        <div className={`h-full rounded-full transition-all duration-700 ${allComplete ? "bg-emerald-400" : accentClass}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

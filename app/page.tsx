@@ -130,7 +130,7 @@ const RANDOM_POOL = [
 
 const TOPICS_10 = [
   {
-    id: "grade10-algebra", title: "פרבולה ואלגברה", subtitle: "משוואות ריבועיות, פרבולות וחוקי חזקות",
+    id: "grade10-algebra", href: "/topic/grade10/algebra-parabola", title: "פרבולה ואלגברה", subtitle: "משוואות ריבועיות, פרבולות וחוקי חזקות",
     icon: Calculator,
     subtopicLinks: [
       { label: "פרבולה ואלגברה", href: "/topic/grade10/algebra-parabola" },
@@ -138,7 +138,7 @@ const TOPICS_10 = [
     color: { bg: "bg-blue-950/40", border: "border-blue-800/50", hover: "hover:border-blue-500/70 hover:shadow-[0_0_32px_rgba(59,130,246,0.18)]", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300", bar: "bg-blue-500", badge: "bg-blue-900/60 text-blue-300 border-blue-700/50" },
   },
   {
-    id: "grade10-geometry", title: "גיאומטריה", subtitle: "מרובעים, מקביליות ומשולשים",
+    id: "grade10-geometry", href: "/topic/grade10/geometry", title: "גיאומטריה", subtitle: "מרובעים, מקביליות ומשולשים",
     icon: Triangle,
     subtopicLinks: [
       { label: "מקבילית", href: "/topic/grade10/geo-parallelogram" },
@@ -147,7 +147,7 @@ const TOPICS_10 = [
     color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", hover: "hover:border-emerald-500/70 hover:shadow-[0_0_32px_rgba(16,185,129,0.18)]", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300", bar: "bg-emerald-500", badge: "bg-emerald-900/60 text-emerald-300 border-emerald-700/50" },
   },
   {
-    id: "grade10-trig", title: "טריגונומטריה", subtitle: "סינוס, קוסינוס, טנגנס ויישומים",
+    id: "grade10-trig", href: "/topic/grade10/trig", title: "טריגונומטריה", subtitle: "סינוס, קוסינוס, טנגנס ויישומים",
     icon: Compass,
     subtopicLinks: [
       { label: "יחסים טריגונומטריים", href: "/topic/grade10/trig-basics" },
@@ -156,7 +156,7 @@ const TOPICS_10 = [
     color: { bg: "bg-amber-950/40", border: "border-amber-800/50", hover: "hover:border-amber-500/70 hover:shadow-[0_0_32px_rgba(245,158,11,0.18)]", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300", bar: "bg-amber-500", badge: "bg-amber-900/60 text-amber-300 border-amber-700/50" },
   },
   {
-    id: "grade10-statistics", title: "סטטיסטיקה", subtitle: "מדדי מרכז ופיזור",
+    id: "grade10-statistics", href: "/topic/grade10/statistics", title: "סטטיסטיקה", subtitle: "מדדי מרכז ופיזור",
     icon: BarChart2,
     subtopicLinks: [
       { label: "מדדי מרכז", href: "/topic/grade10/statistics/central" },
@@ -165,7 +165,7 @@ const TOPICS_10 = [
     color: { bg: "bg-rose-950/40", border: "border-rose-800/50", hover: "hover:border-rose-500/70 hover:shadow-[0_0_32px_rgba(244,63,94,0.18)]", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300", bar: "bg-rose-500", badge: "bg-rose-900/60 text-rose-300 border-rose-700/50" },
   },
   {
-    id: "grade10-analytic", title: "גיאומטריה אנליטית", subtitle: "קו ישר, שיפוע ונקודות חיתוך",
+    id: "grade10-analytic", href: "/topic/grade10/analytic", title: "גיאומטריה אנליטית", subtitle: "קו ישר, שיפוע ונקודות חיתוך",
     icon: Circle,
     subtopicLinks: [
       { label: "מושגי יסוד", href: "/topic/grade10/analytic/basics" },
@@ -180,7 +180,7 @@ const TOPICS_11 = TOPICS; // existing topics are grade 11
 
 const TOPICS_12 = [
   {
-    id: "grade12-series", title: "סדרות", subtitle: "סדרות חשבוניות, הנדסיות ורקורסיביות",
+    id: "grade12-series", href: "/topic/grade12/series", title: "סדרות", subtitle: "סדרות חשבוניות, הנדסיות ורקורסיביות",
     icon: Sigma,
     subtopicLinks: [
       { label: "סדרה חשבונית", href: "/topic/grade12/series-arithmetic" },
@@ -190,7 +190,7 @@ const TOPICS_12 = [
     color: { bg: "bg-amber-950/40", border: "border-amber-800/50", hover: "hover:border-amber-500/70 hover:shadow-[0_0_32px_rgba(245,158,11,0.18)]", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300", bar: "bg-amber-500", badge: "bg-amber-900/60 text-amber-300 border-amber-700/50" },
   },
   {
-    id: "grade12-space", title: "גיאומטריה מרחבית", subtitle: "תיבה, פירמידה ומשולשים במרחב",
+    id: "grade12-space", href: "/topic/grade12/space-geometry", title: "גיאומטריה מרחבית", subtitle: "תיבה, פירמידה ומשולשים במרחב",
     icon: Box,
     subtopicLinks: [
       { label: "תיבה", href: "/topic/grade12/space-geometry/box" },
@@ -199,7 +199,7 @@ const TOPICS_12 = [
     color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", hover: "hover:border-emerald-500/70 hover:shadow-[0_0_32px_rgba(16,185,129,0.18)]", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300", bar: "bg-emerald-500", badge: "bg-emerald-900/60 text-emerald-300 border-emerald-700/50" },
   },
   {
-    id: "grade12-growth", title: "גדילה ודעיכה", subtitle: "מודלים מעריכיים ולוגריתמיים",
+    id: "grade12-growth", href: "/topic/grade12/growth-decay", title: "גדילה ודעיכה", subtitle: "מודלים מעריכיים ולוגריתמיים",
     icon: LineChart,
     subtopicLinks: [
       { label: "גדילה ודעיכה", href: "/topic/grade12/growth-decay" },
@@ -207,7 +207,7 @@ const TOPICS_12 = [
     color: { bg: "bg-rose-950/40", border: "border-rose-800/50", hover: "hover:border-rose-500/70 hover:shadow-[0_0_32px_rgba(244,63,94,0.18)]", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300", bar: "bg-rose-500", badge: "bg-rose-900/60 text-rose-300 border-rose-700/50" },
   },
   {
-    id: "grade12-calculus", title: 'חדו"א מתקדם', subtitle: "אקספוננט, לוגריתם, אינטגרלים",
+    id: "grade12-calculus", href: "/topic/grade12/calculus", title: 'חדו"א מתקדם', subtitle: "אקספוננט, לוגריתם, אינטגרלים",
     icon: TrendingUp,
     subtopicLinks: [
       { label: "פולינומים", href: "/topic/grade12/calculus-polynomial" },
@@ -275,13 +275,14 @@ function ProgressBar({ topicId, total, subtopicHrefs, accentClass }: {
 
 // ─── Topic Card ───────────────────────────────────────────────────────────────
 
-function TopicCard({ topic }: { topic: typeof TOPICS[number] }) {
+function TopicCard({ topic }: { topic: typeof TOPICS[number] & { href?: string } }) {
   const Icon = topic.icon;
   const c = topic.color;
+  const cardHref = (topic as { href?: string }).href || `/topic/${topic.id}`;
   return (
     <Link
-      href={`/topic/${topic.id}`}
-      onClick={() => markVisited(`/topic/${topic.id}`, topic.title, topic.title)}
+      href={cardHref}
+      onClick={() => markVisited(cardHref, topic.title, topic.title)}
       className={`group block rounded-2xl border p-6 transition-all duration-300 hover:scale-[1.015] hover:-translate-y-0.5 ${c.bg} ${c.border} ${c.hover}`}
     >
       {/* Header row */}

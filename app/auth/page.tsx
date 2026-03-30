@@ -90,15 +90,15 @@ export default function AuthPage() {
 
   const handleGrade = (grade: Grade) => {
     if (grade === "י") {
-      router.push("/topic/grade10");
+      router.push("/");
       return;
     }
     if (grade === "יא") {
-      router.push("/topic/grade11");
+      router.push("/");
       return;
     }
     if (grade === "יב") {
-      router.push("/topic/grade12");
+      router.push("/");
       return;
     }
     setSelectedGrade(grade);

@@ -604,123 +604,148 @@ function BarChartLab() {
   const chartW = padL + values.length * (barW + gap) + 20;
 
   return (
-    <section style={{ borderRadius: 24, padding: "2.5rem 2rem", background: "#f8fafc", marginLeft: "auto", marginRight: "auto", maxWidth: "64rem", boxShadow: "0 20px 60px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)", marginTop: "2.5rem", border: "1px solid #e2e8f0" }}>
+    <section className="lab-section">
+      <style>{`
+        .lab-section {
+          border-radius: 24px; background: #f8fafc; margin: 2.5rem auto 0; max-width: 64rem;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+          border: 1px solid #e2e8f0; padding: 1.25rem;
+        }
+        .lab-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+        .lab-main-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        .lab-slider-label { font-size: 14px; }
+        .lab-slider-val { font-size: 15px; }
+        .lab-slider-track { height: 36px; }
+        .lab-stat-value { font-size: 22px; }
+        @media (min-width: 640px) {
+          .lab-section { padding: 2.5rem 2rem; }
+          .lab-stats-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 2rem; }
+          .lab-stat-value { font-size: 28px; }
+          .lab-slider-label { font-size: 13px; }
+          .lab-slider-val { font-size: 14px; }
+        }
+        @media (min-width: 768px) {
+          .lab-main-grid { grid-template-columns: 340px 1fr; gap: 2rem; }
+        }
+      `}</style>
+
       {/* Header with gradient */}
-      <div style={{ background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)", borderRadius: 16, padding: "1.5rem 2rem", marginBottom: "2rem", textAlign: "center" }}>
-        <h3 style={{ color: "#fff", fontSize: 24, fontWeight: 800, margin: 0 }}>מעבדת מדדי מרכז</h3>
-        <p style={{ color: "#94a3b8", fontSize: 14, margin: "6px 0 0" }}>שנה ציונים כדי לראות כיצד ממוצע, חציון ושכיח משתנים בזמן אמת.</p>
+      <div style={{ background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)", borderRadius: 16, padding: "1.25rem 1.5rem", marginBottom: "1.5rem", textAlign: "center" }}>
+        <h3 style={{ color: "#fff", fontSize: 22, fontWeight: 800, margin: 0 }}>מעבדת מדדי מרכז</h3>
+        <p style={{ color: "#94a3b8", fontSize: 13, margin: "6px 0 0" }}>שנה ציונים כדי לראות כיצד ממוצע, חציון ושכיח משתנים בזמן אמת.</p>
       </div>
 
-      {/* Stats Summary — large vibrant cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: "2rem" }}>
+      {/* Stats Summary — vibrant cards, 2-col on mobile, 4-col on desktop */}
+      <div className="lab-stats-grid">
         {[
           { label: "ממוצע", val: mean.toFixed(2), color: "#2563eb", bg: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)", border: "#93c5fd", icon: "x̄" },
           { label: "חציון", val: median.toFixed(2), color: "#ea580c", bg: "linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)", border: "#fdba74", icon: "Me" },
           { label: "שכיח", val: modeStr, color: "#7c3aed", bg: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)", border: "#c4b5fd", icon: "Mo" },
           { label: "כמות", val: `${values.length}`, color: "#475569", bg: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)", border: "#cbd5e1", icon: "n" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 16, background: r.bg, border: `2px solid ${r.border}`, padding: "1.25rem 1rem", textAlign: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
-            <div style={{ color: r.color, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, opacity: 0.8 }}>{r.label}</div>
-            <div style={{ color: r.color, fontWeight: 800, fontSize: 28, fontFamily: "monospace", lineHeight: 1.1 }}>{r.val}</div>
-            <div style={{ color: r.color, fontSize: 10, fontWeight: 600, marginTop: 4, opacity: 0.5 }}>{r.icon}</div>
+          <div key={r.label} style={{ borderRadius: 16, background: r.bg, border: `2px solid ${r.border}`, padding: "1rem 0.75rem", textAlign: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
+            <div style={{ color: r.color, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4, opacity: 0.8 }}>{r.label}</div>
+            <div className="lab-stat-value" style={{ color: r.color, fontWeight: 800, fontFamily: "monospace", lineHeight: 1.1 }}>{r.val}</div>
+            <div style={{ color: r.color, fontSize: 10, fontWeight: 600, marginTop: 3, opacity: 0.5 }}>{r.icon}</div>
           </div>
         ))}
       </div>
 
-      {/* Main content: side-by-side on large screens */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }} className="lab-layout">
-        <style>{`@media (min-width: 768px) { .lab-layout { grid-template-columns: 340px 1fr !important; } }`}</style>
+      {/* Main content: stacked on mobile, side-by-side on desktop */}
+      <div className="lab-main-grid">
 
         {/* Sliders panel */}
-        <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 4px 16px rgba(0,0,0,0.04)" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: "1rem", paddingBottom: 8, borderBottom: "2px solid #e2e8f0" }}>נתוני התלמידים</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: "1.25rem", boxShadow: "0 4px 16px rgba(0,0,0,0.04)" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#334155", marginBottom: "1rem", paddingBottom: 8, borderBottom: "2px solid #e2e8f0" }}>נתוני התלמידים</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
             {values.map((v, i) => (
               <div key={i}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#64748b", marginBottom: 4 }}>
-                  <span style={{ fontWeight: 500 }}>תלמיד {i + 1}</span>
-                  <span style={{ color: "#1e293b", fontWeight: 700, fontFamily: "monospace", fontSize: 14 }}>{v}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", color: "#64748b", marginBottom: 4 }}>
+                  <span className="lab-slider-label" style={{ fontWeight: 500 }}>תלמיד {i + 1}</span>
+                  <span className="lab-slider-val" style={{ color: "#1e293b", fontWeight: 700, fontFamily: "monospace" }}>{v}</span>
                 </div>
-                <input type="range" min={0} max={100} step={1} value={v} onChange={e => setVal(i, +e.target.value)} style={{ width: "100%", accentColor: "#2563eb" }} />
+                <input type="range" min={0} max={100} step={1} value={v} onChange={e => setVal(i, +e.target.value)} className="lab-slider-track" style={{ width: "100%", accentColor: "#2563eb" }} />
               </div>
             ))}
           </div>
         </div>
 
-        {/* Chart panel */}
-        <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 4px 16px rgba(0,0,0,0.04)", display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: "1rem", paddingBottom: 8, borderBottom: "2px solid #e2e8f0" }}>תרשים עמודות</div>
-          <svg viewBox={`0 0 ${chartW} ${chartH + 50}`} style={{ width: "100%", display: "block", flex: 1 }} aria-hidden>
-            {/* Y-axis */}
-            <line x1={padL} y1={padT} x2={padL} y2={padT + chartH} stroke="#cbd5e1" strokeWidth={1} />
-            {/* X-axis */}
-            <line x1={padL} y1={padT + chartH} x2={chartW - 10} y2={padT + chartH} stroke="#cbd5e1" strokeWidth={1} />
+        {/* Chart panel — full width on mobile */}
+        <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: "1.25rem", boxShadow: "0 4px 16px rgba(0,0,0,0.04)", display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#334155", marginBottom: "1rem", paddingBottom: 8, borderBottom: "2px solid #e2e8f0" }}>תרשים עמודות</div>
+          <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+            <svg viewBox={`0 0 ${chartW} ${chartH + 50}`} style={{ width: "100%", minWidth: 360, display: "block" }} aria-hidden>
+              {/* Y-axis */}
+              <line x1={padL} y1={padT} x2={padL} y2={padT + chartH} stroke="#cbd5e1" strokeWidth={1} />
+              {/* X-axis */}
+              <line x1={padL} y1={padT + chartH} x2={chartW - 10} y2={padT + chartH} stroke="#cbd5e1" strokeWidth={1} />
 
-            {/* Y-axis ticks */}
-            {[0, 25, 50, 75, 100].map(tick => {
-              const y = padT + chartH - (tick / maxVal) * chartH;
-              return (
-                <g key={tick}>
-                  <line x1={padL - 4} y1={y} x2={padL} y2={y} stroke="#cbd5e1" strokeWidth={1} />
-                  <text x={padL - 8} y={y + 3} fontSize={8} fill="#94a3b8" textAnchor="end">{tick}</text>
-                </g>
-              );
-            })}
+              {/* Y-axis ticks */}
+              {[0, 25, 50, 75, 100].map(tick => {
+                const y = padT + chartH - (tick / maxVal) * chartH;
+                return (
+                  <g key={tick}>
+                    <line x1={padL - 4} y1={y} x2={padL} y2={y} stroke="#cbd5e1" strokeWidth={1} />
+                    <text x={padL - 8} y={y + 3} fontSize={8} fill="#94a3b8" textAnchor="end">{tick}</text>
+                  </g>
+                );
+              })}
 
-            {/* Mean line (bright blue dashed) */}
-            {(() => {
-              const y = padT + chartH - (mean / maxVal) * chartH;
-              return (
-                <>
-                  <line x1={padL} y1={y} x2={chartW - 10} y2={y} stroke="#2563eb" strokeWidth={2} strokeDasharray="8,4" />
-                  <rect x={padL - 2} y={y - 10} width={56} height={16} rx={4} fill="#2563eb" />
-                  <text x={padL + 26} y={y + 1} fontSize={8} fill="#fff" fontWeight={700} textAnchor="middle">x̄={mean.toFixed(1)}</text>
-                </>
-              );
-            })()}
+              {/* Mean line (bright blue dashed) */}
+              {(() => {
+                const y = padT + chartH - (mean / maxVal) * chartH;
+                return (
+                  <>
+                    <line x1={padL} y1={y} x2={chartW - 10} y2={y} stroke="#2563eb" strokeWidth={2} strokeDasharray="8,4" />
+                    <rect x={padL - 2} y={y - 10} width={56} height={16} rx={4} fill="#2563eb" />
+                    <text x={padL + 26} y={y + 1} fontSize={8} fill="#fff" fontWeight={700} textAnchor="middle">x̄={mean.toFixed(1)}</text>
+                  </>
+                );
+              })()}
 
-            {/* Median line (vivid orange dashed) */}
-            {(() => {
-              const y = padT + chartH - (median / maxVal) * chartH;
-              return (
-                <>
-                  <line x1={padL} y1={y} x2={chartW - 10} y2={y} stroke="#ea580c" strokeWidth={2} strokeDasharray="8,4" />
-                  <rect x={chartW - 70} y={y - 10} width={58} height={16} rx={4} fill="#ea580c" />
-                  <text x={chartW - 41} y={y + 1} fontSize={8} fill="#fff" fontWeight={700} textAnchor="middle">Me={median.toFixed(1)}</text>
-                </>
-              );
-            })()}
+              {/* Median line (vivid orange dashed) */}
+              {(() => {
+                const y = padT + chartH - (median / maxVal) * chartH;
+                return (
+                  <>
+                    <line x1={padL} y1={y} x2={chartW - 10} y2={y} stroke="#ea580c" strokeWidth={2} strokeDasharray="8,4" />
+                    <rect x={chartW - 70} y={y - 10} width={58} height={16} rx={4} fill="#ea580c" />
+                    <text x={chartW - 41} y={y + 1} fontSize={8} fill="#fff" fontWeight={700} textAnchor="middle">Me={median.toFixed(1)}</text>
+                  </>
+                );
+              })()}
 
-            {/* Bars with mode highlight */}
-            {values.map((v, i) => {
-              const h = (v / maxVal) * chartH;
-              const x = padL + i * (barW + gap) + gap;
-              const y = padT + chartH - h;
-              const isMode = modeSet.has(v);
-              return (
-                <g key={i}>
-                  {isMode && (
-                    <rect x={x - 3} y={y - 3} width={barW + 6} height={h + 3} rx={6} fill="none" stroke="#7c3aed" strokeWidth={2.5} strokeDasharray="0" opacity={0.6} />
-                  )}
-                  <rect x={x} y={y} width={barW} height={h} rx={5} fill={isMode ? "#7c3aed" : "#2563eb"} opacity={isMode ? 0.9 : 0.65} />
-                  {isMode && (
-                    <text x={x + barW / 2} y={y - 6} fontSize={8} fill="#7c3aed" fontWeight={700} textAnchor="middle">Mo</text>
-                  )}
-                  <text x={x + barW / 2} y={padT + chartH + 14} fontSize={9} fill="#64748b" fontWeight={500} textAnchor="middle">{i + 1}</text>
-                </g>
-              );
-            })}
-          </svg>
+              {/* Bars with mode highlight */}
+              {values.map((v, i) => {
+                const h = (v / maxVal) * chartH;
+                const x = padL + i * (barW + gap) + gap;
+                const y = padT + chartH - h;
+                const isMode = modeSet.has(v);
+                return (
+                  <g key={i}>
+                    {isMode && (
+                      <rect x={x - 3} y={y - 3} width={barW + 6} height={h + 3} rx={6} fill="none" stroke="#7c3aed" strokeWidth={2.5} opacity={0.6} />
+                    )}
+                    <rect x={x} y={y} width={barW} height={h} rx={5} fill={isMode ? "#7c3aed" : "#2563eb"} opacity={isMode ? 0.9 : 0.65} />
+                    {isMode && (
+                      <text x={x + barW / 2} y={y - 6} fontSize={8} fill="#7c3aed" fontWeight={700} textAnchor="middle">Mo</text>
+                    )}
+                    <text x={x + barW / 2} y={padT + chartH + 14} fontSize={9} fill="#64748b" fontWeight={500} textAnchor="middle">{i + 1}</text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
 
           {/* Legend */}
-          <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: "1rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: "1rem", flexWrap: "wrap" }}>
             {[
               { label: "ממוצע", color: "#2563eb" },
               { label: "חציון", color: "#ea580c" },
               { label: "שכיח", color: "#7c3aed" },
             ].map(item => (
-              <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#64748b" }}>
-                <div style={{ width: 12, height: 12, borderRadius: 3, background: item.color }} />
+              <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748b" }}>
+                <div style={{ width: 14, height: 14, borderRadius: 4, background: item.color }} />
                 <span style={{ fontWeight: 600 }}>{item.label}</span>
               </div>
             ))}

@@ -6,7 +6,7 @@ import {
   Brain, TrendingUp, Circle, Maximize2, BarChart2, GitBranch,
   ChevronRight, Zap, MessageSquare, Shuffle, Clock, Pencil,
   Check, X, BookOpen, ArrowLeft, Share2, LogOut, Settings,
-  Sigma, Box, LineChart, PieChart, Percent, Calculator,
+  Sigma, Box, LineChart, PieChart, Percent, Calculator, Triangle, Compass,
 } from "lucide-react";
 import { useChat } from "./chat-context";
 
@@ -130,16 +130,49 @@ const RANDOM_POOL = [
 
 const TOPICS_10 = [
   {
-    id: "grade10", title: "כיתה י׳ — כל הנושאים", subtitle: "אלגברה, גיאומטריה, טריגונומטריה, סטטיסטיקה",
+    id: "grade10-algebra", title: "פרבולה ואלגברה", subtitle: "משוואות ריבועיות, פרבולות וחוקי חזקות",
     icon: Calculator,
     subtopicLinks: [
       { label: "פרבולה ואלגברה", href: "/topic/grade10/algebra-parabola" },
-      { label: "גיאומטריה", href: "/topic/grade10/geometry" },
-      { label: "טריגונומטריה", href: "/topic/grade10/trig" },
-      { label: "סטטיסטיקה", href: "/topic/grade10/statistics" },
-      { label: "גיאומטריה אנליטית", href: "/topic/grade10/analytic" },
+    ],
+    color: { bg: "bg-blue-950/40", border: "border-blue-800/50", hover: "hover:border-blue-500/70 hover:shadow-[0_0_32px_rgba(59,130,246,0.18)]", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300", bar: "bg-blue-500", badge: "bg-blue-900/60 text-blue-300 border-blue-700/50" },
+  },
+  {
+    id: "grade10-geometry", title: "גיאומטריה", subtitle: "מרובעים, מקביליות ומשולשים",
+    icon: Triangle,
+    subtopicLinks: [
+      { label: "מקבילית", href: "/topic/grade10/geo-parallelogram" },
+      { label: "מעוין", href: "/topic/grade10/geo-rhombus" },
     ],
     color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", hover: "hover:border-emerald-500/70 hover:shadow-[0_0_32px_rgba(16,185,129,0.18)]", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300", bar: "bg-emerald-500", badge: "bg-emerald-900/60 text-emerald-300 border-emerald-700/50" },
+  },
+  {
+    id: "grade10-trig", title: "טריגונומטריה", subtitle: "סינוס, קוסינוס, טנגנס ויישומים",
+    icon: Compass,
+    subtopicLinks: [
+      { label: "יחסים טריגונומטריים", href: "/topic/grade10/trig-basics" },
+      { label: "יישומים", href: "/topic/grade10/trig-applications" },
+    ],
+    color: { bg: "bg-amber-950/40", border: "border-amber-800/50", hover: "hover:border-amber-500/70 hover:shadow-[0_0_32px_rgba(245,158,11,0.18)]", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300", bar: "bg-amber-500", badge: "bg-amber-900/60 text-amber-300 border-amber-700/50" },
+  },
+  {
+    id: "grade10-statistics", title: "סטטיסטיקה", subtitle: "מדדי מרכז ופיזור",
+    icon: BarChart2,
+    subtopicLinks: [
+      { label: "מדדי מרכז", href: "/topic/grade10/statistics/central" },
+      { label: "מדדי פיזור", href: "/topic/grade10/statistics/dispersion" },
+    ],
+    color: { bg: "bg-rose-950/40", border: "border-rose-800/50", hover: "hover:border-rose-500/70 hover:shadow-[0_0_32px_rgba(244,63,94,0.18)]", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300", bar: "bg-rose-500", badge: "bg-rose-900/60 text-rose-300 border-rose-700/50" },
+  },
+  {
+    id: "grade10-analytic", title: "גיאומטריה אנליטית", subtitle: "קו ישר, שיפוע ונקודות חיתוך",
+    icon: Circle,
+    subtopicLinks: [
+      { label: "מושגי יסוד", href: "/topic/grade10/analytic/basics" },
+      { label: "הקו הישר", href: "/topic/grade10/analytic/line" },
+      { label: "בעיות מילוליות", href: "/topic/grade10/analytic/problems" },
+    ],
+    color: { bg: "bg-purple-950/40", border: "border-purple-800/50", hover: "hover:border-purple-500/70 hover:shadow-[0_0_32px_rgba(168,85,247,0.18)]", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300", bar: "bg-purple-500", badge: "bg-purple-900/60 text-purple-300 border-purple-700/50" },
   },
 ];
 

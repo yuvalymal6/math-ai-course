@@ -77,12 +77,12 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
 
 function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "16,185,129", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
   return (
-    <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)`, width: "100%", boxSizing: "border-box" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+    <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.82)", padding: "0.75rem", marginBottom: 12, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)`, width: "100%", boxSizing: "border-box" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
         <span>✨</span>
         <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
       </div>
-      <p style={{ color: "#1A1A1A", fontSize: 13, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500, wordBreak: "break-word", overflowWrap: "break-word" }}>{prompt}</p>
+      <p style={{ color: "#1A1A1A", fontSize: 13, lineHeight: 1.7, marginBottom: 12, whiteSpace: "pre-line", fontWeight: 500, wordBreak: "break-word", overflowWrap: "break-word", width: "100%", padding: 0, margin: "0 0 12px 0" }}>{prompt}</p>
       <CopyBtn text={prompt} label="העתק פרומפט מלא" />
     </div>
   );
@@ -95,10 +95,10 @@ function TutorStepBasic({ step, glowRgb = "16,185,129", borderRgb = "45,90,39" }
         <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
         <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
-      <div style={{ background: "rgba(255,255,255,0.4)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
-        <div>
+      <div style={{ background: "rgba(255,255,255,0.4)", padding: "10px", display: "flex", flexDirection: "column", gap: 10, width: "100%", boxSizing: "border-box" }}>
+        <div style={{ width: "100%" }}>
           <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>הפרומפט המוכן ✍️</div>
-          <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: `1px solid rgba(${borderRgb},0.35)`, padding: 12, fontSize: 11, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word" }}>{step.prompt}</div>
+          <div style={{ borderRadius: 10, background: "rgba(255,255,255,0.75)", border: `1px solid rgba(${borderRgb},0.35)`, padding: "10px", fontSize: 12, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word", overflowWrap: "break-word", width: "100%", boxSizing: "border-box" }}>{step.prompt}</div>
         </div>
         <CopyBtn text={step.prompt} label="העתק פרומפט ממוקד" />
       </div>
@@ -164,12 +164,12 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39",
         {passed ? <CheckCircle size={14} color="#34d399" /> : <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
         <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
-      <div style={{ background: "rgba(255,255,255,0.4)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ background: "rgba(255,255,255,0.4)", padding: "10px", display: "flex", flexDirection: "column", gap: 10, width: "100%", boxSizing: "border-box" }}>
         <textarea
           value={text} rows={3} dir="rtl" disabled={passed}
           onChange={(e) => { setText(e.target.value); setResult(null); }}
           placeholder="נסח כאן את השאלה שלך ל-AI (בקש הכוונה, לא פתרון)..."
-          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: "rgba(255,255,255,0.75)", border: `1px solid ${passed ? "rgba(245,158,11,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 10, background: "rgba(255,255,255,0.75)", border: `1px solid ${passed ? "rgba(245,158,11,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#2D3436", fontSize: 14, padding: 10, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
         />
         {result && (
           <div>

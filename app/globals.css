@@ -31,23 +31,66 @@ html {
   100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
 }
 
-/* ── Mobile-first full-width ── */
+/* ════════════════════════════════════════════════════
+   AGGRESSIVE MOBILE FULL-WIDTH  (<768px)
+   ════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
-  /* Force full-width containers on mobile */
-  .max-w-2xl, .max-w-3xl, .max-w-4xl, .max-w-5xl {
+  /* Kill ALL max-width constraints */
+  [class*="max-w-"] {
     max-width: 100% !important;
   }
-  /* Tighter padding on exercise containers */
-  main > div, main > section {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+  div[style*="maxWidth"], div[style*="max-width"] {
+    max-width: 100% !important;
   }
-  /* KaTeX formulas scale down on mobile */
-  .katex { font-size: 0.85em !important; }
-  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.25rem 0; }
-  /* Prevent any horizontal overflow */
-  section, article, div[style*="maxWidth"] {
+
+  /* Force zero/minimal padding on outer wrappers */
+  main, main > div, main > section {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+
+  /* Cards should nearly touch screen edges */
+  main div[style*="borderRadius"], main section[style*="borderRadius"] {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* KaTeX formulas: aggressive scale-down */
+  .katex {
+    font-size: 0.78em !important;
+  }
+  .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.15rem 0;
+    display: block;
+    width: 100%;
+  }
+  .katex-display > .katex {
+    white-space: nowrap;
+  }
+
+  /* Force all inline-style containers to respect viewport */
+  section, article, div {
     max-width: 100vw;
     box-sizing: border-box;
+  }
+
+  /* Prevent horizontal overflow globally */
+  html, body {
+    overflow-x: hidden;
+  }
+
+  /* Prompt boxes: full-width inner paragraphs */
+  p[style*="whiteSpace"] {
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Textareas full width */
+  textarea {
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 }

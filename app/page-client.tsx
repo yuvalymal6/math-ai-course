@@ -479,6 +479,12 @@ function ShareButton() {
 export default function Dashboard({ initialGrade, initialUsername }: { initialGrade: string; initialUsername: string }) {
   const { openChat } = useChat();
 
+  // Sync server-side grade to localStorage for cross-page instant access
+  useEffect(() => {
+    if (initialGrade) localStorage.setItem("math-grade", initialGrade);
+    if (initialUsername) localStorage.setItem("math-username", initialUsername);
+  }, [initialGrade, initialUsername]);
+
   const gradeTopics = GRADE_TOPICS[initialGrade] || TOPICS;
   const gradeLabel = GRADE_LABELS[initialGrade] || 'כיתה י"א';
 

@@ -429,21 +429,37 @@ function NameGreeting() {
 // ─── Last Visited Card ────────────────────────────────────────────────────────
 
 function LastVisitedCard() {
+  return null; // Replaced by LastVisitedCompact in command center
+}
+
+function LastVisitedCompact() {
   const [last, setLast] = useState<{ label: string; href: string; topicTitle: string } | null>(null);
   useEffect(() => { setLast(getLastVisited()); }, []);
   if (!last) return null;
   return (
     <Link
       href={last.href}
-      className="flex items-center gap-2.5 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-[#00d4ff]/30 rounded-xl px-3 py-2.5 transition-all duration-200 group"
+      className="flex items-center gap-2 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/50 hover:border-[#00d4ff]/30 rounded-lg px-3 py-2 transition-all group"
     >
-      <Clock size={13} className="text-slate-500 shrink-0" />
-      <div className="flex-1 min-w-0 text-right">
-        <p className="text-[10px] text-slate-500">המשך מאיפה שעצרת</p>
-        <p className="text-xs font-semibold text-slate-200 truncate">{last.topicTitle}</p>
-      </div>
-      <ArrowLeft size={13} className="text-slate-600 group-hover:text-white transition-colors shrink-0" />
+      <Clock size={12} className="text-[#00d4ff]/40 group-hover:text-[#00d4ff] shrink-0" />
+      <span className="text-[11px] text-slate-400 group-hover:text-white truncate max-w-[120px] sm:max-w-[180px]">{last.topicTitle}</span>
     </Link>
+  );
+}
+
+function RandomCompact() {
+  const roll = useCallback(() => {
+    const pick = RANDOM_POOL[Math.floor(Math.random() * RANDOM_POOL.length)];
+    window.location.href = pick.href;
+  }, []);
+  return (
+    <button
+      onClick={roll}
+      className="flex items-center gap-2 bg-[#00d4ff]/5 hover:bg-[#00d4ff]/10 border border-[#00d4ff]/20 hover:border-[#00d4ff]/40 rounded-lg px-3 py-2 transition-all group"
+    >
+      <Zap size={12} className="text-[#00d4ff]/50 group-hover:text-[#00d4ff] shrink-0" />
+      <span className="text-[11px] text-[#00d4ff]/60 group-hover:text-[#00d4ff] font-medium">הגרל תרגיל</span>
+    </button>
   );
 }
 
@@ -501,97 +517,59 @@ export default function Dashboard({ initialGrade, initialUsername }: { initialGr
   return (
     <div className="min-h-screen bg-[#0a0f1e] text-white" dir="rtl">
 
-      {/* ── Floating obsidian toolbar ── */}
-      <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-sm border-b border-slate-800/60">
-        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <Brain size={16} className="text-[#00d4ff]" />
-            <span className="font-semibold text-white text-xs">מתמטיקה + AI</span>
-          </div>
-          <div className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-400 font-medium">
-            <span className="text-[#00d4ff]/80">{gradeLabel}</span>
-            <span className="text-slate-600">•</span>
-            <span>4 יח&quot;ל</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <Link href="/onboarding" className="text-slate-500 hover:text-slate-200 transition-colors p-1">
-              <Settings size={14} />
-            </Link>
-            <button onClick={handleLogout} className="text-slate-500 hover:text-red-400 transition-colors p-1">
-              <LogOut size={14} />
-            </button>
+      {/* ── Command center panel (toolbar + hero merged) ── */}
+      <div className="sticky top-0 z-40">
+        <div className="relative overflow-hidden bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50">
+          {/* Subtle glow */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: "radial-gradient(ellipse 60% 80% at 20% 50%, rgba(0,212,255,0.04) 0%, transparent 60%), radial-gradient(ellipse 40% 60% at 80% 40%, rgba(52,211,153,0.03) 0%, transparent 60%)"
+          }} />
+
+          <div className="relative max-w-5xl mx-auto px-3 sm:px-4">
+            {/* Top status line */}
+            <div className="flex items-center justify-between py-2 border-b border-slate-800/40">
+              <div className="flex items-center gap-1.5">
+                <Brain size={14} className="text-[#00d4ff]" />
+                <span className="font-semibold text-white text-[11px]">מתמטיקה + AI</span>
+                <span className="text-slate-600 text-[10px] mx-1">|</span>
+                <span className="text-[#00d4ff]/60 text-[10px] font-medium">{gradeLabel} • 4 יח&quot;ל</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5 ml-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[9px] text-emerald-400/70 font-medium hidden sm:inline">לומד פעיל</span>
+                </div>
+                <ShareButton />
+                <Link href="/onboarding" className="text-slate-500 hover:text-slate-200 transition-colors p-1.5">
+                  <Settings size={13} />
+                </Link>
+                <button onClick={handleLogout} className="text-slate-500 hover:text-red-400 transition-colors p-1.5">
+                  <LogOut size={13} />
+                </button>
+              </div>
+            </div>
+
+            {/* Greeting + Actions row */}
+            <div className="flex items-center justify-between py-3 sm:py-4 gap-4">
+              {/* Greeting */}
+              <div className="shrink-0">
+                <h1 className="text-lg sm:text-xl font-bold text-white leading-tight">
+                  שלום, <NameGreeting />
+                </h1>
+                <p className="text-[#00d4ff]/60 text-xs font-medium mt-0.5">מוכן להמשיך לתרגל?</p>
+              </div>
+
+              {/* Command buttons */}
+              <div className="flex gap-2 items-center">
+                <LastVisitedCompact />
+                <RandomCompact />
+              </div>
+            </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-6 sm:space-y-10">
-
-        {/* ── High-tech hero ── */}
-        <section className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-sm">
-          {/* Glow effects */}
-          <div className="absolute inset-0 pointer-events-none" style={{
-            backgroundImage: "radial-gradient(ellipse 50% 60% at 15% 50%, rgba(0,212,255,0.08) 0%, transparent 70%), radial-gradient(ellipse 40% 50% at 85% 30%, rgba(52,211,153,0.06) 0%, transparent 70%)"
-          }} />
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-            backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-            backgroundSize: "40px 40px"
-          }} />
-
-          <div className="relative p-4 sm:p-6">
-            {/* Multi-column layout: stacked mobile, 3-col desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-4 sm:gap-6 items-start">
-
-              {/* Col 1: Greeting + Status */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] text-emerald-400/80 font-medium uppercase tracking-wider">סטטוס: לומד פעיל</span>
-                </div>
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight">
-                    שלום, <NameGreeting />
-                  </h1>
-                  <p className="text-[#00d4ff]/70 text-sm font-medium mt-0.5">מוכן להמשיך לתרגל?</p>
-                </div>
-                <p className="text-slate-500 text-[11px] sm:text-xs">בחר נושא-משנה, פתור שלב אחר שלב, קבל עזרה מה-AI בדיוק כשצריך.</p>
-              </div>
-
-              {/* Divider (desktop only) */}
-              <div className="hidden sm:block w-px self-stretch bg-slate-700/60" />
-
-              {/* Col 2: Quick actions (compact glass buttons) */}
-              <div className="space-y-2">
-                {/* Last visited */}
-                <LastVisitedCard />
-                {/* Action row */}
-                <div className="flex gap-2">
-                  <RandomChallenge />
-                  <button
-                    onClick={() => openChat()}
-                    className="flex-1 flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-[#00d4ff]/40 rounded-xl px-3 py-2.5 transition-all duration-200 group"
-                  >
-                    <MessageSquare size={14} className="text-slate-400 group-hover:text-[#00d4ff] transition-colors shrink-0" />
-                    <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">שאל את ה-AI</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* AI search bar */}
-            <div className="mt-4 sm:mt-5">
-              <button
-                onClick={() => openChat()}
-                className="w-full flex items-center gap-2.5 bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/50 hover:border-[#00d4ff]/30 rounded-xl px-4 py-2.5 transition-all duration-200 group"
-              >
-                <Zap size={13} className="text-[#00d4ff]/50 group-hover:text-[#00d4ff] transition-colors shrink-0" />
-                <span className="text-xs text-slate-500 group-hover:text-slate-300 transition-colors text-right flex-1">שאל שאלה... צלם תמונה... בקש עזרה מה-AI</span>
-                <span className="text-[10px] text-slate-600 font-medium bg-slate-800 px-2 py-0.5 rounded-md hidden sm:inline">⌘K</span>
-              </button>
-            </div>
-          </div>
-        </section>
 
         {/* ── Topic grid ── */}
         <section className="space-y-4 sm:space-y-5">

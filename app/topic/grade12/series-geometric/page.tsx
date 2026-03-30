@@ -731,7 +731,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       </div>
 
       {/* Prompt Ladder */}
-      <div style={{ borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.45)`, background: "rgba(255,255,255,0.88)", padding: 6, boxShadow: s.glowShadow }}>
+      <div style={{ borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.45)`, background: "rgba(255,255,255,0.88)", padding: "1.25rem", boxShadow: s.glowShadow }}>
         <div style={{ color: `rgb(${s.borderRgb})`, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase     steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium   steps={ex.steps} goldenPrompt={ex.goldenPrompt} borderRgb={s.borderRgb} />}
@@ -755,7 +755,7 @@ function GeoSeriesLab({ levelId }: { levelId: "basic" | "medium" }) {
   const Sn = q === 1 ? a1 * n : Math.round((a1 * (1 - Math.pow(safeQ, n)) / (1 - safeQ)) * 100) / 100;
 
   return (
-    <section style={{ border: `2px solid rgba(${st.borderRgb},0.5)`, borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: `0 10px 15px -3px rgba(60,54,42,0.1), 0 0 24px rgba(${st.borderRgb},0.08)` }}>
+    <section style={{ border: `2px solid rgba(${st.borderRgb},0.5)`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: `0 10px 15px -3px rgba(60,54,42,0.1), 0 0 24px rgba(${st.borderRgb},0.08)` }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת סדרה הנדסית</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את a₁, q ו-n — ראה את האיברים והסכום מתעדכנים בלייב</p>
 
@@ -844,7 +844,7 @@ export default function SeriesGeometricPage() {
 
       {/* Header */}
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
-        <div style={{ margin: "0 auto", padding: "0.75rem 6px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>סדרה הנדסית עם AI</h1>
           <Link
             href="/topic/grade12/series"
@@ -858,7 +858,7 @@ export default function SeriesGeometricPage() {
         </div>
       </div>
 
-      <div style={{ margin: "0 auto", padding: "1rem 4px 3rem" }}>
+      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
 
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>

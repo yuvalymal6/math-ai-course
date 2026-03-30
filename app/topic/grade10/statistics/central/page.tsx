@@ -77,12 +77,12 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
 
 function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "16,185,129", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
   return (
-    <div className="w-full mobile-full-width golden-prompt-debug" style={{ borderRadius: 10, background: "rgba(255,255,255,0.82)", padding: 8, marginBottom: 8, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 8px rgba(${borderRgb},0.1)`, boxSizing: "border-box" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+    <div className="golden-prompt-card" style={{ borderRadius: 14, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 14, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)`, width: "100%", boxSizing: "border-box" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
         <span>✨</span>
         <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
       </div>
-      <p className="w-full" style={{ color: "#1A1A1A", fontSize: 13, lineHeight: 1.7, margin: "0 0 8px 0", whiteSpace: "pre-line", fontWeight: 500, wordBreak: "break-word", overflowWrap: "break-word", padding: 0 }}>{prompt}</p>
+      <p style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.7, margin: "0 0 14px 0", whiteSpace: "pre-line", fontWeight: 500, wordBreak: "break-word", overflowWrap: "break-word" }}>{prompt}</p>
       <CopyBtn text={prompt} label="העתק פרומפט מלא" />
     </div>
   );
@@ -494,10 +494,10 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
     setTimeout(() => setCopiedProblem(false), 2000);
   }
   return (
-    <section className="exercise-section" style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 12, padding: 6, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+    <section className="exercise-section" style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
 
       {/* Formula bar — central tendency (KaTeX) */}
-      <div style={{ borderRadius: 12, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: 6, marginBottom: 10, boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
+      <div style={{ borderRadius: 12, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
         <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
 
         {/* Context: variable definitions */}
@@ -539,11 +539,11 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
       {/* Diagram */}
       {ex.diagram && (
-        <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, boxShadow: s.glowShadow }}>{ex.diagram}</div>
+        <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.25rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
       )}
 
       {/* Problem */}
-      <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: 6, marginBottom: 10 }}>
+      <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>📝 השאלה</div>
           <button onClick={handleCopyProblem} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.1)" : "rgba(107,114,128,0.08)", border: "1px solid rgba(107,114,128,0.2)", color: copiedProblem ? "#15803d" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
@@ -566,7 +566,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       </div>
 
       {/* Prompt Ladder */}
-      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: 6, boxShadow: s.glowShadow }}>
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", boxShadow: s.glowShadow }}>
         <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase     steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} problemText={ex.problem} />}
@@ -607,9 +607,12 @@ function BarChartLab() {
     <section className="lab-section">
       <style>{`
         .lab-section {
-          border-radius: 16px; background: #f8fafc; margin: 1.5rem auto 0; max-width: 64rem;
+          border-radius: 24px; background: #f8fafc; margin: 2rem auto 0; max-width: 64rem;
           box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
-          border: 1px solid #e2e8f0; padding: 0.75rem;
+          border: 1px solid #e2e8f0; padding: 2rem;
+        }
+        @media (max-width: 767px) {
+          .lab-section { border-radius: 14px; padding: 0.75rem; margin-top: 1rem; }
         }
         .lab-two-col { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
         .lab-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -765,7 +768,7 @@ function MissingScoreLab() {
   const toX = (v: number) => padL + ((v - lineMin) / (lineMax - lineMin)) * (w - padL - padR);
 
   return (
-    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "20px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "1.5rem" }}>
+    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת הציון החסר</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את הציון החמישי והממוצע הרצוי כדי לראות את ההשפעה.</p>
 
@@ -882,7 +885,7 @@ function DistributionLab() {
   const totalW = padL + groupW + 40 + groupW + padL;
 
   return (
-    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: "20px", padding: "1rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "1.5rem" }}>
+    <section style={{ border: "1px solid rgba(244,63,94,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת השוואת התפלגויות</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה ציונים בשתי הכיתות וראה את ההבדלים במדדי המרכז.</p>
 
@@ -1049,7 +1052,7 @@ export default function CentralTendencyPage() {
 
       {/* ── Header ── */}
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
-        <div style={{ margin: "0 auto", padding: "0.75rem 6px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem" }}>
+        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem" }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>📊 מדדי מרכז</h1>
             <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>ממוצע, חציון ושכיח — ואיך לשאול AI את השאלות הנכונות</p>
@@ -1066,7 +1069,7 @@ export default function CentralTendencyPage() {
         </div>
       </div>
 
-      <div style={{ margin: "0 auto", padding: "1rem 4px 3rem" }}>
+      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
 
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>

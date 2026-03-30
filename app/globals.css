@@ -32,102 +32,55 @@ html {
 }
 
 /* ════════════════════════════════════════════════════
-   NO-COMPROMISE MOBILE FULL-WIDTH (<768px)
+   MOBILE-ONLY overrides  (<768px)
+   Desktop stays UNTOUCHED — centered, max-w constrained
    ════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
-  /* Kill ALL max-width constraints everywhere */
-  [class*="max-w-"],
-  div[style*="maxWidth"],
-  div[style*="max-width"],
-  section[style*="maxWidth"],
-  section[style*="max-width"] {
+  /* Outer page wrappers: collapse side padding */
+  div[style*="max-width: 56rem"],
+  div[style*="max-width:56rem"] {
     max-width: 100% !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
   }
 
-  /* Force near-zero horizontal padding on all wrappers */
-  main,
-  main > div,
-  main > section,
-  main > div > div,
-  main > div > section {
-    padding-left: 4px !important;
-    padding-right: 4px !important;
-  }
-
-  /* Exercise sections (the big green/orange/red bordered cards) */
+  /* Exercise sections: reduce padding + radius */
   .exercise-section,
-  section[style*="borderRadius"] {
-    padding: 0.65rem !important;
-    border-radius: 16px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+  section[style*="border-radius: 24px"],
+  section[style*="border-radius:24px"] {
+    padding: 0.75rem !important;
+    border-radius: 14px !important;
   }
 
-  /* Inner cards inside exercises */
-  section[style*="borderRadius"] > div[style*="borderRadius"],
-  .exercise-section > div[style*="borderRadius"] {
-    padding: 0.5rem !important;
+  /* GoldenPromptCard: tight mobile padding */
+  .golden-prompt-card {
+    padding: 0.75rem !important;
     border-radius: 10px !important;
+    margin-bottom: 10px !important;
+  }
+  .golden-prompt-card p {
+    font-size: 13px !important;
   }
 
-  /* KaTeX formulas: aggressive scale-down */
-  .katex { font-size: 0.75em !important; }
+  /* Inner cards: reduce padding */
+  .exercise-section > div[style*="border-radius"] {
+    padding: 0.65rem !important;
+  }
+
+  /* KaTeX: scale down formulas */
+  .katex { font-size: 0.8em !important; }
   .katex-display {
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0.1rem 0;
-    display: block;
-    width: 100%;
+    padding: 0.15rem 0;
   }
 
-  /* Force all elements to respect viewport */
-  section, article, div {
-    max-width: 100vw;
-    box-sizing: border-box;
-  }
+  /* Prevent horizontal scroll */
+  html, body { overflow-x: hidden !important; }
 
-  /* Prevent ANY horizontal overflow */
-  html, body {
-    overflow-x: hidden !important;
-  }
-
-  /* Prompt text: fill full width, no padding waste */
-  p[style*="whiteSpace"],
-  p[style*="pre-line"] {
-    width: 100% !important;
-    padding: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
-  /* Textareas: full width, border-box */
+  /* Full-width textareas */
   textarea {
     width: 100% !important;
     box-sizing: border-box !important;
-  }
-
-  /* Buttons: full width for easy tapping */
-  button[style*="borderRadius"] {
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Grid layouts: force vertical stacking */
-  div[style*="gridTemplateColumns: \"1fr 1fr\""],
-  div[style*="grid-template-columns"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Shared class for any element that must be full-width on mobile */
-  .mobile-full-width {
-    padding: 4px !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-    box-sizing: border-box !important;
-  }
-
-  /* DEBUG: Red border on GoldenPromptCard — remove after visual confirmation */
-  .golden-prompt-debug {
-    border: 5px solid red !important;
   }
 }

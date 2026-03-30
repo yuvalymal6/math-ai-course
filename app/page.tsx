@@ -494,8 +494,7 @@ export default function Dashboard() {
   const gradeLabel = GRADE_LABELS[userGrade] || 'כיתה י"א';
 
   const handleLogout = async () => {
-    document.cookie = "math-auth=; path=/; max-age=0";
-    document.cookie = "math-grade=; path=/; max-age=0";
+    await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/login";
   };
 

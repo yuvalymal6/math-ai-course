@@ -17,8 +17,6 @@ export async function POST(req: NextRequest) {
 
   // Set auth cookie (30 days)
   res.cookies.set("math-auth", username.trim(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 30,
     path: "/",

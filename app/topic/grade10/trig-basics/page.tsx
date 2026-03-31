@@ -488,44 +488,65 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   return (
     <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
 
-      {/* Formula bar — trig (KaTeX) */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.25rem 1.5rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(0,212,255,0.12)" }}>
-        <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות טריגונומטריה</div>
+      {/* Formula bar — trig (modern card layout) */}
+      <div className="formula-bar" style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
+        <div className="formula-title" style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 14, textAlign: "center" }}>נוסחאות טריגונומטריה</div>
 
-        {/* Context: variable definitions */}
-        <div style={{ borderRadius: 10, background: "rgba(0,212,255,0.05)", border: "1px solid rgba(0,212,255,0.15)", padding: "10px 14px", marginBottom: 16, textAlign: "center" }}>
-          <div style={{ color: "#2D3436", fontSize: 13, lineHeight: 1.8 }}>
-            <Tex>{String.raw`\alpha`}</Tex> — זווית &nbsp;&nbsp;·&nbsp;&nbsp;
-            ניצב מול — הצלע שמול הזווית &nbsp;&nbsp;·&nbsp;&nbsp;
-            ניצב ליד — הצלע שליד הזווית &nbsp;&nbsp;·&nbsp;&nbsp;
-            יתר — הצלע הארוכה ביותר
+        {/* SVG Right Triangle Illustration */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+          <svg viewBox="0 0 220 160" className="w-full max-w-[220px]" aria-label="משולש ישר-זווית">
+            {/* Triangle */}
+            <polygon points="30,130 190,130 190,30" fill="none" stroke="#334155" strokeWidth="2" />
+            {/* Right angle marker */}
+            <polyline points="175,130 175,115 190,115" fill="none" stroke="#64748b" strokeWidth="1.5" />
+            {/* Angle arc for α */}
+            <path d="M 55,130 A 25,25 0 0,0 43,115" fill="none" stroke="#6366f1" strokeWidth="2" />
+            <text x="60" y="122" fontSize="13" fill="#6366f1" fontWeight="700" fontStyle="italic">α</text>
+
+            {/* Side labels */}
+            {/* a = opposite (vertical right side) */}
+            <text x="196" y="85" fontSize="11" fill="#6366f1" fontWeight="700">a</text>
+            <text x="196" y="97" fontSize="8" fill="#94a3b8">ניצב מול</text>
+            {/* b = adjacent (bottom side) */}
+            <text x="105" y="148" fontSize="11" fill="#10b981" fontWeight="700">b</text>
+            <text x="95" y="157" fontSize="8" fill="#94a3b8">ניצב ליד</text>
+            {/* c = hypotenuse (diagonal) */}
+            <text x="88" y="72" fontSize="11" fill="#f59e0b" fontWeight="700">c</text>
+            <text x="98" y="68" fontSize="8" fill="#94a3b8">יתר</text>
+
+            {/* Vertex labels */}
+            <text x="18" y="140" fontSize="10" fill="#475569" fontWeight="600">A</text>
+            <text x="192" y="140" fontSize="10" fill="#475569" fontWeight="600">B</text>
+            <text x="192" y="25" fontSize="10" fill="#475569" fontWeight="600">C</text>
+          </svg>
+        </div>
+
+        {/* Trig function cards — 3-col grid on desktop, stacked on mobile */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10, marginBottom: 12 }}>
+          {/* Sin card */}
+          <div style={{ borderRadius: 12, border: "1px solid rgba(99,102,241,0.25)", background: "rgba(99,102,241,0.04)", padding: "12px 10px", textAlign: "center" }}>
+            <div style={{ color: "#6366f1", fontSize: 11, fontWeight: 700, marginBottom: 6 }}>Sin — סינוס</div>
+            <div style={{ color: "#6366f1" }}><TexBlock>{String.raw`\sin \alpha = \frac{a}{c}`}</TexBlock></div>
+            <div style={{ color: "#94a3b8", fontSize: 9, marginTop: 4 }}>ניצב מול / יתר</div>
+          </div>
+          {/* Cos card */}
+          <div style={{ borderRadius: 12, border: "1px solid rgba(16,185,129,0.25)", background: "rgba(16,185,129,0.04)", padding: "12px 10px", textAlign: "center" }}>
+            <div style={{ color: "#10b981", fontSize: 11, fontWeight: 700, marginBottom: 6 }}>Cos — קוסינוס</div>
+            <div style={{ color: "#10b981" }}><TexBlock>{String.raw`\cos \alpha = \frac{b}{c}`}</TexBlock></div>
+            <div style={{ color: "#94a3b8", fontSize: 9, marginTop: 4 }}>ניצב ליד / יתר</div>
+          </div>
+          {/* Tan card */}
+          <div style={{ borderRadius: 12, border: "1px solid rgba(245,158,11,0.25)", background: "rgba(245,158,11,0.04)", padding: "12px 10px", textAlign: "center" }}>
+            <div style={{ color: "#f59e0b", fontSize: 11, fontWeight: 700, marginBottom: 6 }}>Tan — טנגנס</div>
+            <div style={{ color: "#f59e0b" }}><TexBlock>{String.raw`\tan \alpha = \frac{a}{b}`}</TexBlock></div>
+            <div style={{ color: "#94a3b8", fontSize: 9, marginTop: 4 }}>ניצב מול / ניצב ליד</div>
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 20, alignItems: "center" }}>
-          {/* sin */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
-            <div style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>סינוס (ניצב מול / יתר)</div>
-            <div style={{ color: "#00d4ff" }}><TexBlock>{String.raw`\sin \alpha = \frac{\text{opposite}}{\text{hypotenuse}}`}</TexBlock></div>
-          </div>
-          <div style={{ width: "80%", height: 1, background: "rgba(60,54,42,0.08)" }} />
-          {/* cos */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
-            <div style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>קוסינוס (ניצב ליד / יתר)</div>
-            <div style={{ color: "#00d4ff" }}><TexBlock>{String.raw`\cos \alpha = \frac{\text{adjacent}}{\text{hypotenuse}}`}</TexBlock></div>
-          </div>
-          <div style={{ width: "80%", height: 1, background: "rgba(60,54,42,0.08)" }} />
-          {/* tan */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
-            <div style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>טנגנס (ניצב מול / ניצב ליד)</div>
-            <div style={{ color: "#00d4ff" }}><TexBlock>{String.raw`\tan \alpha = \frac{\text{opposite}}{\text{adjacent}}`}</TexBlock></div>
-          </div>
-          <div style={{ width: "80%", height: 1, background: "rgba(60,54,42,0.08)" }} />
-          {/* Area formula */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
-            <div style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>שטח משולש (שתי צלעות וזווית)</div>
-            <div style={{ color: "#00d4ff" }}><TexBlock>{String.raw`S = \tfrac{1}{2} \cdot a \cdot b \cdot \sin C`}</TexBlock></div>
-          </div>
+        {/* Area formula — full width */}
+        <div style={{ borderRadius: 10, border: "1px solid rgba(0,212,255,0.15)", background: "rgba(0,212,255,0.03)", padding: "10px", textAlign: "center" }}>
+          <div style={{ color: "#64748b", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>שטח משולש (שתי צלעות וזווית)</div>
+          <div style={{ color: "#00d4ff" }}><TexBlock>{String.raw`S = \tfrac{1}{2} \cdot a \cdot b \cdot \sin C`}</TexBlock></div>
         </div>
       </div>
 

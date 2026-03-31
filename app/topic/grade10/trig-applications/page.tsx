@@ -389,7 +389,6 @@ function LadderAdvanced({ steps, goldenPrompt, borderRgb }: { steps: PromptStep[
   return (
     <div>
       <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
-      {goldenPrompt && <GoldenPromptCard prompt={goldenPrompt} title="פרומפט ראשי — בעיית המטוס" borderRgb={borderRgb} />}
 
       {steps.map((s, i) => (
         <TutorStepMedium key={i} step={s} borderRgb={borderRgb}

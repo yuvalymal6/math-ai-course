@@ -360,12 +360,8 @@ function BasicDiagram() {
       <path d="M 56,190 A 26,26 0 0,0 48,174" fill="none" stroke="#6366f1" strokeWidth="2" />
       {/* 40° label — inside the triangle, clear of arc and edges */}
       <text x="72" y="178" fontSize="12" fill="#6366f1" fontWeight="700">40°</text>
-      {/* BC = x */}
+      {/* BC = x (only data label kept) */}
       <text x="242" y="125" fontSize="16" fill="#6366f1" fontWeight="700">x</text>
-      {/* AB */}
-      <text x="125" y="210" fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">AB</text>
-      {/* AC */}
-      <text x="110" y="108" fontSize="13" fill="#f59e0b" fontWeight="700" textAnchor="middle">AC</text>
       {/* Vertices */}
       <text x="16" y="198" fontSize="13" fill="#475569" fontWeight="700">A</text>
       <text x="232" y="206" fontSize="13" fill="#475569" fontWeight="700">B</text>
@@ -422,10 +418,8 @@ function AdvancedDiagram() {
       <text x="100" y="110" fontSize="15" fill="#f59e0b" fontWeight="700" textAnchor="middle" fontStyle="italic">k</text>
       {/* BC = 0.5k (vertical) */}
       <text x="244" y="125" fontSize="13" fill="#6366f1" fontWeight="700">0.5k</text>
-      {/* Point D label */}
+      {/* Point D label — no BD text, only D and right angle mark */}
       <text x={Dx + 6} y={Dy - 8} fontSize="12" fill="#a78bfa" fontWeight="700">D</text>
-      {/* BD label */}
-      <text x={(Bx + Dx) / 2 + 8} y={(By + Dy) / 2 + 6} fontSize="11" fill="#a78bfa" fontWeight="600">BD</text>
       {/* Vertices */}
       <text x="16" y="198" fontSize="13" fill="#475569" fontWeight="700">A</text>
       <text x="232" y="206" fontSize="13" fill="#475569" fontWeight="700">B</text>
@@ -705,8 +699,8 @@ function LadderLab() {
 function TowerLab() {
   const hyp = 20;
   const [area, setArea] = useState(80);
-  const maxSlider = 150;
-  const maxArea = (hyp * hyp) / 4; // 100 — mathematical max for this hypotenuse
+  const maxSlider = 100;
+  const maxArea = (hyp * hyp) / 4; // 100 — isosceles maximum
   const clampedArea = Math.min(area, maxArea);
 
   // Solve: a*b = 2*S, a² + b² = hyp²
@@ -754,7 +748,8 @@ function TowerLab() {
             <polyline points={`${ptB.x - 10},${ptB.y} ${ptB.x - 10},${ptB.y - 10} ${ptB.x},${ptB.y - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
             {/* BC label — shifted right (+12) to avoid edge */}
             <text x={ptB.x + 12} y={(ptB.y + ptC.y) / 2 + 4} fontSize="13" fill="#6366f1" fontWeight="700">{legA.toFixed(1)}</text>
-            <text x={(ptA.x + ptB.x) / 2} y={ptA.y + 16} fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">{legB.toFixed(1)}</text>
+            {/* AB label at ~75% of bottom side, away from left corner */}
+            <text x={ptA.x + (ptB.x - ptA.x) * 0.75} y={ptA.y + 16} fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">{legB.toFixed(1)}</text>
             <text x={(ptA.x + ptC.x) / 2 - 12} y={(ptA.y + ptC.y) / 2 - 6} fontSize="13" fill="#f59e0b" fontWeight="700">20</text>
             <text x={ptA.x - 12} y={ptA.y + 4} fontSize="11" fill="#475569" fontWeight="600">A</text>
             <text x={ptB.x + 4} y={ptB.y + 16} fontSize="11" fill="#475569" fontWeight="600">B</text>

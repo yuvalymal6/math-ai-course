@@ -388,29 +388,25 @@ function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
 // ─── SVG Diagrams ─────────────────────────────────────────────────────────────
 
 function BasicDiagram() {
-  // Bar chart silhouette — 10 bars, no values shown
-  const bars = [72, 85, 91, 68, 85, 77, 95, 85, 60, 82];
-  const maxVal = 100;
-  const barW = 28, gap = 6, padL = 40, padB = 30, padT = 20;
-  const chartW = padL + bars.length * (barW + gap);
-  const chartH = 200;
-
+  // Balance scale — 9 known scores on right, x=? on right, target 75 on left
   return (
-    <svg viewBox={`0 0 ${chartW + 20} ${chartH + padB + padT}`} className="w-full max-w-sm mx-auto" aria-hidden>
-      {/* Y-axis */}
-      <line x1={padL} y1={padT} x2={padL} y2={chartH + padT} stroke="#94a3b8" strokeWidth={1.2} />
-      {/* X-axis */}
-      <line x1={padL} y1={chartH + padT} x2={chartW + 10} y2={chartH + padT} stroke="#94a3b8" strokeWidth={1.2} />
-      {/* Bars */}
-      {bars.map((v, i) => {
-        const h = (v / maxVal) * chartH;
-        const x = padL + i * (barW + gap) + gap;
-        const y = padT + chartH - h;
-        const hue = 200 + (v / maxVal) * 60;
-        return <rect key={i} x={x} y={y} width={barW} height={h} rx={4} fill={`hsl(${hue}, 55%, 55%)`} opacity={0.8} />;
-      })}
-      {/* Question marks */}
-      <text x={chartW / 2 + 20} y={padT + 30} fontSize={18} fill="#f59e0b" fontWeight={700} textAnchor="middle">?</text>
+    <svg viewBox="0 0 320 160" className="w-full max-w-sm mx-auto" aria-hidden>
+      {/* Base triangle */}
+      <polygon points="160,140 145,155 175,155" fill="#64748b" />
+      {/* Fulcrum line */}
+      <line x1={160} y1={140} x2={160} y2={90} stroke="#64748b" strokeWidth="3" />
+      {/* Beam */}
+      <line x1={40} y1={90} x2={280} y2={90} stroke="#334155" strokeWidth="3" />
+      {/* Left pan (target: 75) */}
+      <rect x={30} y={95} width={80} height={30} rx={6} fill="rgba(99,102,241,0.1)" stroke="#6366f1" strokeWidth="1.5" />
+      <text x={70} y={115} fontSize="16" fill="#6366f1" fontWeight="700" textAnchor="middle">75</text>
+      <text x={70} y={85} fontSize="9" fill="#94a3b8" fontWeight="600" textAnchor="middle">ממוצע מבוקש</text>
+      {/* Right pan (scores + x) */}
+      <rect x={190} y={95} width={100} height={30} rx={6} fill="rgba(16,185,129,0.1)" stroke="#10b981" strokeWidth="1.5" />
+      <text x={240} y={112} fontSize="10" fill="#10b981" fontWeight="600" textAnchor="middle">9 ציונים + x</text>
+      <text x={240} y={85} fontSize="9" fill="#94a3b8" fontWeight="600" textAnchor="middle">סה&quot;כ ÷ 10</text>
+      {/* Question mark */}
+      <text x={240} y={148} fontSize="20" fill="#f59e0b" fontWeight="700" textAnchor="middle">x = ?</text>
     </svg>
   );
 }
@@ -476,18 +472,18 @@ function AdvancedDiagram() {
 const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    title: "ציוני הכיתה",
-    problem: "בכיתה של 10 תלמידים, הציונים במבחן מתמטיקה הם:\n72, 85, 91, 68, 85, 77, 95, 85, 60, 82\n\nא. חשב את ממוצע הציונים.\nב. מצא את החציון.\nג. מהו השכיח? הסבר מדוע.",
+    title: "איזון המאזניים",
+    problem: "לפניך רשימת ציונים של 10 תלמידים:\n60, 65, 70, 72, 75, 80, 82, 85, 90 וציון נוסף x.\nידוע כי הממוצע הכיתתי הוא 75.\n\nא. מצא את הציון x.\nב. מצא את השכיח ואת החציון של כל עשרת הציונים.\nג. אם נחליף את הציון הנמוך ביותר (60) בציון 0, האם הממוצע ישתנה? האם החציון ישתנה? נמקו.",
     diagram: <BasicDiagram />,
     pitfalls: [
-      { title: "⚠️ סדרו את הנתונים לפני מציאת חציון!", text: "טעות קלאסית: לקחת את הערך האמצעי מהרשימה המקורית. חובה לסדר מהקטן לגדול!" },
-      { title: "🔦 חציון בזוגי = ממוצע שני האמצעיים", text: "" },
+      { title: "⚠️ בניית המשוואה", text: "שימו לב: הממוצע הוא 75. כשאתם בונים את המשוואה, אל תשכחו שסכום הציונים צריך להיות שווה ל-75 × 10 = 750." },
+      { title: "💡 חציון תלוי ב-x", text: "טעות נפוצה: לחשב חציון לפני שמוצאים את x. החציון תלוי במיקום של x ברצף המספרים!" },
     ],
-    goldenPrompt: `\nהיי, אני תלמיד כיתה י׳, צירפתי לך שאלה בסטטיסטיקה על מדדי מרכז (ממוצע, חציון, שכיח).\nהנה הפרוטוקול שלנו, תעבוד לפיו ב-100%:\n1️⃣ סריקה:\nתסרוק את הנתונים ותכתוב לי רק:\n"זיהיתי את הנתונים. מחכה להוראות לשלב א'."\n(אל תפתור כלום ואל תסביר כלום בשלב הזה!)\n2️⃣ תפקיד:\nאתה המורה שלי. אל תפתור במקומי. במהלך פתירת סעיף, תשאל אותי שאלות מנחות.\n3️⃣ שיטת עבודה:\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    goldenPrompt: `\nהיי, אני המורה הפרטי שלך לסטטיסטיקה. בתרגיל הזה אנחנו נלמד איך "לאזן" ממוצע באמצעות נעלם.\nהתפקיד שלי הוא להוביל אותך לבניית המשוואה הנכונה. דבר ראשון, תסתכל על המאזניים ועל הנתונים שחסרים.\nתאשר לי שהבנת מה הממוצע שאליו אנחנו צריכים להגיע. אני לא אתן לך את התשובה, אלא אשאל אותך מה הסכום של כל הציונים הידועים לנו כרגע.`,
     steps: [
-      { phase: "סעיף א׳", label: "חישוב ממוצע", coaching: "", prompt: "תעזור לי להבין איך מחשבים ממוצע של קבוצת ציונים.", keywords: [], keywordHint: "", contextWords: ["ממוצע", "סכום", "חלוקה", "כמות", "ציונים", "חיבור", "n", "10"] },
-      { phase: "סעיף ב׳", label: "מציאת חציון", coaching: "", prompt: "כיצד מוצאים את החציון של קבוצת נתונים? האם צריך לסדר קודם?", keywords: [], keywordHint: "", contextWords: ["חציון", "סדר", "אמצע", "זוגי", "ממוצע", "סידור", "עולה", "ערך"] },
-      { phase: "סעיף ג׳", label: "זיהוי שכיח", coaching: "", prompt: "מהו השכיח ואיך מזהים אותו? למה ערך מסוים הוא השכיח?", keywords: [], keywordHint: "", contextWords: ["שכיח", "תדירות", "הכי", "נפוץ", "פעמים", "חוזר", "ספירה", "ערך"] },
+      { phase: "שלב א׳", label: "בניית משוואת הממוצע", coaching: "", prompt: "תדריך אותי איך להשתמש בממוצע 75 כדי למצוא את הסכום הכולל של הציונים ואז את x.", keywords: [], keywordHint: "", contextWords: ["ממוצע", "סכום", "75", "750", "10", "x", "משוואה", "חיסור"] },
+      { phase: "שלב ב׳", label: "מציאת חציון ושכיח", coaching: "", prompt: "עכשיו כשיש לי את x, תסביר לי איך למצוא את השכיח ואת החציון.", keywords: [], keywordHint: "", contextWords: ["חציון", "שכיח", "סדר", "אמצע", "תדירות", "x", "81", "מיון"] },
+      { phase: "שלב ג׳", label: "השפעת שינוי נתון", coaching: "", prompt: "תסביר לי מה קורה לממוצע ולחציון כשמחליפים את הציון 60 בציון 0.", keywords: [], keywordHint: "", contextWords: ["ממוצע", "חציון", "שינוי", "השפעה", "60", "0", "סכום", "מיקום"] },
     ],
   },
   {
@@ -617,9 +613,109 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   );
 }
 
-// ─── Lab 1: BarChartLab (Basic) ───────────────────────────────────────────────
+// ─── Lab 1: BalancingScaleLab (Basic) ─────────────────────────────────────────
 
 function BarChartLab() {
+  // Known 9 scores, correct x = 81 (sum of 9 = 669, need 750 total)
+  const knownScores = [60, 65, 70, 72, 75, 80, 82, 85, 90];
+  const knownSum = knownScores.reduce((a, b) => a + b, 0); // 679
+  const targetAvg = 75;
+  const targetSum = targetAvg * 10; // 750
+  const correctX = targetSum - knownSum; // 71
+  const [xInput, setXInput] = useState("");
+  const [solved, setSolved] = useState(false);
+
+  const xVal = parseFloat(xInput) || 0;
+  const totalSum = knownSum + xVal;
+  const currentAvg = totalSum / 10;
+  const diff = currentAvg - targetAvg;
+  const isCorrect = Math.abs(xVal - correctX) < 0.5 && xInput !== "";
+
+  // Tilt angle for the scale beam
+  const tiltDeg = Math.min(Math.max(diff * 0.8, -15), 15);
+
+  // All 10 scores sorted (for median/mode display)
+  const allScores = [...knownScores, xVal].sort((a, b) => a - b);
+  const median = (allScores[4] + allScores[5]) / 2;
+
+  if (isCorrect && !solved) setSolved(true);
+
+  return (
+    <section style={{ border: "1px solid rgba(0,212,255,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת איזון הממוצע</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>הקלד את x כדי לאזן את המאזניים. הממוצע חייב להיות 75.</p>
+
+      {/* Input box */}
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", borderRadius: 14, border: `2px solid ${solved ? "#16a34a" : "#e2e8f0"}`, padding: "12px 20px", boxShadow: solved ? "0 0 20px rgba(22,163,74,0.2)" : "none", transition: "all 0.3s" }}>
+          <span style={{ color: "#334155", fontSize: 16, fontWeight: 700 }}>x =</span>
+          <input
+            type="number"
+            value={xInput}
+            onChange={e => { setXInput(e.target.value); setSolved(false); }}
+            placeholder="?"
+            style={{ width: 80, fontSize: 20, fontWeight: 700, textAlign: "center", border: "none", outline: "none", background: "transparent", color: solved ? "#16a34a" : "#334155", fontFamily: "monospace" }}
+          />
+          {solved && <span style={{ fontSize: 20 }}>✅</span>}
+        </div>
+      </div>
+
+      {/* Animated balance scale SVG */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem" }}>
+        <svg viewBox="0 0 320 160" style={{ width: "100%", display: "block" }} aria-hidden>
+          {/* Base */}
+          <polygon points="160,145 145,158 175,158" fill="#64748b" />
+          <line x1={160} y1={145} x2={160} y2={95} stroke="#64748b" strokeWidth="3" />
+          {/* Beam (tilts) */}
+          <g transform={`rotate(${solved ? 0 : tiltDeg}, 160, 95)`}>
+            <line x1={30} y1={95} x2={290} y2={95} stroke="#334155" strokeWidth="3" />
+            {/* Left pan — target */}
+            <rect x={20} y={100} width={80} height={28} rx={6} fill={solved ? "rgba(22,163,74,0.1)" : "rgba(99,102,241,0.1)"} stroke={solved ? "#16a34a" : "#6366f1"} strokeWidth="1.5" />
+            <text x={60} y={118} fontSize="14" fill={solved ? "#16a34a" : "#6366f1"} fontWeight="700" textAnchor="middle">75</text>
+            {/* Right pan — current avg */}
+            <rect x={220} y={100} width={80} height={28} rx={6} fill={solved ? "rgba(22,163,74,0.1)" : "rgba(245,158,11,0.1)"} stroke={solved ? "#16a34a" : "#f59e0b"} strokeWidth="1.5" />
+            <text x={260} y={118} fontSize="14" fill={solved ? "#16a34a" : "#f59e0b"} fontWeight="700" textAnchor="middle">{currentAvg.toFixed(1)}</text>
+          </g>
+          {/* Labels */}
+          <text x={60} y={88} fontSize="9" fill="#94a3b8" fontWeight="600" textAnchor="middle">ממוצע מבוקש</text>
+          <text x={260} y={88} fontSize="9" fill="#94a3b8" fontWeight="600" textAnchor="middle">ממוצע נוכחי</text>
+        </svg>
+      </div>
+
+      {/* Live calculation display */}
+      <div style={{ borderRadius: 12, border: "1px solid rgba(0,212,255,0.2)", background: "rgba(255,255,255,0.9)", padding: "14px", marginBottom: "1rem", textAlign: "center", fontFamily: "monospace", fontSize: 13, color: "#334155", direction: "ltr" }}>
+        ({knownScores.join(" + ")} + {xInput || "?"}) ÷ 10 = <span style={{ fontWeight: 700, color: solved ? "#16a34a" : "#f59e0b" }}>{xInput ? currentAvg.toFixed(2) : "?"}</span>
+      </div>
+
+      {/* Feedback */}
+      {solved && (
+        <LabMessage text={`מצוין! x = ${correctX}. הממוצע מאוזן בדיוק על 75! 🎯`} type="success" visible={true} />
+      )}
+      {!solved && xInput && Math.abs(diff) > 0.5 && (
+        <LabMessage text={diff > 0 ? "הממוצע גבוה מדי — נסה ערך קטן יותר" : "הממוצע נמוך מדי — נסה ערך גדול יותר"} type="warning" visible={true} />
+      )}
+
+      {/* Stats (shown after solving) */}
+      {solved && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 10, textAlign: "center", marginTop: 12 }}>
+          {[
+            { label: "x", val: correctX.toString(), color: "#16a34a" },
+            { label: "ממוצע", val: "75.00", color: "#6366f1" },
+            { label: "חציון", val: median.toFixed(1), color: "#f59e0b" },
+            { label: "סכום", val: targetSum.toString(), color: "#00d4ff" },
+          ].map(r => (
+            <div key={r.label} style={{ borderRadius: 14, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.25)", padding: "12px 8px" }}>
+              <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+              <div style={{ color: r.color, fontWeight: 700, fontSize: 16, fontFamily: "monospace" }}>{r.val}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function _OldBarChartLab() {
   const [values, setValues] = useState([72, 85, 91, 68, 85, 77, 95, 85, 60, 82]);
 
   const setVal = (i: number, v: number) => setValues(prev => { const next = [...prev]; next[i] = v; return next; });

@@ -44,7 +44,7 @@ export default function TrigHubPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <h2 className="text-white font-bold text-lg">סינוס, קוסינוס וטנגנס</h2>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#00d4ff]/10 border border-[#00d4ff]/30 text-[#00d4ff]">SOH-CAH-TOA</span>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#00d4ff]/10 border border-[#00d4ff]/30 text-[#00d4ff]">SIN/COS/TAN</span>
                 </div>
                 <p className="text-slate-400 text-sm leading-relaxed">יחסי הצלעות במשולש ישר-זווית — חישוב צלעות, זוויות ומשולשים נסתרים.</p>
                 <div className="flex flex-wrap gap-2 mt-3">

@@ -374,28 +374,25 @@ function BasicDiagram() {
 }
 
 function MediumDiagram() {
+  // Right triangle: ∠B=90°, AC=20 (hypotenuse), one leg = x
   return (
-    <svg viewBox="0 0 400 300" className="w-full max-w-sm mx-auto" aria-hidden>
-      {/* Ground */}
-      <line x1={20} y1={260} x2={380} y2={260} stroke="#94a3b8" strokeWidth={1.5} />
-      {/* Tower */}
-      <rect x={55} y={60} width={20} height={200} fill="#64748b" rx={2} />
-      {/* Horizontal line from tower top */}
-      <line x1={75} y1={60} x2={370} y2={60} stroke="#94a3b8" strokeWidth={1} strokeDasharray="4,3" />
-      {/* Sight line to B (45 deg) */}
-      <line x1={75} y1={60} x2={275} y2={260} stroke="#3b82f6" strokeWidth={2} strokeDasharray="6,3" />
-      {/* Sight line to A (30 deg) */}
-      <line x1={75} y1={60} x2={365} y2={260} stroke="#EA580C" strokeWidth={2} strokeDasharray="6,3" />
-      {/* Depression angle arcs */}
-      <path d="M 130,60 A 55,55 0 0,1 112,95" fill="none" stroke="#3b82f6" strokeWidth={2} />
-      <path d="M 160,60 A 85,85 0 0,1 150,80" fill="none" stroke="#EA580C" strokeWidth={2} />
-      {/* Points */}
-      <circle cx={275} cy={260} r={5} fill="#3b82f6" stroke="#fff" strokeWidth={1.5} />
-      <circle cx={365} cy={260} r={5} fill="#EA580C" stroke="#fff" strokeWidth={1.5} />
-      {/* Labels */}
-      <text x={275} y={278} fontSize={12} fill="#3b82f6" fontWeight={700} textAnchor="middle" fontFamily="sans-serif">B</text>
-      <text x={365} y={278} fontSize={12} fill="#EA580C" fontWeight={700} textAnchor="middle" fontFamily="sans-serif">A</text>
-      <text x={45} y={55} fontSize={12} fill="#64748b" fontWeight={700} textAnchor="middle" fontFamily="sans-serif">h</text>
+    <svg viewBox="0 0 280 220" className="w-full max-w-[260px] mx-auto" aria-hidden>
+      {/* A(30,190) B(230,190) C(230,50) */}
+      <polygon points="30,190 230,190 230,50" fill="rgba(16,185,129,0.04)" stroke="#334155" strokeWidth="2" />
+      {/* Right angle at B */}
+      <polyline points="215,190 215,175 230,175" fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+      {/* Hypotenuse AC label */}
+      <text x="110" y="108" fontSize="15" fill="#f59e0b" fontWeight="700" textAnchor="middle">20</text>
+      {/* BC = x (vertical) */}
+      <text x="242" y="125" fontSize="16" fill="#6366f1" fontWeight="700">x</text>
+      {/* AB = ? (bottom, no number) */}
+      <text x="130" y="210" fontSize="13" fill="#10b981" fontWeight="600" textAnchor="middle">?</text>
+      {/* S = 80 indicator */}
+      <text x="170" y="165" fontSize="11" fill="#94a3b8" fontWeight="600">S = 80</text>
+      {/* Vertices */}
+      <text x="16" y="198" fontSize="13" fill="#475569" fontWeight="700">A</text>
+      <text x="232" y="206" fontSize="13" fill="#475569" fontWeight="700">B</text>
+      <text x="232" y="44" fontSize="13" fill="#475569" fontWeight="700">C</text>
     </svg>
   );
 }
@@ -447,18 +444,18 @@ const exercises: ExerciseDef[] = [
   },
   {
     id: "medium",
-    title: "מגדל השמירה",
-    problem: "ממגדל שמירה בגובה h מסתכלים על שני עצמים A ו-B הנמצאים על הקרקע.\nזווית ההשקפה (Depression) לעצם A היא 30° וזווית ההשקפה לעצם B היא 45°.\nהמרחק בין A ל-B הוא 100 מטר, ושניהם נמצאים על אותו קו ישר מהמגדל.\n\nא. הבע את המרחק מבסיס המגדל לכל עצם באמצעות h.\nב. בנה משוואה ומצא את h (גובה המגדל).\nג. חשב את המרחק מראש המגדל לעצם A.",
+    title: "שטח ופיתגורס",
+    problem: "במשולש ישר זווית ABC (∠B = 90°), אורך היתר AC הוא 20 ס\"מ ושטח המשולש הוא 80 סמ\"ר.\n\nא. סמנו את אחד הניצבים ב-x. הביעו באמצעות x ושטח המשולש את הניצב השני.\nב. באמצעות משפט פיתגורס, בנו משוואה ומצאו את אורכי שני הניצבים (הציגו את שלבי פתרון המשוואה הריבועית).\nג. חשבו את גודלן של שתי הזוויות החדות במשולש באמצעות פונקציות טריגונומטריות.",
     diagram: <MediumDiagram />,
     pitfalls: [
-      { title: "⚠️ זווית השקפה = מהאופק למטה", text: "זווית ה-Depression היא מהקו האופקי כלפי מטה. הזווית בתוך המשולש הישר-זווית היא המשלימה ל-90° — אבל כאן tan(Depression) = ניצב נגדי / ניצב סמוך." },
-      { title: "🔦 tan(30°) = 1/√3, tan(45°) = 1", text: "השתמשו בערכים המדויקים. המרחק לעצם A הוא h·√3, והמרחק לעצם B הוא h." },
+      { title: "⚠️ שכחת הריבוע", text: "תלמידים מרבים לשכוח להעלות בריבוע את הביטוי של הניצב השני בתוך משפט פיתגורס. אם y = 160/x, אז y² = (160/x)² = 25600/x²." },
+      { title: "💡 בידוד הניצב השני", text: "וודאו שבודדתם את הניצב השני נכון מנוסחת השטח: 80 = (x · y) / 2, כלומר y = 160/x." },
     ],
-    goldenPrompt: `אני בכיתה י', מצרף לך תרגיל בטריגונומטריה על מגדל שמירה וזוויות השקפה.\n\nאל תיתן לי את הפתרון — שאל אותי שאלות מנחות על זוויות, טנגנס ומרחקים.\nסרוק את הנתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    goldenPrompt: `\nהיי, אני תלמיד כיתה י׳, צירפתי לך תרגיל על משולש ישר-זווית עם שטח ופיתגורס.\nהנה הפרוטוקול שלנו, תעבוד לפיו ב-100%:\n1️⃣ סריקה:\nתסרוק את הנתונים ותכתוב לי רק:\n"זיהיתי את הנתונים. מחכה להוראות לשלב א'."\n(אל תפתור כלום בשלב הזה!)\n2️⃣ תפקיד:\nאתה המורה שלי. עודד אותי לקשר את נוסחת השטח למשפט פיתגורס: x² + (160/x)² = 20².\n3️⃣ שיטת עבודה:\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה תגיב אך ורק: ״אני מוכן להמשיך.״`,
     steps: [
-      { phase: "סעיף א׳", label: "הבעת מרחקים באמצעות h", coaching: "", prompt: "תעזור לי להביע את המרחק מבסיס המגדל לכל עצם כפונקציה של הגובה h.", keywords: [], keywordHint: "", contextWords: ["זווית השקפה", "טנגנס", "גובה", "מרחק", "משוואה"] },
-      { phase: "סעיף ב׳", label: "בניית משוואה ומציאת h", coaching: "", prompt: "כיצד אבנה משוואה מהנתון שהמרחק בין A ל-B הוא 100 מטר?", keywords: [], keywordHint: "", contextWords: ["זווית השקפה", "טנגנס", "גובה", "מרחק", "משוואה"] },
-      { phase: "סעיף ג׳", label: "מרחק מראש המגדל לעצם A", coaching: "", prompt: "כיצד אמצא את המרחק מראש המגדל לעצם A? (רמז: יתר במשולש ישר-זווית)", keywords: [], keywordHint: "", contextWords: ["זווית השקפה", "טנגנס", "גובה", "מרחק", "משוואה"] },
+      { phase: "סעיף א׳", label: "ביטוי הניצב השני", coaching: "", prompt: "זכרו ששטח משולש ישר זווית הוא מכפלת הניצבים חלקי 2. אם ניצב אחד הוא x, מה הניצב השני?", keywords: [], keywordHint: "", contextWords: ["שטח", "ניצב", "80", "160", "x", "חלקי", "מכפלה"] },
+      { phase: "סעיף ב׳", label: "משוואת פיתגורס", coaching: "", prompt: "אחרי שתציבו את הביטויים במשפט פיתגורס, תקבלו משוואה דו-ריבועית. סמנו t = x² כדי להקל על הפתרון.", keywords: [], keywordHint: "", contextWords: ["פיתגורס", "משוואה", "t", "x²", "20", "400", "ריבועית", "שורש"] },
+      { phase: "סעיף ג׳", label: "הזוויות החדות", coaching: "", prompt: "השתמשו ב-sin או tan כדי למצוא את הזוויות. אם ידועים שני ניצבים ויתר, איזו פונקציה הכי נוחה?", keywords: [], keywordHint: "", contextWords: ["sin", "cos", "tan", "arctan", "זווית", "חדה", "ניצב", "יתר"] },
     ],
   },
   {
@@ -696,101 +693,82 @@ function LadderLab() {
   );
 }
 
-// ─── Lab 2: TowerLab (Medium) ─────────────────────────────────────────────────
+// ─── Lab 2: AreaPythagorasLab (Medium) ────────────────────────────────────────
 
 function TowerLab() {
-  const [towerH, setTowerH] = useState(100);
-  const [depA, setDepA] = useState(30);
-  const [depB, setDepB] = useState(45);
+  const hyp = 20;
+  const [area, setArea] = useState(80);
+  const maxArea = (hyp * hyp) / 4; // 100 — isosceles maximum
 
-  const depARad = (depA * Math.PI) / 180;
-  const depBRad = (depB * Math.PI) / 180;
-  const distA = towerH / Math.tan(depARad);
-  const distB = towerH / Math.tan(depBRad);
-  const distAB = Math.abs(distA - distB);
-  const hypA = Math.sqrt(towerH * towerH + distA * distA);
+  // Solve: a*b = 2*S, a² + b² = hyp²
+  const sum2 = hyp * hyp + 4 * area;
+  const diff2 = hyp * hyp - 4 * area;
+  const canSolve = diff2 >= 0;
+  const aPlusB = Math.sqrt(sum2);
+  const aMinusB = canSolve ? Math.sqrt(diff2) : 0;
+  const legA = (aPlusB + aMinusB) / 2;
+  const legB = (aPlusB - aMinusB) / 2;
+  const angleA = canSolve ? Math.atan2(legA, legB) * (180 / Math.PI) : 45;
+  const angleC = 90 - angleA;
 
-  const groundY = 260, towerX = 70;
-  const maxGroundDist = Math.max(distA, distB, 100);
-  const pxPerUnit = 280 / maxGroundDist;
-  const towerTopY = 40;
-  const towerPxH = groundY - towerTopY;
-
-  const pointAx = towerX + distA * pxPerUnit;
-  const pointBx = towerX + distB * pxPerUnit;
-
-  const arcR = 35;
+  const maxW = 280, maxH = 220;
+  const scale = canSolve ? Math.min((maxW - 80) / Math.max(legB, 1), (maxH - 50) / Math.max(legA, 1), 10) : 5;
+  const ptA = { x: 40, y: maxH - 20 };
+  const ptB = { x: 40 + (canSolve ? legB : 10) * scale, y: maxH - 20 };
+  const ptC = { x: ptB.x, y: maxH - 20 - (canSolve ? legA : 10) * scale };
 
   return (
     <section style={{ border: "1px solid rgba(0,212,255,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת מגדל השמירה</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את גובה המגדל וזוויות ההשקפה כדי לראות מרחקים וחישובים.</p>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת שטח ופיתגורס</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את השטח (יתר קבוע = 20) וצפו כיצד צורת המשולש משתנה.</p>
 
-      {/* Sliders */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: "2rem", background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>גובה המגדל h</span>
-            <span style={{ color: "#64748b", fontWeight: 700 }}>{towerH} מ׳</span>
-          </div>
-          <input type="range" min={20} max={200} step={5} value={towerH} onChange={e => setTowerH(+e.target.value)} style={{ width: "100%", accentColor: "#64748b" }} />
+      {/* Slider */}
+      <div style={{ marginBottom: "2rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#6B7280", marginBottom: 6 }}>
+          <span>שטח המשולש S</span>
+          <span style={{ color: "#10b981", fontWeight: 700, fontSize: 16 }}>{area} סמ&quot;ר</span>
         </div>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>זווית השקפה ל-A</span>
-            <span style={{ color: "#EA580C", fontWeight: 700 }}>{depA}°</span>
-          </div>
-          <input type="range" min={10} max={80} step={1} value={depA} onChange={e => setDepA(+e.target.value)} style={{ width: "100%", accentColor: "#EA580C" }} />
-        </div>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>זווית השקפה ל-B</span>
-            <span style={{ color: "#3b82f6", fontWeight: 700 }}>{depB}°</span>
-          </div>
-          <input type="range" min={10} max={80} step={1} value={depB} onChange={e => setDepB(+e.target.value)} style={{ width: "100%", accentColor: "#3b82f6" }} />
+        <input type="range" min={40} max={maxArea} step={1} value={area} onChange={e => setArea(+e.target.value)} style={{ width: "100%", accentColor: "#10b981" }} />
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
+          <span>משולש צר</span>
+          <span>שווה שוקיים (מקסימום)</span>
         </div>
       </div>
 
-      {/* SVG */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
-        <svg viewBox="0 0 400 300" style={{ width: "100%", display: "block" }} aria-hidden>
-          {/* Ground */}
-          <line x1={20} y1={groundY} x2={390} y2={groundY} stroke="#94a3b8" strokeWidth={1.5} />
-          {/* Tower */}
-          <rect x={towerX - 8} y={towerTopY} width={16} height={towerPxH} fill="#64748b" rx={2} />
-          {/* Horizontal from top */}
-          <line x1={towerX} y1={towerTopY} x2={380} y2={towerTopY} stroke="#94a3b8" strokeWidth={1} strokeDasharray="4,3" />
-          {/* Sight line to A */}
-          <line x1={towerX} y1={towerTopY} x2={Math.min(pointAx, 385)} y2={groundY} stroke="#EA580C" strokeWidth={2} strokeDasharray="6,3" />
-          {/* Sight line to B */}
-          <line x1={towerX} y1={towerTopY} x2={Math.min(pointBx, 385)} y2={groundY} stroke="#3b82f6" strokeWidth={2} strokeDasharray="6,3" />
-          {/* Depression angle arcs */}
-          <path d={`M ${towerX + arcR},${towerTopY} A ${arcR},${arcR} 0 0,1 ${towerX + arcR * Math.cos(depARad)},${towerTopY + arcR * Math.sin(depARad)}`} fill="none" stroke="#EA580C" strokeWidth={2} />
-          <path d={`M ${towerX + arcR * 0.7},${towerTopY} A ${arcR * 0.7},${arcR * 0.7} 0 0,1 ${towerX + arcR * 0.7 * Math.cos(depBRad)},${towerTopY + arcR * 0.7 * Math.sin(depBRad)}`} fill="none" stroke="#3b82f6" strokeWidth={2} />
-          {/* Points */}
-          <circle cx={Math.min(pointAx, 385)} cy={groundY} r={5} fill="#EA580C" stroke="#fff" strokeWidth={1.5} />
-          <circle cx={Math.min(pointBx, 385)} cy={groundY} r={5} fill="#3b82f6" stroke="#fff" strokeWidth={1.5} />
-          {/* Labels */}
-          <text x={Math.min(pointAx, 385)} y={groundY + 18} fontSize={12} fill="#EA580C" fontWeight={700} textAnchor="middle" fontFamily="sans-serif">A</text>
-          <text x={Math.min(pointBx, 385)} y={groundY + 18} fontSize={12} fill="#3b82f6" fontWeight={700} textAnchor="middle" fontFamily="sans-serif">B</text>
-          <text x={towerX - 20} y={towerTopY - 6} fontSize={12} fill="#64748b" fontWeight={700} fontFamily="sans-serif">h</text>
-        </svg>
-      </div>
+      {/* Dynamic SVG */}
+      {canSolve && (
+        <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
+          <svg viewBox={`0 0 ${maxW} ${maxH}`} style={{ width: "100%", display: "block" }} aria-hidden>
+            <polygon points={`${ptA.x},${ptA.y} ${ptB.x},${ptB.y} ${ptC.x},${ptC.y}`} fill="rgba(16,185,129,0.04)" stroke="#334155" strokeWidth="2" />
+            <polyline points={`${ptB.x - 10},${ptB.y} ${ptB.x - 10},${ptB.y - 10} ${ptB.x},${ptB.y - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+            <text x={ptB.x + 8} y={(ptB.y + ptC.y) / 2 + 4} fontSize="13" fill="#6366f1" fontWeight="700">{legA.toFixed(1)}</text>
+            <text x={(ptA.x + ptB.x) / 2} y={ptA.y + 16} fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">{legB.toFixed(1)}</text>
+            <text x={(ptA.x + ptC.x) / 2 - 12} y={(ptA.y + ptC.y) / 2 - 6} fontSize="13" fill="#f59e0b" fontWeight="700">20</text>
+            <text x={ptA.x - 12} y={ptA.y + 4} fontSize="11" fill="#475569" fontWeight="600">A</text>
+            <text x={ptB.x + 4} y={ptB.y + 16} fontSize="11" fill="#475569" fontWeight="600">B</text>
+            <text x={ptC.x + 4} y={ptC.y - 6} fontSize="11" fill="#475569" fontWeight="600">C</text>
+          </svg>
+        </div>
+      )}
 
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10, textAlign: "center" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 10, textAlign: "center" }}>
         {[
-          { label: "מרחק ל-A", val: distA.toFixed(1) + " מ׳", color: "#EA580C" },
-          { label: "מרחק ל-B", val: distB.toFixed(1) + " מ׳", color: "#3b82f6" },
-          { label: "מרחק A–B", val: distAB.toFixed(1) + " מ׳", color: "#f59e0b" },
-          { label: "יתר ל-A", val: hypA.toFixed(1) + " מ׳", color: "#a78bfa" },
+          { label: "ניצב 1", val: canSolve ? legA.toFixed(2) : "—", color: "#6366f1" },
+          { label: "ניצב 2", val: canSolve ? legB.toFixed(2) : "—", color: "#10b981" },
+          { label: "יתר", val: "20", color: "#f59e0b" },
+          { label: "∠A", val: canSolve ? angleA.toFixed(1) + "°" : "—", color: "#00d4ff" },
+          { label: "∠C", val: canSolve ? angleC.toFixed(1) + "°" : "—", color: "#a78bfa" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.35)", padding: 12, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
-            <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
+          <div key={r.label} style={{ borderRadius: 14, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.25)", padding: "14px 8px", boxShadow: "0 2px 8px rgba(60,54,42,0.04)" }}>
+            <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 6 }}>{r.label}</div>
+            <div style={{ color: r.color, fontWeight: 700, fontSize: 16, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}
       </div>
+      {area >= maxArea - 1 && (
+        <p style={{ textAlign: "center", color: "#10b981", fontSize: 12, fontWeight: 600, marginTop: 12 }}>משולש שווה שוקיים — השטח המקסימלי!</p>
+      )}
     </section>
   );
 }

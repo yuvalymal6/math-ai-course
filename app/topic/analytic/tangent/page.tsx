@@ -5,6 +5,8 @@ import { Check, Copy, CheckCircle2, Lock } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
+import MarkComplete from "@/app/components/MarkComplete";
+import SubtopicProgress from "@/app/components/SubtopicProgress";
 
 // ─── Global style ─────────────────────────────────────────────────────────────
 
@@ -570,6 +572,11 @@ export default function TangentPage() {
           </section>
 
           <TangentLab levelId={activeId} />
+
+        {/* Mark as complete */}
+        <div style={{ marginTop: "1.5rem" }}>
+          <MarkComplete subtopicId="/analytic/tangent" level={activeId} />
+        </div>
 
         </div>
       </main>

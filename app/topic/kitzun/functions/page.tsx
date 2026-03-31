@@ -6,6 +6,8 @@ import { Check, Copy, CheckCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
+import MarkComplete from "@/app/components/MarkComplete";
+import SubtopicProgress from "@/app/components/SubtopicProgress";
 
 // ─── Global CSS ───────────────────────────────────────────────────────────────
 
@@ -989,6 +991,11 @@ export default function KitzunFunctionsPage() {
 
         {/* Lab */}
         <FunctionsLab levelId={selectedLevel} />
+
+        {/* Mark as complete */}
+        <div style={{ marginTop: "1.5rem" }}>
+          <MarkComplete subtopicId="/kitzun/functions" level={selectedLevel} />
+        </div>
 
       </div>
     </main>

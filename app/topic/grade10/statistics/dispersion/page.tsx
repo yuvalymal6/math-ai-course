@@ -3,6 +3,8 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import MarkComplete from "@/app/components/MarkComplete";
+import SubtopicProgress from "@/app/components/SubtopicProgress";
 import {
   Copy, Check, AlertTriangle,
   Target, PenLine, Lock, CheckCircle, Sparkles,
@@ -799,6 +801,11 @@ export default function StatisticsDispersionPage() {
             <LevelPanel ex={ex}/>
           </motion.div>
         </AnimatePresence>
+
+        {/* Mark as complete */}
+        <div style={{ marginTop: "1.5rem" }}>
+          <MarkComplete subtopicId="/grade10/statistics/dispersion" level={activeId as "basic" | "medium" | "advanced"} />
+        </div>
 
       </div>
     </main>

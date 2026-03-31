@@ -6,6 +6,8 @@ import { Check, Copy, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
+import MarkComplete from "@/app/components/MarkComplete";
+import SubtopicProgress from "@/app/components/SubtopicProgress";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -549,6 +551,9 @@ export default function InvestigationPage() {
 
       <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
 
+        {/* Sub-topic progress */}
+        <SubtopicProgress subtopicId="/grade12/calculus-polynomial/investigation" />
+
         {/* Level Selector */}
         <div className="flex gap-1 bg-slate-900/60 border border-slate-700 rounded-xl p-1 mb-8">
           {TABS.map(tab => {
@@ -569,6 +574,11 @@ export default function InvestigationPage() {
 
         {/* Lab — always visible */}
         <PolynomialLab />
+
+        {/* Mark as complete */}
+        <div style={{ marginTop: "1.5rem" }}>
+          <MarkComplete subtopicId="/grade12/calculus-polynomial/investigation" level={selectedLevel} />
+        </div>
 
       </div>
     </main>

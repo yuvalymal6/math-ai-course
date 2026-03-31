@@ -6,6 +6,8 @@ import { Check, Copy, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
+import MarkComplete from "@/app/components/MarkComplete";
+import SubtopicProgress from "@/app/components/SubtopicProgress";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1137,6 +1139,9 @@ export default function GeoRhombusPage() {
 
       <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
 
+        {/* Sub-topic progress */}
+        <SubtopicProgress subtopicId="/grade10/geo-rhombus" />
+
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
           {TABS.map(tab => {
@@ -1160,6 +1165,11 @@ export default function GeoRhombusPage() {
         {selectedLevel === "basic" && <RhombusLab levelId="basic" />}
         {selectedLevel === "medium" && <SquareLab />}
         {selectedLevel === "advanced" && <AdvancedLab />}
+
+        {/* Mark as complete */}
+        <div style={{ marginTop: "1.5rem" }}>
+          <MarkComplete subtopicId="/grade10/geo-rhombus" level={selectedLevel} />
+        </div>
 
       </div>
     </main>

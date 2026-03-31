@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import MarkComplete from "@/app/components/MarkComplete";
+import SubtopicProgress from "@/app/components/SubtopicProgress";
 import {
   Brain, ChevronRight, Copy, Check, AlertTriangle,
   Target, PenLine, Lock, CheckCircle, Sparkles,
@@ -1099,6 +1101,11 @@ export default function StatsCenterPage() {
             <LevelPanel ex={ex}/>
           </motion.div>
         </AnimatePresence>
+
+        {/* Mark as complete */}
+        <div style={{ marginTop: "1.5rem" }}>
+          <MarkComplete subtopicId="/statistics/center" level={activeId as "basic" | "medium" | "advanced"} />
+        </div>
 
 
       </main>

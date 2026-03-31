@@ -354,10 +354,10 @@ function BasicDiagram() {
       <polygon points="30,190 230,190 230,50" fill="rgba(99,102,241,0.04)" stroke="#334155" strokeWidth="2" />
       {/* Right angle at B */}
       <polyline points="215,190 215,175 230,175" fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-      {/* Angle arc at A — larger radius so 40° fits inside */}
-      <path d="M 70,190 A 40,40 0 0,0 58,164" fill="none" stroke="#6366f1" strokeWidth="2.5" />
-      {/* 40° label — NO α symbol, just the number, inside the arc */}
-      <text x="78" y="176" fontSize="13" fill="#6366f1" fontWeight="700">40°</text>
+      {/* Angle arc at A — small arc, label inside triangle */}
+      <path d="M 56,190 A 26,26 0 0,0 48,174" fill="none" stroke="#6366f1" strokeWidth="2" />
+      {/* 40° label — inside the triangle, clear of arc and edges */}
+      <text x="72" y="178" fontSize="12" fill="#6366f1" fontWeight="700">40°</text>
       {/* BC = x */}
       <text x="242" y="125" fontSize="16" fill="#6366f1" fontWeight="700">x</text>
       {/* AB */}
@@ -646,7 +646,7 @@ function LadderLab() {
   return (
     <section style={{ border: "1px solid rgba(0,212,255,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המשולש האלגברי</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את x ואת הזווית — צפו כיצד הצלעות משתנות בזמן אמת.</p>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את BC ואת הזווית A — צפו בזמן אמת בתיבות למטה, ושימו לב לשינויים בכל הפרמטרים.</p>
 
       {/* Dual sliders */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "2rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>

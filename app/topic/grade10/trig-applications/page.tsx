@@ -1,11 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
+import katex from "katex";
+import "katex/dist/katex.min.css";
+
+// ─── KaTeX renderers ─────────────────────────────────────────────────────────
+
+function TexBlock({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: true }); }, [children]);
+  return <span ref={ref} dir="ltr" style={{ display: "block", textAlign: "center", unicodeBidi: "embed" }} />;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -414,36 +424,62 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   return (
     <section style={{ borderRadius: 32, border: `2px solid rgba(${s.borderRgb},0.5)`, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", padding: "2.5rem", marginBottom: "2rem", marginLeft: "auto", marginRight: "auto", boxShadow: `0 10px 15px -3px rgba(60,54,42,0.1), 0 0 24px rgba(${s.borderRgb},0.08)` }}>
 
-      {/* Formula bar */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", alignItems: "flex-start", justifyContent: "space-between", borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.4)`, background: "rgba(255,255,255,0.88)", padding: "1rem 1.5rem", marginBottom: "2rem" }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "1.75rem", alignItems: "center" }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>סינוס</div>
-            <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>sin(A) = נגד / יתר</div>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>קוסינוס</div>
-            <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>cos(A) = שכן / יתר</div>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>טנגנס</div>
-            <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>tan(A) = נגד / שכן</div>
+      {/* Formula bar — trig (standardized from trig-basics) */}
+      <div className="formula-bar font-sans" style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "rgba(255,255,255,0.78)", padding: "1.5rem 1.25rem", marginBottom: "2.5rem", boxShadow: "0 4px 20px rgba(0,212,255,0.08)" }}>
+        <h3 style={{ color: "#475569", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.14em", fontWeight: 700, marginBottom: 20, marginTop: 0, textAlign: "center", lineHeight: 1.4 }}>נוסחאות טריגונומטריה</h3>
+
+        {/* Triangle + Legend */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8 mb-6">
+          <svg viewBox="0 0 185 155" className="w-full max-w-[170px] sm:max-w-[195px] shrink-0" aria-label="Right triangle">
+            <polygon points="20,130 160,130 160,20" fill="rgba(99,102,241,0.03)" stroke="#334155" strokeWidth="2" />
+            <polyline points="145,130 145,115 160,115" fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+            <path d="M 48,130 A 28,28 0 0,0 37,115" fill="none" stroke="#6366f1" strokeWidth="2.5" />
+            <text x="52" y="120" fontSize="14" fill="#6366f1" fontWeight="700" fontStyle="italic">α</text>
+            <text x="170" y="79" fontSize="14" fill="#6366f1" fontWeight="700" textAnchor="start">a</text>
+            <text x="90" y="147" fontSize="14" fill="#10b981" fontWeight="700" textAnchor="middle">b</text>
+            <text x="80" y="68" fontSize="14" fill="#f59e0b" fontWeight="700" textAnchor="middle">c</text>
+            <text x="10" y="142" fontSize="11" fill="#475569" fontWeight="600">A</text>
+            <text x="163" y="142" fontSize="11" fill="#475569" fontWeight="600">B</text>
+            <text x="163" y="16" fontSize="11" fill="#475569" fontWeight="600">C</text>
+          </svg>
+          <div className="flex flex-row sm:flex-col gap-3 sm:gap-3" style={{ direction: "rtl" }}>
+            {[
+              { letter: "a", label: "ניצב מול", bg: "#6366f1", text: "white" },
+              { letter: "b", label: "ניצב ליד", bg: "#10b981", text: "white" },
+              { letter: "c", label: "יתר", bg: "#f59e0b", text: "white" },
+              { letter: "α", label: "זווית", bg: "rgba(99,102,241,0.12)", text: "#6366f1" },
+            ].map(item => (
+              <div key={item.letter} className="flex items-center gap-2.5">
+                <span className="shrink-0 rounded-md text-[11px] font-bold" style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", background: item.bg, color: item.text, fontStyle: item.letter === "α" ? "italic" : "normal" }}>{item.letter}</span>
+                <span className="text-slate-600 text-[13px] font-medium leading-normal">{item.label}</span>
+              </div>
+            ))}
           </div>
         </div>
-        <div style={{ width: 1, background: `rgba(${s.borderRgb},0.2)`, alignSelf: "stretch", minHeight: 60 }} />
-        <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-          <div style={{ color: "#1A1A1A", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>נוסחאות שימושיות</div>
-          {[
-            { sym: "h = d·tan(α)",    desc: "גובה ממרחק + זווית" },
-            { sym: "d = h/tan(α)",    desc: "מרחק מגובה + זווית" },
-            { sym: "arctan(h/d) = α", desc: "זווית ממרחק + גובה" },
-            { sym: "v = Δd / Δt",     desc: "מהירות = מרחק / זמן" },
-          ].map(p => (
-            <div key={p.sym} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-              <span style={{ color: s.accentColor, fontFamily: "monospace", fontWeight: 700, fontSize: 12, minWidth: 120 }}>{p.sym}</span>
-              <span style={{ color: "#6B7280", fontSize: 11 }}>— {p.desc}</span>
-            </div>
-          ))}
+
+        {/* Trig function cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 16 }}>
+          <div style={{ borderRadius: 14, border: "1.5px solid rgba(99,102,241,0.3)", background: "rgba(99,102,241,0.05)", padding: "16px 14px", textAlign: "center", display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ color: "#6366f1", fontSize: 13, fontWeight: 700, lineHeight: 1.4 }}>Sin — סינוס</div>
+            <div style={{ color: "#6366f1", margin: "4px 0" }}><TexBlock>{String.raw`\sin \alpha = \frac{a}{c}`}</TexBlock></div>
+            <div style={{ color: "#94a3b8", fontSize: 11, lineHeight: 1.5, marginTop: 2 }}>ניצב מול / יתר</div>
+          </div>
+          <div style={{ borderRadius: 14, border: "1.5px solid rgba(16,185,129,0.3)", background: "rgba(16,185,129,0.05)", padding: "16px 14px", textAlign: "center", display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ color: "#10b981", fontSize: 13, fontWeight: 700, lineHeight: 1.4 }}>Cos — קוסינוס</div>
+            <div style={{ color: "#10b981", margin: "4px 0" }}><TexBlock>{String.raw`\cos \alpha = \frac{b}{c}`}</TexBlock></div>
+            <div style={{ color: "#94a3b8", fontSize: 11, lineHeight: 1.5, marginTop: 2 }}>ניצב ליד / יתר</div>
+          </div>
+          <div style={{ borderRadius: 14, border: "1.5px solid rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.05)", padding: "16px 14px", textAlign: "center", display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ color: "#f59e0b", fontSize: 13, fontWeight: 700, lineHeight: 1.4 }}>Tan — טנגנס</div>
+            <div style={{ color: "#f59e0b", margin: "4px 0" }}><TexBlock>{String.raw`\tan \alpha = \frac{a}{b}`}</TexBlock></div>
+            <div style={{ color: "#94a3b8", fontSize: 11, lineHeight: 1.5, marginTop: 2 }}>ניצב מול / ניצב ליד</div>
+          </div>
+        </div>
+
+        {/* Area formula */}
+        <div style={{ borderRadius: 12, border: "1px solid rgba(0,212,255,0.2)", background: "rgba(0,212,255,0.04)", padding: "14px 12px", textAlign: "center" }}>
+          <div style={{ color: "#64748b", fontSize: 11, fontWeight: 600, marginBottom: 6, lineHeight: 1.4 }}>שטח משולש (שתי צלעות וזווית)</div>
+          <div style={{ color: "#00d4ff" }}><TexBlock>{String.raw`S = \tfrac{1}{2} \cdot a \cdot b \cdot \sin C`}</TexBlock></div>
         </div>
       </div>
 

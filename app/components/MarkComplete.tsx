@@ -7,24 +7,28 @@ import { getSubtopicProgress, toggleLevel, syncFromSupabase, type LevelId } from
 const LEVEL_COLORS: Record<LevelId, {
   border: string; hoverBorder: string; text: string; hoverText: string;
   hoverBg: string; dashBorder: string; dashHover: string; bg: string;
+  shadow: string;
 }> = {
   basic: {
-    border: "border-green-300", hoverBorder: "hover:border-green-500",
-    text: "text-green-700", hoverText: "hover:text-green-800",
-    hoverBg: "hover:bg-green-50", dashBorder: "border-green-300",
-    dashHover: "group-hover:border-green-500", bg: "bg-green-50/60",
+    border: "border-green-400", hoverBorder: "hover:border-green-500",
+    text: "text-green-700", hoverText: "hover:text-green-900",
+    hoverBg: "hover:bg-green-100/80", dashBorder: "border-green-400",
+    dashHover: "group-hover:border-green-600", bg: "bg-green-50/80",
+    shadow: "hover:shadow-[0_0_16px_rgba(22,163,74,0.2)]",
   },
   medium: {
-    border: "border-orange-300", hoverBorder: "hover:border-orange-500",
-    text: "text-orange-700", hoverText: "hover:text-orange-800",
-    hoverBg: "hover:bg-orange-50", dashBorder: "border-orange-300",
-    dashHover: "group-hover:border-orange-500", bg: "bg-orange-50/60",
+    border: "border-orange-400", hoverBorder: "hover:border-orange-500",
+    text: "text-orange-700", hoverText: "hover:text-orange-900",
+    hoverBg: "hover:bg-orange-100/80", dashBorder: "border-orange-400",
+    dashHover: "group-hover:border-orange-600", bg: "bg-orange-50/80",
+    shadow: "hover:shadow-[0_0_16px_rgba(234,88,12,0.2)]",
   },
   advanced: {
-    border: "border-red-300", hoverBorder: "hover:border-red-500",
-    text: "text-red-700", hoverText: "hover:text-red-800",
-    hoverBg: "hover:bg-red-50", dashBorder: "border-red-300",
-    dashHover: "group-hover:border-red-500", bg: "bg-red-50/60",
+    border: "border-red-400", hoverBorder: "hover:border-red-500",
+    text: "text-red-700", hoverText: "hover:text-red-900",
+    hoverBg: "hover:bg-red-100/80", dashBorder: "border-red-400",
+    dashHover: "group-hover:border-red-600", bg: "bg-red-50/80",
+    shadow: "hover:shadow-[0_0_16px_rgba(220,38,38,0.2)]",
   },
 };
 
@@ -79,9 +83,9 @@ export default function MarkComplete({
   return (
     <button
       onClick={handleClick}
-      className={`group flex items-center justify-center gap-2.5 w-full py-2.5 sm:py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${c.bg} border ${c.border} ${c.hoverBorder} ${c.text} ${c.hoverText} ${c.hoverBg}`}
+      className={`group flex items-center justify-center gap-2.5 w-full py-3 sm:py-3.5 rounded-xl text-sm font-bold transition-all duration-200 border-2 ${c.bg} ${c.border} ${c.hoverBorder} ${c.text} ${c.hoverText} ${c.hoverBg} ${c.shadow}`}
     >
-      <span className={`w-4.5 h-4.5 rounded-full border-2 border-dashed ${c.dashBorder} ${c.dashHover} transition-colors shrink-0`} style={{ width: 18, height: 18 }} />
+      <span className={`rounded-full border-2 border-dashed ${c.dashBorder} ${c.dashHover} transition-colors shrink-0`} style={{ width: 20, height: 20 }} />
       <span>סמן כהושלם</span>
     </button>
   );

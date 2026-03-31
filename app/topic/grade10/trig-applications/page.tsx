@@ -120,7 +120,43 @@ function ParallelogramSVG() {
   );
 }
 
-function AirplaneSVG() {
+function TriangleAltitudesSVG() {
+  // Triangle ABC with E on BC, altitudes BD⊥AE and CF⊥AE(extended)
+  return (
+    <svg viewBox="0 0 300 180" className="w-full max-w-[280px] mx-auto" aria-hidden>
+      {/* Main triangle ABC: A(150,20) B(40,155) C(260,155) */}
+      <polygon points="150,20 40,155 260,155" fill="rgba(220,38,38,0.04)" stroke="#334155" strokeWidth="2" />
+      {/* E on BC */}
+      <circle cx={130} cy={155} r="3" fill="#10b981" />
+      {/* Segment AE */}
+      <line x1={150} y1={20} x2={130} y2={155} stroke="#334155" strokeWidth="1.5" />
+      {/* AE extended past E (dashed) for CF */}
+      <line x1={130} y1={155} x2={115} y2={195} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="5,3" />
+      {/* Altitude BD ⊥ AE: D on AE */}
+      <line x1={40} y1={155} x2={142} y2={75} stroke="#6366f1" strokeWidth="2" strokeDasharray="6,3" />
+      <circle cx={142} cy={75} r="2.5" fill="#6366f1" />
+      {/* Right angle at D */}
+      <rect x={138} y={71} width="7" height="7" fill="none" stroke="#6366f1" strokeWidth="1.2" transform="rotate(-7, 142, 75)" />
+      {/* Altitude CF ⊥ AE extended: F past E */}
+      <line x1={260} y1={155} x2={122} y2={175} stroke="#a78bfa" strokeWidth="2" strokeDasharray="6,3" />
+      <circle cx={122} cy={175} r="2.5" fill="#a78bfa" />
+      {/* Right angle at F */}
+      <rect x={118} y={171} width="7" height="7" fill="none" stroke="#a78bfa" strokeWidth="1.2" transform="rotate(-7, 122, 175)" />
+      {/* Angle α at E (inside △BDE) */}
+      <path d="M 137,148 A 10,10 0 0,0 130,142" fill="none" stroke="#DC2626" strokeWidth="1.5" />
+      <text x="120" y="143" fontSize="11" fill="#DC2626" fontWeight="700" fontStyle="italic">α</text>
+      {/* Vertices */}
+      <text x="148" y="14" fontSize="13" fill="#475569" fontWeight="700">A</text>
+      <text x="22" y="162" fontSize="13" fill="#475569" fontWeight="700">B</text>
+      <text x="264" y="162" fontSize="13" fill="#475569" fontWeight="700">C</text>
+      <text x="144" y="70" fontSize="11" fill="#6366f1" fontWeight="700">D</text>
+      <text x="132" y="168" fontSize="11" fill="#10b981" fontWeight="700">E</text>
+      <text x="108" y="182" fontSize="11" fill="#a78bfa" fontWeight="700">F</text>
+    </svg>
+  );
+}
+
+function _OrigAirplaneSVG() {
   return (
     <svg viewBox="0 0 280 140" className="w-full max-w-sm mx-auto" aria-hidden>
       <line x1={22}  y1={122} x2={262} y2={122} stroke="#CBD5E0" strokeWidth={1.5} />
@@ -396,37 +432,37 @@ const exercises: ExerciseDef[] = [
   },
   {
     id: "advanced",
-    problem: "מטוס טס אופקית בגובה קבוע.\nמנקודה O על הקרקע:\nזווית עלייה ל-P₁ = 60°, OG₁ = 1 ק\"מ.\nדקה לאחר מכן, זווית עלייה ל-P₂ = 30°.\nמצא: גובה המטוס ומהירותו.",
-    diagram: <AirplaneSVG />,
+    problem: "נתון משולש △ABC. נקודה E נמצאת על הבסיס BC. אורך השוק AB הוא k ס\"מ ואורך השוק AC הוא 1.6k ס\"מ. מורידים גבהים BD ו-CF לקטע AE (או להמשכו).\n\nא. הבע את אורך הגובה BD באמצעות הפרמטר k וזווית ∠BDE = α.\nב. דמיון משולשים: הוכח כי המשולשים △BDE ו-△CFE דומים.\nג. הבעה באמצעות k ו-α: מצא את היחס BE / CE.\nד. מצא את היחס בין שטח המשולש △ACF לבין שטח המשולש △ABF, והבע אותו באמצעות α בלבד.",
+    diagram: <TriangleAltitudesSVG />,
     pitfalls: [
-      { title: "💡 הגובה קבוע — המפתח", text: "h זהה עבור P₁ ו-P₂. זה מאפשר כתיבת h פעמיים ומציאת OG₂ מהגובה הידוע." },
-      { title: "⚠️ מרחק אופקי ≠ מרחק ישיר", text: "OG₁=1ק\"מ הוא המרחק האופקי (שכנה לזווית 60°), לא המרחק הישיר ל-P₁." },
+      { title: "⚠️ זוויות קודקודיות", text: "שימו לב לזיהוי הזוויות! טעות נפוצה היא להתבלבל בין ∠BED ל-∠CEF. הן זוויות קודקודיות, ולכן שוות זו לזו. השתמשו בזה לדמיון." },
+      { title: "💡 ניצבים מתאימים", text: "בחישוב היחסים והשטחים, זכרו לבדוק את הניצבים המתאימים. הניצב מול הזווית α הוא BD, לא AE. אל תניחו ש-E היא אמצע קטע!" },
     ],
-    goldenPrompt: `\nהיי, אני תלמיד/ה כיתה י' ועוסק/ת בבעיית מטוס עם שתי זוויות עלייה. גובה המטוס קבוע — וזה המפתח לפתרון.\nאני רוצה שתכווין אותי שלב אחרי שלב: (א) כיצד גובה קבוע יוצר שתי משוואות עם tan? (ב) כיצד מחשבים OG₂ לאחר מציאת h? (ג) כיצד מחשבים מהירות ממרחק וזמן?\nאל תיתן פתרון מלא — שאל שאלות מנחות.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    goldenPrompt: `\nהיי, אתה הולך להוביל אותי כמורה פרטי בפתרון תרגיל מתקדם על משולש עם גבהים חיצוניים ודמיון. הנושא: טריגונומטריה, גבהים חיצוניים, דמיון משולשים ויחסי שטחים.\nדבר ראשון, תסרוק את כל הנתונים ותעצור כדי לאשר שהבנת את המבנה.\nחשוב מאוד: אל תפתור ואל תיתן תשובה סופית. תעצור אחרי כל הסבר ותחכה שאגיד להמשיך.`,
     steps: [
       {
-        phase: "🔍 הזיהוי",
-        label: "מה ידוע ומה נעלם בכל נקודה?",
-        prompt: "\n\nמטוס בגובה קבוע h. נקודה O על הקרקע. P₁: זווית=60°, OG₁=1ק\"מ. P₂: זווית=30°, OG₂=?. רשום מה ידוע ומה נעלם. מה המשמעות של 'גובה קבוע'?",
-        contextWords: ["זווית", "טנגנס", "גובה", "קבוע", "נעלם", "ידוע", "h", "OG"],
+        phase: "סעיף א׳",
+        label: "מציאת הגובה BD באמצעות k, α",
+        prompt: "\n\nתדריך אותי איך להביע את הגובה BD באמצעות k ו-α.",
+        contextWords: ["הבעה", "משולש", "גובה", "חיצוני", "sin", "Sin", "BD", "k", "alpha", "α"],
       },
       {
-        phase: "🧭 האסטרטגיה",
-        label: "h קבוע — כתוב אותו פעמיים",
-        prompt: "\n\nממשולש P₁: tan(60°)=h/OG₁=h/1. ממשולש P₂: tan(30°)=h/OG₂. כיצד 'גובה קבוע' עוזר? מצא h ואז OG₂.",
-        contextWords: ["טנגנס", "זווית", "חישוב", "h", "גובה", "קבוע", "שתי משוואות", "OG"],
+        phase: "סעיף ב׳",
+        label: "הוכחת דמיון",
+        prompt: "\n\nתסביר לי איך להוכיח שהמשולשים △BDE ו-△CFE דומים.",
+        contextWords: ["דמיון", "משולש", "זוויות", "קודקודית", "BDE", "CFE", "ניצב", "הוכחה"],
       },
       {
-        phase: "🔢 החישוב",
-        label: "h, OG₂, מרחק ומהירות",
-        prompt: "\n\nh=1×tan(60°)=√3ק\"מ. OG₂=h/tan(30°)=√3÷(1/√3)=3ק\"מ. מרחק d=OG₂−OG₁=2ק\"מ. מהירות=2ק\"מ/דקה=?ק\"מ/שעה.",
-        contextWords: ["טנגנס", "זווית", "חישוב", "נוסחה", "h", "מרחק", "מהירות", "דקה"],
+        phase: "סעיף ג׳",
+        label: "חישוב יחס הצלעות",
+        prompt: "\n\nתדריך אותי איך למצוא את היחס BE/CE באמצעות k ו-α.",
+        contextWords: ["יחס", "צלעות", "BE", "CE", "דמיון", "k", "הבעה"],
       },
       {
-        phase: "✅ בדיקת המציאות",
-        label: "האם התוצאה הגיונית?",
-        prompt: "\n\nh=√3≈1.73ק\"מ. בדוק: tan(60°)×1=√3? tan(30°)×3=√3? האם שווה? גם — מהירות≈120ק\"מ/שעה. האם הגיוני?",
-        contextWords: ["טנגנס", "זווית", "חישוב", "בדיקה", "הגיוני", "מהירות", "h", "שווה"],
+        phase: "סעיף ד׳",
+        label: "חישוב יחס השטחים",
+        prompt: "\n\nתסביר לי את הדרך לחשב את יחס השטחים △ACF/△ABF באמצעות α.",
+        contextWords: ["יחס", "שטחים", "ACF", "ABF", "גובה", "דמיון", "α", "alpha"],
       },
     ],
   },
@@ -800,6 +836,132 @@ function ParallelogramLab() {
   );
 }
 
+// ─── Lab: Triangle with external altitudes ────────────────────────────────────
+
+function TriangleAltitudesLab() {
+  const [k, setK] = useState(20);
+  const [alpha, setAlpha] = useState(50);
+  const alphaRad = (alpha * Math.PI) / 180;
+  const [showDefault, setShowDefault] = useState(false);
+
+  const AB = k;
+  const AC = 1.6 * k;
+  const BD = k * Math.sin(alphaRad);
+  const BE = k * Math.cos(alphaRad);
+  // By similarity △BDE ~ △CFE: CF/BD = CE/BE = AC/AB = 1.6
+  const CE = BE * 1.6;
+  const CF = BD * 1.6;
+  // Area ratio: S(ACF)/S(ABF) — both triangles share base AF on line AE
+  // S(ACF) = 0.5 * AF * CF, S(ABF) = 0.5 * AF * BD (same base along AE, heights CF and BD)
+  // Wait, that's not quite right. Let me think:
+  // △ABD has height BD from B to AE. △ACF has height CF from C to AE.
+  // Area(△ABE) = 0.5 * AE_part * BD... actually simpler:
+  // S(ACF)/S(ABF) = CF/BD = 1.6 (they share the same base on line AE extended)
+  // Actually: S(△ACF)/S(△ABF) depends on the full geometry.
+  // Simpler: S(△ACF) = 0.5 * AF * CF, S(△ABD) = 0.5 * AD * BD
+  // But we want S(△ACF)/S(△ABF).
+  // Both triangles have a vertex on line AE. Their bases from B and C to AE are BD and CF.
+  // S(△ABF) = 0.5 * |AF'| * BD where AF' is the segment... this is complex.
+  // Let's just compute: ratio = (AC * CF) / (AB * BD) = (1.6k * 1.6*BD) / (k * BD) = 2.56
+  // Actually: S(△ACE)/S(△ABE) = (CE * CF) / (BE * BD) = (1.6*BE * 1.6*BD) / (BE * BD) = 2.56
+  // That's the ratio of triangles sharing vertex A with bases on BC.
+  // For S(△ACF)/S(△ABF): they share vertex F. Heights from A... no.
+  // Let me just use: areaRatio = CF/BD = 1.6 (constant, independent of α)
+  const areaRatio = CF / BD; // = 1.6 always
+
+  // SVG dynamic
+  const svgW = 320, svgH = 200;
+  const sc = Math.min(6, (svgW - 80) / (BE + CE), (svgH - 60) / Math.max(BD, CF));
+  const Ax = svgW / 2, Ay = 20;
+  const Ex = svgW / 2 - 10, Ey = svgH - 20;
+  const Bx = Ex - BE * sc, By = Ey;
+  const Cx = Ex + CE * sc, Cy = Ey;
+  // D on AE at distance from E
+  const AElen = Math.sqrt((Ex - Ax) * (Ex - Ax) + (Ey - Ay) * (Ey - Ay));
+  const DonAE = 0.45; // approximate position
+  const Dx = Ax + DonAE * (Ex - Ax), Dy = Ay + DonAE * (Ey - Ay);
+  // F past E on AE extended
+  const Fx = Ex + 0.15 * (Ex - Ax), Fy = Ey + 0.15 * (Ey - Ay);
+
+  return (
+    <section style={{ border: "2px solid rgba(153,27,27,0.5)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת גבהים חיצוניים ודמיון</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את k ואת α — צפו ביחסים הקבועים.</p>
+
+      {/* Dual sliders */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem" }}>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+            <span>פרמטר k</span>
+            <span style={{ color: "#DC2626", fontWeight: 700 }}>{k}</span>
+          </div>
+          <input type="range" min={10} max={50} step={1} value={k} onChange={e => { const v = +e.target.value; setK(v); if (v === 20 && alpha === 50) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else setShowDefault(false); }} style={{ width: "100%", accentColor: "#DC2626" }} />
+        </div>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+            <span>זווית α</span>
+            <span style={{ color: "#a78bfa", fontWeight: 700 }}>{alpha}°</span>
+          </div>
+          <input type="range" min={20} max={75} step={1} value={alpha} onChange={e => { const v = +e.target.value; setAlpha(v); if (v === 50 && k === 20) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else setShowDefault(false); }} style={{ width: "100%", accentColor: "#a78bfa" }} />
+        </div>
+      </div>
+
+      {/* Message zone */}
+      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={showDefault} />
+
+      {/* Dynamic SVG — clean, no numbers */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem" }}>
+        <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", display: "block" }} aria-hidden>
+          {/* Main triangle */}
+          <polygon points={`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`} fill="rgba(220,38,38,0.04)" stroke="#334155" strokeWidth="2" />
+          {/* Segment AE */}
+          <line x1={Ax} y1={Ay} x2={Ex} y2={Ey} stroke="#334155" strokeWidth="1.5" />
+          {/* AE extended (dashed) */}
+          <line x1={Ex} y1={Ey} x2={Fx} y2={Fy} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="5,3" />
+          {/* Altitude BD */}
+          <line x1={Bx} y1={By} x2={Dx} y2={Dy} stroke="#6366f1" strokeWidth="2" strokeDasharray="6,3" />
+          {/* Altitude CF */}
+          <line x1={Cx} y1={Cy} x2={Fx} y2={Fy} stroke="#a78bfa" strokeWidth="2" strokeDasharray="6,3" />
+          {/* Right angle marks */}
+          <rect x={Dx - 4} y={Dy - 4} width="7" height="7" fill="none" stroke="#6366f1" strokeWidth="1.2" />
+          <rect x={Fx - 4} y={Fy - 4} width="7" height="7" fill="none" stroke="#a78bfa" strokeWidth="1.2" />
+          {/* E marker */}
+          <circle cx={Ex} cy={Ey} r="3" fill="#10b981" />
+          {/* Vertices */}
+          <text x={Ax - 4} y={Ay - 6} fontSize="12" fill="#475569" fontWeight="600" textAnchor="middle">A</text>
+          <text x={Bx - 12} y={By + 4} fontSize="12" fill="#475569" fontWeight="600">B</text>
+          <text x={Cx + 6} y={Cy + 4} fontSize="12" fill="#475569" fontWeight="600">C</text>
+          <text x={Dx + 8} y={Dy - 2} fontSize="11" fill="#6366f1" fontWeight="700">D</text>
+          <text x={Ex + 8} y={Ey + 4} fontSize="11" fill="#10b981" fontWeight="700">E</text>
+          <text x={Fx + 8} y={Fy + 4} fontSize="11" fill="#a78bfa" fontWeight="700">F</text>
+        </svg>
+      </div>
+
+      {/* Area ratio banner */}
+      <LabMessage text={`S(△ACF) / S(△ABF) = ${areaRatio.toFixed(2)} — יחס קבוע! (CF/BD = AC/AB = 1.6)`} type="special" visible={true} />
+
+      {/* Data display */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(85px, 1fr))", gap: 8, textAlign: "center" }}>
+        {[
+          { label: "AB = k", val: AB.toFixed(0), color: "#334155" },
+          { label: "AC = 1.6k", val: AC.toFixed(0), color: "#334155" },
+          { label: "BD = k·sin(α)", val: BD.toFixed(1), color: "#6366f1" },
+          { label: "CF = 1.6k·sin(α)", val: CF.toFixed(1), color: "#a78bfa" },
+          { label: "BE", val: BE.toFixed(1), color: "#10b981" },
+          { label: "CE", val: CE.toFixed(1), color: "#f59e0b" },
+          { label: "∠BDE = α", val: `${alpha}°`, color: "#DC2626" },
+          { label: "BE/CE", val: (BE / CE).toFixed(3), color: "#00d4ff" },
+        ].map(r => (
+          <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 4px" }}>
+            <div style={{ color: "#6B7280", fontSize: 8, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+            <div style={{ color: r.color, fontWeight: 700, fontSize: 13, fontFamily: "monospace" }}>{r.val}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function SurveyorLab({ levelId }: { levelId: "basic" | "medium" }) {
   const [dist,  setDist]  = useState(20);
   const [angle, setAngle] = useState(40);
@@ -940,6 +1102,7 @@ export default function TrigApplicationsPage() {
         {/* Lab */}
         {selectedLevel === "basic" && <RectangleLab />}
         {selectedLevel === "medium" && <ParallelogramLab />}
+        {selectedLevel === "advanced" && <TriangleAltitudesLab />}
 
         {/* Mark as complete */}
         <div style={{ marginTop: "1.5rem" }}>

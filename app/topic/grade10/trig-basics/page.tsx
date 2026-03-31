@@ -8,6 +8,7 @@ import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer"
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
+import LabMessage from "@/app/components/LabMessage";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 
@@ -664,6 +665,9 @@ function LadderLab() {
         </div>
       </div>
 
+      {/* Message zone — below slider, above SVG */}
+      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={showDefault} />
+
       {/* Clean SVG — no labels on sides, just shape + vertices */}
       <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
         <svg viewBox={`0 0 ${maxW} ${maxH}`} style={{ width: "100%", display: "block" }} aria-hidden>
@@ -692,9 +696,6 @@ function LadderLab() {
           </div>
         ))}
       </div>
-      {showDefault && (
-        <p style={{ textAlign: "center", color: "#10b981", fontSize: 12, fontWeight: 600, marginTop: 12, animation: "fadeSlideIn 0.3s ease-out" }}>חזרת לנתוני התרגיל המקורי 🙂</p>
-      )}
     </section>
   );
 }
@@ -747,6 +748,11 @@ function TowerLab() {
         </div>
       </div>
 
+      {/* Message zone — below slider, above SVG */}
+      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={showDefault} />
+      <LabMessage text="משולש שווה שוקיים!" type="info" visible={isIsosceles && !showDefault} />
+      <LabMessage text="השטח המקסימלי!" type="warning" visible={isMaxSlider && !showDefault} />
+
       {/* Dynamic SVG */}
       {canSolve && (
         <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
@@ -767,18 +773,6 @@ function TowerLab() {
         </div>
       )}
 
-      {/* Alerts */}
-      {isIsosceles && (
-        <div style={{ borderRadius: 12, border: "2px solid #10b981", background: "rgba(16,185,129,0.08)", padding: "10px 14px", marginBottom: 12, textAlign: "center" }}>
-          <p style={{ color: "#059669", fontSize: 14, fontWeight: 700, margin: 0 }}>משולש שווה שוקיים!</p>
-        </div>
-      )}
-      {isMaxSlider && (
-        <div style={{ borderRadius: 12, border: "2px solid #f59e0b", background: "rgba(245,158,11,0.08)", padding: "10px 14px", marginBottom: 12, textAlign: "center" }}>
-          <p style={{ color: "#d97706", fontSize: 14, fontWeight: 700, margin: 0 }}>השטח המקסימלי!</p>
-        </div>
-      )}
-
       {/* Stats — BC and AB instead of ניצב 1/2 */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 10, textAlign: "center" }}>
         {[
@@ -794,9 +788,6 @@ function TowerLab() {
           </div>
         ))}
       </div>
-      {showDefault && (
-        <p style={{ textAlign: "center", color: "#10b981", fontSize: 12, fontWeight: 600, marginTop: 12, animation: "fadeSlideIn 0.3s ease-out" }}>חזרת לנתוני התרגיל המקורי 🙂</p>
-      )}
     </section>
   );
 }
@@ -846,6 +837,9 @@ function TriangleLab() {
         <input type="range" min={10} max={37} step={1} value={k} onChange={e => { const v = +e.target.value; setK(v); if (v === DEFAULT_K) { setShowDefault(true); setTimeout(() => setShowDefault(false), 2500); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#f59e0b" }} />
       </div>
 
+      {/* Message zone — below slider, above SVG */}
+      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={showDefault} />
+
       {/* Dynamic SVG with altitude BD */}
       <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
         <svg viewBox={`0 0 ${maxW} ${maxH}`} style={{ width: "100%", display: "block" }} aria-hidden>
@@ -865,15 +859,8 @@ function TriangleLab() {
         </svg>
       </div>
 
-      {/* Area ratio banner */}
-      <div style={{ borderRadius: 12, border: "1.5px solid rgba(167,139,250,0.4)", background: "rgba(167,139,250,0.06)", padding: "12px 14px", marginBottom: "1.5rem", textAlign: "center" }}>
-        <p style={{ color: "#7c3aed", fontSize: 14, fontWeight: 700, margin: 0 }}>
-          S(BCD) / S(ABC) = {areaRatio.toFixed(2)} — תמיד קבוע!
-        </p>
-        <p style={{ color: "#94a3b8", fontSize: 11, margin: "4px 0 0" }}>
-          יחס הדמיון = 0.5 → יחס שטחים = 0.5² = 0.25
-        </p>
-      </div>
+      {/* Area ratio — always visible */}
+      <LabMessage text={`S(BCD) / S(ABC) = ${areaRatio.toFixed(2)} — תמיד קבוע! (יחס דמיון = 0.5 → שטחים = 0.25)`} type="special" visible={true} />
 
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: 8, textAlign: "center" }}>
@@ -895,9 +882,6 @@ function TriangleLab() {
           </div>
         ))}
       </div>
-      {showDefault && (
-        <p style={{ textAlign: "center", color: "#10b981", fontSize: 12, fontWeight: 600, marginTop: 12, animation: "fadeSlideIn 0.3s ease-out" }}>חזרת לנתוני התרגיל המקורי 🙂</p>
-      )}
     </section>
   );
 }

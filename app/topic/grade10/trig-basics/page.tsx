@@ -625,6 +625,8 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 function LadderLab() {
   const [x, setX] = useState(10);
   const [angleA, setAngleA] = useState(40);
+  const DEFAULT_X = 10, DEFAULT_ANGLE = 40;
+  const [showDefault, setShowDefault] = useState(false);
   const alphaRad = (angleA * Math.PI) / 180;
 
   const AB = x / Math.tan(alphaRad);
@@ -651,14 +653,14 @@ function LadderLab() {
             <span>ניצב x (BC)</span>
             <span style={{ color: "#6366f1", fontWeight: 700 }}>{x}</span>
           </div>
-          <input type="range" min={5} max={20} step={0.5} value={x} onChange={e => setX(+e.target.value)} style={{ width: "100%", accentColor: "#6366f1" }} />
+          <input type="range" min={5} max={20} step={0.5} value={x} onChange={e => { const v = +e.target.value; setX(v); if (v === DEFAULT_X && angleA === DEFAULT_ANGLE) { setShowDefault(true); setTimeout(() => setShowDefault(false), 2500); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#6366f1" }} />
         </div>
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
             <span>זווית A</span>
             <span style={{ color: "#DC2626", fontWeight: 700 }}>{angleA}°</span>
           </div>
-          <input type="range" min={10} max={80} step={1} value={angleA} onChange={e => setAngleA(+e.target.value)} style={{ width: "100%", accentColor: "#DC2626" }} />
+          <input type="range" min={10} max={80} step={1} value={angleA} onChange={e => { const v = +e.target.value; setAngleA(v); if (v === DEFAULT_ANGLE && x === DEFAULT_X) { setShowDefault(true); setTimeout(() => setShowDefault(false), 2500); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#DC2626" }} />
         </div>
       </div>
 
@@ -690,6 +692,9 @@ function LadderLab() {
           </div>
         ))}
       </div>
+      {showDefault && (
+        <p style={{ textAlign: "center", color: "#10b981", fontSize: 12, fontWeight: 600, marginTop: 12, animation: "fadeSlideIn 0.3s ease-out" }}>חזרת לנתוני התרגיל המקורי 🙂</p>
+      )}
     </section>
   );
 }
@@ -699,7 +704,9 @@ function LadderLab() {
 function TowerLab() {
   const hyp = 20;
   const [area, setArea] = useState(80);
+  const DEFAULT_AREA = 80;
   const maxSlider = 100;
+  const [showDefault, setShowDefault] = useState(false);
   const maxArea = (hyp * hyp) / 4; // 100 — isosceles maximum
   const clampedArea = Math.min(area, maxArea);
 
@@ -733,7 +740,7 @@ function TowerLab() {
           <span>שטח המשולש S</span>
           <span style={{ color: "#10b981", fontWeight: 700, fontSize: 16 }}>{area} סמ&quot;ר</span>
         </div>
-        <input type="range" min={40} max={maxSlider} step={1} value={area} onChange={e => setArea(+e.target.value)} style={{ width: "100%", accentColor: "#10b981" }} />
+        <input type="range" min={40} max={maxSlider} step={1} value={area} onChange={e => { const v = +e.target.value; setArea(v); if (v === DEFAULT_AREA) { setShowDefault(true); setTimeout(() => setShowDefault(false), 2500); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#10b981" }} />
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
           <span>משולש צר</span>
           <span>שטח מקסימלי</span>
@@ -787,6 +794,9 @@ function TowerLab() {
           </div>
         ))}
       </div>
+      {showDefault && (
+        <p style={{ textAlign: "center", color: "#10b981", fontSize: 12, fontWeight: 600, marginTop: 12, animation: "fadeSlideIn 0.3s ease-out" }}>חזרת לנתוני התרגיל המקורי 🙂</p>
+      )}
     </section>
   );
 }
@@ -795,6 +805,8 @@ function TowerLab() {
 
 function TriangleLab() {
   const [k, setK] = useState(20);
+  const DEFAULT_K = 20;
+  const [showDefault, setShowDefault] = useState(false);
 
   // 30-60-90: hyp=k, short=0.5k, long=(√3/2)k
   const shortLeg = 0.5 * k;
@@ -831,7 +843,7 @@ function TriangleLab() {
           <span>ערך k (אורך היתר)</span>
           <span style={{ color: "#f59e0b", fontWeight: 700, fontSize: 16 }}>{k}</span>
         </div>
-        <input type="range" min={10} max={100} step={1} value={k} onChange={e => setK(+e.target.value)} style={{ width: "100%", accentColor: "#f59e0b" }} />
+        <input type="range" min={10} max={37} step={1} value={k} onChange={e => { const v = +e.target.value; setK(v); if (v === DEFAULT_K) { setShowDefault(true); setTimeout(() => setShowDefault(false), 2500); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#f59e0b" }} />
       </div>
 
       {/* Dynamic SVG with altitude BD */}
@@ -883,6 +895,9 @@ function TriangleLab() {
           </div>
         ))}
       </div>
+      {showDefault && (
+        <p style={{ textAlign: "center", color: "#10b981", fontSize: 12, fontWeight: 600, marginTop: 12, animation: "fadeSlideIn 0.3s ease-out" }}>חזרת לנתוני התרגיל המקורי 🙂</p>
+      )}
     </section>
   );
 }

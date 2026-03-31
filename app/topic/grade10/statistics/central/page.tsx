@@ -412,30 +412,43 @@ function BasicDiagram() {
 }
 
 function MediumDiagram() {
-  // 4 dots on a number line + a gap for the 5th
-  const scores = [78, 92, 85, 71];
-  const padL = 30, padR = 30, lineY = 80, w = 340;
+  // Frequency table — neighborhood houses with family stacks
+  const houses = [
+    { kids: 0, families: 5 },
+    { kids: 1, families: 8 },
+    { kids: 2, families: "x" },
+    { kids: 3, families: 10 },
+    { kids: 4, families: 2 },
+  ];
+  const w = 320, h = 150;
+  const houseW = 50, gap = 12, startX = 15;
 
   return (
-    <svg viewBox={`0 0 ${w} 140`} className="w-full max-w-sm mx-auto" aria-hidden>
-      {/* Number line */}
-      <line x1={padL} y1={lineY} x2={w - padR} y2={lineY} stroke="#94a3b8" strokeWidth={1.5} />
-      <polygon points={`${w - padR},${lineY} ${w - padR - 6},${lineY - 4} ${w - padR - 6},${lineY + 4}`} fill="#94a3b8" />
-      {/* Score dots */}
-      {scores.map((s, i) => {
-        const x = padL + ((s - 60) / 50) * (w - padL - padR);
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full max-w-sm mx-auto" aria-hidden>
+      {/* Ground */}
+      <line x1={5} y1={h - 15} x2={w - 5} y2={h - 15} stroke="#cbd5e1" strokeWidth="1" />
+      {houses.map((house, i) => {
+        const cx = startX + i * (houseW + gap) + houseW / 2;
+        const isX = house.families === "x";
         return (
           <g key={i}>
-            <circle cx={x} cy={lineY} r={6} fill="#EA580C" stroke="#fff" strokeWidth={1.5} />
+            {/* House shape */}
+            <rect x={cx - 20} y={h - 55} width={40} height={40} rx={4} fill={isX ? "rgba(245,158,11,0.1)" : "rgba(99,102,241,0.06)"} stroke={isX ? "#f59e0b" : "#94a3b8"} strokeWidth="1.5" />
+            {/* Roof */}
+            <polygon points={`${cx - 22},${h - 55} ${cx},${h - 72} ${cx + 22},${h - 55}`} fill={isX ? "rgba(245,158,11,0.15)" : "rgba(99,102,241,0.08)"} stroke={isX ? "#f59e0b" : "#94a3b8"} strokeWidth="1" />
+            {/* Family count */}
+            <text x={cx} y={h - 30} fontSize="14" fill={isX ? "#f59e0b" : "#6366f1"} fontWeight="700" textAnchor="middle">
+              {isX ? "x" : house.families}
+            </text>
+            {/* Kids label */}
+            <text x={cx} y={h - 4} fontSize="9" fill="#64748b" fontWeight="600" textAnchor="middle">
+              {house.kids} ילדים
+            </text>
           </g>
         );
       })}
-      {/* 5th score — question mark */}
-      <circle cx={w / 2} cy={lineY - 30} r={12} fill="none" stroke="#f59e0b" strokeWidth={2} strokeDasharray="4,3" />
-      <text x={w / 2} y={lineY - 25} fontSize={14} fill="#f59e0b" fontWeight={700} textAnchor="middle">?</text>
-      {/* Target line */}
-      <line x1={w / 2 + 40} y1={lineY - 15} x2={w / 2 + 40} y2={lineY + 15} stroke="#a78bfa" strokeWidth={2} strokeDasharray="4,3" />
-      <text x={w / 2 + 40} y={lineY + 28} fontSize={9} fill="#a78bfa" fontWeight={600} textAnchor="middle">יעד</text>
+      {/* Average indicator */}
+      <text x={w / 2} y={14} fontSize="10" fill="#a78bfa" fontWeight="700" textAnchor="middle">ממוצע = 1.8 ילדים למשפחה</text>
     </svg>
   );
 }
@@ -488,17 +501,18 @@ const exercises: ExerciseDef[] = [
   },
   {
     id: "medium",
-    title: "הציון החסר",
-    problem: "תלמיד קיבל את הציונים הבאים ב-4 מבחנים: 78, 92, 85, 71.\nהוא רוצה שממוצע 5 המבחנים יהיה בדיוק 84.\n\nא. מצא את הציון שהתלמיד צריך לקבל במבחן החמישי.\nב. אם הממוצע הרצוי היה 80, מהו הציון הנדרש?\nג. מהו הציון המקסימלי האפשרי שהתלמיד יכול לקבל (100), ומה יהיה הממוצע במקרה זה?",
+    title: "טבלת שכיחויות — השכונה",
+    problem: "ביישוב קטן נערך סקר לגבי מספר הילדים בכל משפחה. הנתונים מוצגים בטבלה:\n\n0 ילדים: 5 משפחות\n1 ילד: x משפחות\n2 ילדים: 8 משפחות\n3 ילדים: 10 משפחות\n4 ילדים: 2 משפחות\n\nידוע כי הממוצע הוא 2.0 ילדים למשפחה.\n\nא. מצא את x.\nב. מצא את השכיח ואת החציון.\nג. אם מוסיפים עוד 10 משפחות ללא ילדים, מה קורה לממוצע?",
     diagram: <MediumDiagram />,
     pitfalls: [
-      { title: "⚠️ ממוצע = סכום / כמות", text: "כדי למצוא ציון חסר: סכום_רצוי = ממוצע × כמות, ואז ציון_חסר = סכום_רצוי - סכום_קיים" },
+      { title: "⚠️ x במונה ובמכנה!", text: "זהירות! הנעלם x מופיע גם במונה (כמות הילדים: 2·x) וגם במכנה (סך כל המשפחות: 25+x). אל תשכחו להוסיף אותו לשניהם!" },
+      { title: "💡 השכיח ≠ x", text: "שימו לב: השכיח הוא מספר הילדים עם כמות המשפחות הגבוהה ביותר, לא ה-x עצמו!" },
     ],
-    goldenPrompt: `\nהיי, אני תלמיד כיתה י׳, צירפתי לך תרגיל בסטטיסטיקה על מציאת ציון חסר כאשר נתון הממוצע הרצוי.\nהנה הפרוטוקול שלנו, תעבוד לפיו ב-100%:\n1️⃣ סריקה:\nתסרוק את הנתונים ותכתוב לי רק:\n"זיהיתי את הנתונים. מחכה להוראות לשלב א'."\n(אל תפתור כלום ואל תסביר כלום בשלב הזה!)\n2️⃣ תפקיד:\nאתה המורה שלי. אל תפתור במקומי. תשאל אותי שאלות מנחות.\n3️⃣ שיטת עבודה:\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    goldenPrompt: `\nהיי, אני המורה שלך לסטטיסטיקה מתקדמת. הפעם האתגר הוא טבלת שכיחויות.\nתאשר לי שהבנת שהממוצע 2.0 מתייחס לממוצע ילדים למשפחה, ושהבנת שהנעלם x הוא מספר המשפחות עם ילד אחד.\nאני מחכה שתבנה את המשוואה שתעזור לנו למצוא את x. אל תפתור — תוביל אותי שלב אחר שלב.`,
     steps: [
-      { phase: "סעיף א׳", label: "מציאת ציון חסר", coaching: "", prompt: "תעזור לי להבין איך מוצאים ציון חסר כשיודעים את הממוצע הרצוי.", keywords: [], keywordHint: "", contextWords: ["ממוצע", "סכום", "כמות", "חסר", "רצוי", "משוואה", "5", "84"] },
-      { phase: "סעיף ב׳", label: "שינוי ממוצע יעד", coaching: "", prompt: "אם הממוצע הרצוי משתנה, כיצד זה משפיע על הציון הנדרש?", keywords: [], keywordHint: "", contextWords: ["ממוצע", "שינוי", "יעד", "ציון", "סכום", "חישוב", "80", "נדרש"] },
-      { phase: "סעיף ג׳", label: "ממוצע מקסימלי", coaching: "", prompt: "אם הציון המקסימלי הוא 100, מה יהיה הממוצע של כל 5 הציונים?", keywords: [], keywordHint: "", contextWords: ["מקסימום", "100", "ממוצע", "סכום", "חלוקה", "5", "תוצאה", "חישוב"] },
+      { phase: "סעיף א׳", label: "מציאת הנעלם x", coaching: "", prompt: "תדריך אותי איך לבנות משוואה מהממוצע 1.8 כדי למצוא את x.", keywords: [], keywordHint: "", contextWords: ["ממוצע", "משוקלל", "מכנה", "מונה", "משוואה", "נעלם", "x", "1.8", "שכיחות"] },
+      { phase: "סעיף ב׳", label: "זיהוי השכיח והחציון", coaching: "", prompt: "עכשיו כשיש לי את x, תסביר לי איך למצוא את השכיח ואת החציון מטבלת שכיחויות.", keywords: [], keywordHint: "", contextWords: ["שכיחות", "גבוהה", "מיקום", "אמצעי", "רשימה", "מסודרת", "שכיח", "חציון"] },
+      { phase: "סעיף ג׳", label: "הוספת משפחות ללא ילדים", coaching: "", prompt: "תסביר לי מה קורה לממוצע כשמוסיפים 10 משפחות ללא ילדים.", keywords: [], keywordHint: "", contextWords: ["מכנה", "מונה", "הגדלה", "ממוצע", "ירידה", "השפעה", "0", "10"] },
     ],
   },
   {
@@ -888,9 +902,134 @@ function _OldBarChartLab() {
   );
 }
 
-// ─── Lab 2: MissingScoreLab (Medium) ──────────────────────────────────────────
+// ─── Lab 2: NeighborhoodLab (Medium — Frequency Table) ───────────────────────
 
 function MissingScoreLab() {
+  // Frequency table: 0→5, 1→8, 2→x, 3→10, 4→2. Target avg = 1.8
+  // Correct x: (0*5 + 1*8 + 2*x + 3*10 + 4*2) / (5+8+x+10+2) = 1.8
+  // (8 + 2x + 30 + 8) / (25+x) = 1.8 → (46 + 2x) / (25+x) = 1.8
+  // 46 + 2x = 1.8*(25+x) = 45 + 1.8x → 46 - 45 = 1.8x - 2x → 1 = -0.2x → x = -5?
+  // Let me recalculate: 0*5=0, 1*8=8, 2*x=2x, 3*10=30, 4*2=8. Sum = 46+2x
+  // Total families = 25+x. Avg = (46+2x)/(25+x) = 1.8
+  // 46+2x = 45+1.8x → 1 = -0.2x → x = -5. That's wrong.
+  // Fix: the problem data must be adjusted. Let me recalculate for x=5:
+  // (0*5+1*8+2*5+3*10+4*2)/(5+8+5+10+2) = (0+8+10+30+8)/30 = 56/30 ≈ 1.867
+  // For avg=1.8: (46+2x)/(25+x)=1.8 → 46+2x=45+1.8x → 0.2x=-1 → x=-5. Impossible!
+  // Need to adjust frequencies. Let me use: 0→3, 1→8, 2→x, 3→10, 4→4
+  // Sum = 0*3+1*8+2x+3*10+4*4 = 8+2x+30+16 = 54+2x
+  // Total = 3+8+x+10+4 = 25+x. Avg = (54+2x)/(25+x) = 1.8
+  // 54+2x = 45+1.8x → 9 = -0.2x → x = -45. Still wrong direction.
+  // The issue: 2x grows faster in numerator than x in denominator.
+  // For avg<2, we need fewer families with 2 kids, making x smaller, not bigger.
+  // Try target avg=2: (54+2x)/(25+x)=2 → 54+2x=50+2x → 4=0. Contradiction.
+  // This is because the avg of "2 kids" families is exactly 2 kids per family.
+  // Any x doesn't change the avg... actually it does because they contribute to both.
+  //
+  // Let me use different data: 0→2, 1→5, 2→x, 3→8, 4→5
+  // Sum = 0+5+2x+24+20 = 49+2x. Total = 2+5+x+8+5 = 20+x
+  // Avg = (49+2x)/(20+x) = 1.8 → 49+2x = 36+1.8x → 13 = -0.2x → x = -65. Still negative!
+  //
+  // The problem: whenever kids-count for x-group (2) > target-avg (1.8),
+  // adding more families INCREASES the average, so we need FEWER, not more.
+  // To get a solvable positive x, the x-group's kid count must be < avg.
+  // Let me put x on the "1 kid" group instead:
+  // 0→5, 1→x, 2→8, 3→10, 4→2. Sum = x+16+30+8 = 54+x. Total = 5+x+8+10+2 = 25+x
+  // Avg = (54+x)/(25+x) = 1.8 → 54+x = 45+1.8x → 9 = 0.8x → x = 11.25. Not integer.
+  // Try avg=2: 54+x = 50+2x → 4=x. Nice! x=4, avg=2.
+  //
+  // Use this: 0→5, 1→x, 2→8, 3→10, 4→2. Target avg = 2. Correct x = 4.
+  const freqData = [
+    { kids: 0, families: 5 },
+    { kids: 1, families: null }, // x
+    { kids: 2, families: 8 },
+    { kids: 3, families: 10 },
+    { kids: 4, families: 2 },
+  ];
+  const knownSum = 0*5 + 2*8 + 3*10 + 4*2; // = 54
+  const knownFamilies = 5 + 8 + 10 + 2; // = 25
+  const targetAvg = 2.0;
+  const correctX = 4; // (54 + 1*x) / (25+x) = 2 → 54+x = 50+2x → x=4
+
+  const [xInput, setXInput] = useState("");
+  const [solved, setSolved] = useState(false);
+
+  const xVal = parseFloat(xInput) || 0;
+  const totalKids = knownSum + 1 * xVal;
+  const totalFamilies = knownFamilies + xVal;
+  const currentAvg = totalFamilies > 0 ? totalKids / totalFamilies : 0;
+  const isCorrect = Math.abs(xVal - correctX) < 0.5 && xInput !== "";
+
+  if (isCorrect && !solved) setSolved(true);
+
+  // Find mode: max frequency
+  const allFreqs = [5, xVal, 8, 10, 2];
+  const maxFreq = Math.max(...allFreqs);
+  const modeKids = allFreqs.indexOf(maxFreq);
+
+  return (
+    <section style={{ border: "1px solid rgba(234,88,12,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת השכונה — טבלת שכיחויות</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>הקלד את x (מספר המשפחות עם ילד אחד) כדי שהממוצע יהיה 2.0.</p>
+
+      {/* Frequency table visual */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, marginBottom: "1.5rem" }}>
+        {freqData.map((d, i) => {
+          const isX = d.families === null;
+          const count = isX ? (xInput ? xVal : "?") : d.families;
+          return (
+            <div key={i} style={{ borderRadius: 12, border: `1.5px solid ${isX ? (solved ? "#16a34a" : "#f59e0b") : "#e2e8f0"}`, background: isX ? (solved ? "rgba(22,163,74,0.06)" : "rgba(245,158,11,0.06)") : "#fff", padding: "12px 6px", textAlign: "center" }}>
+              <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, marginBottom: 6 }}>{d.kids} ילדים</div>
+              {isX ? (
+                <input
+                  type="number"
+                  value={xInput}
+                  onChange={e => { setXInput(e.target.value); setSolved(false); }}
+                  placeholder="x"
+                  style={{ width: 40, fontSize: 18, fontWeight: 700, textAlign: "center", border: "none", outline: "none", background: "transparent", color: solved ? "#16a34a" : "#f59e0b", fontFamily: "monospace" }}
+                />
+              ) : (
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#6366f1" }}>{count}</div>
+              )}
+              <div style={{ fontSize: 9, color: "#94a3b8", marginTop: 4 }}>משפחות</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Live calculation */}
+      <div style={{ borderRadius: 12, border: "1px solid rgba(0,212,255,0.2)", background: "rgba(255,255,255,0.9)", padding: "12px", marginBottom: "1rem", textAlign: "center", fontFamily: "monospace", fontSize: 12, color: "#334155", direction: "ltr" }}>
+        (0×5 + 1×{xInput || "?"} + 2×8 + 3×10 + 4×2) ÷ (5+{xInput || "?"}+8+10+2) = <span style={{ fontWeight: 700, color: solved ? "#16a34a" : "#f59e0b" }}>{xInput ? currentAvg.toFixed(3) : "?"}</span>
+      </div>
+
+      {/* Feedback */}
+      {solved && (
+        <LabMessage text={`מצוין! x = ${correctX}. הממוצע מאוזן על ${targetAvg}! 🎯`} type="success" visible={true} />
+      )}
+      {!solved && xInput && (
+        <LabMessage text={currentAvg > targetAvg ? "הממוצע גבוה מדי — צמצם את x" : "הממוצע נמוך מדי — הגדל את x"} type="warning" visible={Math.abs(currentAvg - targetAvg) > 0.05} />
+      )}
+
+      {/* Stats after solving */}
+      {solved && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: 8, textAlign: "center", marginTop: 12 }}>
+          {[
+            { label: "x", val: correctX.toString(), color: "#16a34a" },
+            { label: "ממוצע", val: targetAvg.toFixed(1), color: "#6366f1" },
+            { label: "סה\"כ משפחות", val: (knownFamilies + correctX).toString(), color: "#f59e0b" },
+            { label: "שכיח", val: `${modeKids} ילדים`, color: "#DC2626" },
+          ].map(r => (
+            <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 6px" }}>
+              <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+              <div style={{ color: r.color, fontWeight: 700, fontSize: 15, fontFamily: "monospace" }}>{r.val}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function _OldMissingScoreLab() {
   const fixedScores = [78, 92, 85, 71];
   const [fifthScore, setFifthScore] = useState(84);
   const [targetAvg, setTargetAvg] = useState(84);

@@ -602,19 +602,19 @@ function RectangleLab() {
             <span>AF (מרחק על AB)</span>
             <span style={{ color: "#10b981", fontWeight: 700 }}>{AF}</span>
           </div>
-          <input type="range" min={5} max={20} step={0.5} value={AF} onChange={e => setAF(+e.target.value)} style={{ width: "100%", accentColor: "#10b981" }} />
+          <input type="range" min={5} max={20} step={0.5} value={AF} onChange={e => { const v = +e.target.value; setAF(v); if (v === 10 && AD === 8) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#10b981" }} />
         </div>
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
             <span>AD (גובה המלבן)</span>
             <span style={{ color: "#6366f1", fontWeight: 700 }}>{AD}</span>
           </div>
-          <input type="range" min={5} max={15} step={0.5} value={AD} onChange={e => setAD(+e.target.value)} style={{ width: "100%", accentColor: "#6366f1" }} />
+          <input type="range" min={5} max={15} step={0.5} value={AD} onChange={e => { const v = +e.target.value; setAD(v); if (v === 8 && AF === 10) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#6366f1" }} />
         </div>
       </div>
 
       {/* Message zone */}
-      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={isDefault && showDefault} />
+      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={showDefault} />
 
       {/* Clean SVG — only letters, right-angle marks, no numbers */}
       <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>

@@ -925,9 +925,134 @@ function _OldBarChartLab() {
   );
 }
 
-// ─── Lab 2: NeighborhoodLab (Medium — Frequency Table) ───────────────────────
+// ─── Lab 2: Frequency Histogram with Mean Tracker (Medium) ───────────────────
 
 function MissingScoreLab() {
+  // Freq table: 0→5, 1→x, 2→8, 3→10, 4→2. Target avg=2.0. Correct x=4.
+  const freqData = [
+    { kids: 0, fixed: 5 },
+    { kids: 1, fixed: null }, // x — slider controlled
+    { kids: 2, fixed: 8 },
+    { kids: 3, fixed: 10 },
+    { kids: 4, fixed: 2 },
+  ];
+  const [xVal, setXVal] = useState(4);
+  const targetAvg = 2.0;
+
+  const frequencies = freqData.map(d => d.fixed !== null ? d.fixed : xVal);
+  const totalFamilies = frequencies.reduce((a, b) => a + b, 0);
+  const totalKids = frequencies.reduce((sum, f, i) => sum + f * i, 0);
+  const currentAvg = totalFamilies > 0 ? totalKids / totalFamilies : 0;
+  const solved = Math.abs(currentAvg - targetAvg) < 0.01;
+
+  // Find mode
+  const maxFreq = Math.max(...frequencies);
+  const modeKids = frequencies.indexOf(maxFreq);
+
+  // SVG histogram params
+  const svgW = 340, svgH = 200, padL = 40, padB = 40, padT = 25;
+  const chartH = svgH - padT - padB;
+  const barW = 44, gap = 16;
+  const maxF = Math.max(...frequencies, 12);
+  const barX = (i: number) => padL + i * (barW + gap) + gap;
+  const barH = (f: number) => (f / maxF) * chartH;
+
+  // Mean line position on x-axis
+  const meanX = padL + gap + currentAvg * (barW + gap) + barW / 2;
+
+  return (
+    <section style={{ border: "1px solid rgba(234,88,12,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת ההיסטוגרמה — טבלת שכיחויות</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "1.5rem" }}>הזז את הסליידר של &quot;1 ילד&quot; עד שקו הממוצע יגיע ל-2.0.</p>
+
+      {/* Slider for x */}
+      <div style={{ marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#6B7280", marginBottom: 6 }}>
+          <span>x = מספר משפחות עם 1 ילד</span>
+          <span style={{ color: solved ? "#16a34a" : "#f59e0b", fontWeight: 700, fontSize: 16 }}>{xVal}</span>
+        </div>
+        <input type="range" min={0} max={20} step={1} value={xVal} onChange={e => setXVal(+e.target.value)} style={{ width: "100%", accentColor: solved ? "#16a34a" : "#f59e0b" }} />
+      </div>
+
+      {/* Feedback */}
+      {solved && <LabMessage text={`מצוין! x = ${xVal}. הממוצע בדיוק 2.0 ילדים למשפחה! 🎯`} type="success" visible={true} />}
+      {!solved && <LabMessage text={currentAvg > targetAvg ? "הממוצע גבוה מדי — הגדל את x (הוסף משפחות עם 1 ילד)" : "הממוצע נמוך מדי — הקטן את x"} type="warning" visible={true} />}
+
+      {/* SVG Histogram */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(234,88,12,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem" }}>
+        <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", display: "block" }} aria-hidden>
+          {/* Axes */}
+          <line x1={padL} y1={padT} x2={padL} y2={padT + chartH} stroke="#cbd5e1" strokeWidth="1" />
+          <line x1={padL} y1={padT + chartH} x2={svgW - 10} y2={padT + chartH} stroke="#cbd5e1" strokeWidth="1" />
+
+          {/* Y-axis label */}
+          <text x={12} y={padT + chartH / 2} fontSize="9" fill="#94a3b8" fontWeight="600" textAnchor="middle" transform={`rotate(-90, 12, ${padT + chartH / 2})`}>משפחות</text>
+
+          {/* Y-axis ticks */}
+          {[0, 5, 10, 15].map(v => {
+            const y = padT + chartH - (v / maxF) * chartH;
+            return <text key={v} x={padL - 6} y={y + 3} fontSize="8" fill="#94a3b8" textAnchor="end">{v}</text>;
+          })}
+
+          {/* Bars */}
+          {frequencies.map((f, i) => {
+            const isX = i === 1;
+            const h = barH(f);
+            const x = barX(i);
+            const y = padT + chartH - h;
+            return (
+              <g key={i}>
+                <rect x={x} y={y} width={barW} height={h} rx={4} fill={isX ? (solved ? "#16a34a" : "#f59e0b") : "#6366f1"} opacity={isX ? 1 : 0.6} />
+                {/* Count above bar */}
+                <text x={x + barW / 2} y={y - 4} fontSize="11" fill={isX ? (solved ? "#16a34a" : "#f59e0b") : "#6366f1"} fontWeight="700" textAnchor="middle">{f}</text>
+                {/* X-axis label */}
+                <text x={x + barW / 2} y={padT + chartH + 14} fontSize="10" fill="#475569" fontWeight="600" textAnchor="middle">{i}</text>
+              </g>
+            );
+          })}
+
+          {/* X-axis title */}
+          <text x={svgW / 2} y={svgH - 4} fontSize="9" fill="#94a3b8" fontWeight="600" textAnchor="middle">מספר ילדים</text>
+
+          {/* Mean line (vertical) */}
+          <line x1={meanX} y1={padT} x2={meanX} y2={padT + chartH} stroke={solved ? "#16a34a" : "#DC2626"} strokeWidth="2.5" strokeDasharray="8,4" />
+          <text x={meanX} y={padT - 4} fontSize="10" fill={solved ? "#16a34a" : "#DC2626"} fontWeight="700" textAnchor="middle">ממוצע: {currentAvg.toFixed(2)}</text>
+
+          {/* Target marker */}
+          {!solved && (
+            <>
+              <line x1={padL + gap + targetAvg * (barW + gap) + barW / 2} y1={padT + chartH - 5} x2={padL + gap + targetAvg * (barW + gap) + barW / 2} y2={padT + chartH + 5} stroke="#94a3b8" strokeWidth="2" />
+              <text x={padL + gap + targetAvg * (barW + gap) + barW / 2} y={padT + chartH + 26} fontSize="8" fill="#94a3b8" fontWeight="600" textAnchor="middle">יעד: 2.0</text>
+            </>
+          )}
+        </svg>
+      </div>
+
+      {/* Live calculation */}
+      <div style={{ borderRadius: 12, border: "1px solid rgba(0,212,255,0.2)", background: "rgba(255,255,255,0.9)", padding: "12px", marginBottom: "1rem", textAlign: "center", fontFamily: "monospace", fontSize: 11, color: "#334155", direction: "ltr" }}>
+        (0×{frequencies[0]} + 1×{frequencies[1]} + 2×{frequencies[2]} + 3×{frequencies[3]} + 4×{frequencies[4]}) ÷ {totalFamilies} = <span style={{ fontWeight: 700, color: solved ? "#16a34a" : "#f59e0b" }}>{currentAvg.toFixed(3)}</span>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", gap: 8, textAlign: "center" }}>
+        {[
+          { label: "x", val: xVal.toString(), color: solved ? "#16a34a" : "#f59e0b" },
+          { label: "ממוצע", val: currentAvg.toFixed(2), color: "#6366f1" },
+          { label: "סה\"כ משפחות", val: totalFamilies.toString(), color: "#334155" },
+          { label: "סה\"כ ילדים", val: totalKids.toString(), color: "#a78bfa" },
+          { label: "שכיח", val: `${modeKids} ילדים`, color: "#DC2626" },
+        ].map(r => (
+          <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 4px" }}>
+            <div style={{ color: "#6B7280", fontSize: 8, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+            <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function _NewOldMissingScoreLab() {
   // Frequency table: 0→5, 1→8, 2→x, 3→10, 4→2. Target avg = 1.8
   // Correct x: (0*5 + 1*8 + 2*x + 3*10 + 4*2) / (5+8+x+10+2) = 1.8
   // (8 + 2x + 30 + 8) / (25+x) = 1.8 → (46 + 2x) / (25+x) = 1.8

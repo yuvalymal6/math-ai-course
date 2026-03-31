@@ -58,37 +58,50 @@ const TABS = [
 // ─── SVG diagrams (silent — no numbers, no answers) ───────────────────────────
 
 function RectangleDiagramSVG() {
-  // Rectangle ABCD: A(bottom-left), B(bottom-right), C(top-right), D(top-left)
-  // F on AB, E extends past B. Line DF passes through F to E.
-  const Ax = 40, Ay = 160, Bx = 200, By = 160, Cx = 200, Cy = 40, Dx = 40, Dy = 40;
-  // F at ~60% of AB
-  const Fx = Ax + (Bx - Ax) * 0.6, Fy = Ay;
-  // E extends past B
-  const Ex = 260, Ey = By;
+  // Rectangle ABCD: AD=8 (tall), AF=4 (narrow on AB). Proportions: height >> width of F
+  // A(bottom-left), B(bottom-right), C(top-right), D(top-left)
+  // Scale: AD~120px height, AF~60px. Rectangle width ~150px.
+  const Ax = 50, Ay = 170, Dx = 50, Dy = 30;   // left side (A bottom, D top)
+  const Bx = 200, By = 170, Cx = 200, Cy = 30;  // right side
+  // F at AF/AB ratio ≈ 4/12 ≈ 0.33 of AB from A
+  const Fx = Ax + (Bx - Ax) * 0.33, Fy = Ay;
+  // E extends past B — line from D through F to E
+  // Direction D→F: (Fx-Dx, Fy-Dy) = (Fx-50, 140)
+  // E is where this line continues past F at y=Ay: that's F itself.
+  // E must be on AB extended past B. Using the line slope from D(50,30) to F(~100,170):
+  // slope = (170-30)/(100-50) = 140/50 = 2.8. At B's x=200: y = 30 + 2.8*(200-50) = 450 — way past.
+  // The line DF exits the bottom at F. E is beyond B on the ground level.
+  // Extend DF past F: at y=170, x progresses. Past F, the line goes right and below.
+  // For the diagram, E is on AB extended. Line DE passes through F.
+  // Using parametric: from D(50,30), direction to F(100,170). t=1 is F. t>1 continues.
+  // At t=1.5: x = 50 + 1.5*50 = 125, y = 30 + 1.5*140 = 240 — below ground.
+  // E must be at ground level (y=170) which is t=1 (= F). Contradiction for a straight line.
+  // The correct geometry: E is on BC extended (right side extended downward), NOT on AB.
+  // Let's place E on the extension of side BC downward: E = (200, 220).
+  const Ex = Bx, Ey = By + 40; // E below B on BC extension
   return (
-    <svg viewBox="0 0 300 190" className="w-full max-w-[280px] mx-auto" aria-hidden>
-      {/* Rectangle */}
+    <svg viewBox="0 0 260 230" className="w-full max-w-[250px] mx-auto" aria-hidden>
+      {/* Rectangle ABCD */}
       <rect x={Ax} y={Dy} width={Bx - Ax} height={Ay - Dy} fill="rgba(99,102,241,0.04)" stroke="#334155" strokeWidth="2" />
-      {/* AB extended to E (dashed) */}
+      {/* BC extended to E (dashed, downward from B) */}
       <line x1={Bx} y1={By} x2={Ex} y2={Ey} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="6,3" />
       {/* Line DF through F to E */}
       <line x1={Dx} y1={Dy} x2={Ex} y2={Ey} stroke="#6366f1" strokeWidth="2" />
-      {/* Right angle marks */}
-      <polyline points={`${Ax + 10},${Ay} ${Ax + 10},${Ay - 10} ${Ax},${Ay - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1" />
-      <polyline points={`${Bx - 10},${By} ${Bx - 10},${By - 10} ${Bx},${By - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1" />
-      {/* Point F marker */}
-      <circle cx={Fx} cy={Fy} r="3" fill="#10b981" />
-      {/* Point E marker */}
-      <circle cx={Ex} cy={Ey} r="3" fill="#f59e0b" />
-      {/* Angle ADF arc */}
-      <path d={`M ${Dx + 22},${Dy} A 22,22 0 0,1 ${Dx + 18},${Dy + 16}`} fill="none" stroke="#DC2626" strokeWidth="2" />
+      {/* Right angle at A */}
+      <polyline points={`${Ax + 10},${Ay} ${Ax + 10},${Ay - 10} ${Ax},${Ay - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+      {/* Right angle at B */}
+      <polyline points={`${Bx - 10},${By} ${Bx - 10},${By - 10} ${Bx},${By - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+      {/* Point F on AB */}
+      <circle cx={Fx} cy={Fy} r="3.5" fill="#10b981" />
+      {/* Point E below B */}
+      <circle cx={Ex} cy={Ey} r="3.5" fill="#f59e0b" />
       {/* Vertex labels */}
-      <text x={Ax - 14} y={Ay + 4} fontSize="13" fill="#475569" fontWeight="700">A</text>
-      <text x={Bx - 4} y={By + 16} fontSize="13" fill="#475569" fontWeight="700">B</text>
-      <text x={Cx + 4} y={Cy - 4} fontSize="13" fill="#475569" fontWeight="700">C</text>
+      <text x={Ax - 16} y={Ay + 4} fontSize="13" fill="#475569" fontWeight="700">A</text>
+      <text x={Bx + 6} y={By - 4} fontSize="13" fill="#475569" fontWeight="700">B</text>
+      <text x={Cx + 6} y={Cy + 4} fontSize="13" fill="#475569" fontWeight="700">C</text>
       <text x={Dx - 16} y={Dy + 4} fontSize="13" fill="#475569" fontWeight="700">D</text>
       <text x={Fx - 4} y={Fy + 16} fontSize="12" fill="#10b981" fontWeight="700">F</text>
-      <text x={Ex - 2} y={Ey + 16} fontSize="12" fill="#f59e0b" fontWeight="700">E</text>
+      <text x={Ex + 8} y={Ey + 4} fontSize="12" fill="#f59e0b" fontWeight="700">E</text>
     </svg>
   );
 }
@@ -374,7 +387,7 @@ function LadderAdvanced({ steps, goldenPrompt, borderRgb }: { steps: PromptStep[
 const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    problem: "במלבן ABCD אורך הצלע AD הוא 8 ס\"מ. נקודה F נמצאת על הצלע AB כך ש-AF=10. מאריכים את הצלע AB עד לנקודה E כך שהקטע DE עובר דרך F.\n\nא. חשב את הזווית ∠ADF.\nב. מצא את אורך הקטע BE (רמז: השתמש בדמיון משולשים).\nג. מהו היחס בין שטח המשולש △ADF לשטח המשולש △BEF?",
+    problem: "במלבן ABCD אורך הצלע AD הוא 8 ס\"מ. נקודה F נמצאת על הצלע AB כך ש-AF = 4 ס\"מ. מאריכים את הצלע AB עד לנקודה E כך שהקטע DE עובר דרך F.\n\nא. חשב את הזווית ∠ADF.\nב. מצא את אורך הקטע BE (רמז: השתמש בדמיון משולשים).\nג. מהו היחס בין שטח המשולש △ADF לשטח המשולש △BEF?",
     diagram: <RectangleDiagramSVG />,
     pitfalls: [
       { title: "⚠️ זוויות מתחלפות", text: "זהירות! זווית E אינה שווה לזווית ADF — הן זוויות מתחלפות רק אם תזהה את המקבילים הנכונים." },
@@ -590,7 +603,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 // ─── Lab: Rectangle ABCD with point F and E ──────────────────────────────────
 
 function RectangleLab() {
-  const [AF, setAF] = useState(10);
+  const [AF, setAF] = useState(4);
   const [AD, setAD] = useState(8);
   const [showDefault, setShowDefault] = useState(false);
 
@@ -638,14 +651,14 @@ function RectangleLab() {
             <span>AF (מרחק על AB)</span>
             <span style={{ color: "#10b981", fontWeight: 700 }}>{AF}</span>
           </div>
-          <input type="range" min={5} max={20} step={0.5} value={AF} onChange={e => { const v = +e.target.value; setAF(v); if (v === 10 && AD === 8) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#10b981" }} />
+          <input type="range" min={2} max={15} step={0.5} value={AF} onChange={e => { const v = +e.target.value; setAF(v); if (v === 4 && AD === 8) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#10b981" }} />
         </div>
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
             <span>AD (גובה המלבן)</span>
             <span style={{ color: "#6366f1", fontWeight: 700 }}>{AD}</span>
           </div>
-          <input type="range" min={5} max={15} step={0.5} value={AD} onChange={e => { const v = +e.target.value; setAD(v); if (v === 8 && AF === 10) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#6366f1" }} />
+          <input type="range" min={5} max={15} step={0.5} value={AD} onChange={e => { const v = +e.target.value; setAD(v); if (v === 8 && AF === 4) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#6366f1" }} />
         </div>
       </div>
 

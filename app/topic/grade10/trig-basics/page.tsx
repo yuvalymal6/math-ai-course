@@ -492,33 +492,45 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       <div className="formula-bar font-sans" style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "rgba(255,255,255,0.78)", padding: "1.5rem 1.25rem", marginBottom: "2.5rem", boxShadow: "0 4px 20px rgba(0,212,255,0.08)" }}>
         <h3 style={{ color: "#475569", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.14em", fontWeight: 700, marginBottom: 20, marginTop: 0, textAlign: "center", lineHeight: 1.4 }}>נוסחאות טריגונומטריה</h3>
 
-        {/* SVG Right Triangle Illustration */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-          <svg viewBox="0 0 240 175" className="w-full max-w-[240px]" aria-label="משולש ישר-זווית">
-            {/* Triangle fill */}
-            <polygon points="30,145 200,145 200,30" fill="rgba(99,102,241,0.03)" stroke="#334155" strokeWidth="2" />
-            {/* Right angle marker */}
-            <polyline points="183,145 183,128 200,128" fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-            {/* Angle arc for α */}
-            <path d="M 58,145 A 28,28 0 0,0 45,128" fill="none" stroke="#6366f1" strokeWidth="2.5" />
-            <text x="64" y="136" fontSize="14" fill="#6366f1" fontWeight="700" fontStyle="italic">α</text>
-
-            {/* Side labels with generous spacing */}
-            {/* a = opposite (vertical right side) */}
-            <text x="208" y="88" fontSize="13" fill="#6366f1" fontWeight="700">a</text>
-            <text x="208" y="104" fontSize="10" fill="#94a3b8" style={{ lineHeight: 1.5 }}>ניצב מול</text>
-            {/* b = adjacent (bottom side) */}
-            <text x="108" y="165" fontSize="13" fill="#10b981" fontWeight="700">b</text>
-            <text x="96" y="175" fontSize="10" fill="#94a3b8">ניצב ליד</text>
+        {/* Triangle + Legend side-by-side */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-center gap-4 sm:gap-6 mb-6">
+          {/* Clean SVG — English letters only */}
+          <svg viewBox="0 0 180 150" className="w-full max-w-[180px] sm:max-w-[200px] shrink-0" aria-label="Right triangle">
+            <polygon points="20,130 160,130 160,20" fill="rgba(99,102,241,0.03)" stroke="#334155" strokeWidth="2" />
+            <polyline points="145,130 145,115 160,115" fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+            <path d="M 46,130 A 26,26 0 0,0 36,116" fill="none" stroke="#6366f1" strokeWidth="2.5" />
+            <text x="52" y="123" fontSize="15" fill="#6366f1" fontWeight="700" fontStyle="italic">α</text>
+            {/* a = opposite (right side) */}
+            <text x="166" y="80" fontSize="15" fill="#6366f1" fontWeight="700">a</text>
+            {/* b = adjacent (bottom) */}
+            <text x="85" y="147" fontSize="15" fill="#10b981" fontWeight="700">b</text>
             {/* c = hypotenuse (diagonal) */}
-            <text x="90" y="78" fontSize="13" fill="#f59e0b" fontWeight="700">c</text>
-            <text x="102" y="74" fontSize="10" fill="#94a3b8">יתר</text>
-
-            {/* Vertex labels */}
-            <text x="16" y="153" fontSize="11" fill="#475569" fontWeight="600">A</text>
-            <text x="202" y="153" fontSize="11" fill="#475569" fontWeight="600">B</text>
-            <text x="202" y="24" fontSize="11" fill="#475569" fontWeight="600">C</text>
+            <text x="72" y="66" fontSize="15" fill="#f59e0b" fontWeight="700">c</text>
+            {/* Vertices */}
+            <text x="8" y="138" fontSize="12" fill="#475569" fontWeight="600">A</text>
+            <text x="162" y="138" fontSize="12" fill="#475569" fontWeight="600">B</text>
+            <text x="162" y="15" fontSize="12" fill="#475569" fontWeight="600">C</text>
           </svg>
+
+          {/* Hebrew legend */}
+          <div className="flex flex-row sm:flex-col gap-3 sm:gap-2 text-xs sm:text-sm" style={{ direction: "rtl" }}>
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-5 h-5 rounded-md flex items-center justify-center text-xs font-bold text-white" style={{ background: "#6366f1" }}>a</span>
+              <span className="text-slate-600 leading-relaxed">ניצב מול</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-5 h-5 rounded-md flex items-center justify-center text-xs font-bold text-white" style={{ background: "#10b981" }}>b</span>
+              <span className="text-slate-600 leading-relaxed">ניצב ליד</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-5 h-5 rounded-md flex items-center justify-center text-xs font-bold text-white" style={{ background: "#f59e0b" }}>c</span>
+              <span className="text-slate-600 leading-relaxed">יתר</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-5 h-5 rounded-md flex items-center justify-center text-xs font-bold" style={{ background: "rgba(99,102,241,0.1)", color: "#6366f1" }}>α</span>
+              <span className="text-slate-600 leading-relaxed">זווית</span>
+            </div>
+          </div>
         </div>
 
         {/* Trig function cards — 3-col grid on desktop, stacked on mobile */}

@@ -747,7 +747,7 @@ function TowerLab() {
             <polygon points={`${ptA.x},${ptA.y} ${ptB.x},${ptB.y} ${ptC.x},${ptC.y}`} fill="rgba(16,185,129,0.04)" stroke="#334155" strokeWidth="2" />
             <polyline points={`${ptB.x - 10},${ptB.y} ${ptB.x - 10},${ptB.y - 10} ${ptB.x},${ptB.y - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
             {/* BC vertical leg (legA) — right of line, centered height, clear of vertices */}
-            <text x={ptB.x + 18} y={(ptB.y + ptC.y) / 2} fontSize="13" fill="#6366f1" fontWeight="700">{legA.toFixed(1)}</text>
+            <text x={ptB.x + 38} y={(ptB.y + ptC.y) / 2} fontSize="13" fill="#6366f1" fontWeight="700">{legA.toFixed(1)}</text>
             {/* AB bottom base (legB) — centered on base, below the line, far from B */}
             <text x={(ptA.x + ptB.x) / 2} y={ptA.y + 18} fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">{legB.toFixed(1)}</text>
             {/* AC hypotenuse (20) — above diagonal center, outside triangle */}

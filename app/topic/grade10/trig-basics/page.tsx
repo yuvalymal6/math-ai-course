@@ -751,7 +751,7 @@ function TowerLab() {
             {/* AB bottom base (legB) — centered on base, below the line, far from B */}
             <text x={(ptA.x + ptB.x) / 2} y={ptA.y + 18} fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">{legB.toFixed(1)}</text>
             {/* AC hypotenuse (20) — above diagonal center, outside triangle */}
-            <text x={(ptA.x + ptC.x) / 2 - 18} y={(ptA.y + ptC.y) / 2 - 12} fontSize="13" fill="#f59e0b" fontWeight="700">20</text>
+            <text x={(ptA.x + ptC.x) / 2 - 18} y={(ptA.y + ptC.y) / 2} fontSize="13" fill="#f59e0b" fontWeight="700">20</text>
             {/* Vertices */}
             <text x={ptA.x - 14} y={ptA.y + 4} fontSize="12" fill="#475569" fontWeight="600">A</text>
             <text x={ptB.x + 6} y={ptB.y + 16} fontSize="12" fill="#475569" fontWeight="600">B</text>

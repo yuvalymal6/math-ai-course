@@ -746,12 +746,12 @@ function TowerLab() {
           <svg viewBox={`0 0 ${maxW} ${maxH}`} style={{ width: "100%", display: "block" }} aria-hidden>
             <polygon points={`${ptA.x},${ptA.y} ${ptB.x},${ptB.y} ${ptC.x},${ptC.y}`} fill="rgba(16,185,129,0.04)" stroke="#334155" strokeWidth="2" />
             <polyline points={`${ptB.x - 10},${ptB.y} ${ptB.x - 10},${ptB.y - 10} ${ptB.x},${ptB.y - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-            {/* AB (bottom base) — at 80% toward B, below the line */}
-            <text x={ptA.x + (ptB.x - ptA.x) * 0.8} y={ptA.y + 18} fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">{legB.toFixed(1)}</text>
-            {/* BC (vertical leg) — centered height, left of line (outside triangle) */}
-            <text x={ptB.x + 14} y={(ptB.y + ptC.y) / 2 + 4} fontSize="13" fill="#6366f1" fontWeight="700">{legA.toFixed(1)}</text>
-            {/* AC (hypotenuse) — above center of diagonal, outside triangle */}
-            <text x={(ptA.x + ptC.x) / 2 - 16} y={(ptA.y + ptC.y) / 2 - 10} fontSize="13" fill="#f59e0b" fontWeight="700">20</text>
+            {/* BC vertical leg (legA) — right of line, centered height, clear of vertices */}
+            <text x={ptB.x + 18} y={(ptB.y + ptC.y) / 2} fontSize="13" fill="#6366f1" fontWeight="700">{legA.toFixed(1)}</text>
+            {/* AB bottom base (legB) — centered on base, below the line, far from B */}
+            <text x={(ptA.x + ptB.x) / 2} y={ptA.y + 18} fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">{legB.toFixed(1)}</text>
+            {/* AC hypotenuse (20) — above diagonal center, outside triangle */}
+            <text x={(ptA.x + ptC.x) / 2 - 18} y={(ptA.y + ptC.y) / 2 - 12} fontSize="13" fill="#f59e0b" fontWeight="700">20</text>
             {/* Vertices */}
             <text x={ptA.x - 14} y={ptA.y + 4} fontSize="12" fill="#475569" fontWeight="600">A</text>
             <text x={ptB.x + 6} y={ptB.y + 16} fontSize="12" fill="#475569" fontWeight="600">B</text>

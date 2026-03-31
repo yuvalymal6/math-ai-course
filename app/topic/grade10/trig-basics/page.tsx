@@ -843,10 +843,7 @@ function TriangleLab() {
           <line x1={ptB.x} y1={ptB.y} x2={ptD.x} y2={ptD.y} stroke="#a78bfa" strokeWidth="2" strokeDasharray="6,3" />
           {/* Triangle BCD shading */}
           <polygon points={`${ptB.x},${ptB.y} ${ptC.x},${ptC.y} ${ptD.x},${ptD.y}`} fill="rgba(167,139,250,0.1)" stroke="none" />
-          {/* Angle labels */}
-          <text x={ptA.x + 32} y={ptA.y - 8} fontSize="12" fill="#DC2626" fontWeight="700">30°</text>
-          <text x={ptC.x - 26} y={ptC.y + 18} fontSize="12" fill="#a78bfa" fontWeight="700">60°</text>
-          {/* Vertices + D */}
+          {/* Vertices + D (angle labels removed — shown in info boxes below) */}
           <text x={ptA.x - 12} y={ptA.y + 4} fontSize="11" fill="#475569" fontWeight="600">A</text>
           <text x={ptB.x + 4} y={ptB.y + 16} fontSize="11" fill="#475569" fontWeight="600">B</text>
           <text x={ptC.x + 4} y={ptC.y - 6} fontSize="11" fill="#475569" fontWeight="600">C</text>
@@ -875,6 +872,8 @@ function TriangleLab() {
           { label: "DC", val: DC.toFixed(1), color: "#DC2626" },
           { label: "S(ABC)", val: areaABC.toFixed(1), color: "#10b981" },
           { label: "S(BCD)", val: areaBCD.toFixed(1), color: "#a78bfa" },
+          { label: "∠A", val: "30°", color: "#DC2626" },
+          { label: "∠C", val: "60°", color: "#6366f1" },
         ].map(r => (
           <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 6px", boxShadow: "0 2px 6px rgba(60,54,42,0.03)" }}>
             <div style={{ color: "#6B7280", fontSize: 8, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>

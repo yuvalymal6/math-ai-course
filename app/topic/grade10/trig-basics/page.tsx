@@ -415,7 +415,7 @@ function AdvancedDiagram() {
       {/* Right angle mark at D (on AC) */}
       <rect x={Dx - 4} y={Dy - 4} width="8" height="8" fill="none" stroke="#a78bfa" strokeWidth="1.5" transform={`rotate(-35, ${Dx}, ${Dy})`} />
       {/* AC = k (hypotenuse) */}
-      <text x="100" y="110" fontSize="15" fill="#f59e0b" fontWeight="700" textAnchor="middle" fontStyle="italic">k</text>
+      <text x="100" y="120" fontSize="15" fill="#f59e0b" fontWeight="700" textAnchor="middle" fontStyle="italic">k</text>
       {/* BC = 0.5k (vertical) */}
       <text x="244" y="125" fontSize="13" fill="#6366f1" fontWeight="700">0.5k</text>
       {/* Point D label — no BD text, only D and right angle mark */}

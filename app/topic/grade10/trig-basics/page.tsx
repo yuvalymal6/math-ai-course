@@ -398,27 +398,29 @@ function MediumDiagram() {
 }
 
 function AdvancedDiagram() {
-  const Ax = 80, Ay = 240;
-  const Bx = 320, By = 240;
-  const Cx = 160, Cy = 80;
-  const Hx = 160, Hy = 240;
-
+  // 30-60-90 triangle: AC=k (hypotenuse), BC=0.5k (shorter leg)
   return (
-    <svg viewBox="0 0 400 300" className="w-full max-w-sm mx-auto" aria-hidden>
-      {/* Triangle */}
-      <polygon points={`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`} fill="rgba(234,88,12,0.06)" stroke="#64748b" strokeWidth={2} strokeLinejoin="round" />
-      {/* Height h */}
-      <line x1={Cx} y1={Cy} x2={Hx} y2={Hy} stroke="#a78bfa" strokeWidth={2} strokeDasharray="6,3" />
-      {/* Right angle mark at foot */}
-      <polyline points={`${Hx - 10},${Hy} ${Hx - 10},${Hy - 10} ${Hx},${Hy - 10}`} fill="none" stroke="#a78bfa" strokeWidth={1.5} />
-      {/* Angle arc at A */}
-      <path d={`M ${Ax + 35},${Ay} A 35,35 0 0,0 ${Ax + 22},${Ay - 27}`} fill="none" stroke="#00d4ff" strokeWidth={2} />
-      {/* Labels */}
-      <text x={Ax - 10} y={Ay + 18} fontSize={14} fill="#64748b" fontWeight={700} fontFamily="sans-serif">A</text>
-      <text x={Bx + 6} y={By + 18} fontSize={14} fill="#64748b" fontWeight={700} fontFamily="sans-serif">B</text>
-      <text x={Cx - 4} y={Cy - 10} fontSize={14} fill="#64748b" fontWeight={700} fontFamily="sans-serif">C</text>
-      <text x={Hx + 6} y={Hy + 18} fontSize={12} fill="#a78bfa" fontWeight={600} fontFamily="sans-serif">H</text>
-      <text x={Cx - 22} y={(Cy + Hy) / 2} fontSize={12} fill="#a78bfa" fontWeight={700} fontFamily="sans-serif">h</text>
+    <svg viewBox="0 0 280 220" className="w-full max-w-[260px] mx-auto" aria-hidden>
+      {/* A(30,190) B(230,190) C(230,70) — right angle at B */}
+      <polygon points="30,190 230,190 230,70" fill="rgba(220,38,38,0.04)" stroke="#334155" strokeWidth="2" />
+      {/* Right angle at B */}
+      <polyline points="215,190 215,175 230,175" fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+      {/* Angle α at A */}
+      <path d="M 62,190 A 32,32 0 0,0 55,170" fill="none" stroke="#DC2626" strokeWidth="2.5" />
+      <text x="68" y="178" fontSize="13" fill="#DC2626" fontWeight="700" fontStyle="italic">α</text>
+      {/* Angle β at C */}
+      <path d="M 230,88 A 18,18 0 0,0 218,72" fill="none" stroke="#a78bfa" strokeWidth="2" />
+      <text x="208" y="82" fontSize="12" fill="#a78bfa" fontWeight="700" fontStyle="italic">β</text>
+      {/* AC = k (hypotenuse) */}
+      <text x="110" y="118" fontSize="15" fill="#f59e0b" fontWeight="700" textAnchor="middle" fontStyle="italic">k</text>
+      {/* BC = 0.5k (vertical) */}
+      <text x="244" y="135" fontSize="13" fill="#6366f1" fontWeight="700">0.5k</text>
+      {/* AB = ? (bottom) */}
+      <text x="130" y="210" fontSize="13" fill="#10b981" fontWeight="600" textAnchor="middle">?</text>
+      {/* Vertices */}
+      <text x="16" y="198" fontSize="13" fill="#475569" fontWeight="700">A</text>
+      <text x="232" y="206" fontSize="13" fill="#475569" fontWeight="700">B</text>
+      <text x="232" y="64" fontSize="13" fill="#475569" fontWeight="700">C</text>
     </svg>
   );
 }
@@ -460,19 +462,19 @@ const exercises: ExerciseDef[] = [
   },
   {
     id: "advanced",
-    title: "המשולש הכללי",
-    problem: "במשולש ABC ידוע:\n∠A = 60°, AB = 8, AC = 6.\n\nא. הורד גובה מ-C לצלע AB וסמנהו h. חשב את h באמצעות sin 60°.\nב. חשב את שטח המשולש ABC.\nג. מצא את אורך הצלע BC (רמז: השתמש בנוסחת הקוסינוסים או בגובה שמצאת).",
+    title: "פרמטרים ויחסים — המשולש המיוחד",
+    problem: "נתון משולש ישר זווית ABC (∠B = 90°) שבו אורך היתר AC הוא k ס\"מ, ואחד הניצבים (BC) שווה למחצית היתר, כלומר BC = 0.5k.\n\nא. הוכחה: ללא שימוש במחשבון, הוכח מהן זוויות המשולש (רמז: איזה יחס טריגונומטרי נותן חצי?).\nב. הבע את שטח המשולש באמצעות הפרמטר k בלבד.\nג. חשב את היחס בין הניצב הקצר לניצב הארוך. השאר את תשובתך עם שורש.",
     diagram: <AdvancedDiagram />,
     pitfalls: [
-      { title: "⚠️ הגובה = AC · sin(A)", text: "כשמורידים גובה מ-C לצלע AB, הגובה h = AC · sin(∠A) = 6 · sin(60°)." },
-      { title: "💡 נוסחת הקוסינוסים", text: "BC² = AB² + AC² - 2·AB·AC·cos(A). אפשר גם לפרק למשולשים ישרי-זווית באמצעות הגובה." },
+      { title: "⚠️ פחד מפרמטרים", text: "תלמידים נבהלים מ-k. הוא מתנהג בדיוק כמו מספר — אם מצמצמים k/k, מקבלים 1. אם מעלים בריבוע (0.5k)², מקבלים 0.25k²." },
+      { title: "💡 דיוק בשורשים", text: "נטייה להפוך √3/2 למספר עשרוני. בבגרות ב-5 יחידות שומרים על הערך המדויק. AB = (√3/2)k — זה התשובה הסופית." },
     ],
-    goldenPrompt: "",
-    advancedGateQuestion: "לפני שמתחילים — כתוב פרומפט שמסביר: כיצד מחשבים גובה במשולש באמצעות סינוס? מהי נוסחת הקוסינוסים? כיצד מוצאים שטח משולש כשידועות שתי צלעות וזווית ביניהן? (לפחות 80 תווים)",
+    goldenPrompt: `\nהיי, אני תלמיד כיתה י׳, צירפתי לך תרגיל על משולש ישר-זווית מיוחד עם פרמטר k.\nהנה הפרוטוקול שלנו, תעבוד לפיו ב-100%:\n1️⃣ סריקה:\nתסרוק את הנתונים ותכתוב לי רק:\n"זיהיתי את הנתונים. מחכה להוראות לשלב א'."\n2️⃣ תפקיד:\nאתה המורה שלי. עודד אותי לזהות שזה משולש 30-60-90.\n3️⃣ שיטת עבודה:\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    advancedGateQuestion: "לפני שמתחילים — כתוב פרומפט שמסביר: מהו משולש 30-60-90? מהם היחסים בין צלעותיו? כיצד מזהים אותו מתוך נתונים? (לפחות 80 תווים)",
     steps: [
-      { phase: "סעיף א׳", label: "חישוב הגובה h", coaching: "", prompt: "תעזור לי לחשב את הגובה h מ-C לצלע AB באמצעות sin 60°.", keywords: [], keywordHint: "", contextWords: ["גובה", "סינוס", "שטח", "קוסינוס", "נוסחה", "משולש"] },
-      { phase: "סעיף ב׳", label: "שטח המשולש", coaching: "", prompt: "כיצד אחשב את שטח המשולש אם מצאתי את הגובה?", keywords: [], keywordHint: "", contextWords: ["גובה", "סינוס", "שטח", "קוסינוס", "נוסחה", "משולש"] },
-      { phase: "סעיף ג׳", label: "מציאת BC", coaching: "", prompt: "כיצד אמצא את אורך הצלע BC? האם אפשר להשתמש בנוסחת הקוסינוסים?", keywords: [], keywordHint: "", contextWords: ["גובה", "סינוס", "שטח", "קוסינוס", "נוסחה", "משולש"] },
+      { phase: "סעיף א׳", label: "הוכחת הזוויות", coaching: "", prompt: "אם sin(α) = 0.5k/k = 0.5, מה זה אומר על הזווית α? איזו זווית מוכרת יש לה סינוס שווה ל-0.5?", keywords: [], keywordHint: "", contextWords: ["sin", "30", "0.5", "חצי", "מיוחד", "זווית", "הוכחה"] },
+      { phase: "סעיף ב׳", label: "שטח עם פרמטר k", coaching: "", prompt: "השתמשו בפיתגורס כדי למצוא את הניצב השני: √(k² - (0.5k)²). אחר כך הציבו בנוסחת שטח.", keywords: [], keywordHint: "", contextWords: ["פיתגורס", "שורש", "k", "שטח", "0.25", "0.75", "√3"] },
+      { phase: "סעיף ג׳", label: "יחס הניצבים", coaching: "", prompt: "חשבו: מהו (0.5k) חלקי ((√3/2)k)? מה קורה כש-k מצטמצם?", keywords: [], keywordHint: "", contextWords: ["יחס", "צמצום", "k", "שורש", "√3", "1/√3"] },
     ],
   },
 ];
@@ -773,114 +775,76 @@ function TowerLab() {
   );
 }
 
-// ─── Lab 3: TriangleLab (Advanced) ────────────────────────────────────────────
+// ─── Lab 3: SpecialTriangleLab (Advanced) ─────────────────────────────────────
 
 function TriangleLab() {
-  const [angleA, setAngleA] = useState(60);
-  const [sideAB, setSideAB] = useState(8);
-  const [sideAC, setSideAC] = useState(6);
+  const [k, setK] = useState(20);
 
-  const angleARad = (angleA * Math.PI) / 180;
-  const h = sideAC * Math.sin(angleARad);
-  const area = 0.5 * sideAB * h;
-  const bcSq = sideAB * sideAB + sideAC * sideAC - 2 * sideAB * sideAC * Math.cos(angleARad);
-  const bc = bcSq > 0 ? Math.sqrt(bcSq) : 0;
+  // 30-60-90 triangle: hyp = k, short leg = 0.5k, long leg = (√3/2)k
+  const shortLeg = 0.5 * k;
+  const longLeg = (Math.sqrt(3) / 2) * k;
+  const area = (shortLeg * longLeg) / 2; // = (√3/8)k²
+  const ratio = 1 / Math.sqrt(3); // short/long = 1/√3
 
-  let angleB = 0, angleC = 0;
-  if (bc > 0.001) {
-    const sinB = (sideAC * Math.sin(angleARad)) / bc;
-    angleB = Math.asin(Math.min(1, Math.max(-1, sinB))) * 180 / Math.PI;
-    angleC = 180 - angleA - angleB;
-  }
-
-  const scale = 18;
-  const Ax = 60, Ay = 250;
-  const Bx = Ax + sideAB * scale, By = 250;
-  const Cx = Ax + sideAC * Math.cos(angleARad) * scale;
-  const Cy = Ay - sideAC * Math.sin(angleARad) * scale;
-  const Hx = Cx, Hy = Ay;
-
-  const arcR = 25;
-  const arcEndX = Ax + arcR * Math.cos(angleARad);
-  const arcEndY = Ay - arcR * Math.sin(angleARad);
-  const largeArc = angleA > 180 ? 1 : 0;
+  // SVG scaling
+  const maxW = 280, maxH = 220;
+  const sc = Math.min((maxW - 80) / longLeg, (maxH - 50) / shortLeg, 8);
+  const ptA = { x: 40, y: maxH - 20 };
+  const ptB = { x: 40 + longLeg * sc, y: maxH - 20 };
+  const ptC = { x: ptB.x, y: maxH - 20 - shortLeg * sc };
 
   return (
     <section style={{ border: "1px solid rgba(0,212,255,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המשולש הכללי</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה זווית וצלעות כדי לראות גובה, שטח ו-BC לפי נוסחת הקוסינוסים.</p>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המשולש המיוחד (30°-60°-90°)</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את k וצפו: הזוויות תמיד נשארות 30° ו-60°!</p>
 
-      {/* Sliders */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: "2rem", background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>זווית A</span>
-            <span style={{ color: "#00d4ff", fontWeight: 700 }}>{angleA}°</span>
-          </div>
-          <input type="range" min={10} max={170} step={1} value={angleA} onChange={e => setAngleA(+e.target.value)} style={{ width: "100%", accentColor: "#00d4ff" }} />
+      {/* Slider */}
+      <div style={{ marginBottom: "2rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#6B7280", marginBottom: 6 }}>
+          <span>ערך k (אורך היתר)</span>
+          <span style={{ color: "#f59e0b", fontWeight: 700, fontSize: 16 }}>{k}</span>
         </div>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>צלע AB</span>
-            <span style={{ color: "#EA580C", fontWeight: 700 }}>{sideAB}</span>
-          </div>
-          <input type="range" min={2} max={12} step={0.5} value={sideAB} onChange={e => setSideAB(+e.target.value)} style={{ width: "100%", accentColor: "#EA580C" }} />
-        </div>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>צלע AC</span>
-            <span style={{ color: "#3b82f6", fontWeight: 700 }}>{sideAC}</span>
-          </div>
-          <input type="range" min={2} max={12} step={0.5} value={sideAC} onChange={e => setSideAC(+e.target.value)} style={{ width: "100%", accentColor: "#3b82f6" }} />
-        </div>
+        <input type="range" min={10} max={100} step={1} value={k} onChange={e => setK(+e.target.value)} style={{ width: "100%", accentColor: "#f59e0b" }} />
       </div>
 
-      {/* SVG */}
+      {/* Dynamic SVG */}
       <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
-        <svg viewBox="0 0 400 300" style={{ width: "100%", display: "block" }} aria-hidden>
-          {/* Triangle */}
-          <polygon points={`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`} fill="rgba(0,212,255,0.06)" stroke="#64748b" strokeWidth={2} strokeLinejoin="round" />
-          {/* Height h from C to AB */}
-          <line x1={Cx} y1={Cy} x2={Hx} y2={Hy} stroke="#a78bfa" strokeWidth={2} strokeDasharray="6,3" />
-          {/* Right-angle mark at foot of height */}
-          {Hx > Ax + 15 && Hx < Bx - 15 && (
-            <polyline points={`${Hx - 10},${Hy} ${Hx - 10},${Hy - 10} ${Hx},${Hy - 10}`} fill="none" stroke="#a78bfa" strokeWidth={1.5} />
-          )}
-          {/* Angle arc at A */}
-          {angleA > 5 && angleA < 175 && (
-            <path d={`M ${Ax + arcR},${Ay} A ${arcR},${arcR} 0 ${largeArc},0 ${arcEndX},${arcEndY}`} fill="none" stroke="#00d4ff" strokeWidth={2} />
-          )}
-          {/* Vertex labels */}
-          <text x={Ax - 14} y={Ay + 18} fontSize={14} fill="#64748b" fontWeight={700} fontFamily="sans-serif">A</text>
-          <text x={Bx + 6} y={By + 18} fontSize={14} fill="#64748b" fontWeight={700} fontFamily="sans-serif">B</text>
-          <text x={Cx - 4} y={Cy - 10} fontSize={14} fill="#64748b" fontWeight={700} fontFamily="sans-serif">C</text>
-          {/* h label */}
-          <text x={Cx - 22} y={(Cy + Hy) / 2} fontSize={12} fill="#a78bfa" fontWeight={700} fontFamily="sans-serif">h</text>
+        <svg viewBox={`0 0 ${maxW} ${maxH}`} style={{ width: "100%", display: "block" }} aria-hidden>
+          <polygon points={`${ptA.x},${ptA.y} ${ptB.x},${ptB.y} ${ptC.x},${ptC.y}`} fill="rgba(220,38,38,0.04)" stroke="#334155" strokeWidth="2" />
+          <polyline points={`${ptB.x - 10},${ptB.y} ${ptB.x - 10},${ptB.y - 10} ${ptB.x},${ptB.y - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+          {/* Labels */}
+          <text x={ptB.x + 8} y={(ptB.y + ptC.y) / 2 + 4} fontSize="12" fill="#6366f1" fontWeight="700">0.5k = {shortLeg.toFixed(1)}</text>
+          <text x={(ptA.x + ptB.x) / 2} y={ptA.y + 16} fontSize="12" fill="#10b981" fontWeight="700" textAnchor="middle">(√3/2)k = {longLeg.toFixed(1)}</text>
+          <text x={(ptA.x + ptC.x) / 2 - 8} y={(ptA.y + ptC.y) / 2 - 6} fontSize="13" fill="#f59e0b" fontWeight="700">k = {k}</text>
+          {/* Angle labels (always 30° and 60°) */}
+          <text x={ptA.x + 32} y={ptA.y - 8} fontSize="12" fill="#DC2626" fontWeight="700">30°</text>
+          <text x={ptC.x - 26} y={ptC.y + 18} fontSize="12" fill="#a78bfa" fontWeight="700">60°</text>
+          {/* Vertices */}
+          <text x={ptA.x - 12} y={ptA.y + 4} fontSize="11" fill="#475569" fontWeight="600">A</text>
+          <text x={ptB.x + 4} y={ptB.y + 16} fontSize="11" fill="#475569" fontWeight="600">B</text>
+          <text x={ptC.x + 4} y={ptC.y - 6} fontSize="11" fill="#475569" fontWeight="600">C</text>
         </svg>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, textAlign: "center", marginBottom: 12 }}>
-        {[
-          { label: "גובה h", val: h.toFixed(2), color: "#a78bfa" },
-          { label: "שטח", val: area.toFixed(2), color: "#16A34A" },
-          { label: "BC", val: bc.toFixed(2), color: "#EA580C" },
-        ].map(r => (
-          <div key={r.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.35)", padding: 12, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
-            <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
-          </div>
-        ))}
+      {/* Key insight banner */}
+      <div style={{ borderRadius: 12, border: "1.5px solid rgba(220,38,38,0.25)", background: "rgba(220,38,38,0.04)", padding: "12px 14px", marginBottom: "1.5rem", textAlign: "center" }}>
+        <p style={{ color: "#DC2626", fontSize: 13, fontWeight: 600, margin: 0 }}>
+          לא משנה מה k — הזוויות תמיד 30° ו-60°!
+        </p>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, textAlign: "center" }}>
+
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 10, textAlign: "center" }}>
         {[
-          { label: "∠A", val: `${angleA.toFixed(1)}°`, color: "#00d4ff" },
-          { label: "∠B", val: `${angleB.toFixed(1)}°`, color: "#f59e0b" },
-          { label: "∠C", val: `${angleC.toFixed(1)}°`, color: "#DC2626" },
+          { label: "BC = 0.5k", val: shortLeg.toFixed(1), color: "#6366f1" },
+          { label: "AB = (√3/2)k", val: longLeg.toFixed(2), color: "#10b981" },
+          { label: "AC = k", val: k.toString(), color: "#f59e0b" },
+          { label: "S = (√3/8)k²", val: area.toFixed(1), color: "#00d4ff" },
+          { label: "BC/AB", val: `1/√3 ≈ ${ratio.toFixed(3)}`, color: "#a78bfa" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.35)", padding: 12, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
-            <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
+          <div key={r.label} style={{ borderRadius: 14, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.25)", padding: "14px 8px", boxShadow: "0 2px 8px rgba(60,54,42,0.04)" }}>
+            <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 6 }}>{r.label}</div>
+            <div style={{ color: r.color, fontWeight: 700, fontSize: 15, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}
       </div>

@@ -504,7 +504,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
             <path d="M 48,130 A 28,28 0 0,0 37,115" fill="none" stroke="#6366f1" strokeWidth="2.5" />
             <text x="52" y="120" fontSize="14" fill="#6366f1" fontWeight="700" fontStyle="italic">α</text>
             {/* a: tight to BC vertical, centered at midpoint y=75 */}
-            <text x="165" y="79" fontSize="14" fill="#6366f1" fontWeight="700" textAnchor="start">a</text>
+            <text x="170" y="79" fontSize="14" fill="#6366f1" fontWeight="700" textAnchor="start">a</text>
             {/* b: centered under AB, midpoint x=90 */}
             <text x="90" y="147" fontSize="14" fill="#10b981" fontWeight="700" textAnchor="middle">b</text>
             {/* c: above midpoint of AC diagonal, offset up-left */}

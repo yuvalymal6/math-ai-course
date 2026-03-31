@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Brain, ChevronRight, CheckCircle2, Lock, AlertCircle } from "lucide-react";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
+import LabMessage from "@/app/components/LabMessage";
+import { useDefaultToast } from "@/app/lib/useDefaultToast";
 
 // ─── Level 1 — Guiding (buttons) ─────────────────────────────────────────────
 

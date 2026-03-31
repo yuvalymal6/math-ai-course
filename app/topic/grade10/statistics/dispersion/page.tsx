@@ -4,6 +4,8 @@ import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import MarkComplete from "@/app/components/MarkComplete";
+import LabMessage from "@/app/components/LabMessage";
+import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 import {
   Copy, Check, AlertTriangle,

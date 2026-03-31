@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
+import LabMessage from "@/app/components/LabMessage";
+import { useDefaultToast } from "@/app/lib/useDefaultToast";
 
 // ─── Shared style ──────────────────────────────────────────────────────────────
 

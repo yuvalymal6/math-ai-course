@@ -7,6 +7,8 @@ import Link from "next/link";
 import { calculatePromptScore, flexMatch, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
+import LabMessage from "@/app/components/LabMessage";
+import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

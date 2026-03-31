@@ -4,6 +4,8 @@ import { useState, useCallback } from "react";
 import Link from "next/link";
 import { Brain, ChevronRight, Copy, Check, Lock, CheckCircle2 } from "lucide-react";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
+import LabMessage from "@/app/components/LabMessage";
+import { useDefaultToast } from "@/app/lib/useDefaultToast";
 
 const GATE_CHARS = 80;
 

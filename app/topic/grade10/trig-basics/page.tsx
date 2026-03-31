@@ -397,29 +397,37 @@ function MediumDiagram() {
 }
 
 function AdvancedDiagram() {
-  // 30-60-90 triangle: AC=k (hypotenuse), BC=0.5k (shorter leg)
+  // 30-60-90 triangle with altitude BD to hypotenuse
+  // A(30,190) B(230,190) C(230,50) — right angle at B
+  // D is foot of altitude from B to AC
+  // In 30-60-90: AD/AC = cos²(30°) = 0.75, so D is at 75% from A to C
+  const Ax = 30, Ay = 190, Bx = 230, By = 190, Cx = 230, Cy = 50;
+  const t = 0.75; // AD/AC ratio
+  const Dx = Ax + t * (Cx - Ax); // = 30 + 0.75*200 = 180
+  const Dy = Ay + t * (Cy - Ay); // = 190 + 0.75*(-140) = 85
+
   return (
     <svg viewBox="0 0 280 220" className="w-full max-w-[260px] mx-auto" aria-hidden>
-      {/* A(30,190) B(230,190) C(230,70) — right angle at B */}
-      <polygon points="30,190 230,190 230,70" fill="rgba(220,38,38,0.04)" stroke="#334155" strokeWidth="2" />
+      {/* Triangle ABC */}
+      <polygon points={`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`} fill="rgba(220,38,38,0.04)" stroke="#334155" strokeWidth="2" />
       {/* Right angle at B */}
       <polyline points="215,190 215,175 230,175" fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-      {/* Angle α at A */}
-      <path d="M 62,190 A 32,32 0 0,0 55,170" fill="none" stroke="#DC2626" strokeWidth="2.5" />
-      <text x="68" y="178" fontSize="13" fill="#DC2626" fontWeight="700" fontStyle="italic">α</text>
-      {/* Angle β at C */}
-      <path d="M 230,88 A 18,18 0 0,0 218,72" fill="none" stroke="#a78bfa" strokeWidth="2" />
-      <text x="208" y="82" fontSize="12" fill="#a78bfa" fontWeight="700" fontStyle="italic">β</text>
+      {/* Altitude BD (dashed) */}
+      <line x1={Bx} y1={By} x2={Dx} y2={Dy} stroke="#a78bfa" strokeWidth="2" strokeDasharray="6,3" />
+      {/* Right angle mark at D (on AC) */}
+      <rect x={Dx - 4} y={Dy - 4} width="8" height="8" fill="none" stroke="#a78bfa" strokeWidth="1.5" transform={`rotate(-35, ${Dx}, ${Dy})`} />
       {/* AC = k (hypotenuse) */}
-      <text x="110" y="118" fontSize="15" fill="#f59e0b" fontWeight="700" textAnchor="middle" fontStyle="italic">k</text>
+      <text x="100" y="110" fontSize="15" fill="#f59e0b" fontWeight="700" textAnchor="middle" fontStyle="italic">k</text>
       {/* BC = 0.5k (vertical) */}
-      <text x="244" y="135" fontSize="13" fill="#6366f1" fontWeight="700">0.5k</text>
-      {/* AB = ? (bottom) */}
-      <text x="130" y="210" fontSize="13" fill="#10b981" fontWeight="600" textAnchor="middle">?</text>
+      <text x="244" y="125" fontSize="13" fill="#6366f1" fontWeight="700">0.5k</text>
+      {/* Point D label */}
+      <text x={Dx + 6} y={Dy - 8} fontSize="12" fill="#a78bfa" fontWeight="700">D</text>
+      {/* BD label */}
+      <text x={(Bx + Dx) / 2 + 8} y={(By + Dy) / 2 + 6} fontSize="11" fill="#a78bfa" fontWeight="600">BD</text>
       {/* Vertices */}
       <text x="16" y="198" fontSize="13" fill="#475569" fontWeight="700">A</text>
       <text x="232" y="206" fontSize="13" fill="#475569" fontWeight="700">B</text>
-      <text x="232" y="64" fontSize="13" fill="#475569" fontWeight="700">C</text>
+      <text x="232" y="44" fontSize="13" fill="#475569" fontWeight="700">C</text>
     </svg>
   );
 }
@@ -461,19 +469,20 @@ const exercises: ExerciseDef[] = [
   },
   {
     id: "advanced",
-    title: "פרמטרים ויחסים — המשולש המיוחד",
-    problem: "נתון משולש ישר זווית ABC (∠B = 90°) שבו אורך היתר AC הוא k ס\"מ, ואחד הניצבים (BC) שווה למחצית היתר, כלומר BC = 0.5k.\n\nא. הוכחה: ללא שימוש במחשבון, הוכח מהן זוויות המשולש (רמז: איזה יחס טריגונומטרי נותן חצי?).\nב. הבע את שטח המשולש באמצעות הפרמטר k בלבד.\nג. חשב את היחס בין הניצב הקצר לניצב הארוך. השאר את תשובתך עם שורש.",
+    title: "דמיון, גובה ויחסי שטחים",
+    problem: "נתונים: במשולש ישר זווית ABC (∠B = 90°), אורך היתר הוא k ס\"מ ואחד הניצבים הוא 0.5k ס\"מ. מורידים גובה BD ליתר AC.\n\nא. הוכחה: מהן זוויות המשולש?\nב. הבע את שטח המשולש ABC ואת אורך הקטע AD באמצעות הפרמטר k בלבד.\nג. הוכח דמיון בין המשולשים ABC ו-BCD.\nד. מצא את יחס השטחים בין משולש BCD לבין שטח המשולש המקורי ABC.",
     diagram: <AdvancedDiagram />,
     pitfalls: [
-      { title: "⚠️ פחד מפרמטרים", text: "תלמידים נבהלים מ-k. הוא מתנהג בדיוק כמו מספר — אם מצמצמים k/k, מקבלים 1. אם מעלים בריבוע (0.5k)², מקבלים 0.25k²." },
-      { title: "💡 דיוק בשורשים", text: "נטייה להפוך √3/2 למספר עשרוני. בבגרות ב-5 יחידות שומרים על הערך המדויק. AB = (√3/2)k — זה התשובה הסופית." },
+      { title: "⚠️ יחס הדמיון", text: "שימו לב כשאתם קובעים את יחס הדמיון — הוא תמיד היחס בין צלעות מתאימות (למשל, יתר מול יתר). טעות נפוצה היא להתבלבל בין הניצב הקצר לניצב הארוך." },
+      { title: "💡 יחס שטחים", text: "זכרו את המשפט הקלאסי: יחס השטחים בין משולשים דומים שווה לריבוע יחס הדמיון. אל תשכחו להעלות בחזקה!" },
     ],
-    goldenPrompt: `\nהיי, אני תלמיד כיתה י׳, צירפתי לך תרגיל על משולש ישר-זווית מיוחד עם פרמטר k.\nהנה הפרוטוקול שלנו, תעבוד לפיו ב-100%:\n1️⃣ סריקה:\nתסרוק את הנתונים ותכתוב לי רק:\n"זיהיתי את הנתונים. מחכה להוראות לשלב א'."\n2️⃣ תפקיד:\nאתה המורה שלי. עודד אותי לזהות שזה משולש 30-60-90.\n3️⃣ שיטת עבודה:\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה תגיב אך ורק: ״אני מוכן להמשיך.״`,
-    advancedGateQuestion: "לפני שמתחילים — כתוב פרומפט שמסביר: מהו משולש 30-60-90? מהם היחסים בין צלעותיו? כיצד מזהים אותו מתוך נתונים? (לפחות 80 תווים)",
+    goldenPrompt: `\nהיי, אני תלמיד כיתה י׳, צירפתי לך תרגיל מתקדם על משולש ישר-זווית מיוחד עם גובה ליתר ודמיון. הנושא: טריגונומטריה, משולשים דומים ויחסי שטחים.\nדבר ראשון, תסרוק את כל הנתונים ותעצור כדי לאשר שהבנת. חשוב מאוד: אל תפתור ואל תיתן תשובה סופית. תוביל אותי שלב אחר שלב, תעצור אחרי כל הסבר ותחכה שאגיד להמשיך.`,
+    advancedGateQuestion: "לפני שמתחילים — כתוב פרומפט שמסביר: מהו משולש 30-60-90? מהם היחסים בין צלעותיו? מה קורה כשמורידים גובה ליתר? (לפחות 80 תווים)",
     steps: [
-      { phase: "סעיף א׳", label: "הוכחת הזוויות", coaching: "", prompt: "אם sin(α) = 0.5k/k = 0.5, מה זה אומר על הזווית α? איזו זווית מוכרת יש לה סינוס שווה ל-0.5?", keywords: [], keywordHint: "", contextWords: ["sin", "30", "0.5", "חצי", "מיוחד", "זווית", "הוכחה"] },
-      { phase: "סעיף ב׳", label: "שטח עם פרמטר k", coaching: "", prompt: "השתמשו בפיתגורס כדי למצוא את הניצב השני: √(k² - (0.5k)²). אחר כך הציבו בנוסחת שטח.", keywords: [], keywordHint: "", contextWords: ["פיתגורס", "שורש", "k", "שטח", "0.25", "0.75", "√3"] },
-      { phase: "סעיף ג׳", label: "יחס הניצבים", coaching: "", prompt: "חשבו: מהו (0.5k) חלקי ((√3/2)k)? מה קורה כש-k מצטמצם?", keywords: [], keywordHint: "", contextWords: ["יחס", "צמצום", "k", "שורש", "√3", "1/√3"] },
+      { phase: "סעיף א׳", label: "מציאת זוויות המשולש", coaching: "", prompt: "תדריך אותי להוכיח מהן זוויות המשולש.", keywords: [], keywordHint: "", contextWords: ["sin", "30", "60", "0.5", "חצי", "מיוחד", "זווית", "הוכחה", "טריגונומטריה", "משולש", "שטחים"] },
+      { phase: "סעיף ב׳", label: "הבעת השטח ו-AD באמצעות k", coaching: "", prompt: "תדריך אותי להביע את שטח המשולש ואת אורך הקטע AD באמצעות k.", keywords: [], keywordHint: "", contextWords: ["פיתגורס", "שורש", "k", "שטח", "הבעה", "AD", "גובה", "√3", "טריגונומטריה", "משולש"] },
+      { phase: "סעיף ג׳", label: "הוכחת דמיון", coaching: "", prompt: "תסביר לי איך להוכיח שהמשולשים ABC ו-BCD דומים.", keywords: [], keywordHint: "", contextWords: ["דמיון", "זוויות", "צלעות", "יחס", "BCD", "ABC", "ניצב", "טריגונומטריה", "משולש"] },
+      { phase: "סעיף ד׳", label: "חישוב יחס שטחים", coaching: "", prompt: "תדריך אותי לחשב את יחס השטחים בין BCD ל-ABC.", keywords: [], keywordHint: "", contextWords: ["יחס", "שטחים", "דמיון", "ריבוע", "חזקה", "BCD", "ABC", "טריגונומטריה", "משולש"] },
     ],
   },
 ];
@@ -774,23 +783,34 @@ function TowerLab() {
 function TriangleLab() {
   const [k, setK] = useState(20);
 
-  // 30-60-90 triangle: hyp = k, short leg = 0.5k, long leg = (√3/2)k
+  // 30-60-90: hyp=k, short=0.5k, long=(√3/2)k
   const shortLeg = 0.5 * k;
   const longLeg = (Math.sqrt(3) / 2) * k;
-  const area = (shortLeg * longLeg) / 2; // = (√3/8)k²
-  const ratio = 1 / Math.sqrt(3); // short/long = 1/√3
+  const areaABC = (shortLeg * longLeg) / 2;
+  // BD = AB·BC/AC = longLeg·shortLeg/k = (√3/4)k
+  const BD = (longLeg * shortLeg) / k;
+  // AD = AB²/AC = longLeg²/k = 0.75k
+  const AD = (longLeg * longLeg) / k;
+  // DC = BC²/AC = shortLeg²/k = 0.25k
+  const DC = (shortLeg * shortLeg) / k;
+  // Area BCD = 0.5·DC·BD
+  const areaBCD = 0.5 * DC * BD;
+  const areaRatio = areaBCD / areaABC; // always 0.25
 
-  // SVG scaling
-  const maxW = 280, maxH = 220;
-  const sc = Math.min((maxW - 80) / longLeg, (maxH - 50) / shortLeg, 8);
+  // SVG
+  const maxW = 300, maxH = 230;
+  const sc = Math.min((maxW - 80) / longLeg, (maxH - 50) / shortLeg, 7);
   const ptA = { x: 40, y: maxH - 20 };
   const ptB = { x: 40 + longLeg * sc, y: maxH - 20 };
   const ptC = { x: ptB.x, y: maxH - 20 - shortLeg * sc };
+  // D on AC: parametric t = AD/AC = 0.75
+  const tD = AD / k;
+  const ptD = { x: ptA.x + tD * (ptC.x - ptA.x), y: ptA.y + tD * (ptC.y - ptA.y) };
 
   return (
     <section style={{ border: "1px solid rgba(0,212,255,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המשולש המיוחד (30°-60°-90°)</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את k וצפו: הזוויות תמיד נשארות 30° ו-60°!</p>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת גובה, דמיון ויחסי שטחים</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את k — הזוויות ויחס השטחים תמיד נשארים קבועים!</p>
 
       {/* Slider */}
       <div style={{ marginBottom: "2rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
@@ -801,44 +821,53 @@ function TriangleLab() {
         <input type="range" min={10} max={100} step={1} value={k} onChange={e => setK(+e.target.value)} style={{ width: "100%", accentColor: "#f59e0b" }} />
       </div>
 
-      {/* Dynamic SVG */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
+      {/* Dynamic SVG with altitude BD */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
         <svg viewBox={`0 0 ${maxW} ${maxH}`} style={{ width: "100%", display: "block" }} aria-hidden>
+          {/* Triangle ABC */}
           <polygon points={`${ptA.x},${ptA.y} ${ptB.x},${ptB.y} ${ptC.x},${ptC.y}`} fill="rgba(220,38,38,0.04)" stroke="#334155" strokeWidth="2" />
+          {/* Right angle at B */}
           <polyline points={`${ptB.x - 10},${ptB.y} ${ptB.x - 10},${ptB.y - 10} ${ptB.x},${ptB.y - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-          {/* Labels */}
-          <text x={ptB.x + 8} y={(ptB.y + ptC.y) / 2 + 4} fontSize="12" fill="#6366f1" fontWeight="700">0.5k = {shortLeg.toFixed(1)}</text>
-          <text x={(ptA.x + ptB.x) / 2} y={ptA.y + 16} fontSize="12" fill="#10b981" fontWeight="700" textAnchor="middle">(√3/2)k = {longLeg.toFixed(1)}</text>
-          <text x={(ptA.x + ptC.x) / 2 - 8} y={(ptA.y + ptC.y) / 2 - 6} fontSize="13" fill="#f59e0b" fontWeight="700">k = {k}</text>
-          {/* Angle labels (always 30° and 60°) */}
+          {/* Altitude BD */}
+          <line x1={ptB.x} y1={ptB.y} x2={ptD.x} y2={ptD.y} stroke="#a78bfa" strokeWidth="2" strokeDasharray="6,3" />
+          {/* Triangle BCD shading */}
+          <polygon points={`${ptB.x},${ptB.y} ${ptC.x},${ptC.y} ${ptD.x},${ptD.y}`} fill="rgba(167,139,250,0.1)" stroke="none" />
+          {/* Angle labels */}
           <text x={ptA.x + 32} y={ptA.y - 8} fontSize="12" fill="#DC2626" fontWeight="700">30°</text>
           <text x={ptC.x - 26} y={ptC.y + 18} fontSize="12" fill="#a78bfa" fontWeight="700">60°</text>
-          {/* Vertices */}
+          {/* Vertices + D */}
           <text x={ptA.x - 12} y={ptA.y + 4} fontSize="11" fill="#475569" fontWeight="600">A</text>
           <text x={ptB.x + 4} y={ptB.y + 16} fontSize="11" fill="#475569" fontWeight="600">B</text>
           <text x={ptC.x + 4} y={ptC.y - 6} fontSize="11" fill="#475569" fontWeight="600">C</text>
+          <text x={ptD.x + 6} y={ptD.y - 8} fontSize="11" fill="#a78bfa" fontWeight="700">D</text>
         </svg>
       </div>
 
-      {/* Key insight banner */}
-      <div style={{ borderRadius: 12, border: "1.5px solid rgba(220,38,38,0.25)", background: "rgba(220,38,38,0.04)", padding: "12px 14px", marginBottom: "1.5rem", textAlign: "center" }}>
-        <p style={{ color: "#DC2626", fontSize: 13, fontWeight: 600, margin: 0 }}>
-          לא משנה מה k — הזוויות תמיד 30° ו-60°!
+      {/* Area ratio banner */}
+      <div style={{ borderRadius: 12, border: "1.5px solid rgba(167,139,250,0.4)", background: "rgba(167,139,250,0.06)", padding: "12px 14px", marginBottom: "1.5rem", textAlign: "center" }}>
+        <p style={{ color: "#7c3aed", fontSize: 14, fontWeight: 700, margin: 0 }}>
+          S(BCD) / S(ABC) = {areaRatio.toFixed(2)} — תמיד קבוע!
+        </p>
+        <p style={{ color: "#94a3b8", fontSize: 11, margin: "4px 0 0" }}>
+          יחס הדמיון = 0.5 → יחס שטחים = 0.5² = 0.25
         </p>
       </div>
 
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 10, textAlign: "center" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: 8, textAlign: "center" }}>
         {[
           { label: "BC = 0.5k", val: shortLeg.toFixed(1), color: "#6366f1" },
-          { label: "AB = (√3/2)k", val: longLeg.toFixed(2), color: "#10b981" },
+          { label: "AB", val: longLeg.toFixed(1), color: "#10b981" },
           { label: "AC = k", val: k.toString(), color: "#f59e0b" },
-          { label: "S = (√3/8)k²", val: area.toFixed(1), color: "#00d4ff" },
-          { label: "BC/AB", val: `1/√3 ≈ ${ratio.toFixed(3)}`, color: "#a78bfa" },
+          { label: "BD", val: BD.toFixed(1), color: "#a78bfa" },
+          { label: "AD", val: AD.toFixed(1), color: "#00d4ff" },
+          { label: "DC", val: DC.toFixed(1), color: "#DC2626" },
+          { label: "S(ABC)", val: areaABC.toFixed(1), color: "#10b981" },
+          { label: "S(BCD)", val: areaBCD.toFixed(1), color: "#a78bfa" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 14, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.25)", padding: "14px 8px", boxShadow: "0 2px 8px rgba(60,54,42,0.04)" }}>
-            <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 6 }}>{r.label}</div>
-            <div style={{ color: r.color, fontWeight: 700, fontSize: 15, fontFamily: "monospace" }}>{r.val}</div>
+          <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 6px", boxShadow: "0 2px 6px rgba(60,54,42,0.03)" }}>
+            <div style={{ color: "#6B7280", fontSize: 8, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+            <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}
       </div>

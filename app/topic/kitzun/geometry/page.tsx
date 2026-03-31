@@ -361,39 +361,42 @@ function LadderMedium({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentC
 }
 
 function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
-  const st = STATION[ex.id as keyof typeof STATION];
+  const steps = ex.steps;
   const [masterPassed, setMasterPassed] = useState(false);
-  const [stepsPassed, setStepsPassed] = useState<boolean[]>(Array(ex.steps.length).fill(false));
-  const allPassed = stepsPassed.every(Boolean) && masterPassed;
+  const [unlockedCount, setUnlockedCount] = useState(1);
+  const allPassed = masterPassed && unlockedCount > steps.length;
 
   return (
-    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
-      <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
-      <MasterPromptGate
-        onPass={() => setMasterPassed(true)}
-        accentColor={accentColor}
-        accentRgb={accentRgb}
-        subjectWords={ex.subjectWords}
-        subjectHint={ex.subjectHint}
-        requiredPhrase="סרוק נתונים ועצור"
-      />
-      {masterPassed && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: "easeOut" }}>
-          {ex.steps.map((s, i) => (
-            <TutorStepMedium
-              key={i} step={s}
-              locked={i > 0 && !stepsPassed[i - 1]}
-              onPass={() => setStepsPassed(prev => { const next = [...prev]; next[i] = true; return next; })}
-              borderRgb={st.borderRgb}
-            />
-          ))}
-          {allPassed && (
-            <div style={{ borderRadius: 16, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: "1rem 1.5rem", marginTop: 16, textAlign: "center" }}>
-              <span style={{ fontSize: 20 }}>🏆</span>
-              <p style={{ color: "#14532d", fontWeight: 700, fontSize: 15, margin: "4px 0 0" }}>חיתוך חוט אופטימלי — מאסטר בחדו&quot;א!</p>
+    <div>
+      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
+
+      {steps.map((s, i) => (
+        <div key={i} style={{ marginBottom: 8 }}>
+          {(!masterPassed || i >= unlockedCount) ? (
+            <div style={{ borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,255,255,0.7)", padding: "14px 16px", opacity: 0.5, pointerEvents: "none" as const, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ color: "#6B7280", fontSize: 13, fontWeight: 600 }}>{ s.phase } — { s.label }</span>
+              <span style={{ fontSize: 16 }}>🔒</span>
+            </div>
+          ) : (
+            <div>
+              <div style={{ borderRadius: 14, border: "1px solid rgba(22,163,74,0.3)", background: "rgba(255,255,255,0.9)", padding: "14px 16px", marginBottom: 8 }}>
+                <div style={{ color: "#15803d", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{ s.phase } — { s.label }</div>
+                <div style={{ color: "#334155", fontSize: 13, lineHeight: 1.6 }}>{ s.prompt }</div>
+              </div>
+              <button onClick={() => setUnlockedCount(v => Math.max(v, i + 2))} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
+                סיימתי סעיף זה ✓
+              </button>
             </div>
           )}
-        </motion.div>
+        </div>
+      ))}
+
+      {allPassed && (
+        <div style={{ borderRadius: 16, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: "1.25rem 1.5rem", marginTop: 16, textAlign: "center" }}>
+          <div style={{ fontSize: 28, marginBottom: 8 }}>🏆</div>
+          <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>כל הכבוד — השלמת את הרמה המתקדמת!</div>
+          <div style={{ color: "#166534", fontSize: 13 }}>עברת בהצלחה את כל הסעיפים.</div>
+        </div>
       )}
     </div>
   );

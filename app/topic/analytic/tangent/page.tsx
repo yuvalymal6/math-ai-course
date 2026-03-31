@@ -407,29 +407,42 @@ function LadderMedium({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentC
 // ─── LadderAdvanced ───────────────────────────────────────────────────────────
 
 function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
+  const steps = ex.steps;
   const [masterPassed, setMasterPassed] = useState(false);
-  const [passed, setPassed] = useState<boolean[]>(Array(ex.steps.length).fill(false));
-  const allPassed = masterPassed && passed.every(Boolean);
+  const [unlockedCount, setUnlockedCount] = useState(1);
+  const allPassed = masterPassed && unlockedCount > steps.length;
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor={accentColor} accentRgb={accentRgb}
-        subjectWords={TANGENT_SUBJECT_WORDS} subjectHint="משיק / רדיוס / ניצבות / מרחק לישר / נקודת משיקות" requiredPhrase="סרוק נתונים ועצור" />
-      {masterPassed && (
-        <>
-          <div style={{ borderRadius: 12, background: `rgba(${accentRgb},0.07)`, border: `1px solid rgba(${accentRgb},0.2)`, padding: "8px 14px", fontSize: 13, color: accentColor, fontWeight: 600 }}>
-            🎓 מעולה! עבור כל שלב — נסח פרומפט מדויק כדי לקבל גישה לשלב הבא.
-          </div>
-          {ex.steps.map((step, i) => (
-            <TutorStepMedium key={i} step={step} index={i} accentColor={accentColor} accentRgb={accentRgb}
-              locked={i > 0 && !passed[i - 1]}
-              onPass={() => setPassed(p => { const n = [...p]; n[i] = true; return n; })} />
-          ))}
-          {allPassed && (
-            <div style={{ borderRadius: 16, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: "1.2rem 1.5rem", textAlign: "center", fontSize: 15, fontWeight: 800, color: "#14532d" }}>
-              🏆 הוכחת משיקות בנוסחת המרחק — מאסטר בגיאומטריה אנליטית!
+    <div>
+      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
+
+      {steps.map((step, i) => (
+        <div key={i} style={{ marginBottom: 8 }}>
+          {(!masterPassed || i >= unlockedCount) ? (
+            <div style={{ borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,255,255,0.7)", padding: "14px 16px", opacity: 0.5, pointerEvents: "none" as const, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ color: "#6B7280", fontSize: 13, fontWeight: 600 }}>{ step.phase } — { step.label }</span>
+              <span style={{ fontSize: 16 }}>🔒</span>
+            </div>
+          ) : (
+            <div>
+              <div style={{ borderRadius: 14, border: "1px solid rgba(22,163,74,0.3)", background: "rgba(255,255,255,0.9)", padding: "14px 16px", marginBottom: 8 }}>
+                <div style={{ color: "#15803d", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{ step.phase } — { step.label }</div>
+                <div style={{ color: "#334155", fontSize: 13, lineHeight: 1.6 }}>{ step.prompt }</div>
+              </div>
+              <button onClick={() => setUnlockedCount(v => Math.max(v, i + 2))} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
+                סיימתי סעיף זה ✓
+              </button>
             </div>
           )}
-        </>
+        </div>
+      ))}
+
+      {allPassed && (
+        <div style={{ borderRadius: 16, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: "1.25rem 1.5rem", marginTop: 16, textAlign: "center" }}>
+          <div style={{ fontSize: 28, marginBottom: 8 }}>🏆</div>
+          <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>כל הכבוד — השלמת את הרמה המתקדמת!</div>
+          <div style={{ color: "#166534", fontSize: 13 }}>עברת בהצלחה את כל הסעיפים.</div>
+        </div>
       )}
     </div>
   );

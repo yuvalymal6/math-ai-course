@@ -598,8 +598,10 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
         <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
-        {ex.id === "advanced" && <LadderAdvanced steps={ex.steps} />}
       </div>
+
+      {/* Advanced — outside bordered container */}
+      {ex.id === "advanced" && <LadderAdvanced steps={ex.steps} />}
 
     </section>
   );

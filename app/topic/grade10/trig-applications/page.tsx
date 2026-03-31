@@ -388,12 +388,26 @@ function LadderAdvanced({ steps, goldenPrompt, borderRgb }: { steps: PromptStep[
 
   return (
     <div>
-      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
+      {/* Master Prompt Gate — in its own bordered container */}
+      <div style={{ borderRadius: 16, border: `2px solid rgba(${borderRgb},0.45)`, background: "rgba(255,255,255,0.88)", padding: "1.25rem", marginBottom: 16 }}>
+        <div style={{ color: `rgb(${borderRgb})`, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
+        <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
+      </div>
 
+      {/* Locked sections — separate cards outside the master container */}
       {steps.map((s, i) => (
-        <TutorStepMedium key={i} step={s} borderRgb={borderRgb}
-          locked={!masterPassed || i >= unlockedCount}
-          onPass={() => setUnlockedCount(v => Math.max(v, i + 2))} />
+        <div key={i} style={{ marginBottom: 8 }}>
+          {(!masterPassed || i >= unlockedCount) ? (
+            <div style={{ borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,255,255,0.7)", padding: "14px 16px", opacity: 0.5, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ color: "#6B7280", fontSize: 13, fontWeight: 600 }}>{s.phase} — {s.label}</span>
+              <span style={{ fontSize: 16 }}>🔒</span>
+            </div>
+          ) : (
+            <TutorStepMedium step={s} borderRgb={borderRgb}
+              locked={false}
+              onPass={() => setUnlockedCount(v => Math.max(v, i + 2))} />
+          )}
+        </div>
       ))}
 
       {allPassed && (
@@ -401,7 +415,7 @@ function LadderAdvanced({ steps, goldenPrompt, borderRgb }: { steps: PromptStep[
           style={{ borderRadius: 16, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: "1.25rem 1.5rem", marginTop: 16, textAlign: "center" }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>🏆</div>
           <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>כל הכבוד — השלמת את הרמה המתקדמת!</div>
-          <div style={{ color: "#166534", fontSize: 13 }}>עברת בהצלחה את ארבעת הסעיפים. אתה מוכן לבחינה!</div>
+          <div style={{ color: "#166534", fontSize: 13 }}>עברת בהצלחה את כל הסעיפים. אתה מוכן לבחינה!</div>
         </motion.div>
       )}
     </div>
@@ -612,13 +626,17 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
         ))}
       </div>
 
-      {/* Prompt Ladder */}
-      <div style={{ borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.45)`, background: "rgba(255,255,255,0.88)", padding: "1.25rem", boxShadow: s.glowShadow }}>
-        <div style={{ color: `rgb(${s.borderRgb})`, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
-        {ex.id === "basic"    && <LadderBase     steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
-        {ex.id === "medium"   && <LadderMedium   steps={ex.steps} goldenPrompt={ex.goldenPrompt} borderRgb={s.borderRgb} />}
-        {ex.id === "advanced" && <LadderAdvanced steps={ex.steps} goldenPrompt={ex.goldenPrompt} borderRgb={s.borderRgb} />}
-      </div>
+      {/* Prompt Ladder — Basic & Medium inside bordered container */}
+      {(ex.id === "basic" || ex.id === "medium") && (
+        <div style={{ borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.45)`, background: "rgba(255,255,255,0.88)", padding: "1.25rem", boxShadow: s.glowShadow }}>
+          <div style={{ color: `rgb(${s.borderRgb})`, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
+          {ex.id === "basic"  && <LadderBase   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
+          {ex.id === "medium" && <LadderMedium steps={ex.steps} goldenPrompt={ex.goldenPrompt} borderRgb={s.borderRgb} />}
+        </div>
+      )}
+
+      {/* Advanced — MasterPromptGate in its own container, sections outside */}
+      {ex.id === "advanced" && <LadderAdvanced steps={ex.steps} goldenPrompt={ex.goldenPrompt} borderRgb={s.borderRgb} />}
 
     </section>
   );

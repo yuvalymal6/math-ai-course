@@ -470,8 +470,10 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
         <div className="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-4">🧠 מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase     steps={ex.steps} goldenPrompt={ex.goldenPrompt} />}
         {ex.id === "medium"   && <LadderMedium   steps={ex.steps} goldenPrompt={ex.goldenPrompt} />}
-        {ex.id === "advanced" && <LadderAdvanced steps={ex.steps} />}
       </div>
+
+      {/* Advanced — outside bordered container */}
+      {ex.id === "advanced" && <LadderAdvanced steps={ex.steps} />}
 
     </section>
   );

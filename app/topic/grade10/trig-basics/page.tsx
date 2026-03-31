@@ -746,14 +746,10 @@ function TowerLab() {
           <svg viewBox={`0 0 ${maxW} ${maxH}`} style={{ width: "100%", display: "block" }} aria-hidden>
             <polygon points={`${ptA.x},${ptA.y} ${ptB.x},${ptB.y} ${ptC.x},${ptC.y}`} fill="rgba(16,185,129,0.04)" stroke="#334155" strokeWidth="2" />
             <polyline points={`${ptB.x - 10},${ptB.y} ${ptB.x - 10},${ptB.y - 10} ${ptB.x},${ptB.y - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-            {/* BC label — shifted right (+12) to avoid edge */}
-            <text x={ptB.x + 12} y={(ptB.y + ptC.y) / 2 + 4} fontSize="13" fill="#6366f1" fontWeight="700">{legA.toFixed(1)}</text>
-            {/* AB label at ~75% of bottom side, away from left corner */}
-            <text x={ptA.x + (ptB.x - ptA.x) * 0.75} y={ptA.y + 16} fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">{legB.toFixed(1)}</text>
-            <text x={(ptA.x + ptC.x) / 2 - 12} y={(ptA.y + ptC.y) / 2 - 6} fontSize="13" fill="#f59e0b" fontWeight="700">20</text>
-            <text x={ptA.x - 12} y={ptA.y + 4} fontSize="11" fill="#475569" fontWeight="600">A</text>
-            <text x={ptB.x + 4} y={ptB.y + 16} fontSize="11" fill="#475569" fontWeight="600">B</text>
-            <text x={ptC.x + 4} y={ptC.y - 6} fontSize="11" fill="#475569" fontWeight="600">C</text>
+            {/* Vertices only — all numerical labels in info boxes below */}
+            <text x={ptA.x - 14} y={ptA.y + 4} fontSize="12" fill="#475569" fontWeight="600">A</text>
+            <text x={ptB.x + 6} y={ptB.y + 16} fontSize="12" fill="#475569" fontWeight="600">B</text>
+            <text x={ptC.x + 6} y={ptC.y - 6} fontSize="12" fill="#475569" fontWeight="600">C</text>
           </svg>
         </div>
       )}

@@ -304,10 +304,37 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
 // ─── Ladders ──────────────────────────────────────────────────────────────────
 
 function LadderBase({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: PromptStep[]; goldenPrompt: string; glowRgb: string; borderRgb: string }) {
+  const [completed, setCompleted] = useState<boolean[]>(Array(steps.length).fill(false));
+  const unlocked = completed.filter(Boolean).length + 1;
+  const markDone = (i: number) => {
+    setCompleted(prev => { const next = [...prev]; next[i] = true; return next; });
+    const el = document.getElementById(`basic-step-${i + 1}`);
+    if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 200);
+  };
   return (
     <div>
       <GoldenPromptCard prompt={goldenPrompt} title="פרומפט ראשי" glowRgb={glowRgb} borderRgb={borderRgb} />
-      {steps.map((s, i) => <TutorStepBasic key={i} step={s} glowRgb={glowRgb} borderRgb={borderRgb} />)}
+      {steps.map((s, i) => (
+        <div key={i} id={`basic-step-${i}`}>
+          {i < unlocked ? (
+            <>
+              <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
+              {!completed[i] ? (
+                <button onClick={() => markDone(i)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
+                  סיימתי סעיף זה ✓
+                </button>
+              ) : (
+                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>✅ הושלם</div>
+              )}
+            </>
+          ) : (
+            <div style={{ opacity: 0.35, pointerEvents: "none", position: "relative" }}>
+              <div style={{ position: "absolute", top: 8, right: 8, fontSize: 16, zIndex: 2 }}>🔒</div>
+              <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

@@ -310,13 +310,37 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
 // ─── Ladders ──────────────────────────────────────────────────────────────────
 
 function LadderBase({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
-  const st = STATION[ex.id];
+  const steps = ex.steps;
+  const st = (typeof STATION !== "undefined" && STATION[ex.id as keyof typeof STATION]) || { borderRgb: "45,90,39", glowRgb: "22,163,74" };
+  const [completed, setCompleted] = useState<boolean[]>(Array(steps.length).fill(false));
+  const unlocked = completed.filter(Boolean).length + 1;
+  const markDone = (i: number) => {
+    setCompleted(prev => { const next = [...prev]; next[i] = true; return next; });
+    const el = document.getElementById(`basic-step-${i + 1}`);
+    if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 200);
+  };
   return (
-    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
-      <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
-      <GoldenPromptCard prompt={ex.goldenPrompt} title="פרומפט ראשי" glowRgb={accentRgb} borderRgb={st.borderRgb} />
-      {ex.steps.map((s, i) => (
-        <TutorStepBasic key={i} step={s} glowRgb={accentRgb} borderRgb={st.borderRgb} />
+    <div>
+      {steps.map((s, i) => (
+        <div key={i} id={`basic-step-${i}`}>
+          {i < unlocked ? (
+            <>
+              <TutorStepBasic key={i} step={s} glowRgb={accentRgb} borderRgb={st.borderRgb} />
+              {!completed[i] ? (
+                <button onClick={() => markDone(i)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
+                  סיימתי סעיף זה ✓
+                </button>
+              ) : (
+                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>✅ הושלם</div>
+              )}
+            </>
+          ) : (
+            <div style={{ opacity: 0.35, pointerEvents: "none", position: "relative" }}>
+              <div style={{ position: "absolute", top: 8, right: 8, fontSize: 16, zIndex: 2 }}>🔒</div>
+              <TutorStepBasic key={i} step={s} glowRgb={accentRgb} borderRgb={st.borderRgb} />
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );

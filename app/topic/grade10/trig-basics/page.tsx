@@ -348,22 +348,21 @@ function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
 // ─── SVG Diagrams ─────────────────────────────────────────────────────────────
 
 function BasicDiagram() {
-  // Right triangle ABC: angle B = 90°, angle A = 40°, BC = x (opposite)
   return (
     <svg viewBox="0 0 280 220" className="w-full max-w-[260px] mx-auto" aria-hidden>
-      {/* Triangle ABC: A(30,190) B(230,190) C(230,50) */}
+      {/* A(30,190) B(230,190) C(230,50) */}
       <polygon points="30,190 230,190 230,50" fill="rgba(99,102,241,0.04)" stroke="#334155" strokeWidth="2" />
-      {/* Right angle marker at B */}
+      {/* Right angle at B */}
       <polyline points="215,190 215,175 230,175" fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-      {/* Angle arc α at A (40°) */}
-      <path d="M 62,190 A 32,32 0 0,0 55,170" fill="none" stroke="#6366f1" strokeWidth="2.5" />
-      {/* Labels */}
-      <text x="68" y="178" fontSize="14" fill="#6366f1" fontWeight="700" fontStyle="italic">α=40°</text>
-      {/* BC = x (opposite, vertical right) */}
+      {/* Angle arc at A — larger radius so 40° fits inside */}
+      <path d="M 70,190 A 40,40 0 0,0 58,164" fill="none" stroke="#6366f1" strokeWidth="2.5" />
+      {/* 40° label — NO α symbol, just the number, inside the arc */}
+      <text x="78" y="176" fontSize="13" fill="#6366f1" fontWeight="700">40°</text>
+      {/* BC = x */}
       <text x="242" y="125" fontSize="16" fill="#6366f1" fontWeight="700">x</text>
-      {/* AB (adjacent, bottom) */}
+      {/* AB */}
       <text x="125" y="210" fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">AB</text>
-      {/* AC (hypotenuse, diagonal) */}
+      {/* AC */}
       <text x="110" y="108" fontSize="13" fill="#f59e0b" fontWeight="700" textAnchor="middle">AC</text>
       {/* Vertices */}
       <text x="16" y="198" fontSize="13" fill="#475569" fontWeight="700">A</text>
@@ -434,14 +433,14 @@ const exercises: ExerciseDef[] = [
     problem: "במשולש ישר זווית ABC (∠B = 90°), נתון כי הזווית α (∠BAC) היא בת 40°.\nאורך הניצב BC (הניצב מול הזווית) מסומן ב-x.\n\nא. הבע באמצעות x את אורך היתר AC ואת אורך הניצב השני AB.\nב. נתון כי שטח המשולש הוא 50 סמ\"ר. בנה משוואה מתאימה, מצא את ערכו של x וחשב את כל צלעות המשולש (דייק עד 2 ספרות).\nג. מצא את גודל הזווית החדה השנייה ∠C.",
     diagram: <BasicDiagram />,
     pitfalls: [
-      { title: "⚠️ זהירות עם הפונקציה", text: "אל תתבלבלו בין הניצבים! כדי למצוא את AB (הניצב ליד), נשתמש ב-tan ולא ב-sin. הקשר הנכון: tan(α) = BC/AB = x/AB, כלומר AB = x/tan(40°)." },
-      { title: "💡 אלגברה של שטח", text: "זכרו שבנוסחת השטח S = (AB · BC) / 2, כשמציבים את הביטויים מסעיף א׳ נקבל x · x = x². אל תשכחו להוציא שורש בסוף התהליך כדי למצוא את x." },
+      { title: "⚠️ הפונקציה הנכונה", text: "רגע לפני שבוחרים sin או cos — בדקו: האם הניצב שאנחנו מחפשים נמצא מול הזווית או לידה? בחירה נכונה של היחס (כמו tan במקרה שלנו) היא חצי מהפתרון." },
+      { title: "💡 מ-x² חזרה ל-x", text: "כשמציבים x בנוסחת השטח, זכרו ש-x · x הופך ל-x². כדי \"לחזור\" ל-x בסוף התהליך, נצטרך להשתמש בפעולת השורש הריבועי." },
     ],
-    goldenPrompt: `\nהיי, אני תלמיד כיתה י׳, צירפתי לך תרגיל טריגונומטריה אלגברי על משולש ישר-זווית.\nהנה הפרוטוקול שלנו, תעבוד לפיו ב-100%:\n1️⃣ סריקה:\nתסרוק את הנתונים ותכתוב לי רק:\n"זיהיתי את הנתונים. מחכה להוראות לשלב א'."\n(אל תפתור כלום ואל תסביר כלום בשלב הזה!)\n2️⃣ תפקיד:\nאתה המורה שלי. אל תפתור במקומי. עודד אותי לבנות קודם ביטוי אלגברי ורק אחר כך להציב מספרים.\n3️⃣ שיטת עבודה:\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    goldenPrompt: `\nהיי, אני תלמיד כיתה י׳, צירפתי לך תרגיל טריגונומטריה אלגברי על משולש ישר-זווית.\nהנה הפרוטוקול שלנו, תעבוד לפיו ב-100%:\n1️⃣ סריקה:\nתסרוק את הנתונים ותכתוב לי רק:\n"זיהיתי את הנתונים. מחכה להוראות לשלב א'."\n(אל תפתור כלום בשלב הזה!)\n2️⃣ תפקיד:\nאתה מנטור מתמטי תומך. המשימה שלך היא להנחות את האינטואיציה של התלמיד דרך שאלות, לא לפתור עבורו. במקום לתת תשובה, שאל את התלמיד לזהות את הקשר בין הזווית הנתונה לצלעות, וודא שהוא מבין את ה"למה" מאחורי הביטוי האלגברי.\n3️⃣ שיטת עבודה:\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה תגיב אך ורק: ״אני מוכן להמשיך.״`,
     steps: [
-      { phase: "סעיף א׳", label: "ביטוי אלגברי לצלעות", coaching: "", prompt: "חשבו: איזה יחס טריגונומטרי מקשר בין הניצב מול (x) ליתר? ואיזה מקשר בין הניצב מול לניצב ליד?", keywords: [], keywordHint: "", contextWords: ["sin", "cos", "tan", "יתר", "ניצב", "זווית", "40", "x", "ביטוי"] },
-      { phase: "סעיף ב׳", label: "משוואת שטח ומציאת x", coaching: "", prompt: "הציבו את הביטויים שמצאתם בסעיף א׳ לתוך נוסחת שטח המשולש. שימו לב שתקבלו משוואה עם x².", keywords: [], keywordHint: "", contextWords: ["שטח", "משוואה", "x²", "שורש", "50", "tan", "הצבה"] },
-      { phase: "סעיף ג׳", label: "הזווית השנייה ∠C", coaching: "", prompt: "חשבו: מה סכום הזוויות במשולש? כבר ידועות לנו שתי זוויות...", keywords: [], keywordHint: "", contextWords: ["180", "90", "40", "50", "סכום", "זוויות", "משלימה"] },
+      { phase: "סעיף א׳", label: "ביטוי אלגברי לצלעות המשולש", coaching: "", prompt: "תדריך אותי לבטא את צלעות המשולש האחרות באמצעות x.", keywords: [], keywordHint: "", contextWords: ["sin", "cos", "tan", "יתר", "ניצב", "זווית", "40", "x", "ביטוי"] },
+      { phase: "סעיף ב׳", label: "מציאת הצלעות", coaching: "", prompt: "נתון כי השטח הוא 50. כיצד נמצא את x ונחשב את אורכי צלעות המשולש?", keywords: [], keywordHint: "", contextWords: ["שטח", "משוואה", "x²", "שורש", "50", "tan", "הצבה"] },
+      { phase: "סעיף ג׳", label: "הזווית השנייה ∠C", coaching: "", prompt: "תסביר לי איך נחשב את זווית C.", keywords: [], keywordHint: "", contextWords: ["180", "90", "40", "50", "סכום", "זוויות", "משלימה"] },
     ],
   },
   {
@@ -620,74 +619,69 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
 function LadderLab() {
   const [x, setX] = useState(10);
-  const alpha = 40; // degrees
-  const alphaRad = (alpha * Math.PI) / 180;
+  const [angleA, setAngleA] = useState(40);
+  const alphaRad = (angleA * Math.PI) / 180;
 
-  // BC = x (opposite), AB = x / tan(α), AC = x / sin(α)
   const AB = x / Math.tan(alphaRad);
   const AC = x / Math.sin(alphaRad);
   const area = (AB * x) / 2;
+  const angleC = 90 - angleA;
 
-  // Dynamic SVG scaling
-  const scale = 8;
-  const Ax = 30, Ay = 30 + AB * scale;
-  const Bx = 30 + 0, By = Ay; // B is directly below A horizontally... wait, let me reconsider
-  // A(left-bottom), B(right-bottom, right angle), C(right-top)
-  const padL = 40, padB = 20;
-  const maxH = 220, maxW = 280;
-  const abLen = Math.min(AB * scale, maxW - 80);
-  const bcLen = Math.min(x * scale, maxH - 40);
-
-  const ptA = { x: padL, y: maxH - padB };
-  const ptB = { x: padL + abLen, y: maxH - padB };
-  const ptC = { x: padL + abLen, y: maxH - padB - bcLen };
+  // Clean SVG — no numerical labels on diagram
+  const maxW = 280, maxH = 220;
+  const sc = Math.min((maxW - 80) / Math.max(AB, 1), (maxH - 50) / Math.max(x, 1), 8);
+  const ptA = { x: 40, y: maxH - 20 };
+  const ptB = { x: 40 + AB * sc, y: maxH - 20 };
+  const ptC = { x: ptB.x, y: maxH - 20 - x * sc };
 
   return (
     <section style={{ border: "1px solid rgba(0,212,255,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המשולש האלגברי</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את x כדי לראות כיצד הביטויים מסעיף א׳ משתנים בזמן אמת.</p>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את x ואת הזווית — צפו כיצד הצלעות משתנות בזמן אמת.</p>
 
-      {/* Slider */}
-      <div style={{ marginBottom: "2rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#6B7280", marginBottom: 6 }}>
-          <span>ערך x (אורך BC)</span>
-          <span style={{ color: "#6366f1", fontWeight: 700, fontSize: 16 }}>{x}</span>
+      {/* Dual sliders */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "2rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+            <span>ניצב x (BC)</span>
+            <span style={{ color: "#6366f1", fontWeight: 700 }}>{x}</span>
+          </div>
+          <input type="range" min={5} max={20} step={0.5} value={x} onChange={e => setX(+e.target.value)} style={{ width: "100%", accentColor: "#6366f1" }} />
         </div>
-        <input type="range" min={5} max={20} step={0.5} value={x} onChange={e => setX(+e.target.value)} style={{ width: "100%", accentColor: "#6366f1" }} />
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+            <span>זווית A</span>
+            <span style={{ color: "#DC2626", fontWeight: 700 }}>{angleA}°</span>
+          </div>
+          <input type="range" min={10} max={80} step={1} value={angleA} onChange={e => setAngleA(+e.target.value)} style={{ width: "100%", accentColor: "#DC2626" }} />
+        </div>
       </div>
 
-      {/* Dynamic SVG */}
+      {/* Clean SVG — no labels on sides, just shape + vertices */}
       <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
         <svg viewBox={`0 0 ${maxW} ${maxH}`} style={{ width: "100%", display: "block" }} aria-hidden>
-          {/* Triangle */}
           <polygon points={`${ptA.x},${ptA.y} ${ptB.x},${ptB.y} ${ptC.x},${ptC.y}`} fill="rgba(99,102,241,0.04)" stroke="#334155" strokeWidth="2" />
-          {/* Right angle at B */}
-          <polyline points={`${ptB.x - 12},${ptB.y} ${ptB.x - 12},${ptB.y - 12} ${ptB.x},${ptB.y - 12}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-          {/* Angle arc at A */}
-          <path d={`M ${ptA.x + 28},${ptA.y} A 28,28 0 0,0 ${ptA.x + 20},${ptA.y - 20}`} fill="none" stroke="#6366f1" strokeWidth="2" />
-          {/* Labels */}
-          <text x={ptA.x + 32} y={ptA.y - 8} fontSize="12" fill="#6366f1" fontWeight="700">40°</text>
-          <text x={ptB.x + 8} y={(ptB.y + ptC.y) / 2 + 4} fontSize="14" fill="#6366f1" fontWeight="700">x={x}</text>
-          <text x={(ptA.x + ptB.x) / 2} y={ptA.y + 16} fontSize="12" fill="#10b981" fontWeight="700" textAnchor="middle">AB={AB.toFixed(2)}</text>
-          <text x={(ptA.x + ptC.x) / 2 - 15} y={(ptA.y + ptC.y) / 2 - 6} fontSize="12" fill="#f59e0b" fontWeight="700">AC={AC.toFixed(2)}</text>
-          {/* Vertices */}
+          <polyline points={`${ptB.x - 10},${ptB.y} ${ptB.x - 10},${ptB.y - 10} ${ptB.x},${ptB.y - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+          {/* Vertices only */}
           <text x={ptA.x - 14} y={ptA.y + 4} fontSize="12" fill="#475569" fontWeight="600">A</text>
           <text x={ptB.x + 4} y={ptB.y + 16} fontSize="12" fill="#475569" fontWeight="600">B</text>
           <text x={ptC.x + 4} y={ptC.y - 6} fontSize="12" fill="#475569" fontWeight="600">C</text>
         </svg>
       </div>
 
-      {/* Calculation results */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10, textAlign: "center" }}>
+      {/* Data display below */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 10, textAlign: "center" }}>
         {[
-          { label: "x (BC)", val: x.toFixed(1), color: "#6366f1" },
-          { label: "AB = x/tan(40°)", val: AB.toFixed(2), color: "#10b981" },
-          { label: "AC = x/sin(40°)", val: AC.toFixed(2), color: "#f59e0b" },
-          { label: "שטח S", val: area.toFixed(2), color: "#00d4ff" },
+          { label: "BC (x)", val: x.toFixed(1), color: "#6366f1" },
+          { label: "AB", val: AB.toFixed(2), color: "#10b981" },
+          { label: "AC (יתר)", val: AC.toFixed(2), color: "#f59e0b" },
+          { label: "שטח S", val: area.toFixed(1), color: "#00d4ff" },
+          { label: "∠A", val: `${angleA}°`, color: "#DC2626" },
+          { label: "∠C", val: `${angleC}°`, color: "#a78bfa" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 14, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.25)", padding: "14px 10px", boxShadow: "0 2px 8px rgba(60,54,42,0.04)" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 6 }}>{r.label}</div>
-            <div style={{ color: r.color, fontWeight: 700, fontSize: 16, fontFamily: "monospace" }}>{r.val}</div>
+          <div key={r.label} style={{ borderRadius: 14, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.25)", padding: "12px 8px", boxShadow: "0 2px 8px rgba(60,54,42,0.04)" }}>
+            <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 5 }}>{r.label}</div>
+            <div style={{ color: r.color, fontWeight: 700, fontSize: 15, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}
       </div>

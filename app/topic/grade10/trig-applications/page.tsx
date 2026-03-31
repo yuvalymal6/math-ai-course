@@ -93,22 +93,29 @@ function RectangleDiagramSVG() {
   );
 }
 
-function CliffBoatsSVG() {
+function ParallelogramSVG() {
+  // Parallelogram ABCD: A(bottom-left), B(bottom-right), C(top-right), D(top-left-ish)
+  // AB = 1.5k, AD = k. Angle D = α. Height BE from B to DC.
+  // D shifted right by AD*cos(α) from A's x
   return (
-    <svg viewBox="0 0 280 150" className="w-full max-w-sm mx-auto" aria-hidden>
-      <line x1={28} y1={122} x2={264} y2={122} stroke="#CBD5E0" strokeWidth={1.5} />
-      <line x1={28} y1={28}  x2={28}  y2={122} stroke="#16A34A" strokeWidth={3}   strokeLinecap="round" />
-      <line x1={28} y1={28}  x2={95}  y2={28}  stroke="#CBD5E0" strokeWidth={1}   strokeDasharray="4 3" />
-      <line x1={28} y1={28}  x2={108} y2={122} stroke="#34d399" strokeWidth={2}   strokeLinecap="round" />
-      <line x1={28} y1={28}  x2={218} y2={122} stroke="#a78bfa" strokeWidth={2}   strokeLinecap="round" />
-      <path d="M 60 28 A 32 32 0 0 1 45 52" fill="none" stroke="#34d399" strokeWidth={1.6} />
-      <path d="M 80 28 A 52 52 0 0 1 57 64" fill="none" stroke="#a78bfa" strokeWidth={1.6} />
-      <circle cx={108} cy={122} r={5} fill="#34d399" />
-      <circle cx={218} cy={122} r={5} fill="#a78bfa" />
-      <text x={10}  y={24}  fill="#334155" fontSize={12} fontWeight="bold" fontFamily="sans-serif">P</text>
-      <text x={10}  y={134} fill="#334155" fontSize={12} fontWeight="bold" fontFamily="sans-serif">Q</text>
-      <text x={103} y={138} fill="#34d399" fontSize={11} fontWeight="bold" fontFamily="sans-serif">B₁</text>
-      <text x={213} y={138} fill="#a78bfa" fontSize={11} fontWeight="bold" fontFamily="sans-serif">B₂</text>
+    <svg viewBox="0 0 300 170" className="w-full max-w-[280px] mx-auto" aria-hidden>
+      {/* Parallelogram: A(30,140) B(210,140) D(70,40) C(250,40) */}
+      <polygon points="30,140 210,140 250,40 70,40" fill="rgba(234,88,12,0.04)" stroke="#334155" strokeWidth="2" />
+      {/* Height BE from B to DC */}
+      <line x1={210} y1={140} x2={210} y2={40} stroke="#a78bfa" strokeWidth="2" strokeDasharray="6,3" />
+      {/* Right angle at E */}
+      <polyline points="198,40 198,52 210,52" fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+      {/* Diagonal BD */}
+      <line x1={210} y1={140} x2={70} y2={40} stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="4,2" />
+      {/* Angle α at D */}
+      <path d="M 90,40 A 20,20 0 0,1 82,56" fill="none" stroke="#DC2626" strokeWidth="2" />
+      <text x="96" y="58" fontSize="11" fill="#DC2626" fontWeight="700" fontStyle="italic">α</text>
+      {/* Vertices */}
+      <text x="16" y="150" fontSize="13" fill="#475569" fontWeight="700">A</text>
+      <text x="212" y="154" fontSize="13" fill="#475569" fontWeight="700">B</text>
+      <text x="254" y="36" fontSize="13" fill="#475569" fontWeight="700">C</text>
+      <text x="56" y="36" fontSize="13" fill="#475569" fontWeight="700">D</text>
+      <text x="214" y="36" fontSize="12" fill="#a78bfa" fontWeight="700">E</text>
     </svg>
   );
 }
@@ -358,37 +365,32 @@ const exercises: ExerciseDef[] = [
   },
   {
     id: "medium",
-    problem: "מראש צוק בגובה 20 מ׳, זוויות השקיעה\nלסירה B₁ הן 45° ולסירה B₂ הן 30°.\nהסירות באותו כיוון מהצוק.\nמצא את המרחק בין הסירות.",
-    diagram: <CliffBoatsSVG />,
+    problem: "במקבילית ABCD נתון: AD = k, AB = 1.5k. הזווית החדה של המקבילית היא ∠D = α. מורידים גובה BE לצלע DC.\n\nא. הבע את אורך הגובה BE באמצעות k ו-α.\nב. הבע את אורך הקטע DE באמצעות k ו-α.\nג. הבע את אורך האלכסון BD באמצעות k ו-α (השתמש במשפט פיתגורס במשולש △BDE).",
+    diagram: <ParallelogramSVG />,
     pitfalls: [
-      { title: "💡 גובה = נגדית, מרחק = שכנה", text: "גובה הצוק (20מ') הוא הנגדית. מרחק הסירה מהצוק הוא השכנה. tan(זווית)=גובה/מרחק." },
-      { title: "⚠️ שוכחים לחסר", text: "כל סירה במרחק d₁ ו-d₂ מבסיס הצוק. המרחק ביניהן = d₂ − d₁ בלבד!" },
+      { title: "⚠️ זיהוי הצלעות", text: "זהירות! אל תתבלבל בין הצלעות: AD הוא היתר במשולש ישר הזווית הקטן, לא AB." },
+      { title: "💡 Sin vs Cos", text: "שים לב: כשאתה מבטא את DE, השתמש ב-Cos. כשאתה מבטא את BE, השתמש ב-Sin." },
+      { title: "⚠️ ריבוע ביטוי", text: "טעות נפוצה: שכחת להעלות בריבוע את כל הביטוי של DE כשאתה מחשב את האלכסון." },
     ],
-    goldenPrompt: `\nצוק 20מ'. B₁ זווית 45°: d₁=20/tan(45°)=20מ'. B₂ זווית 30°: d₂=20/tan(30°)=20√3≈34.6מ'. מרחק=d₂−d₁≈14.6מ'. אמת: זווית קטנה→רחוק יותר ✓\nסרוק את התמונה/נתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    goldenPrompt: `\nהיי, אתה הולך להוביל אותי כמורה פרטי בפתרון תרגיל המקבילית הפרמטרי הזה. המטרה היא שתלמד אותי איך לעבוד עם פרמטרים.\nדבר ראשון, תסרוק את מבנה התרגיל ועצור.\nחשוב מאוד: אל תפתור לי את התרגיל. תעצור אחרי כל הסבר קצר ותחכה שאני אגיד לך להמשיך, תשתמש בשאלות מכווינות ותחשוב שמטרתך היא ללמד אותי לפתור את התרגיל בעצמי.`,
     steps: [
       {
-        phase: "🔍 הזיהוי",
-        label: "מה ידוע בכל משולש?",
-        prompt: "\n\nצוק 20מ'. זווית שקיעה לB₁=45°, לB₂=30°. עבור כל סירה: מהו גובה הצוק (נגדית)? מהו המרחק האופקי (שכנה)? מה ידוע ומה נעלם?",
-        contextWords: ["זווית", "טנגנס", "חישוב", "נוסחה", "נגדית", "שכנה", "גובה", "מרחק"],
+        phase: "סעיף א׳",
+        label: "הבעת הגובה BE",
+        prompt: "\n\nתדריך אותי איך להביע את הגובה BE באמצעות k ו-α.",
+        contextWords: ["Sin", "sin", "להביע", "נביע", "פרמטר", "k", "גובה", "BE"],
       },
       {
-        phase: "🧭 האסטרטגיה",
-        label: "איזה יחס ואיך מבודדים d?",
-        prompt: "\n\nגובה צוק=20מ' (נגדית). מרחק=d (שכנה). זווית שקיעה=α. איזה יחס מקשר? כתוב: tan(α)=? ואז בודד d.",
-        contextWords: ["טנגנס", "זווית", "נוסחה", "חישוב", "בידוד", "לבודד", "שכנה", "נגדית"],
+        phase: "סעיף ב׳",
+        label: "הבעת הקטע DE",
+        prompt: "\n\nתדריך אותי איך להביע את הקטע DE באמצעות k ו-α.",
+        contextWords: ["Cos", "cos", "להביע", "נביע", "DE", "קטע", "פרמטר"],
       },
       {
-        phase: "🔢 החישוב",
-        label: "חשב d₁, d₂, ואז הפרש",
-        prompt: "\n\nd₁: tan(45°)=20/d₁ → מצא d₁. d₂: tan(30°)=20/d₂ → מצא d₂. מה המרחק בין הסירות = d₂−d₁?",
-        contextWords: ["טנגנס", "זווית", "חישוב", "נוסחה", "חיסור", "הפרש", "מרחק"],
-      },
-      {
-        phase: "✅ בדיקת המציאות",
-        label: "הגיוני שB₂ רחוקה יותר?",
-        prompt: "\n\nd₁≈20מ' (זווית 45°), d₂≈34.6מ' (זווית 30°). האם הגיוני שסירה עם זווית שקיעה קטנה יותר (30°) רחוקה יותר? מדוע?",
-        contextWords: ["זווית", "קטנה", "רחוק", "הגיוני", "כלל", "שקיעה"],
+        phase: "סעיף ג׳",
+        label: "חישוב האלכסון BD",
+        prompt: "\n\nתדריך אותי איך לחשב את אורך האלכסון BD באמצעות k ו-α.",
+        contextWords: ["פיתגורס", "BD", "אלכסון", "ריבוע", "שורש", "משולש"],
       },
     ],
   },
@@ -660,6 +662,144 @@ function RectangleLab() {
   );
 }
 
+// ─── Lab: Parallelogram ABCD with height BE ──────────────────────────────────
+
+function ParallelogramLab() {
+  const [k, setK] = useState(10);
+  const [alpha, setAlpha] = useState(60);
+  const alphaRad = (alpha * Math.PI) / 180;
+
+  const AD = k;
+  const AB = 1.5 * k;
+  const BE = AD * Math.sin(alphaRad);       // height
+  const DE = AD * Math.cos(alphaRad);       // base segment
+  const BD = Math.sqrt(BE * BE + (AB - DE) * (AB - DE)); // actually BD via triangle BDE
+  // BD² = BE² + DE² (in right triangle BDE where E is foot of height on DC)
+  // Wait: DC = AB = 1.5k. DE = AD·cos(α). EC = DC - DE = 1.5k - k·cos(α).
+  // BD² = BE² + (DC - DE)² ... no, let me use triangle BDE:
+  // In △BDE: angle E = 90°, BE = k·sin(α), DE = k·cos(α)
+  // BD² = BE² + DE² = k²·sin²(α) + k²·cos²(α) = k². So BD = k = AD.
+  // That's because △BDE has hypotenuse BD = AD = k.
+  // Actually wait, that means BD = AD always. Let me reconsider.
+  // E is foot of height from B to line DC. In parallelogram:
+  // D is at origin, C = D + DC direction. DC || AB, DC = AB = 1.5k.
+  // The height from B perpendicular to DC lands at E.
+  // In the triangle ADE (with A below D): no, let me use coordinates.
+  // Let D = (0,0), A = (AD·cos(π-α), -AD·sin(π-α)) ... this is getting complex.
+  // Simpler: angle at D = α. AD = k. In triangle formed by dropping height from B:
+  // Actually the right triangle is ABE' where E' is foot from B to line AD extended.
+  // Or: drop height BE from B to DC. Since ABCD is a parallelogram:
+  // Place D at origin. DC along x-axis. D=(0,0), C=(1.5k, 0).
+  // Angle D = α means DA makes angle α with DC.
+  // A = (k·cos(α), -k·sin(α)) [below D since α is measured downward from DC].
+  // Actually in standard parallelogram with D top-left:
+  // D=(0,0), C=(1.5k,0) along top. A = (k·cos(π-α), k·sin(π-α)).
+  // Hmm, let me just use the simple formulas:
+  // BE (height from B to DC) = AD · sin(α) = k·sin(α) ✓
+  // DE (projection of AD onto DC from D) = AD · cos(α) = k·cos(α) ✓
+  // In △BDE: BE = k·sin(α), and the horizontal distance from D to B's projection:
+  // B is at: from A go AB parallel to DC. If we compute B_x:
+  // EC = DC - DE = 1.5k - k·cos(α). That's the distance from E to C.
+  // The distance from E to the projection of B on DC... B is directly above E? No!
+  // BE is the height from B to DC, so E is the foot. △BDE has:
+  // BD = AD = k (diagonal of the right triangle at vertex A).
+  // Wait: in right triangle ABE... no. Let me just compute BD properly.
+  // Coordinates: D=(0,0). DC direction = (1,0). C=(1.5k, 0).
+  // DA at angle (π-α) from DC: A = (-k·cos(α), k·sin(α)).
+  // Wait, angle D = α means the interior angle at D. DA goes at angle α from DC.
+  // So A = (k·cos(α), -k·sin(α)) [if DC goes right, DA goes down-right at angle α below].
+  // Hmm, in a parallelogram with acute angle α at D:
+  // D=(0,0), C=(1.5k, 0). A goes at angle (180°-α) from DC direction.
+  // A = (k·cos(180°-α), k·sin(180°-α)) = (-k·cos(α), k·sin(α)).
+  // B = A + DC vector = (-k·cos(α) + 1.5k, k·sin(α)).
+  // E = foot of perpendicular from B to line DC (y=0): E = (B_x, 0) = (-k·cos(α)+1.5k, 0).
+  // BE = B_y = k·sin(α) ✓
+  // DE = distance from D(0,0) to E = |E_x| = 1.5k - k·cos(α).
+  // BD = distance from B to D: √(B_x² + B_y²) = √((1.5k - k·cos(α))² + (k·sin(α))²)
+  //    = √(2.25k² - 3k²·cos(α) + k²·cos²(α) + k²·sin²(α))
+  //    = √(2.25k² - 3k²·cos(α) + k²) = k·√(3.25 - 3·cos(α))
+  const BEval = k * Math.sin(alphaRad);
+  const DEval = 1.5 * k - k * Math.cos(alphaRad);
+  const BDval = k * Math.sqrt(3.25 - 3 * Math.cos(alphaRad));
+
+  const isDefault = k === 10 && alpha === 60;
+  const [showDefault, setShowDefault] = useState(false);
+
+  // SVG coords
+  const svgW = 320, svgH = 180;
+  const sc = Math.min((svgW - 80) / (1.5 * k), (svgH - 50) / (k * Math.sin(alphaRad) + 1), 6);
+  const pD = { x: 60, y: 30 };
+  const pC = { x: pD.x + 1.5 * k * sc, y: pD.y };
+  const pA = { x: pD.x - k * Math.cos(alphaRad) * sc, y: pD.y + k * Math.sin(alphaRad) * sc };
+  const pB = { x: pA.x + 1.5 * k * sc, y: pA.y };
+  const pE = { x: pD.x + DEval * sc, y: pD.y };
+
+  return (
+    <section style={{ border: "2px solid rgba(146,64,14,0.5)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המקבילית הפרמטרית</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את k ואת α — צפו בביטויים האלגבריים בזמן אמת.</p>
+
+      {/* Dual sliders */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem" }}>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+            <span>פרמטר k</span>
+            <span style={{ color: "#EA580C", fontWeight: 700 }}>{k}</span>
+          </div>
+          <input type="range" min={5} max={25} step={1} value={k} onChange={e => { const v = +e.target.value; setK(v); if (v === 10 && alpha === 60) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else setShowDefault(false); }} style={{ width: "100%", accentColor: "#EA580C" }} />
+        </div>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+            <span>זווית α</span>
+            <span style={{ color: "#DC2626", fontWeight: 700 }}>{alpha}°</span>
+          </div>
+          <input type="range" min={20} max={85} step={1} value={alpha} onChange={e => { const v = +e.target.value; setAlpha(v); if (v === 60 && k === 10) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else setShowDefault(false); }} style={{ width: "100%", accentColor: "#DC2626" }} />
+        </div>
+      </div>
+
+      {/* Message zone */}
+      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={showDefault} />
+
+      {/* Clean dynamic SVG */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem" }}>
+        <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", display: "block" }} aria-hidden>
+          {/* Parallelogram */}
+          <polygon points={`${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y} ${pD.x},${pD.y}`} fill="rgba(234,88,12,0.04)" stroke="#334155" strokeWidth="2" />
+          {/* Height BE (dashed) */}
+          <line x1={pB.x} y1={pB.y} x2={pE.x} y2={pE.y} stroke="#a78bfa" strokeWidth="2" strokeDasharray="6,3" />
+          {/* Right angle at E */}
+          <polyline points={`${pE.x - 8},${pE.y} ${pE.x - 8},${pE.y + 8} ${pE.x},${pE.y + 8}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
+          {/* Diagonal BD (dotted) */}
+          <line x1={pB.x} y1={pB.y} x2={pD.x} y2={pD.y} stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="4,2" />
+          {/* Vertices — no numbers */}
+          <text x={pA.x - 14} y={pA.y + 4} fontSize="12" fill="#475569" fontWeight="600">A</text>
+          <text x={pB.x + 4} y={pB.y + 14} fontSize="12" fill="#475569" fontWeight="600">B</text>
+          <text x={pC.x + 4} y={pC.y - 4} fontSize="12" fill="#475569" fontWeight="600">C</text>
+          <text x={pD.x - 14} y={pD.y - 4} fontSize="12" fill="#475569" fontWeight="600">D</text>
+          <text x={pE.x + 4} y={pE.y - 4} fontSize="11" fill="#a78bfa" fontWeight="700">E</text>
+        </svg>
+      </div>
+
+      {/* Data display — algebraic expression + numerical value */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 8, textAlign: "center" }}>
+        {[
+          { label: "AD = k", val: AD.toFixed(1), color: "#EA580C" },
+          { label: "AB = 1.5k", val: AB.toFixed(1), color: "#334155" },
+          { label: "BE = k·sin(α)", val: BEval.toFixed(2), color: "#a78bfa" },
+          { label: "DE = 1.5k−k·cos(α)", val: DEval.toFixed(2), color: "#10b981" },
+          { label: "BD", val: BDval.toFixed(2), color: "#f59e0b" },
+          { label: "∠D = α", val: `${alpha}°`, color: "#DC2626" },
+        ].map(r => (
+          <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 6px" }}>
+            <div style={{ color: "#6B7280", fontSize: 8, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+            <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function SurveyorLab({ levelId }: { levelId: "basic" | "medium" }) {
   const [dist,  setDist]  = useState(20);
   const [angle, setAngle] = useState(40);
@@ -799,7 +939,7 @@ export default function TrigApplicationsPage() {
 
         {/* Lab */}
         {selectedLevel === "basic" && <RectangleLab />}
-        {selectedLevel === "medium" && <SurveyorLab levelId={selectedLevel} />}
+        {selectedLevel === "medium" && <ParallelogramLab />}
 
         {/* Mark as complete */}
         <div style={{ marginTop: "1.5rem" }}>

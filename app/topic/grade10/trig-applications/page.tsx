@@ -57,18 +57,38 @@ const TABS = [
 
 // ─── SVG diagrams (silent — no numbers, no answers) ───────────────────────────
 
-function ElevationAngleSVG() {
+function RectangleDiagramSVG() {
+  // Rectangle ABCD: A(bottom-left), B(bottom-right), C(top-right), D(top-left)
+  // F on AB, E extends past B. Line DF passes through F to E.
+  const Ax = 40, Ay = 160, Bx = 200, By = 160, Cx = 200, Cy = 40, Dx = 40, Dy = 40;
+  // F at ~60% of AB
+  const Fx = Ax + (Bx - Ax) * 0.6, Fy = Ay;
+  // E extends past B
+  const Ex = 260, Ey = By;
   return (
-    <svg viewBox="0 0 260 140" className="w-full max-w-sm mx-auto" aria-hidden>
-      <line x1={22} y1={118} x2={230} y2={118} stroke="#CBD5E0" strokeWidth={1.5} />
-      <rect x={196} y={22} width={26} height={96} fill="rgba(22,163,74,0.06)" stroke="#16A34A" strokeWidth={1.5} rx={2} />
-      <line x1={22} y1={118} x2={209} y2={22} stroke="#a78bfa" strokeWidth={2} strokeLinecap="round" />
-      <line x1={22} y1={118} x2={80} y2={118} stroke="#CBD5E0" strokeWidth={1} strokeDasharray="4 3" />
-      <path d="M 54 118 A 32 32 0 0 0 38 90" fill="none" stroke="#f59e0b" strokeWidth={1.8} />
-      <text x={8}   y={128} fill="#334155" fontSize={12} fontWeight="bold" fontFamily="sans-serif">A</text>
-      <text x={210} y={132} fill="#334155" fontSize={12} fontWeight="bold" fontFamily="sans-serif">B</text>
-      <text x={224} y={18}  fill="#334155" fontSize={12} fontWeight="bold" fontFamily="sans-serif">D</text>
-      <text x={40}  y={104} fill="#f59e0b" fontSize={11} fontWeight="bold" fontFamily="sans-serif">α</text>
+    <svg viewBox="0 0 300 190" className="w-full max-w-[280px] mx-auto" aria-hidden>
+      {/* Rectangle */}
+      <rect x={Ax} y={Dy} width={Bx - Ax} height={Ay - Dy} fill="rgba(99,102,241,0.04)" stroke="#334155" strokeWidth="2" />
+      {/* AB extended to E (dashed) */}
+      <line x1={Bx} y1={By} x2={Ex} y2={Ey} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="6,3" />
+      {/* Line DF through F to E */}
+      <line x1={Dx} y1={Dy} x2={Ex} y2={Ey} stroke="#6366f1" strokeWidth="2" />
+      {/* Right angle marks */}
+      <polyline points={`${Ax + 10},${Ay} ${Ax + 10},${Ay - 10} ${Ax},${Ay - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1" />
+      <polyline points={`${Bx - 10},${By} ${Bx - 10},${By - 10} ${Bx},${By - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1" />
+      {/* Point F marker */}
+      <circle cx={Fx} cy={Fy} r="3" fill="#10b981" />
+      {/* Point E marker */}
+      <circle cx={Ex} cy={Ey} r="3" fill="#f59e0b" />
+      {/* Angle ADF arc */}
+      <path d={`M ${Dx + 22},${Dy} A 22,22 0 0,1 ${Dx + 18},${Dy + 16}`} fill="none" stroke="#DC2626" strokeWidth="2" />
+      {/* Vertex labels */}
+      <text x={Ax - 14} y={Ay + 4} fontSize="13" fill="#475569" fontWeight="700">A</text>
+      <text x={Bx - 4} y={By + 16} fontSize="13" fill="#475569" fontWeight="700">B</text>
+      <text x={Cx + 4} y={Cy - 4} fontSize="13" fill="#475569" fontWeight="700">C</text>
+      <text x={Dx - 16} y={Dy + 4} fontSize="13" fill="#475569" fontWeight="700">D</text>
+      <text x={Fx - 4} y={Fy + 16} fontSize="12" fill="#10b981" fontWeight="700">F</text>
+      <text x={Ex - 2} y={Ey + 16} fontSize="12" fill="#f59e0b" fontWeight="700">E</text>
     </svg>
   );
 }
@@ -311,33 +331,28 @@ function LadderAdvanced({ steps, goldenPrompt, borderRgb }: { steps: PromptStep[
 const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    problem: "אדם עומד 15 מ׳ מבניין.\nזווית העלייה לראש הבניין היא 55°.\nמצא את גובה הבניין.",
-    diagram: <ElevationAngleSVG />,
+    problem: "במלבן ABCD אורך הצלע AD הוא 8 ס\"מ. נקודה F נמצאת על הצלע AB כך ש-AF=10. מאריכים את הצלע AB עד לנקודה E כך שהקטע DE עובר דרך F.\n\nא. חשב את הזווית ∠ADF.\nב. מצא את אורך הקטע BE (רמז: השתמש בדמיון משולשים).\nג. מהו היחס בין שטח המשולש △ADF לשטח המשולש △BEF?",
+    diagram: <RectangleDiagramSVG />,
     pitfalls: [
-      { title: "⚠️ שימוש ב-sin במקום tan", text: "sin מקשר נגדית ויתר. כאן יש מרחק אופקי (שכנה) — זה tan: נגדית/שכנה." },
-      { title: "💡 המרחק הוא השכנה, לא היתר", text: "15 מ׳ = מרחק אופקי = שכנה לזווית 55°. הגובה = נגדית. tan(55°) = h/15." },
+      { title: "⚠️ זוויות מתחלפות", text: "זהירות! זווית E אינה שווה לזווית ADF — הן זוויות מתחלפות רק אם תזהה את המקבילים הנכונים." },
+      { title: "💡 יחס שטחים", text: "זכור: יחס השטחים הוא ריבוע יחס הדמיון, לא יחס הדמיון עצמו!" },
     ],
-    goldenPrompt: `\nאדם 15מ' מבניין, זווית עלייה 55°. שכנה=15, נגדית=h. tan(55°)=h/15 → h=15×tan(55°)≈21.4מ'. אמת: 55°>45° → h>15 ✓\nסרוק את התמונה/נתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    goldenPrompt: `\nהיי, אתה הולך להוביל אותי כמורה פרטי בפתרון של תרגיל הגיאומטריה הזה שלב אחר שלב. המטרה היא שתלמד אותי ולא תפתור עבורי.\nדבר ראשון, תסרוק את כל הנתונים של המלבן ABCD, ותעצור מיד כדי לאשר לי שהבנת את המבנה.\nחשוב מאוד: אל תפתור לי את התרגיל ואל תיתן לי את התשובה הסופית בשום מצב. תעצור אחרי כל הסבר קצר ותחכה שאני אגיד לך להמשיך. אני רוצה להבין את ההיגיון הגיאומטרי של התרגיל.`,
     steps: [
       {
-        phase: "🔍 הזיהוי",
-        label: "מה ידוע ומה מחפשים?",
-        prompt: "\n\nאדם עומד 15מ' מבניין, זווית עלייה 55°. עזור לי לזהות: מהו המרחק האופקי (שכנה)? מהו הגובה (נגדית)? מה ידוע ומה מחפשים?",
+        phase: "סעיף א׳",
+        label: "מציאת זווית ∠ADF",
+        prompt: "\n\nתדריך אותי איך להשתמש בנתונים כדי למצוא את הזווית ∠ADF.",
       },
       {
-        phase: "🧭 האסטרטגיה",
-        label: "איזה יחס מחבר שכנה ונגדית?",
-        prompt: "\n\nיש לי: מרחק אופקי=15מ' (שכנה), זווית=55°. מחפש: גובה (נגדית). איזה יחס מקשר שכנה+נגדית+זווית? כתוב את המשוואה.",
+        phase: "סעיף ב׳",
+        label: "מעבר למשולש החיצוני ומציאת BE",
+        prompt: "\n\nעכשיו כשיש לנו את נתוני המשולש הפנימי, תסביר לי איך נחשב את צלע BE.",
       },
       {
-        phase: "🔢 החישוב",
-        label: "בידוד הגובה וחישוב",
-        prompt: "\n\ntan(55°) = h/15. בודד h: h = 15×tan(55°). tan(55°) ≈ 1.428. מה הגובה h?",
-      },
-      {
-        phase: "✅ בדיקת המציאות",
-        label: "הגיוני שהגובה גדול מהמרחק?",
-        prompt: "\n\nh≈21.4מ', מרחק=15מ'. זווית 55°>45° — האם הגיוני שהגובה גדול מהמרחק? מה הכלל הכללי?",
+        phase: "סעיף ג׳",
+        label: "חישוב יחס השטחים",
+        prompt: "\n\nתסביר לי את הדרך לחשב את היחס בין שטח △ADF לשטח △BEF.",
       },
     ],
   },
@@ -534,6 +549,117 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
 // ─── SurveyorLab ──────────────────────────────────────────────────────────────
 
+// ─── Lab: Rectangle ABCD with point F and E ──────────────────────────────────
+
+function RectangleLab() {
+  const [AF, setAF] = useState(10);
+  const [AD, setAD] = useState(8);
+  const [showDefault, setShowDefault] = useState(false);
+
+  // Triangle ADF: right angle at A, AD vertical, AF horizontal
+  const DF = Math.sqrt(AD * AD + AF * AF);
+  const angleDeg = Math.atan2(AF, AD) * (180 / Math.PI);
+
+  // For the extended construction: line from D(0,AD) through F(AF,0)
+  // In the rectangle of width W, BF = W - AF
+  // By similar triangles: BE/AD = BF/AF
+  // Let W = AF + BF, choose W such that BF is reasonable
+  // For the original problem: AD=8, AF=10, let's say W = AF * 1.5 = 15, so BF = 5
+  const W_rect = AF * 1.5; // rectangle width
+  const BF = W_rect - AF;
+  const BE = (AD * BF) / AF;
+
+  // Areas
+  const areaADF = (AD * AF) / 2;
+  const areaBEF = (BE * BF) / 2;
+  const areaRatio = areaADF > 0 && areaBEF > 0 ? (areaADF / areaBEF) : 0;
+
+  // SVG coords
+  const svgW = 320, svgH = 200;
+  const sc = Math.min((svgW - 80) / W_rect, (svgH - 60) / AD, 8);
+  const pA = { x: 30, y: svgH - 20 };
+  const pB = { x: 30 + W_rect * sc, y: svgH - 20 };
+  const pC = { x: pB.x, y: svgH - 20 - AD * sc };
+  const pD = { x: pA.x, y: svgH - 20 - AD * sc };
+  const pF = { x: pA.x + AF * sc, y: pA.y };
+  // E is past B on the bottom line
+  const pE = { x: pB.x + BE * sc * 0.8, y: pB.y };
+
+  // Default detection
+  const isDefault = AF === 10 && AD === 8;
+
+  return (
+    <section style={{ border: "2px solid rgba(45,90,39,0.5)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת מלבן ודמיון</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את AF ואת AD — צפו בזמן אמת בתיבות למטה.</p>
+
+      {/* Dual sliders */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+            <span>AF (מרחק על AB)</span>
+            <span style={{ color: "#10b981", fontWeight: 700 }}>{AF}</span>
+          </div>
+          <input type="range" min={5} max={20} step={0.5} value={AF} onChange={e => setAF(+e.target.value)} style={{ width: "100%", accentColor: "#10b981" }} />
+        </div>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+            <span>AD (גובה המלבן)</span>
+            <span style={{ color: "#6366f1", fontWeight: 700 }}>{AD}</span>
+          </div>
+          <input type="range" min={5} max={15} step={0.5} value={AD} onChange={e => setAD(+e.target.value)} style={{ width: "100%", accentColor: "#6366f1" }} />
+        </div>
+      </div>
+
+      {/* Message zone */}
+      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={isDefault && showDefault} />
+
+      {/* Clean SVG — only letters, right-angle marks, no numbers */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
+        <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", display: "block" }} aria-hidden>
+          {/* Rectangle ABCD */}
+          <rect x={pA.x} y={pD.y} width={pB.x - pA.x} height={pA.y - pD.y} fill="rgba(99,102,241,0.04)" stroke="#334155" strokeWidth="2" />
+          {/* Extension AB to E (dashed) */}
+          <line x1={pB.x} y1={pB.y} x2={pE.x} y2={pE.y} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="6,3" />
+          {/* Line DF through F to E */}
+          <line x1={pD.x} y1={pD.y} x2={pE.x} y2={pE.y} stroke="#6366f1" strokeWidth="2" />
+          {/* Right angle marks at A and B */}
+          <polyline points={`${pA.x + 8},${pA.y} ${pA.x + 8},${pA.y - 8} ${pA.x},${pA.y - 8}`} fill="none" stroke="#94a3b8" strokeWidth="1" />
+          <polyline points={`${pB.x - 8},${pB.y} ${pB.x - 8},${pB.y - 8} ${pB.x},${pB.y - 8}`} fill="none" stroke="#94a3b8" strokeWidth="1" />
+          {/* Point F */}
+          <circle cx={pF.x} cy={pF.y} r="3.5" fill="#10b981" />
+          {/* Point E */}
+          <circle cx={pE.x} cy={pE.y} r="3.5" fill="#f59e0b" />
+          {/* Vertices */}
+          <text x={pA.x - 14} y={pA.y + 4} fontSize="12" fill="#475569" fontWeight="600">A</text>
+          <text x={pB.x - 4} y={pB.y + 16} fontSize="12" fill="#475569" fontWeight="600">B</text>
+          <text x={pC.x + 6} y={pC.y + 4} fontSize="12" fill="#475569" fontWeight="600">C</text>
+          <text x={pD.x - 14} y={pD.y + 4} fontSize="12" fill="#475569" fontWeight="600">D</text>
+          <text x={pF.x - 4} y={pF.y + 16} fontSize="11" fill="#10b981" fontWeight="700">F</text>
+          <text x={pE.x - 2} y={pE.y + 16} fontSize="11" fill="#f59e0b" fontWeight="700">E</text>
+        </svg>
+      </div>
+
+      {/* Data display */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: 8, textAlign: "center" }}>
+        {[
+          { label: "AD", val: AD.toFixed(1), color: "#6366f1" },
+          { label: "AF", val: AF.toFixed(1), color: "#10b981" },
+          { label: "BF", val: BF.toFixed(1), color: "#f59e0b" },
+          { label: "BE", val: BE.toFixed(2), color: "#DC2626" },
+          { label: "∠ADF", val: angleDeg.toFixed(1) + "°", color: "#a78bfa" },
+          { label: "S△ADF/S△BEF", val: areaRatio.toFixed(2), color: "#00d4ff" },
+        ].map(r => (
+          <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 6px", boxShadow: "0 2px 6px rgba(60,54,42,0.03)" }}>
+            <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+            <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function SurveyorLab({ levelId }: { levelId: "basic" | "medium" }) {
   const [dist,  setDist]  = useState(20);
   const [angle, setAngle] = useState(40);
@@ -671,8 +797,9 @@ export default function TrigApplicationsPage() {
           <ExerciseCard ex={ex} />
         </motion.div>
 
-        {/* Lab — shown only for basic and medium */}
-        {selectedLevel !== "advanced" && <SurveyorLab levelId={selectedLevel} />}
+        {/* Lab */}
+        {selectedLevel === "basic" && <RectangleLab />}
+        {selectedLevel === "medium" && <SurveyorLab levelId={selectedLevel} />}
 
         {/* Mark as complete */}
         <div style={{ marginTop: "1.5rem" }}>

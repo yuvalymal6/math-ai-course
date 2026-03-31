@@ -385,7 +385,7 @@ function MediumDiagram() {
       {/* BC = x (vertical) */}
       <text x="242" y="125" fontSize="16" fill="#6366f1" fontWeight="700">x</text>
       {/* AB = ? (bottom, shifted right to avoid edge overlap) */}
-      <text x="140" y="210" fontSize="13" fill="#10b981" fontWeight="600" textAnchor="middle">AB = ?</text>
+      <text x="130" y="210" fontSize="15" fill="#10b981" fontWeight="700" textAnchor="middle">?</text>
       {/* S = 80 indicator */}
       <text x="170" y="165" fontSize="11" fill="#94a3b8" fontWeight="600">S = 80</text>
       {/* Vertices */}
@@ -703,18 +703,22 @@ function LadderLab() {
 function TowerLab() {
   const hyp = 20;
   const [area, setArea] = useState(80);
-  const maxArea = (hyp * hyp) / 4; // 100 — isosceles maximum
+  const maxSlider = 150;
+  const maxArea = (hyp * hyp) / 4; // 100 — mathematical max for this hypotenuse
+  const clampedArea = Math.min(area, maxArea);
 
   // Solve: a*b = 2*S, a² + b² = hyp²
-  const sum2 = hyp * hyp + 4 * area;
-  const diff2 = hyp * hyp - 4 * area;
+  const sum2 = hyp * hyp + 4 * clampedArea;
+  const diff2 = hyp * hyp - 4 * clampedArea;
   const canSolve = diff2 >= 0;
   const aPlusB = Math.sqrt(sum2);
   const aMinusB = canSolve ? Math.sqrt(diff2) : 0;
-  const legA = (aPlusB + aMinusB) / 2;
-  const legB = (aPlusB - aMinusB) / 2;
+  const legA = (aPlusB + aMinusB) / 2; // BC (longer or equal)
+  const legB = (aPlusB - aMinusB) / 2; // AB (shorter or equal)
   const angleA = canSolve ? Math.atan2(legA, legB) * (180 / Math.PI) : 45;
   const angleC = 90 - angleA;
+  const isIsosceles = canSolve && Math.abs(legA - legB) < 0.1;
+  const isMaxSlider = area >= maxSlider;
 
   const maxW = 280, maxH = 220;
   const scale = canSolve ? Math.min((maxW - 80) / Math.max(legB, 1), (maxH - 50) / Math.max(legA, 1), 10) : 5;
@@ -727,26 +731,27 @@ function TowerLab() {
       <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת שטח ופיתגורס</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את השטח (יתר קבוע = 20) וצפו כיצד צורת המשולש משתנה.</p>
 
-      {/* Slider */}
+      {/* Slider — max 150 */}
       <div style={{ marginBottom: "2rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#6B7280", marginBottom: 6 }}>
           <span>שטח המשולש S</span>
           <span style={{ color: "#10b981", fontWeight: 700, fontSize: 16 }}>{area} סמ&quot;ר</span>
         </div>
-        <input type="range" min={40} max={maxArea} step={1} value={area} onChange={e => setArea(+e.target.value)} style={{ width: "100%", accentColor: "#10b981" }} />
+        <input type="range" min={40} max={maxSlider} step={1} value={area} onChange={e => setArea(+e.target.value)} style={{ width: "100%", accentColor: "#10b981" }} />
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
           <span>משולש צר</span>
-          <span>שווה שוקיים (מקסימום)</span>
+          <span>שטח מקסימלי</span>
         </div>
       </div>
 
       {/* Dynamic SVG */}
       {canSolve && (
-        <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
+        <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
           <svg viewBox={`0 0 ${maxW} ${maxH}`} style={{ width: "100%", display: "block" }} aria-hidden>
             <polygon points={`${ptA.x},${ptA.y} ${ptB.x},${ptB.y} ${ptC.x},${ptC.y}`} fill="rgba(16,185,129,0.04)" stroke="#334155" strokeWidth="2" />
             <polyline points={`${ptB.x - 10},${ptB.y} ${ptB.x - 10},${ptB.y - 10} ${ptB.x},${ptB.y - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-            <text x={ptB.x + 8} y={(ptB.y + ptC.y) / 2 + 4} fontSize="13" fill="#6366f1" fontWeight="700">{legA.toFixed(1)}</text>
+            {/* BC label — shifted right (+12) to avoid edge */}
+            <text x={ptB.x + 12} y={(ptB.y + ptC.y) / 2 + 4} fontSize="13" fill="#6366f1" fontWeight="700">{legA.toFixed(1)}</text>
             <text x={(ptA.x + ptB.x) / 2} y={ptA.y + 16} fontSize="13" fill="#10b981" fontWeight="700" textAnchor="middle">{legB.toFixed(1)}</text>
             <text x={(ptA.x + ptC.x) / 2 - 12} y={(ptA.y + ptC.y) / 2 - 6} fontSize="13" fill="#f59e0b" fontWeight="700">20</text>
             <text x={ptA.x - 12} y={ptA.y + 4} fontSize="11" fill="#475569" fontWeight="600">A</text>
@@ -756,11 +761,23 @@ function TowerLab() {
         </div>
       )}
 
-      {/* Stats */}
+      {/* Alerts */}
+      {isIsosceles && (
+        <div style={{ borderRadius: 12, border: "2px solid #10b981", background: "rgba(16,185,129,0.08)", padding: "10px 14px", marginBottom: 12, textAlign: "center" }}>
+          <p style={{ color: "#059669", fontSize: 14, fontWeight: 700, margin: 0 }}>משולש שווה שוקיים!</p>
+        </div>
+      )}
+      {isMaxSlider && (
+        <div style={{ borderRadius: 12, border: "2px solid #f59e0b", background: "rgba(245,158,11,0.08)", padding: "10px 14px", marginBottom: 12, textAlign: "center" }}>
+          <p style={{ color: "#d97706", fontSize: 14, fontWeight: 700, margin: 0 }}>השטח המקסימלי!</p>
+        </div>
+      )}
+
+      {/* Stats — BC and AB instead of ניצב 1/2 */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 10, textAlign: "center" }}>
         {[
-          { label: "ניצב 1", val: canSolve ? legA.toFixed(2) : "—", color: "#6366f1" },
-          { label: "ניצב 2", val: canSolve ? legB.toFixed(2) : "—", color: "#10b981" },
+          { label: "BC", val: canSolve ? legA.toFixed(2) : "—", color: "#6366f1" },
+          { label: "AB", val: canSolve ? legB.toFixed(2) : "—", color: "#10b981" },
           { label: "יתר", val: "20", color: "#f59e0b" },
           { label: "∠A", val: canSolve ? angleA.toFixed(1) + "°" : "—", color: "#00d4ff" },
           { label: "∠C", val: canSolve ? angleC.toFixed(1) + "°" : "—", color: "#a78bfa" },
@@ -771,9 +788,6 @@ function TowerLab() {
           </div>
         ))}
       </div>
-      {area >= maxArea - 1 && (
-        <p style={{ textAlign: "center", color: "#10b981", fontSize: 12, fontWeight: 600, marginTop: 12 }}>משולש שווה שוקיים — השטח המקסימלי!</p>
-      )}
     </section>
   );
 }

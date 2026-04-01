@@ -627,127 +627,116 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   );
 }
 
-// ─── Lab 1: Histogram with Mean Line (Basic) ────────────────────────────────
+// ─── Lab 1: Full Slider Histogram (Basic) ────────────────────────────────────
 
 function BarChartLab() {
-  const knownScores = [60, 65, 70, 72, 75, 80, 82, 85, 90];
-  const knownSum = knownScores.reduce((a, b) => a + b, 0); // 679
+  const initialScores = [60, 65, 70, 72, 75, 80, 82, 85, 90, 71];
+  const [scores, setScores] = useState(initialScores);
   const targetAvg = 75;
-  const targetSum = targetAvg * 10; // 750
-  const correctX = targetSum - knownSum; // 71
-  const [xInput, setXInput] = useState("");
-  const [solved, setSolved] = useState(false);
+  const xIndex = 9; // last score is x
 
-  const xVal = parseFloat(xInput) || 0;
-  const totalSum = knownSum + xVal;
-  const currentAvg = totalSum / 10;
-  const isCorrect = Math.abs(xVal - correctX) < 0.5 && xInput !== "";
+  const setScore = (i: number, v: number) => setScores(prev => { const next = [...prev]; next[i] = v; return next; });
 
-  const allScores = xInput ? [...knownScores, xVal].sort((a, b) => a - b) : [...knownScores].sort((a, b) => a - b);
-  const median = allScores.length === 10 ? (allScores[4] + allScores[5]) / 2 : 0;
+  const sum = scores.reduce((a, b) => a + b, 0);
+  const mean = sum / 10;
+  const sorted = [...scores].sort((a, b) => a - b);
+  const median = (sorted[4] + sorted[5]) / 2;
 
-  if (isCorrect && !solved) setSolved(true);
+  // Mode
+  const freq: Record<number, number> = {};
+  for (const v of scores) freq[v] = (freq[v] || 0) + 1;
+  const maxFreq = Math.max(...Object.values(freq));
+  const modes = Object.entries(freq).filter(([, f]) => f === maxFreq).map(([v]) => +v);
+  const modeStr = modes.length === scores.length ? "אין" : modes.join(", ");
 
-  // Histogram SVG params
-  const svgW = 380, svgH = 200, padL = 35, padB = 30, padT = 20;
+  const onTarget = Math.abs(mean - targetAvg) < 0.05;
+
+  // SVG params
+  const svgW = 380, svgH = 180, padL = 30, padT = 20, padB = 25;
   const chartH = svgH - padT - padB;
-  const barW = 26, gap = 4;
-  const minScore = 55, maxScore = 95;
-  const scaleX = (v: number) => padL + ((v - minScore) / (maxScore - minScore)) * (svgW - padL - 20);
-  const scaleY = (v: number) => padT + chartH - ((v - minScore) / (maxScore - minScore)) * chartH;
-  // Mean line Y position
-  const meanY = scaleY(currentAvg);
-  const targetY = scaleY(targetAvg);
+  const barW = 30, gap = 6;
+  const maxVal = 100;
 
   return (
     <section style={{ border: "1px solid rgba(0,212,255,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת ההיסטוגרמה</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>הקלד את x — העמודה תקפוץ למיקום, וקו הממוצע יתעדכן.</p>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת ההיסטוגרמה</h3>
+      <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: 4 }}>הזיזו סליידרים — צפו בממוצע, חציון ושכיח בזמן אמת.</p>
+      <p style={{ color: onTarget ? "#16a34a" : "#f59e0b", fontSize: 13, fontWeight: 700, textAlign: "center", marginBottom: "1.5rem" }}>🎯 ממוצע יעד: {targetAvg}</p>
 
-      {/* Input */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", borderRadius: 14, border: `2px solid ${solved ? "#16a34a" : "#e2e8f0"}`, padding: "12px 20px", boxShadow: solved ? "0 0 20px rgba(22,163,74,0.2)" : "none", transition: "all 0.3s" }}>
-          <span style={{ color: "#334155", fontSize: 16, fontWeight: 700 }}>x =</span>
-          <input type="number" value={xInput} onChange={e => { setXInput(e.target.value); setSolved(false); }} placeholder="?" style={{ width: 80, fontSize: 20, fontWeight: 700, textAlign: "center", border: "none", outline: "none", background: "transparent", color: solved ? "#16a34a" : "#334155", fontFamily: "monospace" }} />
-          {solved && <span style={{ fontSize: 20 }}>✅</span>}
+      {/* Metric cards — always visible */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: "1.5rem" }}>
+        <div style={{ borderRadius: 14, background: onTarget ? "rgba(22,163,74,0.08)" : "#fff", border: `2px solid ${onTarget ? "#16a34a" : "#e2e8f0"}`, padding: "12px 8px", textAlign: "center", boxShadow: onTarget ? "0 0 16px rgba(22,163,74,0.2)" : "none", transition: "all 0.3s" }}>
+          <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>ממוצע</div>
+          <div style={{ color: onTarget ? "#16a34a" : "#6366f1", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{mean.toFixed(1)}</div>
+        </div>
+        <div style={{ borderRadius: 14, background: "#fff", border: "2px solid #e2e8f0", padding: "12px 8px", textAlign: "center" }}>
+          <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>חציון</div>
+          <div style={{ color: "#f59e0b", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{median.toFixed(1)}</div>
+        </div>
+        <div style={{ borderRadius: 14, background: "#fff", border: "2px solid #e2e8f0", padding: "12px 8px", textAlign: "center" }}>
+          <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>שכיח</div>
+          <div style={{ color: "#a78bfa", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{modeStr}</div>
         </div>
       </div>
 
-      {/* Histogram SVG */}
+      {/* SVG Histogram with mean line */}
       <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem" }}>
         <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", display: "block" }} aria-hidden>
-          {/* Axes */}
+          {/* Y-axis */}
           <line x1={padL} y1={padT} x2={padL} y2={padT + chartH} stroke="#cbd5e1" strokeWidth="1" />
-          <line x1={padL} y1={padT + chartH} x2={svgW - 10} y2={padT + chartH} stroke="#cbd5e1" strokeWidth="1" />
+          <line x1={padL} y1={padT + chartH} x2={svgW - 5} y2={padT + chartH} stroke="#cbd5e1" strokeWidth="1" />
 
-          {/* X-axis ticks */}
-          {[60, 65, 70, 75, 80, 85, 90].map(v => (
-            <g key={v}>
-              <line x1={scaleX(v)} y1={padT + chartH} x2={scaleX(v)} y2={padT + chartH + 4} stroke="#94a3b8" strokeWidth="1" />
-              <text x={scaleX(v)} y={padT + chartH + 14} fontSize="8" fill="#94a3b8" textAnchor="middle">{v}</text>
-            </g>
-          ))}
-
-          {/* Target avg line (always at 75) */}
-          <line x1={padL} y1={targetY} x2={svgW - 10} y2={targetY} stroke="#cbd5e1" strokeWidth="1" strokeDasharray="4,4" />
-          <text x={padL - 4} y={targetY + 3} fontSize="8" fill="#94a3b8" textAnchor="end">75</text>
+          {/* Target line */}
+          {(() => { const y = padT + chartH - (targetAvg / maxVal) * chartH; return (
+            <><line x1={padL} y1={y} x2={svgW - 5} y2={y} stroke="#cbd5e1" strokeWidth="1" strokeDasharray="4,4" />
+            <text x={padL - 4} y={y + 3} fontSize="7" fill="#94a3b8" textAnchor="end">{targetAvg}</text></>
+          ); })()}
 
           {/* Mean line (dynamic) */}
-          {xInput && (
-            <>
-              <line x1={padL} y1={meanY} x2={svgW - 10} y2={meanY} stroke={solved ? "#16a34a" : "#f59e0b"} strokeWidth="2" strokeDasharray="8,4" />
-              <text x={svgW - 8} y={meanY + 4} fontSize="9" fill={solved ? "#16a34a" : "#f59e0b"} fontWeight="700" textAnchor="end">{currentAvg.toFixed(1)}</text>
-            </>
-          )}
+          {(() => { const y = padT + chartH - (mean / maxVal) * chartH; return (
+            <><line x1={padL} y1={y} x2={svgW - 5} y2={y} stroke={onTarget ? "#16a34a" : "#f59e0b"} strokeWidth="2" strokeDasharray="8,4" />
+            <text x={svgW - 3} y={y + 4} fontSize="9" fill={onTarget ? "#16a34a" : "#f59e0b"} fontWeight="700" textAnchor="end">{mean.toFixed(1)}</text></>
+          ); })()}
 
-          {/* Score bars — known scores */}
-          {allScores.map((v, i) => {
-            const isX = xInput && Math.abs(v - xVal) < 0.01 && v === xVal;
-            const barH = ((v - minScore) / (maxScore - minScore)) * chartH;
-            const x = padL + 10 + i * (barW + gap);
-            const y = padT + chartH - barH;
+          {/* Bars */}
+          {scores.map((v, i) => {
+            const isX = i === xIndex;
+            const h = (v / maxVal) * chartH;
+            const x = padL + 8 + i * (barW + gap);
+            const y = padT + chartH - h;
             return (
               <g key={i}>
-                <rect x={x} y={y} width={barW} height={barH} rx={3} fill={isX ? (solved ? "#16a34a" : "#f59e0b") : "#6366f1"} opacity={isX ? 1 : 0.6} />
-                <text x={x + barW / 2} y={y - 4} fontSize="8" fill={isX ? (solved ? "#16a34a" : "#f59e0b") : "#6366f1"} fontWeight="700" textAnchor="middle">{v}</text>
+                <rect x={x} y={y} width={barW} height={h} rx={3} fill={isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#6366f1"} opacity={isX ? 1 : 0.6} />
+                <text x={x + barW / 2} y={y - 3} fontSize="8" fill={isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#6366f1"} fontWeight="700" textAnchor="middle">{v}</text>
+                <text x={x + barW / 2} y={padT + chartH + 12} fontSize="7" fill="#94a3b8" textAnchor="middle">{isX ? "x" : `#${i + 1}`}</text>
               </g>
             );
           })}
 
-          {/* Solved label */}
-          {solved && (
-            <text x={svgW / 2} y={padT + 12} fontSize="12" fill="#16a34a" fontWeight="800" textAnchor="middle">הממוצע מאוזן על 75! ✓</text>
-          )}
+          {onTarget && <text x={svgW / 2} y={padT + 10} fontSize="11" fill="#16a34a" fontWeight="800" textAnchor="middle">ממוצע = {targetAvg}! ✓</text>}
         </svg>
       </div>
 
-      {/* Live calculation */}
-      <div style={{ borderRadius: 12, border: "1px solid rgba(0,212,255,0.2)", background: "rgba(255,255,255,0.9)", padding: "12px", marginBottom: "1rem", textAlign: "center", fontFamily: "monospace", fontSize: 12, color: "#334155", direction: "ltr" }}>
-        ({knownScores.join(" + ")} + {xInput || "?"}) ÷ 10 = <span style={{ fontWeight: 700, color: solved ? "#16a34a" : "#f59e0b" }}>{xInput ? currentAvg.toFixed(2) : "?"}</span>
+      {/* Sliders grid — 2 columns on mobile, 5 on desktop */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8, marginBottom: "1.5rem" }}>
+        {scores.map((v, i) => {
+          const isX = i === xIndex;
+          return (
+            <div key={i} style={{ borderRadius: 10, border: `1.5px solid ${isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#e2e8f0"}`, background: isX ? (onTarget ? "rgba(22,163,74,0.04)" : "rgba(245,158,11,0.04)") : "#fff", padding: "8px 10px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#6B7280", marginBottom: 3 }}>
+                <span style={{ fontWeight: isX ? 700 : 500 }}>{isX ? "x" : `תלמיד ${i + 1}`}</span>
+                <span style={{ color: isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#334155", fontWeight: 700, fontFamily: "monospace" }}>{v}</span>
+              </div>
+              <input type="range" min={0} max={100} step={1} value={v} onChange={e => setScore(i, +e.target.value)} style={{ width: "100%", accentColor: isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#6366f1" }} />
+            </div>
+          );
+        })}
       </div>
 
-      {/* Feedback */}
-      {solved && <LabMessage text={`מצוין! x = ${correctX}. הממוצע מאוזן בדיוק על 75! 🎯`} type="success" visible={true} />}
-      {!solved && xInput && Math.abs(currentAvg - targetAvg) > 0.5 && (
-        <LabMessage text={currentAvg > targetAvg ? "הממוצע גבוה מדי — נסה ערך קטן יותר" : "הממוצע נמוך מדי — נסה ערך גדול יותר"} type="warning" visible={true} />
-      )}
-
-      {/* Stats after solving */}
-      {solved && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: 8, textAlign: "center", marginTop: 12 }}>
-          {[
-            { label: "x", val: correctX.toString(), color: "#16a34a" },
-            { label: "ממוצע", val: "75.00", color: "#6366f1" },
-            { label: "חציון", val: median.toFixed(1), color: "#f59e0b" },
-            { label: "סכום", val: targetSum.toString(), color: "#00d4ff" },
-          ].map(r => (
-            <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 6px" }}>
-              <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
-              <div style={{ color: r.color, fontWeight: 700, fontSize: 15, fontFamily: "monospace" }}>{r.val}</div>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Dynamic formula */}
+      <div style={{ borderRadius: 12, border: "1px solid rgba(0,212,255,0.2)", background: "rgba(255,255,255,0.9)", padding: "10px", textAlign: "center", fontFamily: "monospace", fontSize: 11, color: "#334155", direction: "ltr", overflowX: "auto" }}>
+        ({scores.join(" + ")}) ÷ 10 = <span style={{ fontWeight: 700, color: onTarget ? "#16a34a" : "#f59e0b" }}>{mean.toFixed(2)}</span>
+      </div>
     </section>
   );
 }

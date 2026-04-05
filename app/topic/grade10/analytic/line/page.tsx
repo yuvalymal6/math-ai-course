@@ -413,9 +413,9 @@ function BasicDiagram() {
       <circle cx={toX(2)} cy={toY(5)} r={5} fill="#f59e0b" stroke="#fff" strokeWidth={1.5} />
       <text x={toX(2) + 8} y={toY(5) - 8} fontSize={11} fill="#f59e0b" fontWeight={600} fontFamily="sans-serif">?</text>
 
-      {/* Line labels */}
-      <text x={toX(3.5) + 6} y={toY(8) - 2} fontSize={10} fill="#EA580C" fontWeight={600} fontFamily="sans-serif">y=2x+1</text>
-      <text x={toX(5) + 6} y={toY(2) - 6} fontSize={10} fill="#3b82f6" fontWeight={600} fontFamily="sans-serif">y=-x+7</text>
+      {/* Line labels — silent: no equations */}
+      <text x={toX(3.5) + 6} y={toY(8) - 2} fontSize={10} fill="#EA580C" fontWeight={600} fontFamily="sans-serif">ℓ₁</text>
+      <text x={toX(5) + 6} y={toY(2) - 6} fontSize={10} fill="#3b82f6" fontWeight={600} fontFamily="sans-serif">ℓ₂</text>
     </svg>
   );
 }
@@ -443,13 +443,13 @@ function MediumDiagram() {
 
       {/* Point A(1,7) */}
       <circle cx={toX(1)} cy={toY(7)} r={5} fill="#16A34A" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(1) + 8} y={toY(7) - 6} fontSize={11} fill="#16A34A" fontWeight={600} fontFamily="sans-serif">A(1,7)</text>
+      <text x={toX(1) + 8} y={toY(7) - 6} fontSize={11} fill="#16A34A" fontWeight={600} fontFamily="sans-serif">A</text>
 
       {/* Perpendicular distance dashed */}
       <line x1={toX(1)} y1={toY(7)} x2={toX(1.9)} y2={toY(3.7)} stroke="#a78bfa" strokeWidth={1.5} strokeDasharray="4,3" />
 
       {/* Line labels */}
-      <text x={toX(3.2) + 6} y={toY(7.5)} fontSize={10} fill="#EA580C" fontWeight={600} fontFamily="sans-serif">y=3x-2</text>
+      <text x={toX(3.2) + 6} y={toY(7.5)} fontSize={10} fill="#EA580C" fontWeight={600} fontFamily="sans-serif">ℓ₁</text>
       <text x={toX(0.2)} y={toY(9.5)} fontSize={10} fill="#16A34A" fontWeight={600} fontFamily="sans-serif">?</text>
     </svg>
   );
@@ -513,8 +513,8 @@ const exercises: ExerciseDef[] = [
     problem: "שני חברים יוצאים לטיול. הראשון הולך לאורך הישר y = 2x + 1.\nהשני הולך לאורך הישר y = -x + 7.\n\nא. מצא את נקודת המפגש של שני החברים.\nב. מהו המרחק של נקודת המפגש מראשית הצירים?\nג. מצא את השטח של המשולש שנוצר בין שני הישרים וציר ה-x.",
     diagram: <BasicDiagram />,
     pitfalls: [
-      { title: "⚠️ נקודת חיתוך = פתרון מערכת משוואות", text: "השוו את שני הביטויים: 2x+1 = -x+7. אל תנסו לנחש — פתרו אלגברית." },
-      { title: "🔦 שטח משולש עם ציר x", text: "מצאו קודם את נקודות החיתוך של כל ישר עם ציר x (הציבו y=0). הבסיס הוא המרחק ביניהן, והגובה הוא ה-y של נקודת המפגש." },
+      { title: "חיתוך ≠ ניחוש", text: "תלמידים רבים מנסים לנחש את נקודת החיתוך מהגרף. זה לא מדויק — צריך לפתור מערכת משוואות אלגברית." },
+      { title: "שטח משולש — מאיפה הבסיס?", text: "הטעות הנפוצה: לקחת את המרחק בין שני הישרים כבסיס. הבסיס הוא על ציר x, בין שתי נקודות החיתוך של הישרים עם הציר." },
     ],
     goldenPrompt: `\nהיי, אני תלמיד/ה כיתה י' ומצרף/ת שאלה בגאומטריה אנליטית על חיתוך ישרים ושטח משולש.\nאני רוצה שתהיה המורה הפרטי שלי — תעזור לי להבין ולא לתת תשובות ישירות.\n\nאל תפתור עבורי — שאל אותי שאלות מכווינות.\nסרוק את הנתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
     steps: [
@@ -529,8 +529,8 @@ const exercises: ExerciseDef[] = [
     problem: "הכביש הראשי עובר לאורך הישר y = 3x - 2.\nמתכננים לסלול כביש חדש, מקביל לכביש הראשי, שיעבור דרך הנקודה A(1, 7).\n\nא. מצא את משוואת הכביש החדש.\nב. מהו המרחק בין שני הכבישים המקבילים?\nג. נקודה P נמצאת על הכביש הראשי כך ש-x_P = 3. מצא את המרחק מ-P לכביש החדש.",
     diagram: <MediumDiagram />,
     pitfalls: [
-      { title: "⚠️ ישרים מקבילים = שיפועים שווים", text: "הכביש החדש חייב להיות עם שיפוע 3 (כמו הראשי). רק ה-b (חיתוך עם ציר y) משתנה." },
-      { title: "🔦 מרחק בין ישרים מקבילים", text: "הנוסחה: d = |b₁-b₂| / √(m²+1). אל תשכחו את השורש במכנה!" },
+      { title: "מקביל ≠ אותו ישר", text: "תלמידים שוכחים שמקביל = שיפוע זהה אבל חיתוך y שונה. אם גם ה-b זהה, זה אותו ישר ולא ישר מקביל." },
+      { title: "מרחק בין ישרים — לא מרחק אופקי!", text: "הטעות הנפוצה: לחשב |b₁-b₂| בלבד. המרחק בין ישרים מקבילים הוא מרחק ניצב, לא הפרש חיתוכי y." },
     ],
     goldenPrompt: `אני בכיתה י', מצרף לך תרגיל בגאומטריה אנליטית על ישרים מקבילים ומרחק בין ישרים.\n\nאל תיתן לי את הפתרון — שאל אותי שאלות מנחות על שיפועים, מקבילים ומרחק.\nסרוק את הנתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
     steps: [
@@ -545,8 +545,8 @@ const exercises: ExerciseDef[] = [
     problem: "במערכת צירים נתונים שלושה ישרים:\nL₁: y = x + 4\nL₂: y = -2x + 10\nL₃: y = 0 (ציר ה-x)\n\nא. מצא את שלוש קודקודי המשולש שנוצר מחיתוך הישרים.\nב. הוכח כי אחת הזוויות במשולש היא זווית ישרה (90°).\nג. חשב את שטח המשולש.",
     diagram: <AdvancedDiagram />,
     pitfalls: [
-      { title: "⚠️ שלושה חיתוכים = שלוש מערכות", text: "לכל זוג ישרים יש נקודת חיתוך. צריך לפתור 3 מערכות משוואות." },
-      { title: "💡 בדיקת זווית ישרה = מכפלת שיפועים", text: "אם m₁·m₂ = -1, הישרים מאונכים. בדקו את כל הזוגות!" },
+      { title: "3 ישרים ≠ 3 חיתוכים אוטומטיים", text: "תלמידים פותרים רק חיתוך אחד ושוכחים שיש 3 זוגות. כל זוג ישרים נותן קודקוד אחד — צריך לפתור 3 מערכות." },
+      { title: "זווית ישרה — לא מספיק לבדוק זוג אחד", text: "הטעות: לבדוק רק את m₁·m₂ של הזוג הראשון ולהכריז שאין זווית ישרה. צריך לבדוק את כל 3 הזוגות." },
     ],
     goldenPrompt: "",
     advancedGateQuestion: "לפני שמתחילים — כתוב פרומפט שמסביר: כיצד מוצאים נקודות חיתוך של ישרים? איך מוכיחים ניצבות באמצעות שיפועים? כיצד מחשבים שטח משולש עם קודקודים ידועים? (לפחות 80 תווים)",
@@ -791,6 +791,9 @@ function IntersectionLab() {
           </div>
         ))}
       </div>
+      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: 12 }}>
+        {isParallel ? "שימו לב: כשהשיפועים שווים, הישרים לא נפגשים — אין נקודת חיתוך!" : "שנו את השיפועים ובדקו: מתי הישרים מאונכים? מתי מקבילים?"}
+      </p>
     </section>
   );
 }
@@ -906,6 +909,9 @@ function ParallelDistanceLab() {
           </div>
         ))}
       </div>
+      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: 12 }}>
+        שנו את ה-b של אחד הישרים — שימו לב שהמרחק הניצב משתנה, גם אם ההפרש |b₁-b₂| נשאר קבוע!
+      </p>
     </section>
   );
 }
@@ -1091,6 +1097,9 @@ function TriangleLab() {
           </div>
         ))}
       </div>
+      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: 12 }}>
+        {perp12 ? "m₁·m₂ = -1 — יש זווית ישרה! המשולש ניצב." : "שנו את השיפועים עד שתקבלו m₁·m₂ = -1 — אז תהיה זווית ישרה."}
+      </p>
     </section>
   );
 }

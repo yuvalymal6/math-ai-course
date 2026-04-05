@@ -82,8 +82,6 @@ export default function AnalyticParallelogramDiagram({ ax = -4 }: Props) {
   const bcL = toSvg(minX, C.y), bcR = toSvg(maxX, C.y);
 
   const f = (n: number) => n.toFixed(1);
-  const coord = (p: { x: number; y: number }) => `(${p.x % 1 === 0 ? p.x : p.x.toFixed(1)}, ${p.y % 1 === 0 ? p.y : p.y.toFixed(1)})`;
-
   return (
     <div className="w-full max-w-sm mx-auto" dir="ltr">
       <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full h-auto" role="img"
@@ -134,20 +132,17 @@ export default function AnalyticParallelogramDiagram({ ax = -4 }: Props) {
 
         {/* ── Vertices ── */}
         {[
-          { p: sA, c: A, label: "A", color: "#1a1a2e", dx: -8, dy: 14 },
-          { p: sB, c: B, label: "B", color: "#1a1a2e", dx: 6, dy: 14 },
-          { p: sC, c: C, label: "C", color: "#1a1a2e", dx: 6, dy: -6 },
-          { p: sD, c: D, label: "D", color: "#1a1a2e", dx: -8, dy: -6 },
+          { p: sA, label: "A", color: "#1a1a2e", dx: -8, dy: 14 },
+          { p: sB, label: "B", color: "#1a1a2e", dx: 6, dy: 14 },
+          { p: sC, label: "C", color: "#1a1a2e", dx: 6, dy: -6 },
+          { p: sD, label: "D", color: "#1a1a2e", dx: -8, dy: -6 },
         ].map(v => (
           <g key={v.label}>
             <circle cx={f(v.p.x)} cy={f(v.p.y)} r={3.5} fill={v.color} stroke="#fff" strokeWidth={1.5} />
             <text x={v.p.x + v.dx} y={v.p.y + v.dy} fontSize={11} fontWeight={800} fill={v.color}>{v.label}</text>
-            <text x={v.p.x + v.dx} y={v.p.y + v.dy + 11} fontSize={8} fontWeight={600} fill="#6B7280">{coord(v.c)}</text>
           </g>
         ))}
 
-        {/* ── Line label: y = -2x ── */}
-        <text x={bdR.x - 40} y={bdR.y + 14} fontSize={9} fill="#a78bfa" fontWeight={600} fontStyle="italic">y = −2x</text>
       </svg>
     </div>
   );

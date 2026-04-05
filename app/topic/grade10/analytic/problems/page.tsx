@@ -440,7 +440,6 @@ function MediumDiagram() {
         <g key={v.label}>
           <circle cx={toX(v.p.x)} cy={toY(v.p.y)} r={3.5} fill={v.color} stroke="#fff" strokeWidth={1.5} />
           <text x={toX(v.p.x) + v.dx} y={toY(v.p.y) + v.dy} fontSize={11} fill={v.color} fontWeight={700}>{v.label}</text>
-          <text x={toX(v.p.x) + v.dx} y={toY(v.p.y) + v.dy + 10} fontSize={7} fill="#6B7280" fontWeight={600}>({v.p.x},{v.p.y})</text>
         </g>
       ))}
 
@@ -480,7 +479,7 @@ function AdvancedDiagram() {
 
       {/* L1: y=mx (blue line through O and past P) */}
       <line x1={toX(0)} y1={toY(0)} x2={toX(P.x + 1)} y2={toY((P.x + 1) * m)} stroke="#3b82f6" strokeWidth={1.5} />
-      <text x={toX(P.x + 0.8)} y={toY((P.x + 0.8) * m) - 6} fontSize={9} fill="#3b82f6" fontWeight={600} fontStyle="italic">y=mx</text>
+      <text x={toX(P.x + 0.8)} y={toY((P.x + 0.8) * m) - 6} fontSize={9} fill="#3b82f6" fontWeight={600} fontStyle="italic">ℓ₁</text>
 
       {/* △OQM fill (blue) */}
       <polygon points={`${toX(0)},${toY(0)} ${toX(Q.x)},${toY(Q.y)} ${toX(M.x)},${toY(M.y)}`}
@@ -522,10 +521,10 @@ function AdvancedDiagram() {
       <text x={toX(0) - 10} y={toY(0) + 12} fontSize={10} fill="#1a1a2e" fontWeight={700}>O</text>
 
       <circle cx={toX(P.x)} cy={toY(P.y)} r={3.5} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(P.x) + 6} y={toY(P.y) - 4} fontSize={10} fill="#DC2626" fontWeight={700}>P(t, mt)</text>
+      <text x={toX(P.x) + 6} y={toY(P.y) - 4} fontSize={10} fill="#DC2626" fontWeight={700}>P</text>
 
       <circle cx={toX(M.x)} cy={toY(M.y)} r={3} fill="#1a1a2e" stroke="#fff" strokeWidth={1} />
-      <text x={toX(M.x) + 4} y={toY(M.y) + 14} fontSize={10} fill="#1a1a2e" fontWeight={700}>M(t, 0)</text>
+      <text x={toX(M.x) + 4} y={toY(M.y) + 14} fontSize={10} fill="#1a1a2e" fontWeight={700}>M</text>
 
       <circle cx={toX(Q.x)} cy={toY(Q.y)} r={3.5} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
       <text x={toX(Q.x) - 8} y={toY(Q.y) - 8} fontSize={10} fill="#DC2626" fontWeight={700}>Q</text>
@@ -716,25 +715,25 @@ function RectangleLab() {
   const area = 0.5 * AC * BD;
 
   return (
-    <section style={{ border: "1px solid rgba(22,163,74,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginTop: "2rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת המעוין</h3>
-      <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את x של נקודה A — צפו כיצד המעוין משתנה תוך שמירה על ניצבות.</p>
+    <section style={{ border: "8px solid #334155", borderRadius: "40px", padding: "2.5rem", background: "#020617", marginTop: "2rem" }}>
+      <h3 style={{ color: "#e2e8f0", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת המעוין</h3>
+      <p style={{ color: "#94a3b8", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את x של נקודה A — צפו כיצד המעוין משתנה תוך שמירה על ניצבות.</p>
 
       {/* Interactive diagram */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(22,163,74,0.25)", background: "#fff", padding: "0.5rem", marginBottom: "1.5rem" }}>
+      <div style={{ borderRadius: 16, border: "1px solid rgba(22,163,74,0.35)", background: "#0f172a", padding: "0.5rem", marginBottom: "1.5rem" }}>
         <AnalyticParallelogramDiagram ax={ax} />
       </div>
 
       {/* Slider: x of A */}
-      <div style={{ marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem", border: "1px solid rgba(22,163,74,0.15)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+      <div style={{ marginBottom: "1.5rem", background: "#0f172a", borderRadius: 16, padding: "1.25rem", border: "1px solid #334155" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#e2e8f0", marginBottom: 4 }}>
           <span style={{ fontWeight: 600 }}>A.x (קואורדינטת x של A)</span>
           <span style={{ color: "#16A34A", fontWeight: 700, fontFamily: "monospace" }}>{ax}</span>
         </div>
         <input type="range" min={-8} max={-1} step={0.5} value={ax}
           onChange={e => setAx(+e.target.value)}
           style={{ width: "100%", accentColor: "#16A34A" }} />
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#6B7280", marginTop: 4 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
           <span>A = ({ax}, {ay})</span>
           <span>C = ({cx}, {cy})</span>
           <span>B = ({bx}, {by})</span>
@@ -743,36 +742,36 @@ function RectangleLab() {
       </div>
 
       {/* Slope meter — the key insight */}
-      <div style={{ borderRadius: 14, background: "rgba(22,163,74,0.04)", border: "2px solid rgba(22,163,74,0.3)", padding: "14px 16px", marginBottom: "1rem", textAlign: "center" }}>
-        <div style={{ color: "#1A1A1A", fontSize: 12, fontWeight: 700, marginBottom: 8 }}>מד שיפועים — הוכחת ניצבות</div>
+      <div style={{ borderRadius: 14, background: "rgba(22,163,74,0.08)", border: "2px solid rgba(22,163,74,0.4)", padding: "14px 16px", marginBottom: "1rem", textAlign: "center" }}>
+        <div style={{ color: "#e2e8f0", fontSize: 12, fontWeight: 700, marginBottom: 8 }}>מד שיפועים — הוכחת ניצבות</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.3)" }}>
-            <div style={{ fontSize: 9, color: "#6B7280", fontWeight: 600 }}>שיפוע AC</div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#3b82f6", fontFamily: "monospace" }}>{slopeAC}</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.4)" }}>
+            <div style={{ fontSize: 9, color: "#94a3b8", fontWeight: 600 }}>שיפוע AC</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#60a5fa", fontFamily: "monospace" }}>{slopeAC}</div>
           </div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1A1A" }}>×</div>
-          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.3)" }}>
-            <div style={{ fontSize: 9, color: "#6B7280", fontWeight: 600 }}>שיפוע BD</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#e2e8f0" }}>×</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(167,139,250,0.15)", border: "1px solid rgba(167,139,250,0.4)" }}>
+            <div style={{ fontSize: 9, color: "#94a3b8", fontWeight: 600 }}>שיפוע BD</div>
             <div style={{ fontSize: 18, fontWeight: 800, color: "#a78bfa", fontFamily: "monospace" }}>{slopeBD}</div>
           </div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1A1A" }}>=</div>
-          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(22,163,74,0.1)", border: "2px solid #16A34A" }}>
-            <div style={{ fontSize: 9, color: "#6B7280", fontWeight: 600 }}>מכפלה</div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#16A34A", fontFamily: "monospace" }}>{product}</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#e2e8f0" }}>=</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(22,163,74,0.15)", border: "2px solid #16A34A" }}>
+            <div style={{ fontSize: 9, color: "#94a3b8", fontWeight: 600 }}>מכפלה</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#4ade80", fontFamily: "monospace" }}>{product}</div>
           </div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#16A34A" }}>→ מעוין!</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#4ade80" }}>→ מעוין!</div>
         </div>
       </div>
 
       {/* Data row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, textAlign: "center" }}>
         {[
-          { label: "אלכסון AC", val: AC.toFixed(2), color: "#3b82f6" },
+          { label: "אלכסון AC", val: AC.toFixed(2), color: "#60a5fa" },
           { label: "אלכסון BD", val: BD.toFixed(2), color: "#a78bfa" },
-          { label: "שטח = ½·AC·BD", val: area.toFixed(1), color: "#16A34A" },
+          { label: "שטח = ½·AC·BD", val: area.toFixed(1), color: "#4ade80" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
-            <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+          <div key={r.label} style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", padding: "10px 6px" }}>
+            <div style={{ color: "#94a3b8", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
             <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}
@@ -820,12 +819,12 @@ function ParallelogramLab() {
   };
 
   return (
-    <section style={{ border: "1px solid rgba(234,88,12,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginTop: "2rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת המקבילית והדמיון</h3>
-      <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את B — צפו כיצד D עוקבת כדי לשמור על מקבילית.</p>
+    <section style={{ border: "8px solid #334155", borderRadius: "40px", padding: "2.5rem", background: "#020617", marginTop: "2rem" }}>
+      <h3 style={{ color: "#e2e8f0", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת המקבילית והדמיון</h3>
+      <p style={{ color: "#94a3b8", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את B — צפו כיצד D עוקבת כדי לשמור על מקבילית.</p>
 
       {/* SVG */}
-      <div style={{ borderRadius: 16, border: `1px solid ${verified ? "rgba(22,163,74,0.5)" : "rgba(234,88,12,0.25)"}`, background: verified ? "rgba(22,163,74,0.03)" : "#fff", padding: "0.5rem", marginBottom: "1.5rem", transition: "all 0.3s" }}>
+      <div style={{ borderRadius: 16, border: `1px solid ${verified ? "rgba(22,163,74,0.5)" : "#334155"}`, background: verified ? "rgba(22,163,74,0.05)" : "#0f172a", padding: "0.5rem", marginBottom: "1.5rem", transition: "all 0.3s" }}>
         <svg viewBox="0 0 260 260" className="w-full max-w-xs mx-auto" style={{ display: "block" }} aria-hidden>
           {/* Grid */}
           {[0, 2, 4, 6, 8, 10, 12, 14, 16].map(v => (
@@ -853,7 +852,7 @@ function ParallelogramLab() {
 
           {/* M */}
           <circle cx={toX(M.x)} cy={toY(M.y)} r={3} fill="#f59e0b" stroke="#fff" strokeWidth={1} />
-          <text x={toX(M.x) + 5} y={toY(M.y) - 3} fontSize={8} fill="#f59e0b" fontWeight={700}>M({M.x},{M.y})</text>
+          <text x={toX(M.x) + 5} y={toY(M.y) - 3} fontSize={8} fill="#f59e0b" fontWeight={700}>M</text>
 
           {/* Vertices */}
           {[
@@ -871,16 +870,16 @@ function ParallelogramLab() {
       </div>
 
       {/* B slider */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem", border: "1px solid rgba(234,88,12,0.15)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem", background: "#0f172a", borderRadius: 16, padding: "1.25rem", border: "1px solid #334155" }}>
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#e2e8f0", marginBottom: 4 }}>
             <span style={{ fontWeight: 600 }}>B.x</span>
             <span style={{ color: "#EA580C", fontWeight: 700, fontFamily: "monospace" }}>{bx}</span>
           </div>
           <input type="range" min={3} max={15} step={1} value={bx} onChange={e => { setBx(+e.target.value); setVerified(false); }} style={{ width: "100%", accentColor: "#EA580C" }} />
         </div>
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#e2e8f0", marginBottom: 4 }}>
             <span style={{ fontWeight: 600 }}>B.y</span>
             <span style={{ color: "#EA580C", fontWeight: 700, fontFamily: "monospace" }}>{by}</span>
           </div>
@@ -891,13 +890,13 @@ function ParallelogramLab() {
       {/* Coordinate meter */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, textAlign: "center", marginBottom: "1rem" }}>
         {[
-          { label: "AM", val: AM.toFixed(1), color: "#f59e0b" },
-          { label: "MC", val: CM.toFixed(1), color: "#f59e0b" },
+          { label: "AM", val: AM.toFixed(1), color: "#fbbf24" },
+          { label: "MC", val: CM.toFixed(1), color: "#fbbf24" },
           { label: "BM", val: BM.toFixed(1), color: "#a78bfa" },
           { label: "MD", val: DM.toFixed(1), color: "#a78bfa" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "8px 4px" }}>
-            <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 2 }}>{r.label}</div>
+          <div key={r.label} style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", padding: "8px 4px" }}>
+            <div style={{ color: "#94a3b8", fontSize: 9, fontWeight: 600, marginBottom: 2 }}>{r.label}</div>
             <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}
@@ -905,19 +904,19 @@ function ParallelogramLab() {
 
       {/* Similarity ratio + area */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, textAlign: "center", marginBottom: "1.5rem" }}>
-        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
-          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>יחס דמיון △ABM ~ △CDM</div>
-          <div style={{ color: "#EA580C", fontWeight: 800, fontSize: 16, fontFamily: "monospace" }}>{ratio}</div>
+        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", padding: "10px 6px" }}>
+          <div style={{ color: "#94a3b8", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>יחס דמיון △ABM ~ △CDM</div>
+          <div style={{ color: "#fb923c", fontWeight: 800, fontSize: 16, fontFamily: "monospace" }}>{ratio}</div>
         </div>
-        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
-          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>שטח ABCD</div>
-          <div style={{ color: "#16A34A", fontWeight: 800, fontSize: 16, fontFamily: "monospace" }}>{areaVal}</div>
+        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", padding: "10px 6px" }}>
+          <div style={{ color: "#94a3b8", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>שטח ABCD</div>
+          <div style={{ color: "#4ade80", fontWeight: 800, fontSize: 16, fontFamily: "monospace" }}>{areaVal}</div>
         </div>
       </div>
 
       {/* Guess D */}
-      <div style={{ borderRadius: 14, background: "rgba(234,88,12,0.04)", border: `2px solid ${verified ? "#16A34A" : "rgba(234,88,12,0.25)"}`, padding: "14px 16px", textAlign: "center", transition: "all 0.3s" }}>
-        <div style={{ color: "#1A1A1A", fontSize: 12, fontWeight: 700, marginBottom: 8 }}>הזינו את הקואורדינטות של D:</div>
+      <div style={{ borderRadius: 14, background: "rgba(234,88,12,0.08)", border: `2px solid ${verified ? "#16A34A" : "rgba(234,88,12,0.35)"}`, padding: "14px 16px", textAlign: "center", transition: "all 0.3s" }}>
+        <div style={{ color: "#e2e8f0", fontSize: 12, fontWeight: 700, marginBottom: 8 }}>הזינו את הקואורדינטות של D:</div>
         <div style={{ display: "flex", gap: 8, justifyContent: "center", alignItems: "center" }}>
           <input
             type="text" value={guess} dir="ltr"
@@ -975,12 +974,12 @@ function SquareBuilderLab() {
   const toY = (v: number) => oy - v * sc;
 
   return (
-    <section style={{ border: `2px solid ${isCongruent ? "rgba(22,163,74,0.5)" : "rgba(139,38,53,0.4)"}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginTop: "2rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", transition: "border-color 0.3s" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת הגובה ליתר — דמיון פרמטרי</h3>
-      <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את m ו-t — ראו שיחס השטחים תלוי רק ב-m!</p>
+    <section style={{ border: "8px solid #334155", borderRadius: "40px", padding: "2.5rem", background: "#020617", marginTop: "2rem", transition: "border-color 0.3s" }}>
+      <h3 style={{ color: "#e2e8f0", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבד�� הגובה ליתר — דמיון פרמטרי</h3>
+      <p style={{ color: "#94a3b8", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את m ו-t — ראו שיחס השטחים תלוי רק ב-m!</p>
 
       {/* SVG */}
-      <div style={{ borderRadius: 16, border: `1px solid ${isCongruent ? "rgba(22,163,74,0.35)" : "rgba(139,38,53,0.25)"}`, background: isCongruent ? "rgba(22,163,74,0.02)" : "#fff", padding: "0.5rem", marginBottom: "1.5rem", transition: "all 0.3s" }}>
+      <div style={{ borderRadius: 16, border: `1px solid ${isCongruent ? "rgba(22,163,74,0.4)" : "#334155"}`, background: isCongruent ? "rgba(22,163,74,0.05)" : "#0f172a", padding: "0.5rem", marginBottom: "1.5rem", transition: "all 0.3s" }}>
         <svg viewBox={`0 0 ${Math.ceil(toX(maxCoord) + 30)} ${Math.ceil(oy + 30)}`} className="w-full max-w-sm mx-auto" style={{ display: "block" }} aria-hidden>
           {/* Axes */}
           <line x1={toX(-0.5)} y1={toY(0)} x2={toX(maxCoord + 0.5)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1} />
@@ -1030,9 +1029,9 @@ function SquareBuilderLab() {
       </div>
 
       {/* Sliders */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem", border: "1px solid rgba(139,38,53,0.15)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem", background: "#0f172a", borderRadius: 16, padding: "1.25rem", border: "1px solid #334155" }}>
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#e2e8f0", marginBottom: 4 }}>
             <span style={{ fontWeight: 600 }}>שיפוע m</span>
             <span style={{ color: "#DC2626", fontWeight: 700, fontFamily: "monospace" }}>{m.toFixed(1)}</span>
           </div>
@@ -1041,7 +1040,7 @@ function SquareBuilderLab() {
             style={{ width: "100%", accentColor: "#DC2626" }} />
         </div>
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#e2e8f0", marginBottom: 4 }}>
             <span style={{ fontWeight: 600 }}>מיקום P (t)</span>
             <span style={{ color: "#3b82f6", fontWeight: 700, fontFamily: "monospace" }}>{t}</span>
           </div>
@@ -1052,27 +1051,27 @@ function SquareBuilderLab() {
       </div>
 
       {/* Live proof: area ratio */}
-      <div style={{ borderRadius: 14, background: isCongruent ? "rgba(22,163,74,0.06)" : "rgba(139,38,53,0.04)", border: `2px solid ${isCongruent ? "#16A34A" : "rgba(139,38,53,0.3)"}`, padding: "14px 16px", marginBottom: "1rem", textAlign: "center", transition: "all 0.3s" }}>
-        <div style={{ color: "#1A1A1A", fontSize: 12, fontWeight: 700, marginBottom: 8 }}>
+      <div style={{ borderRadius: 14, background: isCongruent ? "rgba(22,163,74,0.1)" : "rgba(139,38,53,0.08)", border: `2px solid ${isCongruent ? "#16A34A" : "rgba(139,38,53,0.4)"}`, padding: "14px 16px", marginBottom: "1rem", textAlign: "center", transition: "all 0.3s" }}>
+        <div style={{ color: "#e2e8f0", fontSize: 12, fontWeight: 700, marginBottom: 8 }}>
           {isCongruent ? "חפיפה! m = 1 → המשולשים זהים" : "יחס שטחים — תלוי רק ב-m"}
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.3)" }}>
-            <div style={{ fontSize: 8, color: "#6B7280", fontWeight: 600 }}>S(△OQM)</div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: "#3b82f6", fontFamily: "monospace" }}>{areaOQM.toFixed(2)}</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.4)" }}>
+            <div style={{ fontSize: 8, color: "#94a3b8", fontWeight: 600 }}>S(△OQM)</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#60a5fa", fontFamily: "monospace" }}>{areaOQM.toFixed(2)}</div>
           </div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1A1A" }}>/</div>
-          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.3)" }}>
-            <div style={{ fontSize: 8, color: "#6B7280", fontWeight: 600 }}>S(△MQP)</div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "#e2e8f0" }}>/</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(167,139,250,0.15)", border: "1px solid rgba(167,139,250,0.4)" }}>
+            <div style={{ fontSize: 8, color: "#94a3b8", fontWeight: 600 }}>S(△MQP)</div>
             <div style={{ fontSize: 16, fontWeight: 800, color: "#a78bfa", fontFamily: "monospace" }}>{areaMQP.toFixed(2)}</div>
           </div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1A1A" }}>=</div>
-          <div style={{ padding: "6px 12px", borderRadius: 8, background: isCongruent ? "rgba(22,163,74,0.1)" : "rgba(220,38,38,0.1)", border: `2px solid ${isCongruent ? "#16A34A" : "#DC2626"}` }}>
-            <div style={{ fontSize: 8, color: "#6B7280", fontWeight: 600 }}>1/m²</div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: isCongruent ? "#16A34A" : "#DC2626", fontFamily: "monospace" }}>{areaRatio.toFixed(3)}</div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "#e2e8f0" }}>=</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: isCongruent ? "rgba(22,163,74,0.15)" : "rgba(220,38,38,0.15)", border: `2px solid ${isCongruent ? "#16A34A" : "#DC2626"}` }}>
+            <div style={{ fontSize: 8, color: "#94a3b8", fontWeight: 600 }}>1/m²</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: isCongruent ? "#4ade80" : "#f87171", fontFamily: "monospace" }}>{areaRatio.toFixed(3)}</div>
           </div>
         </div>
-        <div style={{ color: "#6B7280", fontSize: 10, marginTop: 8 }}>
+        <div style={{ color: "#94a3b8", fontSize: 10, marginTop: 8 }}>
           הזיזו את t — היחס {areaRatio.toFixed(3)} נשאר קבוע! (= 1/m² = 1/{(m * m).toFixed(2)})
         </div>
       </div>
@@ -1080,13 +1079,13 @@ function SquareBuilderLab() {
       {/* Data row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, textAlign: "center" }}>
         {[
-          { label: "OQ", val: OQ.toFixed(2), color: "#3b82f6" },
-          { label: "QM", val: QM.toFixed(2), color: "#DC2626" },
+          { label: "OQ", val: OQ.toFixed(2), color: "#60a5fa" },
+          { label: "QM", val: QM.toFixed(2), color: "#f87171" },
           { label: "QP", val: QP.toFixed(2), color: "#a78bfa" },
-          { label: "דמיון OQ/QP", val: (OQ / (QP || 1)).toFixed(3), color: "#1A1A1A" },
+          { label: "דמיון OQ/QP", val: (OQ / (QP || 1)).toFixed(3), color: "#e2e8f0" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "8px 4px" }}>
-            <div style={{ color: "#6B7280", fontSize: 8, fontWeight: 600, marginBottom: 2 }}>{r.label}</div>
+          <div key={r.label} style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", padding: "8px 4px" }}>
+            <div style={{ color: "#94a3b8", fontSize: 8, fontWeight: 600, marginBottom: 2 }}>{r.label}</div>
             <div style={{ color: r.color, fontWeight: 700, fontSize: 13, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}

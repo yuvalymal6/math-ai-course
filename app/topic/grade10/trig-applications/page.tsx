@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle } from "lucide-react";
 import Link from "next/link";
-import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
+import { calculatePromptScore, flexMatch, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
 import LabMessage from "@/app/components/LabMessage";
@@ -88,28 +88,6 @@ function ParallelogramSVG() {
 }
 
 
-function _OrigAirplaneSVG() {
-  return (
-    <svg viewBox="0 0 280 140" className="w-full max-w-sm mx-auto" aria-hidden>
-      <line x1={22}  y1={122} x2={262} y2={122} stroke="#CBD5E0" strokeWidth={1.5} />
-      <line x1={100} y1={122} x2={100} y2={28}  stroke="#CBD5E0" strokeWidth={1}   strokeDasharray="3 3" />
-      <line x1={220} y1={122} x2={220} y2={28}  stroke="#CBD5E0" strokeWidth={1}   strokeDasharray="3 3" />
-      <line x1={80}  y1={28}  x2={240} y2={28}  stroke="#00d4ff" strokeWidth={1.5} strokeDasharray="6 3" />
-      <line x1={22}  y1={122} x2={100} y2={28}  stroke="#16A34A" strokeWidth={2}   strokeLinecap="round" />
-      <line x1={22}  y1={122} x2={220} y2={28}  stroke="#a78bfa" strokeWidth={2}   strokeLinecap="round" />
-      <path d="M 72 122 A 50 50 0 0 0 50 88"  fill="none" stroke="#16A34A" strokeWidth={1.6} />
-      <path d="M 110 122 A 88 88 0 0 0 72 92" fill="none" stroke="#a78bfa" strokeWidth={1.6} />
-      <circle cx={100} cy={28} r={5} fill="#16A34A" />
-      <circle cx={220} cy={28} r={5} fill="#a78bfa" />
-      <line x1={108} y1={20} x2={212} y2={20} stroke="#00d4ff" strokeWidth={1.5} />
-      <polygon points="212,17 218,20 212,23" fill="#00d4ff" />
-      <text x={8}   y={128} fill="#334155" fontSize={11} fontWeight="bold" fontFamily="sans-serif">O</text>
-      <text x={94}  y={18}  fill="#16A34A" fontSize={10} fontWeight="bold" fontFamily="sans-serif">P₁</text>
-      <text x={214} y={18}  fill="#a78bfa" fontSize={10} fontWeight="bold" fontFamily="sans-serif">P₂</text>
-      <text x={150} y={14}  fill="#00d4ff" fontSize={9}  fontFamily="sans-serif">d</text>
-    </svg>
-  );
-}
 
 // ─── Prompt Coach Atoms ───────────────────────────────────────────────────────
 
@@ -351,6 +329,7 @@ const exercises: ExerciseDef[] = [
     pitfalls: [
       { title: "⚠️ זוויות מתחלפות", text: "זהירות! זווית E אינה שווה לזווית ADF — הן זוויות מתחלפות רק אם תזהה את המקבילים הנכונים." },
       { title: "💡 יחס שטחים", text: "זכור: יחס השטחים הוא ריבוע יחס הדמיון, לא יחס הדמיון עצמו!" },
+      { title: "⚠️ tan ≠ sin", text: "כש-AF ו-AD ידועים, הזווית ADF מתקבלת מ-tan (ניצב מול / ניצב ליד) — לא מ-sin. וודא שאתה בוחר את הפונקציה הנכונה." },
     ],
     goldenPrompt: `\nהיי, אתה הולך להוביל אותי כמורה פרטי בפתרון של תרגיל הגיאומטריה הזה שלב אחר שלב. המטרה היא שתלמד אותי ולא תפתור עבורי.\nדבר ראשון, תסרוק את כל הנתונים של המלבן ABCD, ותעצור מיד כדי לאשר לי שהבנת את המבנה.\nחשוב מאוד: אל תפתור לי את התרגיל ואל תיתן לי את התשובה הסופית בשום מצב. תעצור אחרי כל הסבר קצר ותחכה שאני אגיד לך להמשיך. אני רוצה להבין את ההיגיון הגיאומטרי של התרגיל.`,
     steps: [
@@ -409,6 +388,7 @@ const exercises: ExerciseDef[] = [
     pitfalls: [
       { title: "⚠️ זוויות קודקודיות", text: "שימו לב לזיהוי הזוויות! טעות נפוצה היא להתבלבל בין ∠BED ל-∠CEF. הן זוויות קודקודיות, ולכן שוות זו לזו. השתמשו בזה לדמיון." },
       { title: "💡 ניצבים מתאימים", text: "בחישוב היחסים והשטחים, זכרו לבדוק את הניצבים המתאימים. הניצב מול הזווית α הוא BD, לא AE. אל תניחו ש-E היא אמצע קטע!" },
+      { title: "⚠️ יחס דמיון ≠ יחס שטחים", text: "אם יחס הדמיון הוא k, יחס השטחים הוא k². לדוגמה: יחס דמיון 1.6 → יחס שטחים 2.56. אל תשכח להעלות בריבוע!" },
     ],
     goldenPrompt: `\nהיי, אתה הולך להוביל אותי כמורה פרטי בפתרון תרגיל מתקדם על משולש עם גבהים חיצוניים ודמיון. הנושא: טריגונומטריה, גבהים חיצוניים, דמיון משולשים ויחסי שטחים.\nדבר ראשון, תסרוק את כל הנתונים ותעצור כדי לאשר שהבנת את המבנה.\nחשוב מאוד: אל תפתור ואל תיתן תשובה סופית. תעצור אחרי כל הסבר ותחכה שאגיד להמשיך.`,
     steps: [
@@ -561,8 +541,6 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   );
 }
 
-// ─── SurveyorLab ──────────────────────────────────────────────────────────────
-
 // ─── Lab: Rectangle ABCD with point F and E ──────────────────────────────────
 
 function RectangleLab() {
@@ -657,51 +635,9 @@ function ParallelogramLab() {
   const AB = 1.5 * k;
   const BE = AD * Math.sin(alphaRad);       // height
   const DE = AD * Math.cos(alphaRad);       // base segment
-  const BD = Math.sqrt(BE * BE + (AB - DE) * (AB - DE)); // actually BD via triangle BDE
-  // BD² = BE² + DE² (in right triangle BDE where E is foot of height on DC)
-  // Wait: DC = AB = 1.5k. DE = AD·cos(α). EC = DC - DE = 1.5k - k·cos(α).
-  // BD² = BE² + (DC - DE)² ... no, let me use triangle BDE:
-  // In △BDE: angle E = 90°, BE = k·sin(α), DE = k·cos(α)
-  // BD² = BE² + DE² = k²·sin²(α) + k²·cos²(α) = k². So BD = k = AD.
-  // That's because △BDE has hypotenuse BD = AD = k.
-  // Actually wait, that means BD = AD always. Let me reconsider.
-  // E is foot of height from B to line DC. In parallelogram:
-  // D is at origin, C = D + DC direction. DC || AB, DC = AB = 1.5k.
-  // The height from B perpendicular to DC lands at E.
-  // In the triangle ADE (with A below D): no, let me use coordinates.
-  // Let D = (0,0), A = (AD·cos(π-α), -AD·sin(π-α)) ... this is getting complex.
-  // Simpler: angle at D = α. AD = k. In triangle formed by dropping height from B:
-  // Actually the right triangle is ABE' where E' is foot from B to line AD extended.
-  // Or: drop height BE from B to DC. Since ABCD is a parallelogram:
-  // Place D at origin. DC along x-axis. D=(0,0), C=(1.5k, 0).
-  // Angle D = α means DA makes angle α with DC.
-  // A = (k·cos(α), -k·sin(α)) [below D since α is measured downward from DC].
-  // Actually in standard parallelogram with D top-left:
-  // D=(0,0), C=(1.5k,0) along top. A = (k·cos(π-α), k·sin(π-α)).
-  // Hmm, let me just use the simple formulas:
-  // BE (height from B to DC) = AD · sin(α) = k·sin(α) ✓
-  // DE (projection of AD onto DC from D) = AD · cos(α) = k·cos(α) ✓
-  // In △BDE: BE = k·sin(α), and the horizontal distance from D to B's projection:
-  // B is at: from A go AB parallel to DC. If we compute B_x:
-  // EC = DC - DE = 1.5k - k·cos(α). That's the distance from E to C.
-  // The distance from E to the projection of B on DC... B is directly above E? No!
-  // BE is the height from B to DC, so E is the foot. △BDE has:
-  // BD = AD = k (diagonal of the right triangle at vertex A).
-  // Wait: in right triangle ABE... no. Let me just compute BD properly.
-  // Coordinates: D=(0,0). DC direction = (1,0). C=(1.5k, 0).
-  // DA at angle (π-α) from DC: A = (-k·cos(α), k·sin(α)).
-  // Wait, angle D = α means the interior angle at D. DA goes at angle α from DC.
-  // So A = (k·cos(α), -k·sin(α)) [if DC goes right, DA goes down-right at angle α below].
-  // Hmm, in a parallelogram with acute angle α at D:
-  // D=(0,0), C=(1.5k, 0). A goes at angle (180°-α) from DC direction.
-  // A = (k·cos(180°-α), k·sin(180°-α)) = (-k·cos(α), k·sin(α)).
-  // B = A + DC vector = (-k·cos(α) + 1.5k, k·sin(α)).
-  // E = foot of perpendicular from B to line DC (y=0): E = (B_x, 0) = (-k·cos(α)+1.5k, 0).
-  // BE = B_y = k·sin(α) ✓
-  // DE = distance from D(0,0) to E = |E_x| = 1.5k - k·cos(α).
-  // BD = distance from B to D: √(B_x² + B_y²) = √((1.5k - k·cos(α))² + (k·sin(α))²)
-  //    = √(2.25k² - 3k²·cos(α) + k²·cos²(α) + k²·sin²(α))
-  //    = √(2.25k² - 3k²·cos(α) + k²) = k·√(3.25 - 3·cos(α))
+  // Coordinates: D=(0,0), C=(1.5k,0), A=(-k·cos(α), k·sin(α)), B=A+DC=(1.5k-k·cos(α), k·sin(α))
+  // E = foot from B to DC = (1.5k-k·cos(α), 0)
+  // BD = k·√(3.25 - 3·cos(α))
   const BEval = k * Math.sin(alphaRad);
   const DEval = 1.5 * k - k * Math.cos(alphaRad);
   const BDval = k * Math.sqrt(3.25 - 3 * Math.cos(alphaRad));
@@ -873,78 +809,6 @@ function TriangleAltitudesLab() {
   );
 }
 
-function SurveyorLab({ levelId }: { levelId: "basic" | "medium" }) {
-  const [dist,  setDist]  = useState(20);
-  const [angle, setAngle] = useState(40);
-  const rad    = (angle * Math.PI) / 180;
-  const height = dist * Math.tan(rad);
-  const st = STATION[levelId];
-
-  const W = 300, H = 180, Ox = 36, Oy = 158, scale = 4;
-  const Tx = Math.min(Ox + dist * scale, W - 30);
-  const Ty = Math.max(Oy - Math.min(height * scale, Oy - 16), 16);
-
-  return (
-    <section style={{ border: `2px solid rgba(${st.borderRgb},0.5)`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: `0 10px 15px -3px rgba(60,54,42,0.1), 0 0 24px rgba(${st.borderRgb},0.08)` }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת הסוקר</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה מרחק וזווית — ראה כיצד הגובה מתעדכן בזמן אמת</p>
-
-      {/* Sliders */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: "2rem", background: "rgba(255,255,255,0.88)", borderRadius: 16, border: `2px solid rgba(${st.borderRgb},0.4)`, padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
-        {[
-          { title: "מרחק אופקי", varSym: "d (מ׳)", val: dist,  set: setDist,  min: 5,  max: 50, step: 1 },
-          { title: "זווית עלייה", varSym: "α (°)",  val: angle, set: setAngle, min: 5,  max: 80, step: 1 },
-        ].map((row) => (
-          <div key={row.varSym}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-              <span>{row.title} <span style={{ color: st.accentColor, fontFamily: "monospace", fontWeight: 600 }}>({row.varSym})</span></span>
-              <span style={{ color: st.accentColor, fontFamily: "monospace", fontWeight: 700 }}>{row.val}</span>
-            </div>
-            <input type="range" min={row.min} max={row.max} step={row.step} value={row.val}
-              onChange={(e) => row.set(+e.target.value)}
-              style={{ width: "100%", accentColor: st.accentColor }} />
-          </div>
-        ))}
-      </div>
-
-      {/* SVG */}
-      <div style={{ borderRadius: 16, border: `2px solid rgba(${st.borderRgb},0.45)`, background: "rgba(255,255,255,0.88)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: st.glowShadow }}>
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-sm mx-auto" aria-hidden>
-          <line x1={16} y1={Oy} x2={W - 10} y2={Oy} stroke="#CBD5E0" strokeWidth={1.5} />
-          <rect x={Tx - 9} y={Ty} width={18} height={Oy - Ty} fill={`rgba(${st.borderRgb},0.06)`} stroke={`rgb(${st.borderRgb})`} strokeWidth={1.5} rx={2} />
-          <line x1={Ox} y1={Oy} x2={Tx} y2={Ty} stroke="#a78bfa" strokeWidth={2} strokeLinecap="round" />
-          <line x1={Ox} y1={Oy} x2={Ox + 40} y2={Oy} stroke="#CBD5E0" strokeWidth={1} strokeDasharray="4 3" />
-          <line x1={Tx + 14} y1={Oy} x2={Tx + 14} y2={Ty} stroke="#34d399" strokeWidth={1.5} strokeDasharray="3 2" />
-          <line x1={Ox} y1={Oy + 12} x2={Tx} y2={Oy + 12} stroke="#f59e0b" strokeWidth={1.5} />
-          <path d={`M ${Ox + 34} ${Oy} A 34 34 0 0 0 ${Ox + 34 * Math.cos(rad)} ${Oy - 34 * Math.sin(rad)}`} fill="none" stroke="#f59e0b" strokeWidth={1.8} />
-          <text x={Ox - 14} y={Oy + 4}            fill="#334155" fontSize={10} fontWeight="bold" fontFamily="sans-serif">A</text>
-          <text x={Tx + 20} y={(Oy + Ty) / 2 + 4} fill="#34d399" fontSize={10} fontFamily="sans-serif">h</text>
-          <text x={(Ox + Tx) / 2 - 6} y={Oy + 22} fill="#f59e0b" fontSize={10} fontFamily="sans-serif">d</text>
-          <text x={Ox + 12} y={Oy - 18}            fill="#f59e0b" fontSize={10} fontFamily="sans-serif">α</text>
-        </svg>
-      </div>
-
-      {/* Tiles */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, textAlign: "center", marginBottom: "1rem" }}>
-        {[
-          { label: "d", val: `${dist} מ׳`,            sub: "מרחק אופקי" },
-          { label: "α", val: `${angle}°`,              sub: "זווית עלייה" },
-          { label: "h", val: `${height.toFixed(1)} מ׳`, sub: "גובה"       },
-        ].map(row => (
-          <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.88)", border: `2px solid rgba(${st.borderRgb},0.5)`, padding: 12, boxShadow: `0 4px 16px rgba(${st.glowRgb},0.12)` }}>
-            <div style={{ color: st.accentColor, fontFamily: "monospace", fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{row.label}</div>
-            <div style={{ color: st.accentColor, fontWeight: 700, fontSize: 20 }}>{row.val}</div>
-            <div style={{ color: "#6B7280", fontSize: 10, marginTop: 4 }}>{row.sub}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.88)", border: `1px solid rgba(${st.borderRgb},0.3)`, padding: 12, textAlign: "center", fontSize: 12, color: "#2D3436" }}>
-        h = d × tan(α) = {dist} × tan({angle}°) ≈ <span style={{ color: st.accentColor, fontWeight: 700 }}>{height.toFixed(2)}</span> מ׳
-      </div>
-    </section>
-  );
-}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 

@@ -455,11 +455,11 @@ function BasicDiagram() {
 
       {/* Point C on AB — amber */}
       <circle cx={toX(5)} cy={toY(3)} r={4.5} fill="#f59e0b" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(5) + 8} y={toY(3) - 6} fontSize={11} fill="#f59e0b" fontWeight={600} fontFamily="sans-serif" fontStyle="italic">C(5,3)</text>
+      <text x={toX(5) + 8} y={toY(3) - 6} fontSize={11} fill="#f59e0b" fontWeight={600} fontFamily="sans-serif" fontStyle="italic">C</text>
 
       {/* Point A — green, on x-axis */}
       <circle cx={toX(8)} cy={toY(0)} r={4.5} fill="#16A34A" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(8) - 6} y={toY(0) + 16} fontSize={11} fill="#16A34A" fontWeight={600} fontFamily="sans-serif" fontStyle="italic">A(8,0)</text>
+      <text x={toX(8) - 6} y={toY(0) + 16} fontSize={11} fill="#16A34A" fontWeight={600} fontFamily="sans-serif" fontStyle="italic">A</text>
 
       {/* Point B — no coordinates shown (student must find them) */}
       <circle cx={toX(2)} cy={toY(6)} r={4.5} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
@@ -467,7 +467,7 @@ function BasicDiagram() {
 
       {/* Point O — at origin */}
       <circle cx={toX(0)} cy={toY(0)} r={3.5} fill="#475569" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(0) - 14} y={toY(0) + 14} fontSize={11} fill="#6B7280" fontWeight={600} fontFamily="sans-serif" fontStyle="italic">O(0,0)</text>
+      <text x={toX(0) - 14} y={toY(0) + 14} fontSize={11} fill="#6B7280" fontWeight={600} fontFamily="sans-serif" fontStyle="italic">O</text>
     </svg>
   );
 }
@@ -514,7 +514,7 @@ function MediumDiagram() {
 
       {/* Point C — teal, with coordinates */}
       <circle cx={toX(6)} cy={toY(8)} r={4.5} fill="#0891b2" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(6) + 8} y={toY(8) - 6} fontSize={11} fill="#0891b2" fontWeight={600} fontFamily="sans-serif" fontStyle="italic">C(6,8)</text>
+      <text x={toX(6) + 8} y={toY(8) - 6} fontSize={11} fill="#0891b2" fontWeight={600} fontFamily="sans-serif" fontStyle="italic">C</text>
 
       {/* Point A — green, on y-axis, no coordinates */}
       <circle cx={toX(0)} cy={toY(-4)} r={4.5} fill="#16A34A" stroke="#fff" strokeWidth={1.5} />
@@ -585,7 +585,7 @@ function AdvancedDiagram() {
 
       {/* Point A — green, at origin */}
       <circle cx={toX(0)} cy={toY(0)} r={6} fill="#16A34A" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(0) - 4} y={toY(0) + 18} fontSize={11} fill="#16A34A" fontWeight={700} fontFamily="sans-serif">A(0,0)</text>
+      <text x={toX(0) - 4} y={toY(0) + 18} fontSize={11} fill="#16A34A" fontWeight={700} fontFamily="sans-serif">A</text>
 
       {/* Point B — red */}
       <circle cx={toX(4)} cy={toY(8)} r={6} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
@@ -593,15 +593,15 @@ function AdvancedDiagram() {
 
       {/* Point C — teal */}
       <circle cx={toX(6)} cy={toY(2)} r={6} fill="#0891b2" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(6) + 8} y={toY(2) + 14} fontSize={11} fill="#0891b2" fontWeight={700} fontFamily="sans-serif">C(6,2)</text>
+      <text x={toX(6) + 8} y={toY(2) + 14} fontSize={11} fill="#0891b2" fontWeight={700} fontFamily="sans-serif">C</text>
 
       {/* Point D — purple, on x-axis */}
       <circle cx={toX(10)} cy={toY(0)} r={6} fill="#9333ea" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(10) - 4} y={toY(0) + 18} fontSize={11} fill="#9333ea" fontWeight={700} fontFamily="sans-serif">D(10,0)</text>
+      <text x={toX(10) - 4} y={toY(0) + 18} fontSize={11} fill="#9333ea" fontWeight={700} fontFamily="sans-serif">D</text>
 
       {/* Point E — amber, midpoint of AB */}
       <circle cx={toX(2)} cy={toY(4)} r={5} fill="#f59e0b" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(2) + 8} y={toY(4) - 6} fontSize={10} fill="#f59e0b" fontWeight={700} fontFamily="sans-serif">E(2,4)</text>
+      <text x={toX(2) + 8} y={toY(4) - 6} fontSize={10} fill="#f59e0b" fontWeight={700} fontFamily="sans-serif">E</text>
     </svg>
   );
 }
@@ -615,14 +615,14 @@ const exercises: ExerciseDef[] = [
     problem: "נתונות הנקודות A(8, 0) ו-C(5, 3).\nידוע כי הנקודה C היא אמצע הקטע AB.\n\nא. מצא את נקודה B.\nב. חשב את אורך הקטע AC ואת אורך הקטע AB.\nג. הנקודה O היא ראשית הצירים (0,0). חשב את שטח המשולש ABO.",
     diagram: <BasicDiagram />,
     pitfalls: [
-      { title: "⚠️ שימו לב להצבה בסדר הנכון", text: "הפעם, נתון אמצע הקטע. שימו לב לזה כשתגיעו לנוסחה." },
-      { title: "🔦 איך נחשב את הגובה במערכת צירים?", text: "שימו לב שאם נוריד מ-B גובה, הוא יהיה מאונך לציר X. איך זה ישפיע על מציאת הגובה?" },
+      { title: "נוסחת אמצע — מי הנעלם?", text: "הטעות הנפוצה: להציב את האמצע כ-A או כ-B. שימו לב מי נתון ומי לא — הנוסחה עובדת בשני הכיוונים." },
+      { title: "שטח משולש — לא כל צלע היא בסיס", text: "תלמידים בוחרים צלע אקראית כבסיס. חשבו איזו צלע נמצאת על ציר — זה יחסוך חישוב גובה." },
     ],
     goldenPrompt: `\nהיי, אני תלמיד/ה כיתה י' ומצרף/ת שאלה בגאומטריה אנליטית על אמצע קטע ושטח משולש. אני רוצה שתהיה המורה הפרטי שלי — תעזור לי להבין ולא לתת תשובות ישירות.\n\nאל תפתור עבורי — שאל אותי שאלות מכווינות.\nסרוק את הנתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
     steps: [
-      { phase: "סעיף א׳", label: "מציאת שיעורי נקודה B", coaching: "", prompt: "עזור לי למצוא את שיעורי הנקודה B.", keywords: [], keywordHint: "", contextWords: ["אמצע", "נוסחה", "xB", "yB", "כפול", "חיסור", "הצבה", "2", "ציר"] },
-      { phase: "סעיף ב׳", label: "חישוב אורכי AC ו-AB", coaching: "", prompt: "תסביר לי כיצד נמצא את האורכים AC, AB.", keywords: [], keywordHint: "", contextWords: ["מרחק", "שורש", "ריבוע", "הפרש", "אורך", "כפול", "אמצע", "18"] },
-      { phase: "סעיף ג׳", label: "שטח משולש ABO", coaching: "", prompt: "O ראשית הצירים, כיצד נחשב את שטח המשולש ABO?", keywords: [], keywordHint: "", contextWords: ["שטח", "משולש", "בסיס", "גובה", "ציר", "חצי", "נעל", "24"] },
+      { phase: "סעיף א׳", label: "מציאת שיעורי נקודה B", coaching: "", prompt: "נתונות A(8,0) ו-C(5,3), וידוע ש-C היא אמצע הקטע AB. תנחה אותי — איך משתמשים בנוסחת אמצע קטע כדי למצוא את B? מה הנעלם במשוואה?", keywords: [], keywordHint: "", contextWords: ["אמצע", "נוסחה", "xB", "yB", "כפול", "חיסור", "הצבה", "2", "ציר"] },
+      { phase: "סעיף ב׳", label: "חישוב אורכי AC ו-AB", coaching: "", prompt: "מצאתי את B. עכשיו צריך לחשב את אורכי הקטעים AC ו-AB. תנחה אותי — איזו נוסחה מתאימה? האם יש קשר בין AC ל-AB בגלל שנקודת האמצע ידועה?", keywords: [], keywordHint: "", contextWords: ["מרחק", "שורש", "ריבוע", "הפרש", "אורך", "כפול", "אמצע", "18"] },
+      { phase: "סעיף ג׳", label: "שטח משולש ABO", coaching: "", prompt: "O היא ראשית הצירים (0,0), A ו-B ידועות. תנחה אותי — איך מחשבים שטח משולש כשאחד הקודקודים בראשית הצירים? מה כדאי לבחור כבסיס?", keywords: [], keywordHint: "", contextWords: ["שטח", "משולש", "בסיס", "גובה", "ציר", "חצי", "נעל", "24"] },
     ],
   },
   {
@@ -631,13 +631,14 @@ const exercises: ExerciseDef[] = [
     problem: "הנקודה C(6, 8) היא קדקוד הזווית הישרה במשולש ABC.\nמשוואת הניצב AC היא: y = 2x − 4.\nהניצב BC מאונך ל-AC ועובר דרך C.\n\nא. מצא את משוואת הישר עליו מונח הניצב BC.\nב. ידוע כי הקדקוד A נמצא על ציר ה-y, ושיעור ה-y של הקדקוד B הוא 6. מצא את שיעורי הנקודות A ו-B.\nג. חשב את אורך הניצבים AC ו-BC, ומצא את שטח המשולש ABC.",
     diagram: <MediumDiagram />,
     pitfalls: [
-      { title: "⚠️ זיהוי הניצבים", text: "וודאו שאתם מחשבים את המרחק מנקודת המפגש C לכל קדקוד. אל תשתמשו ביתר AB לחישוב השטח!" },
+      { title: "שיפוע ניצב ≠ אותו שיפוע", text: "הטעות הנפוצה: לקחת את אותו שיפוע לישר המאונך. שיפוע ניצב הוא ההופכי הנגדי, לא אותו מספר." },
+      { title: "שטח משולש ישר-זווית — מה הבסיס?", text: "תלמידים מחפשים גובה חיצוני. במשולש ישר-זווית, שני הניצבים הם בסיס וגובה — אין צורך בחישוב נוסף." },
     ],
     goldenPrompt: `אני בכיתה י', מצרף לך תרגיל בגאומטריה אנליטית על משולש ישר-זווית, משוואות ישרים וניצבות.\n\nאל תיתן לי את הפתרון — שאל אותי שאלות מנחות על שיפועים, ניצבות ומשוואת ישר.\nסרוק את הנתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
     steps: [
-      { phase: "סעיף א׳", label: "משוואת הישר BC", coaching: "", prompt: "ידוע ש-BC מאונך ל-AC ועובר דרך C(6,8). תסביר לי כיצד אמצא את משוואת BC.", keywords: [], keywordHint: "", contextWords: ["מאונך", "שיפוע", "ניצב", "-1", "הופכי", "נגדי", "הצבה", "C"] },
-      { phase: "סעיף ב׳", label: "מציאת שיעורי A ו-B", coaching: "", prompt: "A נמצאת על ציר y, ושיעור ה-y של B הוא 6. עזור לי למצוא את שיעורי שתי הנקודות.", keywords: [], keywordHint: "", contextWords: ["ציר", "y", "x=0", "הצבה", "משוואה", "A", "B", "6"] },
-      { phase: "סעיף ג׳", label: "אורכי ניצבים ושטח", coaching: "", prompt: "תעזור לי לחשב את AC, BC ואת שטח המשולש ABC. שים לב שזה משולש ישר-זווית.", keywords: [], keywordHint: "", contextWords: ["מרחק", "ניצב", "שטח", "חצי", "מכפלה", "ישר-זווית"] },
+      { phase: "סעיף א׳", label: "משוואת הישר BC", coaching: "", prompt: "נתון שהניצב AC הוא y=2x-4 ושהניצב BC מאונך לו ועובר דרך C(6,8). תנחה אותי — מה שיפוע AC? ואיך מוצאים שיפוע של ישר מאונך?", keywords: [], keywordHint: "", contextWords: ["מאונך", "שיפוע", "ניצב", "-1", "הופכי", "נגדי", "הצבה", "C"] },
+      { phase: "סעיף ב׳", label: "מציאת שיעורי A ו-B", coaching: "", prompt: "יש לי שתי משוואות ישרים: AC: y=2x-4 ו-BC שמצאתי. ידוע ש-A על ציר y (כלומר x=0) ושיעור y של B הוא 6. תנחה אותי — איך מציבים את התנאים כדי למצוא את הנקודות?", keywords: [], keywordHint: "", contextWords: ["ציר", "y", "x=0", "הצבה", "משוואה", "A", "B", "6"] },
+      { phase: "סעיף ג׳", label: "אורכי ניצבים ושטח", coaching: "", prompt: "מצאתי את A, B ו-C. המשולש ABC ישר-זווית ב-C. תנחה אותי — איך מחשבים את אורכי הניצבים AC ו-BC? ואיך השטח קשור לניצבים?", keywords: [], keywordHint: "", contextWords: ["מרחק", "ניצב", "שטח", "חצי", "מכפלה", "ישר-זווית"] },
     ],
   },
   {
@@ -646,16 +647,16 @@ const exercises: ExerciseDef[] = [
     problem: "במערכת צירים נתונות הנקודות A(0, 0), C(6, 2) ו-D(10, 0).\nהנקודה E(2, 4) היא אמצע הקטע AB.\nהמרובע ABCD נוצר מחיבור הנקודות.\n\nא. מצא את שיעורי הנקודה B.\nב. הוכח כי AC מאונך ל-BC.\nג. חשב את שטח △ACD.\nד. חשב את שטח המרובע ABCD.",
     diagram: <AdvancedDiagram />,
     pitfalls: [
-      { title: "⚠️ זהירות: משולש △ACD הוא לא משולש ישר זווית!", text: "כדי לחשב את שטחו, עליך למצוא את אורך הבסיס AD (שנמצא על ציר ה-X) ואת הגובה שיורד אליו מהנקודה C. בדוק מהו ערך ה-y של נקודה C." },
-      { title: "💡 רמז לביצוע: חישוב שטח ABCD", text: "שים לב — ABCD הוא מרובע לא מוגדר. כדי לחשב את שטחו נחשב את סכום שטחי המשולשים." },
+      { title: "ניצבות ≠ זוויות ישרות בכל קודקוד", text: "הוכחתם שזווית C ישרה, אבל זה לא אומר שכל הזוויות במרובע ישרות. אל תניחו שזה מלבן." },
+      { title: "שטח מרובע — לא תמיד נוסחה אחת", text: "הטעות: לנסות להשתמש בנוסחת מלבן או מקבילית על מרובע כללי. חשבו איך לפרק אותו לחלקים פשוטים יותר." },
     ],
     goldenPrompt: "",
     advancedGateQuestion: "לפני שמתחילים — כתוב פרומפט שמסביר: כיצד משחזרים נקודה מאמצע קטע? איך מוכיחים ניצבות באמצעות שיפועים? כיצד מחשבים שטח מרובע על ידי חלוקה למשולשים? (לפחות 80 תווים)",
     steps: [
-      { phase: "סעיף א׳", label: "מציאת שיעורי B", coaching: "", prompt: "E(2, 4) היא אמצע AB ו-A(0, 0). עזור לי למצוא את B.", keywords: [], keywordHint: "", contextWords: ["אמצע", "נוסחה", "xB", "yB", "כפול", "חיסור", "הצבה", "2"] },
-      { phase: "סעיף ב׳", label: "הוכחת ניצבות AC⊥BC", coaching: "", prompt: "כיצד אוכיח ש-AC מאונך ל-BC? מה הכלי המתאים?", keywords: [], keywordHint: "", contextWords: ["שיפוע", "מכפלה", "−1", "מאונך", "ניצב", "הוכחה"] },
-      { phase: "סעיף ג׳", label: "שטח △ACD", coaching: "", prompt: "כיצד אחשב את שטח המשולש ACD?", keywords: [], keywordHint: "", contextWords: ["שטח", "משולש", "בסיס", "גובה", "חצי", "מכפלה", "נעל"] },
-      { phase: "סעיף ד׳", label: "שטח מרובע ABCD", coaching: "", prompt: "כיצד אחשב את שטח המרובע ABCD? תכווין אותי לחלוקה למשולשים.", keywords: [], keywordHint: "", contextWords: ["שטח", "מרובע", "משולש", "חלוקה", "אלכסון", "שרוך", "נעל", "סכום"] },
+      { phase: "סעיף א׳", label: "מציאת שיעורי B", coaching: "", prompt: "נתונות A(0,0) ו-E(2,4) שהיא אמצע הקטע AB. תנחה אותי — איך מוצאים את B מתוך נוסחת אמצע? מה צריך לכפול ומה לחסר?", keywords: [], keywordHint: "", contextWords: ["אמצע", "נוסחה", "xB", "yB", "כפול", "חיסור", "הצבה", "2"] },
+      { phase: "סעיף ב׳", label: "הוכחת ניצבות AC⊥BC", coaching: "", prompt: "מצאתי את B. עכשיו נתונות A(0,0), B, ו-C(6,2). צריך להוכיח ש-AC מאונך ל-BC. תנחה אותי — מה מחשבים קודם? מה התנאי המתמטי לניצבות?", keywords: [], keywordHint: "", contextWords: ["שיפוע", "מכפלה", "−1", "מאונך", "ניצב", "הוכחה"] },
+      { phase: "סעיף ג׳", label: "שטח △ACD", coaching: "", prompt: "נתונות A(0,0), C(6,2), D(10,0). צריך לחשב את שטח המשולש ACD. תנחה אותי — שתיים מהנקודות על ציר x. האם זה עוזר לבחירת בסיס וגובה?", keywords: [], keywordHint: "", contextWords: ["שטח", "משולש", "בסיס", "גובה", "חצי", "מכפלה", "נעל"] },
+      { phase: "סעיף ד׳", label: "שטח מרובע ABCD", coaching: "", prompt: "חישבתי את שטח △ACD. עכשיו צריך את שטח כל המרובע ABCD. תנחה אותי — ABCD הוא מרובע כללי (לא מלבן ולא מקבילית). איך מפרקים אותו לחלקים שאני כבר יודע לחשב?", keywords: [], keywordHint: "", contextWords: ["שטח", "מרובע", "משולש", "חלוקה", "אלכסון", "שרוך", "נעל", "סכום"] },
     ],
   },
 ];

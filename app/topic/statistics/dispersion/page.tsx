@@ -10,14 +10,16 @@ import { useDefaultToast } from "@/app/lib/useDefaultToast";
 
 // ─── Shared style ──────────────────────────────────────────────────────────────
 
-const ISLAND: React.CSSProperties = {
-  border: "8px solid #334155",
-  borderRadius: "24px",
-  padding: "2rem",
-  backgroundColor: "#0f172a",
+const SECTION: React.CSSProperties = {
+  border: "1px solid rgba(60,54,42,0.15)",
+  borderRadius: 24,
+  padding: "2.5rem",
+  background: "rgba(255,255,255,0.82)",
+  backdropFilter: "blur(8px)",
   marginBottom: "2.5rem",
   width: "100%",
   boxSizing: "border-box",
+  boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)",
 };
 
 // ─── Atoms ────────────────────────────────────────────────────────────────────
@@ -27,7 +29,7 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCp(true); setTimeout(() => setCp(false), 2000); }}
-      style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 10, fontSize: 13, background: "rgba(0,0,0,0.4)", border: "1px solid rgba(34,211,238,0.35)", color: "#22d3ee", cursor: "pointer" }}
+      style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 10, fontSize: 13, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.35)", color: "#16A34A", cursor: "pointer" }}
     >
       {cp ? <Check size={13} /> : <Copy size={13} />}{cp ? "הועתק!" : label}
     </button>
@@ -36,27 +38,25 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
 
 function GoldenPromptCard({ prompt, title = "פרומפט ראשי" }: { prompt: string; title?: string }) {
   return (
-    <div style={{ borderRadius: 14, padding: 1, background: "linear-gradient(135deg,rgba(34,211,238,0.55),rgba(34,211,238,0.2),rgba(167,139,250,0.4))", marginBottom: 20 }}>
-      <div style={{ borderRadius: 13, background: "rgba(0,0,0,0.78)", padding: "1.25rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-          <span>✨</span>
-          <span style={{ color: "#22d3ee", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
-        </div>
-        <p style={{ color: "#e2e8f0", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-wrap" }}>{prompt}</p>
-        <CopyBtn text={prompt} label="העתק פרומפט מלא" />
+    <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 16, border: "2px solid rgba(45,90,39,0.45)", boxShadow: "0 0 12px rgba(45,90,39,0.15)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <span>✨</span>
+        <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
       </div>
+      <p style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-wrap" }}>{prompt}</p>
+      <CopyBtn text={prompt} label="העתק פרומפט מלא" />
     </div>
   );
 }
 
 function TutorStepBasic({ title, prompt }: { title: string; prompt: string }) {
   return (
-    <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #1e293b", marginBottom: 10 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", background: "rgba(0,0,0,0.5)", borderBottom: "1px solid #1e293b" }}>
-        <span style={{ color: "#34d399", fontSize: 12, fontWeight: 700 }}>{title}</span>
+    <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid rgba(60,54,42,0.15)", marginBottom: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", background: "rgba(22,163,74,0.06)", borderBottom: "1px solid rgba(60,54,42,0.1)" }}>
+        <span style={{ color: "#16A34A", fontSize: 12, fontWeight: 700 }}>{title}</span>
       </div>
-      <div style={{ background: "rgba(0,0,0,0.3)", padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-        <div style={{ borderRadius: 8, background: "rgba(0,0,0,0.5)", border: "1px solid #1e293b", padding: 12, fontSize: 12, color: "#e2e8f0", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{prompt}</div>
+      <div style={{ background: "rgba(255,255,255,0.5)", padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ borderRadius: 8, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(60,54,42,0.1)", padding: 12, fontSize: 12, color: "#2D3436", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{prompt}</div>
         <CopyBtn text={prompt} />
       </div>
     </div>
@@ -80,27 +80,27 @@ function TutorStepMedium({ title, placeholder, contextWords, onPass }: {
     if (!r.blocked && r.score >= 75) onPass();
   };
   return (
-    <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #1e293b", marginBottom: 10 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", background: "rgba(0,0,0,0.5)", borderBottom: "1px solid #1e293b" }}>
-        {passed ? <CheckCircle size={14} color="#34d399" /> : null}
-        <span style={{ color: passed ? "#cbd5e1" : "#f59e0b", fontSize: 12, fontWeight: 700 }}>{title}</span>
+    <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid rgba(60,54,42,0.15)", marginBottom: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", background: "rgba(234,88,12,0.06)", borderBottom: "1px solid rgba(60,54,42,0.1)" }}>
+        {passed ? <CheckCircle size={14} color="#16A34A" /> : null}
+        <span style={{ color: passed ? "#6B7280" : "#EA580C", fontSize: 12, fontWeight: 700 }}>{title}</span>
       </div>
-      <div style={{ background: "rgba(0,0,0,0.3)", padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ background: "rgba(255,255,255,0.5)", padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
         <textarea
           value={val} rows={3} dir="rtl"
           onChange={e => { setVal(e.target.value); setResult(null); }}
           placeholder={placeholder}
           disabled={passed}
-          style={{ width: "100%", minHeight: 80, borderRadius: 10, background: "rgba(0,0,0,0.5)", border: `1px solid ${passed ? "rgba(52,211,153,0.4)" : "#334155"}`, color: "#e2e8f0", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit", opacity: passed ? 0.6 : 1 }}
+          style={{ width: "100%", minHeight: 80, borderRadius: 10, background: "rgba(255,255,255,0.7)", border: `1px solid ${passed ? "rgba(22,163,74,0.4)" : "rgba(60,54,42,0.2)"}`, color: "#1A1A1A", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit", opacity: passed ? 0.6 : 1 }}
         />
-        {!passed && <button onClick={validate} style={{ padding: "7px 18px", borderRadius: 10, fontSize: 12, background: "rgba(0,0,0,0.4)", border: "1px solid #334155", color: "#94a3b8", cursor: "pointer" }}>בדוק ניסוח 🤖</button>}
+        {!passed && <button onClick={validate} style={{ padding: "7px 18px", borderRadius: 10, fontSize: 12, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.3)", color: "#EA580C", cursor: "pointer" }}>בדוק ניסוח 🤖</button>}
         {result && (
           <div style={{ marginTop: 8 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#cbd5e1", marginBottom: 4, fontWeight: 600 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", marginBottom: 4, fontWeight: 600 }}>
               <span>ציון הפרומפט</span>
               <span style={{ fontWeight: 800 }}>{result.score}/100</span>
             </div>
-            <div style={{ height: 6, borderRadius: 3, background: "#1e293b", overflow: "hidden" }}>
+            <div style={{ height: 6, borderRadius: 3, background: "rgba(60,54,42,0.12)", overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${result.score}%`, borderRadius: 3, background: scoreBarColor, transition: "width 0.4s ease" }} />
             </div>
           </div>
@@ -266,7 +266,7 @@ function DispersionLab() {
   }, [drag.current?.idx]);
 
   return (
-    <section style={{ ...ISLAND, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden", boxSizing: "border-box" }}>
+    <section style={{ ...SECTION, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden", boxSizing: "border-box" }}>
       <h3 style={{ color: "white", fontSize: 16, fontWeight: 700, textAlign: "center", marginBottom: 4 }}>מעבדת פיזור — גרור את העמודות</h3>
       <p style={{ color: "#64748b", fontSize: 12, textAlign: "center", marginBottom: "1rem" }}>הערכים מתעדכנים בזמן אמת</p>
       <div style={{ display: "flex", justifyContent: "center", overflowX: "auto" }}>
@@ -453,8 +453,8 @@ export default function StatisticsDispersionPage() {
   const GATE    = 80;
 
   return (
-    <div style={{ background: "#020617", minHeight: "100vh", width: "100%" }}>
-      <main style={{ maxWidth: 1000, margin: "0 auto", padding: "2rem", color: "white" }} dir="rtl">
+    <div style={{ background: "#F3EFE0", minHeight: "100vh", width: "100%", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "22px 22px" }}>
+      <main style={{ maxWidth: 1000, margin: "0 auto", padding: "2rem", color: "#1A1A1A" }} dir="rtl">
 
         {/* Nav */}
         <div style={{ marginBottom: "1.5rem" }}>
@@ -494,7 +494,7 @@ export default function StatisticsDispersionPage() {
         {/* ══════════════ LEVEL 1 ══════════════ */}
         {level === 1 && (
           <>
-            <section style={{ ...ISLAND, borderColor: "rgba(52,211,153,0.35)" }}>
+            <section style={{ ...SECTION, borderColor: "rgba(52,211,153,0.35)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1.25rem", paddingBottom: "0.75rem", borderBottom: "1px solid rgba(52,211,153,0.15)" }}>
                 <div style={{ width: 4, height: 24, borderRadius: 4, background: "#34d399", flexShrink: 0 }} />
                 <h2 style={{ color: "#34d399", fontSize: 17, fontWeight: 800, margin: 0 }}>🟢 רמה בסיסית — טווח ועקביות</h2>
@@ -519,7 +519,7 @@ export default function StatisticsDispersionPage() {
         {/* ══════════════ LEVEL 2 ══════════════ */}
         {level === 2 && (
           <>
-            <section style={{ ...ISLAND, borderColor: "rgba(245,158,11,0.35)" }}>
+            <section style={{ ...SECTION, borderColor: "rgba(245,158,11,0.35)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1.25rem", paddingBottom: "0.75rem", borderBottom: "1px solid rgba(245,158,11,0.15)" }}>
                 <div style={{ width: 4, height: 24, borderRadius: 4, background: "#f59e0b", flexShrink: 0 }} />
                 <h2 style={{ color: "#f59e0b", fontSize: 17, fontWeight: 800, margin: 0 }}>🟡 רמה בינונית — סטיית תקן</h2>
@@ -559,7 +559,7 @@ export default function StatisticsDispersionPage() {
         {/* ══════════════ LEVEL 3 ══════════════ */}
         {level === 3 && (
           <>
-            <section style={{ ...ISLAND, borderColor: "rgba(167,139,250,0.35)" }}>
+            <section style={{ ...SECTION, borderColor: "rgba(167,139,250,0.35)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1.25rem", paddingBottom: "0.75rem", borderBottom: "1px solid rgba(167,139,250,0.15)" }}>
                 <div style={{ width: 4, height: 24, borderRadius: 4, background: "#a78bfa", flexShrink: 0 }} />
                 <h2 style={{ color: "#a78bfa", fontSize: 17, fontWeight: 800, margin: 0 }}>🟣 רמה מתקדמת — שונות וטרנספורמציה</h2>

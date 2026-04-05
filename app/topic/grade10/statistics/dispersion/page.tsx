@@ -973,23 +973,110 @@ const TABS = [
 // ─── Formula Bar ──────────────────────────────────────────────────────────────
 
 function FormulaBar() {
+  const [activeTab, setActiveTab] = useState<"range" | "sigma" | "variance" | null>(null);
+
+  const tabs = [
+    { id: "range" as const, label: "📏 טווח", tex: "R", color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "sigma" as const, label: "📊 סטיית תקן", tex: "\\sigma", color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
+    { id: "variance" as const, label: "📐 שונות", tex: "\\sigma^2", color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
+  ];
+
   return (
-    <div style={{ borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", padding: "1.25rem 1.5rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(60,54,42,0.08)" }}>
-      <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>📐 נוסחאות מרכזיות</div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ color: "#6B7280", fontSize: 11, fontWeight: 600, marginBottom: 6 }}>טווח</div>
-          <DisplayMath>{"R = x_{max} - x_{min}"}</DisplayMath>
-        </div>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ color: "#6B7280", fontSize: 11, fontWeight: 600, marginBottom: 6 }}>סטיית תקן</div>
-          <DisplayMath>{"\\sigma = \\sqrt{\\frac{\\sum(x_i - \\bar{x})^2}{n}}"}</DisplayMath>
-        </div>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ color: "#6B7280", fontSize: 11, fontWeight: 600, marginBottom: 6 }}>שונות</div>
-          <DisplayMath>{"\\sigma^2 = \\frac{\\sum(x_i - \\bar{x})^2}{n}"}</DisplayMath>
-        </div>
+    <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.08)" }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
+
+      {/* Tab buttons */}
+      <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
+        {tabs.map(t => {
+          const isActive = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(isActive ? null : t.id)}
+              style={{
+                flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
+                border: `1.5px solid ${isActive ? t.borderColor : "rgba(60,54,42,0.1)"}`,
+                background: isActive ? `${t.color}0D` : "rgba(60,54,42,0.03)",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
+              <span style={{ color: isActive ? t.color : "#6B7280" }}><InlineMath>{t.tex}</InlineMath></span>
+            </button>
+          );
+        })}
       </div>
+
+      {/* Expanded: Range */}
+      {activeTab === "range" && (
+        <motion.div key="range" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(22,163,74,0.25)", background: "rgba(220,252,231,0.4)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"R = x_{\\max} - x_{\\min}"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>איך מחשבים?</strong>
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>מצאו את הערך הגדול ביותר (<InlineMath>{"x_{\\max}"}</InlineMath>).</li>
+                  <li>מצאו את הערך הקטן ביותר (<InlineMath>{"x_{\\min}"}</InlineMath>).</li>
+                  <li>חסרו: <InlineMath>{"R = x_{\\max} - x_{\\min}"}</InlineMath></li>
+                </ol>
+              </div>
+              <div style={{ marginTop: 10, color: "#15803d", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                💡 דוגמה: ציונים 60, 70, 80, 90, 100 → טווח = 100 − 60 = 40
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Expanded: Sigma */}
+      {activeTab === "sigma" && (
+        <motion.div key="sigma" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(234,88,12,0.25)", background: "rgba(255,247,237,0.95)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"\\sigma = \\sqrt{\\frac{\\sum(x_i - \\bar{x})^2}{n}}"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.06)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>איך מחשבים?</strong>
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>חשבו ממוצע (<InlineMath>{"\\bar{x}"}</InlineMath>).</li>
+                  <li>חסרו כל ערך מהממוצע (<InlineMath>{"x_i - \\bar{x}"}</InlineMath>).</li>
+                  <li>העלו כל הפרש בריבוע.</li>
+                  <li>חשבו ממוצע הריבועים, ואז שורש.</li>
+                </ol>
+              </div>
+              <div style={{ marginTop: 10, color: "#B45309", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                💡 דוגמה: ציונים 78,79,80,81,82 (ממוצע=80)<br/>
+                הפרשים: −2,−1,0,1,2 → ריבועים: 4,1,0,1,4 → σ = √(10/5) ≈ 1.41
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Expanded: Variance */}
+      {activeTab === "variance" && (
+        <motion.div key="variance" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(220,38,38,0.25)", background: "rgba(254,242,242,0.95)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"\\sigma^2 = \\frac{\\sum(x_i - \\bar{x})^2}{n}"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>מה הקשר ל-σ?</strong>
+                <p dir="rtl" style={{ margin: "6px 0 0" }}>שונות = σ². זה אותו חישוב כמו סטיית תקן — רק בלי השורש בסוף.</p>
+              </div>
+              <div style={{ marginTop: 10, color: "#DC2626", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                💡 דוגמה: אם σ ≈ 1.41, אז σ² = 2<br/>
+                💡 חוקי טרנספורמציה: Var(X+b) = Var(X), אבל Var(aX) = a²·Var(X)
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }

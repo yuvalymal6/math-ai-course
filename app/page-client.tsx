@@ -166,11 +166,10 @@ const TOPICS_10 = [
     color: { bg: "bg-rose-950/40", border: "border-rose-800/50", hover: "hover:border-rose-500/70 hover:shadow-[0_0_32px_rgba(244,63,94,0.18)]", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300", bar: "bg-rose-500", badge: "bg-rose-900/60 text-rose-300 border-rose-700/50" },
   },
   {
-    id: "grade10-analytic", href: "/topic/grade10/analytic", title: "גיאומטריה אנליטית", subtitle: "קו ישר, שיפוע ונקודות חיתוך",
+    id: "grade10-analytic", href: "/topic/grade10/analytic", title: "גיאומטריה אנליטית", subtitle: "יסודות ובעיות גאומטריות",
     icon: Circle,
     subtopicLinks: [
       { label: "מושגי יסוד", href: "/topic/grade10/analytic/basics" },
-      { label: "הקו הישר", href: "/topic/grade10/analytic/line" },
       { label: "בעיות מילוליות", href: "/topic/grade10/analytic/problems" },
     ],
     color: { bg: "bg-purple-950/40", border: "border-purple-800/50", hover: "hover:border-purple-500/70 hover:shadow-[0_0_32px_rgba(168,85,247,0.18)]", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300", bar: "bg-purple-500", badge: "bg-purple-900/60 text-purple-300 border-purple-700/50" },

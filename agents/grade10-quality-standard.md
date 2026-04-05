@@ -2,7 +2,6 @@
 
 ## כלל עיצוב בסיסי — כיתה י
 כל המעבדות בכיתה י משתמשות ברקע בהיר בלבד.
-Island Protocol (background: #020617) שייך לכיתות יא-יב בלבד.
 סגנון מעבדה תקין לכיתה י:
 ```
 border: "1px solid ...", borderRadius: 24,
@@ -209,7 +208,6 @@ import MasterPromptGate from "@/app/components/MasterPromptGate";
 | קובץ | שורות | חסרונות עיקריים |
 |-------|--------|-----------------|
 | `analytic/basics` | 1,247 | ✅ מבנה מלא. Labs בסגנון בהיר — תקין |
-| `analytic/line` | 1,183 | ✅ מבנה מלא. SVGs לא שקטים (מכילים משוואות כמו `y=2x+1`) |
 | `analytic/problems` | 1,183 | ✅ מבנה מלא. SVGs לא שקטים (קואורדינטות על קודקודים) |
 | `trig-applications` | 1,026 | ✅ מבנה מלא. SVGs שקטים. Labs בסגנון בהיר — תקין |
 | `statistics/center` | 1,114 | ⚠️ ערכת צבעים כהה (שונה מהשאר). ולידציה מותאמת אישית (לא `calculatePromptScore`). Lab אחד משותף |
@@ -220,10 +218,6 @@ import MasterPromptGate from "@/app/components/MasterPromptGate";
 #### `analytic/basics` (הכי קרוב לרמה 100)
 - **Labs:** וודא סגנון בהיר (border 1px, background rgba לבן) — ללא Island Protocol
 - **הכל השאר:** מלא ותקין
-
-#### `analytic/line`
-- **SVGs:** הסר טקסטי משוואות מהדיאגרמות הסטטיות (השאר רק תוויות קודקודים)
-- **Labs:** וודא סגנון בהיר — ללא Island Protocol
 
 #### `analytic/problems`
 - **SVGs:** הסר קואורדינטות מספריות מקודקודים בדיאגרמות סטטיות

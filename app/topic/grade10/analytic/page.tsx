@@ -18,15 +18,6 @@ const SUBTOPICS = [
     ready: true,
   },
   {
-    id: "line",
-    symbol: "↗",
-    title: "הקו הישר",
-    description: "נקודת אמצע, מרחק בין נקודות, שיפוע, משוואת הקו, ניצב ומקביל",
-    exercises: ["A(2,5), B(6,9) — אמצע, מרחק, שיפוע", "קו דרך שתי נקודות — משוואה וניצב", "שטח משולש בציר הקואורדינטות"],
-    color: "orange",
-    ready: true,
-  },
-  {
     id: "problems",
     symbol: "🔷",
     title: "בעיות גאומטריות",
@@ -72,7 +63,7 @@ export default function AnalyticHub() {
         <div className="text-center space-y-3">
           <p className="text-[#00d4ff] text-xs font-semibold uppercase tracking-widest">כיתה י • 4 יח"ל מהדורה חדשה</p>
           <h1 className="text-4xl font-extrabold">גיאומטריה אנליטית</h1>
-          <p className="text-slate-400 text-lg">יסודות, קו ישר ובעיות גאומטריות</p>
+          <p className="text-slate-400 text-lg">יסודות ובעיות גאומטריות</p>
         </div>
 
         <p className="text-slate-400 text-center text-sm">בחר נושא-משנה להתחיל</p>

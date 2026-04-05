@@ -108,9 +108,9 @@ function TutorStepMedium({ title, placeholder, contextWords, onPass }: {
         {result && result.hint && (
           <div style={{
             borderRadius: 12,
-            background: result.blocked ? "rgba(254,226,226,0.15)" : result.score >= 75 ? "rgba(220,252,231,0.15)" : "rgba(255,251,235,0.1)",
+            background: result.blocked ? "rgba(254,226,226,0.3)" : result.score >= 75 ? "rgba(220,252,231,0.3)" : "rgba(255,251,235,0.3)",
             border: `2px solid ${result.blocked ? "#dc2626" : result.score >= 75 ? "#16a34a" : "#d97706"}`,
-            padding: 12, color: "#cbd5e1", fontSize: 12, lineHeight: 1.6,
+            padding: 12, color: "#2D3436", fontSize: 12, lineHeight: 1.6,
             ...(result.score >= 75 ? { fontWeight: 600 } : {})
           }}>
             {result.hint}
@@ -119,7 +119,7 @@ function TutorStepMedium({ title, placeholder, contextWords, onPass }: {
         {passed && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <button onClick={() => { navigator.clipboard.writeText(val); setCp(true); setTimeout(() => setCp(false), 2000); }}
-              style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 10, fontSize: 12, background: "transparent", border: "1px solid rgba(52,211,153,0.3)", color: "#6ee7b7", cursor: "pointer" }}>
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 10, fontSize: 12, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.3)", color: "#16A34A", cursor: "pointer" }}>
               {cp ? <Check size={12} /> : <Copy size={12} />}{cp ? "הועתק!" : "העתק ניסוח"}
             </button>
           </motion.div>
@@ -131,13 +131,13 @@ function TutorStepMedium({ title, placeholder, contextWords, onPass }: {
 
 function KeywordPills({ text, keywords }: { text: string; keywords: string[] }) {
   return (
-    <div style={{ borderRadius: 12, border: "1px solid #1e293b", background: "rgba(0,0,0,0.4)", padding: "10px 14px", marginBottom: 16 }}>
-      <div style={{ color: "#475569", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>מילות מפתח נדרשות</div>
+    <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.5)", padding: "10px 14px", marginBottom: 16 }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>מיל��ת מפתח נדרשות</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
         {keywords.map(kw => {
           const found = text.includes(kw);
           return (
-            <span key={kw} style={{ padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 600, transition: "all 0.25s", background: found ? "rgba(6,78,59,0.4)" : "rgba(30,41,59,0.6)", border: `1px solid ${found ? "rgba(52,211,153,0.5)" : "#334155"}`, color: found ? "#34d399" : "#475569" }}>
+            <span key={kw} style={{ padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 600, transition: "all 0.25s", background: found ? "rgba(22,163,74,0.12)" : "rgba(60,54,42,0.06)", border: `1px solid ${found ? "rgba(22,163,74,0.4)" : "rgba(60,54,42,0.15)"}`, color: found ? "#16A34A" : "#6B7280" }}>
               {kw}{found ? " ✓" : ""}
             </span>
           );
@@ -267,7 +267,7 @@ function DispersionLab() {
 
   return (
     <section style={{ ...SECTION, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden", boxSizing: "border-box" }}>
-      <h3 style={{ color: "white", fontSize: 16, fontWeight: 700, textAlign: "center", marginBottom: 4 }}>מעבדת פיזור — גרור את העמודות</h3>
+      <h3 style={{ color: "#1A1A1A", fontSize: 16, fontWeight: 700, textAlign: "center", marginBottom: 4 }}>מעבדת פיזור — גרור את העמודות</h3>
       <p style={{ color: "#64748b", fontSize: 12, textAlign: "center", marginBottom: "1rem" }}>הערכים מתעדכנים בזמן אמת</p>
       <div style={{ display: "flex", justifyContent: "center", overflowX: "auto" }}>
         <svg width={DB_SVG_W} height={DB_SVG_H} viewBox={`0 0 ${DB_SVG_W} ${DB_SVG_H}`}
@@ -310,19 +310,19 @@ function DispersionLab() {
         </svg>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
-        <div style={{ borderRadius: 10, background: "rgba(0,0,0,0.4)", border: "1px solid #1e293b", padding: "10px 8px", textAlign: "center" }}>
-          <div style={{ color: "#64748b", fontSize: 10, marginBottom: 4 }}>ממוצע (μ)</div>
+        <div style={{ borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(60,54,42,0.12)", padding: "10px 8px", textAlign: "center" }}>
+          <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 4 }}>ממוצע (μ)</div>
           <div style={{ color: "#f59e0b", fontWeight: 700, fontSize: 15, fontFamily: "monospace" }}>{mean.toFixed(2)}</div>
         </div>
-        <div style={{ borderRadius: 10, background: "rgba(0,0,0,0.4)", border: `1px solid ${auraColor}55`, padding: "10px 8px", textAlign: "center", transition: "border-color 0.5s" }}>
+        <div style={{ borderRadius: 10, background: "rgba(255,255,255,0.7)", border: `1px solid ${auraColor}33`, padding: "10px 8px", textAlign: "center", transition: "border-color 0.5s" }}>
           <div style={{ color: auraColor, fontSize: 10, marginBottom: 4, transition: "color 0.5s" }}>סטיית תקן (σ)</div>
           <div style={{ color: auraColor, fontWeight: 700, fontSize: 15, fontFamily: "monospace" }}>{sd.toFixed(2)}</div>
         </div>
       </div>
-      <div style={{ marginTop: 12, borderRadius: 10, border: "1px solid #1e293b", padding: "10px 12px" }}>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#64748b", cursor: "pointer" }}>
+      <div style={{ marginTop: 12, borderRadius: 10, border: "1px solid rgba(60,54,42,0.12)", padding: "10px 12px" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#6B7280", cursor: "pointer" }}>
           <input type="checkbox" checked={challenge} onChange={e => setChallenge(e.target.checked)}
-            style={{ accentColor: "#22d3ee" }} />
+            style={{ accentColor: "#16A34A" }} />
           אתגר: הגע לσ ≤ {DB_TARGET_SD}
           {challenge && (
             <span style={{ marginRight: "auto", fontSize: 11, fontWeight: 700, color: auraColor }}>
@@ -331,7 +331,7 @@ function DispersionLab() {
           )}
         </label>
         {challenge && (
-          <div style={{ height: 5, borderRadius: 4, background: "#1e293b", overflow: "hidden", marginTop: 8 }}>
+          <div style={{ height: 5, borderRadius: 4, background: "rgba(60,54,42,0.12)", overflow: "hidden", marginTop: 8 }}>
             <div style={{ height: "100%", borderRadius: 4, transition: "width 0.3s, background 0.5s", width: `${Math.min(100, (DB_TARGET_SD / Math.max(sd, 0.01)) * 100)}%`, background: auraColor }} />
           </div>
         )}
@@ -460,15 +460,15 @@ export default function StatisticsDispersionPage() {
         <div style={{ marginBottom: "1.5rem" }}>
           <Link
             href="/topic/statistics"
-            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#4A4A4A", border: "1px solid #333", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#FFFFFF", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#2D2D2D"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#4A4A4A"; }}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(255,255,255,0.7)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#2D3436", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.9)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.7)"; }}
           >
             <span style={{ fontSize: 16 }}>←</span>
             חזרה
           </Link>
           <h1 style={{ fontSize: "1.9rem", fontWeight: "bold", marginTop: "0.5rem" }}>מדדי פיזור — עם AI</h1>
-          <p style={{ color: "#94a3b8", fontSize: 14, marginTop: 4 }}>טווח, סטיית תקן ושונות — ואיך לשאול AI את השאלות הנכונות</p>
+          <p style={{ color: "#6B7280", fontSize: 14, marginTop: 4 }}>טווח, סטיית תקן ושונות — ואיך לשאול AI את השאלות הנכונות</p>
         </div>
 
         {/* Level picker */}
@@ -479,8 +479,8 @@ export default function StatisticsDispersionPage() {
             return (
               <button key={lv} onClick={() => setLevel(lv)} style={{
                 borderRadius: 20, padding: "1.25rem 1rem",
-                background: active ? "#0f172a" : "rgba(15,23,42,0.5)",
-                border: `3px solid ${active ? m.color : "#1e293b"}`,
+                background: active ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.5)",
+                border: `3px solid ${active ? m.color : "rgba(60,54,42,0.15)"}`,
                 cursor: "pointer", textAlign: "center", transition: "all 0.2s",
                 boxShadow: active ? `0 0 20px 4px ${m.glowColor}` : "none",
               }}>
@@ -500,10 +500,10 @@ export default function StatisticsDispersionPage() {
                 <h2 style={{ color: "#34d399", fontSize: 17, fontWeight: 800, margin: 0 }}>🟢 רמה בסיסית — טווח ועקביות</h2>
               </div>
               <DispersionSVG_L1 />
-              <div style={{ borderRadius: 12, background: "rgba(0,0,0,0.3)", border: "1px solid #1e293b", padding: "1rem", marginBottom: "1.25rem" }}>
-                <p style={{ color: "#94a3b8", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>נתוני הבעיה</p>
-                <p style={{ color: "#cbd5e1", fontSize: 14, marginBottom: 6, whiteSpace: "pre-line" }}>{STORY_INTRO}</p>
-                <ol style={{ color: "#cbd5e1", fontSize: 14, paddingRight: "1.25rem", display: "flex", flexDirection: "column", gap: 4, marginTop: 12 }}>
+              <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.6)", border: "1px solid rgba(60,54,42,0.1)", padding: "1rem", marginBottom: "1.25rem" }}>
+                <p style={{ color: "#6B7280", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>נתוני הבעיה</p>
+                <p style={{ color: "#2D3436", fontSize: 14, marginBottom: 6, whiteSpace: "pre-line" }}>{STORY_INTRO}</p>
+                <ol style={{ color: "#2D3436", fontSize: 14, paddingRight: "1.25rem", display: "flex", flexDirection: "column", gap: 4, marginTop: 12 }}>
                   <li>חשב את הטווח (Range) של כל כיתה.</li>
                   <li>לפי הטווח — איזו כיתה הומוגנית יותר ואיזו הטרוגנית?</li>
                   <li>מה חסרון הטווח כמדד פיזור?</li>
@@ -525,10 +525,10 @@ export default function StatisticsDispersionPage() {
                 <h2 style={{ color: "#f59e0b", fontSize: 17, fontWeight: 800, margin: 0 }}>🟡 רמה בינונית — סטיית תקן</h2>
               </div>
               <DispersionSVG_L2 />
-              <div style={{ borderRadius: 12, background: "rgba(0,0,0,0.3)", border: "1px solid #1e293b", padding: "1rem", marginBottom: "1.25rem" }}>
-                <p style={{ color: "#94a3b8", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>נתוני הבעיה</p>
-                <p style={{ color: "#cbd5e1", fontSize: 14, marginBottom: 6, whiteSpace: "pre-line" }}>{STORY_INTRO}</p>
-                <ol style={{ color: "#cbd5e1", fontSize: 14, paddingRight: "1.25rem", display: "flex", flexDirection: "column", gap: 4, marginTop: 12 }}>
+              <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.6)", border: "1px solid rgba(60,54,42,0.1)", padding: "1rem", marginBottom: "1.25rem" }}>
+                <p style={{ color: "#6B7280", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>נתוני הבעיה</p>
+                <p style={{ color: "#2D3436", fontSize: 14, marginBottom: 6, whiteSpace: "pre-line" }}>{STORY_INTRO}</p>
+                <ol style={{ color: "#2D3436", fontSize: 14, paddingRight: "1.25rem", display: "flex", flexDirection: "column", gap: 4, marginTop: 12 }}>
                   <li>חשב את סטיית התקן (σ) של כל כיתה.</li>
                   <li>היכן הציונים &#x27;רחוקים&#x27; יותר מהמרכז?</li>
                   <li>איזו כיתה הומוגנית יותר לפי σ?</li>
@@ -547,7 +547,7 @@ export default function StatisticsDispersionPage() {
               ))}
               {l2p0 && l2p1 && l2p2 && l2p3 && (
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                  style={{ borderRadius: 12, background: "rgba(6,78,59,0.15)", border: "1px solid rgba(52,211,153,0.3)", padding: "1rem", color: "#6ee7b7", fontSize: 14, marginTop: "1rem" }}>
+                  style={{ borderRadius: 12, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.3)", padding: "1rem", color: "#16A34A", fontSize: 14, marginTop: "1rem" }}>
                   ✅ כל הכבוד! σ(יא&#x2019;1) ≈ 1.41 ← הומוגנית | σ(יא&#x2019;2) ≈ 14.14 ← הטרוגנית
                 </motion.div>
               )}
@@ -565,10 +565,10 @@ export default function StatisticsDispersionPage() {
                 <h2 style={{ color: "#a78bfa", fontSize: 17, fontWeight: 800, margin: 0 }}>🟣 רמה מתקדמת — שונות וטרנספורמציה</h2>
               </div>
               <DispersionSVG_L3 />
-              <div style={{ borderRadius: 12, background: "rgba(0,0,0,0.3)", border: "1px solid #1e293b", padding: "1rem", marginBottom: "1.5rem" }}>
-                <p style={{ color: "#94a3b8", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>נתוני הבעיה</p>
-                <p style={{ color: "#cbd5e1", fontSize: 14, marginBottom: 6, whiteSpace: "pre-line" }}>{STORY_INTRO}</p>
-                <ol style={{ color: "#cbd5e1", fontSize: 14, paddingRight: "1.25rem", display: "flex", flexDirection: "column", gap: 4, marginTop: 12 }}>
+              <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.6)", border: "1px solid rgba(60,54,42,0.1)", padding: "1rem", marginBottom: "1.5rem" }}>
+                <p style={{ color: "#6B7280", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>נתוני הבעיה</p>
+                <p style={{ color: "#2D3436", fontSize: 14, marginBottom: 6, whiteSpace: "pre-line" }}>{STORY_INTRO}</p>
+                <ol style={{ color: "#2D3436", fontSize: 14, paddingRight: "1.25rem", display: "flex", flexDirection: "column", gap: 4, marginTop: 12 }}>
                   <li>חשב שונות (Var) וסטיית תקן (σ) לכל כיתה.</li>
                   <li>המורה הוסיפה 5 בונוס לכולם ביא&#x2019;2. מה יקרה ל-σ ולשונות?</li>
                   <li>הסבר: <strong style={{ color: "#a78bfa" }}>Var(X+b) = Var(X)</strong> ו-<strong style={{ color: "#a78bfa" }}>Var(aX) = a²·Var(X)</strong>.</li>
@@ -577,18 +577,18 @@ export default function StatisticsDispersionPage() {
 
               {!l3Submitted ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                  <div style={{ borderRadius: 12, border: "1px solid rgba(167,139,250,0.3)", background: "rgba(0,0,0,0.4)", padding: "1.25rem" }}>
+                  <div style={{ borderRadius: 12, border: "1px solid rgba(167,139,250,0.3)", background: "rgba(167,139,250,0.06)", padding: "1.25rem" }}>
                     <div style={{ color: "#a78bfa", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>🔐 נסח בעצמך פרומפט זהב מלא</div>
-                    <pre style={{ color: "#cbd5e1", fontSize: 14, lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{L3_GATE_TEXT}</pre>
+                    <pre style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{L3_GATE_TEXT}</pre>
                   </div>
                   <textarea
                     value={l3Text} rows={5} dir="rtl"
                     onChange={e => setL3Text(e.target.value)}
                     placeholder="כתוב כאן פרומפט מדויק — לפחות 80 תווים..."
-                    style={{ width: "100%", minHeight: 130, borderRadius: 12, background: "rgba(0,0,0,0.5)", border: "1px solid #334155", color: "white", fontSize: 14, padding: 14, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+                    style={{ width: "100%", minHeight: 130, borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(60,54,42,0.2)", color: "#1A1A1A", fontSize: 14, padding: 14, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
                   />
                   <div>
-                    <div style={{ height: 5, borderRadius: 4, background: "#1e293b", overflow: "hidden" }}>
+                    <div style={{ height: 5, borderRadius: 4, background: "rgba(60,54,42,0.12)", overflow: "hidden" }}>
                       <div style={{ height: "100%", borderRadius: 4, background: l3Count >= GATE ? "#34d399" : "#a78bfa", width: `${Math.min(100, (l3Count / GATE) * 100)}%`, transition: "width 0.2s" }} />
                     </div>
                     <div style={{ fontSize: 11, color: l3Count >= GATE ? "#34d399" : "#475569", marginTop: 4, textAlign: "left" }}>{l3Count} / {GATE} תווים</div>
@@ -596,13 +596,13 @@ export default function StatisticsDispersionPage() {
                   <button
                     onClick={() => { if (l3Count >= GATE) setL3Submitted(true); }}
                     disabled={l3Count < GATE}
-                    style={{ padding: "12px 24px", borderRadius: 12, background: l3Count >= GATE ? "rgba(167,139,250,0.12)" : "transparent", border: `1px solid ${l3Count >= GATE ? "rgba(167,139,250,0.5)" : "#1e293b"}`, color: l3Count >= GATE ? "#a78bfa" : "#334155", fontSize: 14, fontWeight: 600, cursor: l3Count >= GATE ? "pointer" : "not-allowed", transition: "all 0.3s" }}>
+                    style={{ padding: "12px 24px", borderRadius: 12, background: l3Count >= GATE ? "rgba(167,139,250,0.12)" : "transparent", border: `1px solid ${l3Count >= GATE ? "rgba(167,139,250,0.5)" : "rgba(60,54,42,0.15)"}`, color: l3Count >= GATE ? "#a78bfa" : "rgba(60,54,42,0.3)", fontSize: 14, fontWeight: 600, cursor: l3Count >= GATE ? "pointer" : "not-allowed", transition: "all 0.3s" }}>
                     שלח לחונך →
                   </button>
                 </div>
               ) : (
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                  style={{ borderRadius: 12, background: "rgba(6,78,59,0.15)", border: "1px solid rgba(52,211,153,0.3)", padding: "1.25rem", color: "#6ee7b7", fontSize: 15 }}>
+                  style={{ borderRadius: 12, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.3)", padding: "1.25rem", color: "#16A34A", fontSize: 15 }}>
                   ✅ כל הכבוד! הפרומפט שלך נשלח לחונך.
                 </motion.div>
               )}

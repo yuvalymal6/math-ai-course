@@ -1,814 +1,574 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
+import { Copy, Check, Lock, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import MarkComplete from "@/app/components/MarkComplete";
-import LabMessage from "@/app/components/LabMessage";
-import { useDefaultToast } from "@/app/lib/useDefaultToast";
-import SubtopicProgress from "@/app/components/SubtopicProgress";
-import {
-  Copy, Check, AlertTriangle,
-  Target, PenLine, Lock, CheckCircle, Sparkles,
-} from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// THEME
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Constants ───────────────────────────────────────────────────────────────
 
-const BG       = "#F3EFE0";
-const CARD     = "rgba(255,255,255,0.82)";
-const CARD2    = "rgba(255,255,255,0.75)";
-const BORDER   = "rgba(60,54,42,0.18)";
-const TEXT     = "#1A1A1A";
-const TEXT2    = "#2D3436";
-const MUTED    = "#6B7280";
-const DIV      = "rgba(60,54,42,0.08)";
+const CLASS_A = [78, 79, 80, 81, 82];
+const CLASS_B = [60, 70, 80, 90, 100];
+const MEAN = 80;
+const GATE_CHARS = 80;
 
-// difficulty accent helpers
-function accentColor(id: Ex["id"]) {
-  return id === "basic" ? "#16A34A" : id === "frequency" ? "#EA580C" : "#DC2626";
-}
-function accentRgb(id: Ex["id"]) {
-  return id === "basic" ? "22,163,74" : id === "frequency" ? "234,88,12" : "220,38,38";
-}
+// ─── Copy Button ─────────────────────────────────────────────────────────────
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PROMPT VALIDATION
-// ─────────────────────────────────────────────────────────────────────────────
-
-const FORBIDDEN = ["פתור", "תשובה", "תביא לי", "מה התשובה", "תחשב בשבילי", "תן לי"];
-const REQUIRED  = ["σ","טווח","פיזור","שונות","ממוצע","הסבר","תסביר","כיצד","שלב","ריבועים","הפרש","הומוגני"];
-
-function checkPrompt(text: string): { ok: boolean; kind: "forbidden"|"weak"|"ok"; msg: string } {
-  const t = text.trim();
-  if (t.length < 10)                       return { ok:false, kind:"weak",      msg:"הפרומפט קצר מדי." };
-  if (FORBIDDEN.some(w => t.includes(w)))  return { ok:false, kind:"forbidden", msg:"זה פרומפט של העתקה — בקש הדרכה, לא פתרון." };
-  if (!REQUIRED.some(w => t.includes(w)))  return { ok:false, kind:"weak",      msg:"כלול מילת מפתח: טווח / σ / פיזור / שונות…" };
-  return { ok:true, kind:"ok", msg:"פרומפט תקין!" };
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PROMPT INPUT FIELD
-// ─────────────────────────────────────────────────────────────────────────────
-
-function PromptInput({
-  label, placeholder="", onApprove, validate, accentRgbStr="22,163,74",
-}: {
-  label: string; placeholder?: string; onApprove(): void;
-  validate?(t: string): { ok: boolean; msg: string } | null;
-  accentRgbStr?: string;
-}) {
-  const [text, setText] = useState("");
-  const [res,  setRes]  = useState<{ ok:boolean; kind:string; msg:string }|null>(null);
-  const [done, setDone] = useState(false);
-
-  function submit() {
-    if (validate) {
-      const r = validate(text);
-      if (r) {
-        setRes({ ok:r.ok, kind: r.ok?"ok":"weak", msg:r.msg });
-        if (r.ok) { setDone(true); onApprove(); }
-        return;
-      }
-    }
-    const r = checkPrompt(text);
-    setRes(r);
-    if (r.ok) { setDone(true); onApprove(); }
-  }
-
-  if (done) return (
-    <div style={{ background: "rgba(220,252,231,1)", border: "2px solid #16a34a", borderRadius: 12, padding: "10px 14px", display:"flex", alignItems:"center", gap:8 }}>
-      <CheckCircle size={14} color="#16a34a" />
-      <span style={{ color: TEXT, fontSize: 13, fontWeight: 600 }}>פרומפט מאושר! שלח ל-AI ואז המשך.</span>
-    </div>
-  );
-
-  return (
-    <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-      <p style={{ color: TEXT2, fontSize: 12, fontWeight: 700, display:"flex", alignItems:"center", gap:4, margin:0 }}>
-        <PenLine size={11}/>{label}
-      </p>
-      <textarea
-        value={text} onChange={e => setText(e.target.value)} placeholder={placeholder}
-        rows={3} dir="rtl"
-        style={{ width:"100%", background: CARD2, border:`1px solid rgba(${accentRgbStr},0.35)`, borderRadius:10, padding:12, color: TEXT, fontSize:13, resize:"none", boxSizing:"border-box", fontFamily:"inherit" }}
-      />
-      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-        <button onClick={submit}
-          style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 14px", borderRadius:10, fontSize:12, background:`rgba(${accentRgbStr},0.08)`, border:`1px solid rgba(${accentRgbStr},0.35)`, color:`rgb(${accentRgbStr})`, fontWeight:600, cursor:"pointer" }}>
-          <Check size={11}/>בדוק פרומפט
-        </button>
-        {text.length > 0 && <span style={{ color:MUTED, fontSize:11 }}>{text.length} תווים</span>}
-      </div>
-      <AnimatePresence>
-        {res && !res.ok && (
-          <motion.p initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} exit={{opacity:0}}
-            style={{ fontSize:12, borderRadius:10, padding:"8px 12px", border: res.kind==="forbidden" ? "1px solid rgba(220,38,38,0.4)" : "1px solid rgba(234,88,12,0.4)", background: res.kind==="forbidden" ? "rgba(220,38,38,0.06)" : "rgba(234,88,12,0.06)", color: res.kind==="forbidden" ? "#DC2626" : "#B45309", margin:0 }}>
-            {res.kind==="forbidden" ? "🚫 " : "💡 "}{res.msg}
-          </motion.p>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PITFALLS
-// ─────────────────────────────────────────────────────────────────────────────
-
-function Pitfalls({ items }: { items: {title:string; body:string}[] }) {
-  return (
-    <div style={{ marginBottom:"1.5rem" }}>
-      <div style={{ color:"#DC2626", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:10 }}>⚠️ מוקשים נפוצים</div>
-      {items.map((p,i) => (
-        <div key={i} style={{ borderRadius:12, border:"1px solid rgba(220,38,38,0.2)", background:"rgba(220,38,38,0.05)", padding:"0.8rem 1rem", marginBottom:8 }}>
-          <div style={{ color:"#DC2626", fontWeight:600, fontSize:13, marginBottom: p.body ? 4 : 0 }}>{p.title}</div>
-          {p.body && <div style={{ color:TEXT2, fontSize:13, lineHeight:1.6 }}>{p.body}</div>}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// COPY BUTTON
-// ─────────────────────────────────────────────────────────────────────────────
-
-function CopyBtn({ text }: { text: string }) {
+function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
-  async function copy() {
-    await navigator.clipboard.writeText(text);
-    setCopied(true); setTimeout(() => setCopied(false), 2000);
-  }
   return (
-    <button onClick={copy}
-      style={{ display:"flex", alignItems:"center", gap:7, padding:"7px 16px", borderRadius:12, fontSize:12, background: copied?"rgba(22,163,74,0.1)":CARD2, border: copied?"1px solid rgba(22,163,74,0.4)":"1px solid rgba(60,54,42,0.25)", color: copied?"#15803d":TEXT, fontWeight:500, cursor:"pointer" }}>
-      {copied ? <><Check size={12}/>הועתק!</> : <><Copy size={12}/>העתק פרומפט</>}
+    <button
+      onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+      className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium w-full"
+      style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: copied ? "#34d399" : "#e2e8f0" }}
+    >
+      {copied ? <Check size={14} /> : <Copy size={14} />}
+      {copied ? "הועתק!" : label}
     </button>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SILENT SVG DIAGRAMS
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Silent SVG: Two Dot Plots ───────────────────────────────────────────────
 
-function DiagramNumberLines() {
-  const cx = 150;
-  const clustered = [cx-10, cx-3, cx, cx+5, cx+12];
-  const scattered  = [cx-80, cx-38, cx, cx+40, cx+82];
+function DotPlotDiagram() {
+  const W = 420, H = 200;
+  const padL = 40, padR = 20, plotW = W - padL - padR;
+  const minVal = 50, maxVal = 110, range = maxVal - minVal;
+  const toX = (v: number) => padL + ((v - minVal) / range) * plotW;
+
+  const rowAy = 55;
+  const rowBy = 130;
+
+  const rangeA = Math.max(...CLASS_A) - Math.min(...CLASS_A);
+  const rangeB = Math.max(...CLASS_B) - Math.min(...CLASS_B);
+
   return (
-    <svg width={300} height={120} viewBox="0 0 300 120">
-      <text x={14} y={36} fill={MUTED} fontSize={10} fontWeight="bold">יא&#x2019;1</text>
-      <line x1={36} y1={32} x2={264} y2={32} stroke="#94a3b8" strokeWidth={1.5}/>
-      {clustered.map((x,i) => <circle key={i} cx={x} cy={32} r={7} fill="rgba(59,130,246,0.2)" stroke="#3b82f6" strokeWidth={2}/>)}
-      <text x={14} y={88} fill={MUTED} fontSize={10} fontWeight="bold">יא&#x2019;2</text>
-      <line x1={36} y1={84} x2={264} y2={84} stroke="#94a3b8" strokeWidth={1.5}/>
-      {scattered.map((x,i) => <circle key={i} cx={x} cy={84} r={7} fill="rgba(244,63,94,0.2)" stroke="#f43f5e" strokeWidth={2}/>)}
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-md mx-auto" aria-hidden>
+      {/* Class A label */}
+      <text x={W - padR} y={rowAy - 22} textAnchor="end" fill="#60a5fa" fontSize={12} fontWeight={700}>{"כיתה א'"}</text>
+      {/* Class A axis */}
+      <line x1={padL} y1={rowAy} x2={W - padR} y2={rowAy} stroke="#334155" strokeWidth={1} />
+      {/* Class A dots */}
+      {CLASS_A.map((v, i) => (
+        <circle key={`a${i}`} cx={toX(v)} cy={rowAy} r={8} fill="rgba(96,165,250,0.25)" stroke="#60a5fa" strokeWidth={2} />
+      ))}
+      {/* Class A range bar */}
+      <line x1={toX(Math.min(...CLASS_A))} y1={rowAy + 18} x2={toX(Math.max(...CLASS_A))} y2={rowAy + 18} stroke="#60a5fa" strokeWidth={3} strokeLinecap="round" />
+      <text x={toX(MEAN)} y={rowAy + 32} textAnchor="middle" fill="#60a5fa" fontSize={9} fontWeight={600}>{`טווח = ${rangeA}`}</text>
+
+      {/* Class B label */}
+      <text x={W - padR} y={rowBy - 22} textAnchor="end" fill="#f43f5e" fontSize={12} fontWeight={700}>{"כיתה ב'"}</text>
+      {/* Class B axis */}
+      <line x1={padL} y1={rowBy} x2={W - padR} y2={rowBy} stroke="#334155" strokeWidth={1} />
+      {/* Class B dots */}
+      {CLASS_B.map((v, i) => (
+        <circle key={`b${i}`} cx={toX(v)} cy={rowBy} r={8} fill="rgba(244,63,94,0.25)" stroke="#f43f5e" strokeWidth={2} />
+      ))}
+      {/* Class B range bar */}
+      <line x1={toX(Math.min(...CLASS_B))} y1={rowBy + 18} x2={toX(Math.max(...CLASS_B))} y2={rowBy + 18} stroke="#f43f5e" strokeWidth={3} strokeLinecap="round" />
+      <text x={toX(MEAN)} y={rowBy + 32} textAnchor="middle" fill="#f43f5e" fontSize={9} fontWeight={600}>{`טווח = ${rangeB}`}</text>
+
+      {/* Mean dashed line */}
+      <line x1={toX(MEAN)} y1={rowAy - 30} x2={toX(MEAN)} y2={rowBy + 18} stroke="#f59e0b" strokeWidth={1.5} strokeDasharray="5,4" />
+      <text x={toX(MEAN)} y={H - 8} textAnchor="middle" fill="#f59e0b" fontSize={10} fontWeight={700}>{`ממוצע = ${MEAN}`}</text>
+
+      {/* Axis ticks */}
+      {[60, 70, 80, 90, 100].map(v => (
+        <g key={v}>
+          <text x={toX(v)} y={rowAy - 8} textAnchor="middle" fill="#64748b" fontSize={8}>{v}</text>
+        </g>
+      ))}
     </svg>
   );
 }
 
-function DiagramBellCurves() {
+// ─── Level 1: Guiding (Copy-Paste) ──────────────────────────────────────────
+
+const L1_STEPS = [
+  {
+    label: "א. זהו את הציון הגבוה והנמוך בכל כיתה",
+    description: "הסתכלו על גרף הנקודות. מצאו את הנקודה הכי ימנית (גבוה) והכי שמאלית (נמוך) בכל כיתה.",
+    prompt: "הנה שתי כיתות שנבחנו באותו מבחן:\nכיתה א': 78, 79, 80, 81, 82\nכיתה ב': 60, 70, 80, 90, 100\n\nהנחה אותי לזהות את הציון הכי גבוה והכי נמוך בכל כיתה. אל תיתן לי את התשובה ישירות — שאל אותי שאלות מנחות.",
+  },
+  {
+    label: "ב. חשבו את הטווח (Max − Min)",
+    description: "חשבו את ההפרש בין הציון הגבוה לנמוך בכל כיתה. זהו הטווח.",
+    prompt: "מצאתי את הציונים הקיצוניים. עכשיו הנחה אותי לחשב את הטווח (הפרש בין מקסימום למינימום) של כל כיתה. תשאל אותי מה ההפרש ואל תגיד לי ישירות.",
+  },
+  {
+    label: "ג. איזו כיתה אחידה יותר?",
+    description: "הסבירו: למה הממוצע לבדו לא מספיק כדי לתאר את ההתפלגות?",
+    prompt: "הממוצע של שתי הכיתות הוא 80. אבל הכיתות נראות שונות מאוד. הנחה אותי להבין למה ממוצע לבדו לא מספיק ומה הטווח מוסיף לנו.",
+  },
+  {
+    label: "ד. שאלת בונוס: +5 נקודות לכולם",
+    description: "אם כולם בכיתה ב' קיבלו 5 נקודות בונוס — האם המרחק בין התלמידים השתנה?",
+    prompt: "המורה של כיתה ב' נתן 5 נקודות בונוס לכולם. הנחה אותי להבין: האם הטווח (המרחק בין הגבוה לנמוך) ישתנה? למה כן או למה לא?",
+  },
+];
+
+function Level1({ done, setDone }: { done: boolean[]; setDone: (d: boolean[]) => void }) {
+  const [copiedIdx, setCopiedIdx] = useState(-1);
+
+  function toggleDone(i: number) {
+    const next = [...done];
+    next[i] = !next[i];
+    setDone(next);
+  }
+
   return (
-    <svg width={300} height={110} viewBox="0 0 300 110">
-      <line x1={10} y1={95} x2={290} y2={95} stroke="#94a3b8" strokeWidth={1.5}/>
-      <path d="M 170 94 C 185 94, 195 20, 210 14 C 225 20, 235 94, 250 94" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" strokeWidth={2} strokeLinejoin="round"/>
-      <path d="M 30 94 C 55 94, 70 30, 90 14 C 110 30, 125 94, 150 94" fill="rgba(244,63,94,0.15)" stroke="#f43f5e" strokeWidth={2} strokeLinejoin="round"/>
-      <text x={60}  y={110} fill={MUTED} fontSize={9} textAnchor="middle">יא&#x2019;2 — רחבה</text>
-      <text x={210} y={110} fill={MUTED} fontSize={9} textAnchor="middle">יא&#x2019;1 — צרה</text>
-    </svg>
+    <section className="mb-12">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-sm font-bold">1</div>
+        <div>
+          <h2 className="text-lg font-bold text-white">שלב א׳ — העתקת פרומפטים</h2>
+          <p className="text-slate-400 text-sm">העתיקו כל פרומפט, שלחו ל-AI, ואשרו שסיימתם</p>
+        </div>
+      </div>
+
+      {/* Diagram */}
+      <div className="rounded-2xl border border-amber-500/30 p-6 mb-6" style={{ background: "#0f172a" }}>
+        <p className="text-amber-400 text-xs font-bold uppercase tracking-widest text-center mb-4">שתי כיתות — פיזור על ציר</p>
+        <DotPlotDiagram />
+      </div>
+
+      {/* Steps */}
+      <div className="flex flex-col gap-3">
+        {L1_STEPS.map((step, i) => {
+          const locked = i > 0 && !done[i - 1];
+          const isDone = done[i];
+
+          return (
+            <div
+              key={i}
+              className="rounded-xl border p-4"
+              style={{
+                borderColor: locked ? "#1e293b" : isDone ? "rgba(52,211,153,0.4)" : "rgba(245,158,11,0.3)",
+                background: locked ? "rgba(15,23,42,0.5)" : isDone ? "rgba(52,211,153,0.05)" : "#0f172a",
+                opacity: locked ? 0.45 : 1,
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
+                  style={{
+                    borderColor: locked ? "#334155" : isDone ? "#34d399" : "#f59e0b",
+                    color: locked ? "#475569" : isDone ? "#34d399" : "#f59e0b",
+                    background: isDone ? "rgba(52,211,153,0.15)" : "transparent",
+                  }}
+                >
+                  {locked ? <Lock size={10} /> : isDone ? <Check size={10} /> : i + 1}
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm text-slate-200 mb-1">{step.label}</p>
+                  <p className="text-slate-400 text-sm mb-3">{step.description}</p>
+
+                  {!locked && !isDone && (
+                    <>
+                      <div className="rounded-lg border border-slate-700 p-3 mb-3" style={{ background: "#020617" }}>
+                        <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">{step.prompt}</p>
+                      </div>
+                      <CopyBtn text={step.prompt} />
+                    </>
+                  )}
+
+                  {!locked && (
+                    <button
+                      onClick={() => toggleDone(i)}
+                      className="mt-3 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                      style={{
+                        background: isDone ? "rgba(52,211,153,0.15)" : "rgba(245,158,11,0.1)",
+                        border: `1px solid ${isDone ? "rgba(52,211,153,0.4)" : "rgba(245,158,11,0.3)"}`,
+                        color: isDone ? "#34d399" : "#f59e0b",
+                      }}
+                    >
+                      {isDone ? <Check size={12} /> : null}
+                      {isDone ? "סיימתי עם AI" : "סיימתי עם AI"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
-function DiagramSigmaCards() {
+// ─── Level 2: Training (Keyword Validation) ─────────────────────────────────
+
+const L2_KEYWORDS = ["טווח", "מקסימום", "מינימום", "פיזור", "אחידות"];
+const L2_HINT = "נסו לכלול מילים כמו: טווח, מקסימום, מינימום, פיזור, אחידות";
+
+function Level2({ status, setStatus }: { status: "idle" | "ok" | "hint"; setStatus: (s: "idle" | "ok" | "hint") => void }) {
+  const [text, setText] = useState("");
+  const locked = status === "ok";
+
+  function check() {
+    const allFound = L2_KEYWORDS.every(kw => text.includes(kw));
+    setStatus(allFound ? "ok" : "hint");
+  }
+
   return (
-    <div style={{ display:"flex", justifyContent:"center", gap:32, padding:"8px 0" }}>
-      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
-        <div style={{ width:64, height:64, borderRadius:14, background:"rgba(139,92,246,0.08)", border:"1.5px solid rgba(139,92,246,0.35)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <span style={{ fontSize:32, fontWeight:700, color:"#7c3aed", fontFamily:"serif" }}>σ</span>
+    <section className="mb-12">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-sm font-bold">2</div>
+        <div>
+          <h2 className="text-lg font-bold text-white">שלב ב׳ — כתיבת פרומפט עצמאי</h2>
+          <p className="text-slate-400 text-sm">כתבו פרומפט משלכם שמכיל את מילות המפתח</p>
         </div>
-        <span style={{ color:MUTED, fontSize:11 }}>סטיית תקן</span>
       </div>
-      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
-        <div style={{ width:64, height:64, borderRadius:14, background:"rgba(234,88,12,0.08)", border:"1.5px solid rgba(234,88,12,0.35)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <span style={{ fontSize:26, fontWeight:700, color:"#EA580C", fontFamily:"serif" }}>σ²</span>
+
+      {/* New problem diagram */}
+      <div className="rounded-2xl border border-emerald-500/30 p-6 mb-6" style={{ background: "#0f172a" }}>
+        <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest text-center mb-3">תרגיל חדש</p>
+        <p className="text-slate-300 text-sm text-center leading-relaxed">
+          {"נתונות שתי קבוצות כדורסל. ממוצע הנקודות זהה (75 נקודות למשחק)."}<br />
+          {"קבוצה א': 73, 74, 75, 76, 77"}<br />
+          {"קבוצה ב': 55, 65, 75, 85, 95"}<br />
+          {"כתבו פרומפט שמבקש מ-AI להסביר לכם מה הטווח של כל קבוצה ולמה ממוצע לבדו לא מספיק."}
+        </p>
+      </div>
+
+      {/* Textarea */}
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        disabled={locked}
+        dir="rtl"
+        rows={4}
+        placeholder="כתבו כאן את הפרומפט שלכם..."
+        className="w-full rounded-xl border p-4 text-sm resize-none mb-3"
+        style={{
+          background: locked ? "rgba(52,211,153,0.05)" : "#0f172a",
+          borderColor: locked ? "rgba(52,211,153,0.4)" : "#334155",
+          color: "#e2e8f0",
+        }}
+      />
+
+      {/* Keyword pills */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {L2_KEYWORDS.map(kw => {
+          const found = text.includes(kw);
+          return (
+            <span
+              key={kw}
+              className="px-3 py-1 rounded-full text-xs font-semibold border"
+              style={{
+                background: found ? "rgba(52,211,153,0.15)" : "rgba(100,116,139,0.1)",
+                borderColor: found ? "#34d399" : "#475569",
+                color: found ? "#34d399" : "#64748b",
+              }}
+            >
+              {kw} {found ? "✓" : ""}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* Check button */}
+      {!locked && (
+        <button
+          onClick={check}
+          className="px-5 py-2.5 rounded-xl text-sm font-bold"
+          style={{ background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.4)", color: "#34d399" }}
+        >
+          בדוק
+        </button>
+      )}
+
+      {/* Feedback */}
+      {status === "ok" && (
+        <div className="mt-4 flex items-center gap-2 p-3 rounded-xl border" style={{ background: "rgba(52,211,153,0.08)", borderColor: "rgba(52,211,153,0.4)" }}>
+          <CheckCircle2 size={16} className="text-emerald-400" />
+          <span className="text-emerald-400 text-sm font-semibold">מצוין! הפרומפט שלכם מכיל את כל מילות המפתח.</span>
         </div>
-        <span style={{ color:MUTED, fontSize:11 }}>שונות</span>
-      </div>
-    </div>
+      )}
+      {status === "hint" && (
+        <div className="mt-4 p-3 rounded-xl border" style={{ background: "rgba(245,158,11,0.08)", borderColor: "rgba(245,158,11,0.3)" }}>
+          <p className="text-amber-400 text-sm">{L2_HINT}</p>
+        </div>
+      )}
+    </section>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DISPERSION LAB
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Level 3: Mastery (Free-form + char gate) ───────────────────────────────
 
-const LAB_Z      = [-2, -1.3, -0.6, 0, 0.6, 1.3, 2];
-const LAB_COLORS = ["#f43f5e","#f97316","#eab308","#22c55e","#3b82f6","#8b5cf6","#ec4899"];
-const LW = 360, LH = 160, LCX = 180, LAY = 110, LSCALE = 52;
+function Level3({ submitted, setSubmitted }: { submitted: boolean; setSubmitted: (s: boolean) => void }) {
+  const [text, setText] = useState("");
+  const progress = Math.min(100, (text.length / GATE_CHARS) * 100);
+  const ready = text.length >= GATE_CHARS;
 
-function DispersionLab({ active }: { active?: boolean }) {
-  const [sigma, setSigma] = useState(1.0);
-
-  const bandL = Math.max(12, LCX - sigma * LSCALE);
-  const bandR = Math.min(LW - 12, LCX + sigma * LSCALE);
-  const sigmaColor = sigma < 1.2 ? "#16A34A" : sigma < 2.2 ? "#EA580C" : "#DC2626";
-  const label = sigma < 1.2
-    ? "פיזור נמוך — נקודות קרובות למרכז (הומוגני)"
-    : sigma < 2.2
-    ? "פיזור בינוני — ציונים מפוזרים סביב הממוצע"
-    : "פיזור גבוה — נקודות רחוקות מהמרכז (הטרוגני)";
+  if (submitted) {
+    return (
+      <section className="mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-violet-500/20 border border-violet-500/40 flex items-center justify-center text-violet-400 text-sm font-bold">3</div>
+          <h2 className="text-lg font-bold text-white">שלב ג׳ — שליטה</h2>
+        </div>
+        <div className="rounded-2xl border border-emerald-500/40 p-6 flex flex-col items-center gap-3" style={{ background: "rgba(52,211,153,0.05)" }}>
+          <CheckCircle2 size={36} className="text-emerald-400" />
+          <p className="text-emerald-400 font-bold text-lg">הפרומפט נשלח לחונך!</p>
+          <p className="text-slate-400 text-sm">כל הכבוד — סיימתם את שלושת השלבים.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <div style={{ borderRadius:16, border: active?`1.5px solid rgba(22,163,74,0.4)`:`1px solid ${BORDER}`, background: CARD, padding:"1.5rem", boxShadow: active?"0 4px 20px rgba(22,163,74,0.12)":"0 2px 8px rgba(60,54,42,0.08)" }}>
-      <h3 style={{ color:TEXT, fontSize:16, fontWeight:700, textAlign:"center", marginBottom:4 }}>סימולטור פיזור סביב הממוצע</h3>
-      <p style={{ color:MUTED, fontSize:12, textAlign:"center", marginBottom:"1.25rem" }}>הגדל את σ וראה איך הנקודות מתרחקות מהמרכז</p>
+    <section className="mb-12">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-8 h-8 rounded-lg bg-violet-500/20 border border-violet-500/40 flex items-center justify-center text-violet-400 text-sm font-bold">3</div>
+        <div>
+          <h2 className="text-lg font-bold text-white">שלב ג׳ — שליטה</h2>
+          <p className="text-slate-400 text-sm">כתבו פרומפט מלא בעצמכם — בלי עזרה</p>
+        </div>
+      </div>
 
-      <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:"1rem" }}>
-        <span style={{ color:MUTED, fontSize:13, whiteSpace:"nowrap", fontFamily:"serif" }}>σ =</span>
-        <input type="range" min={0.3} max={3.0} step={0.1} value={sigma}
-          onChange={e => setSigma(parseFloat(e.target.value))}
-          style={{ flex:1, accentColor:sigmaColor }}
+      <div className="rounded-2xl border border-violet-500/30 p-6 mb-6" style={{ background: "#0f172a" }}>
+        <p className="text-violet-400 text-xs font-bold uppercase tracking-widest text-center mb-3">אתגר מתקדם</p>
+        <p className="text-slate-300 text-sm text-center leading-relaxed">
+          {"בבית ספר יש 3 כיתות עשירית. ממוצע הציונים בכולן 80."}<br />
+          {"כיתה א': טווח 4, כיתה ב': טווח 40, כיתה ג': טווח 20."}<br />
+          {"כתבו פרומפט שמבקש מ-AI להסביר: למה כיתה ב' היא הכי מאתגרת למורה? מה אפשר ללמוד מהטווח של כל כיתה?"}
+        </p>
+      </div>
+
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        dir="rtl"
+        rows={5}
+        placeholder="כתבו כאן את הפרומפט המלא שלכם..."
+        className="w-full rounded-xl border border-slate-700 p-4 text-sm resize-none mb-3"
+        style={{ background: "#0f172a", color: "#e2e8f0" }}
+      />
+
+      {/* Progress bar */}
+      <div className="h-2 rounded-full overflow-hidden mb-3" style={{ background: "#1e293b" }}>
+        <div
+          className="h-full rounded-full transition-all duration-300"
+          style={{ width: `${progress}%`, background: ready ? "#34d399" : "#a78bfa" }}
         />
-        <span style={{ fontFamily:"monospace", fontWeight:700, fontSize:16, minWidth:38, color:sigmaColor }}>{sigma.toFixed(1)}</span>
       </div>
+      <p className="text-slate-500 text-xs mb-4">{text.length} / {GATE_CHARS} תווים</p>
 
-      <div style={{ display:"flex", justifyContent:"center", overflowX:"auto", background:"#fff", borderRadius:12, border:`1px solid ${BORDER}`, padding:"0.75rem" }}>
-        <svg width={LW} height={LH} viewBox={`0 0 ${LW} ${LH}`} style={{ maxWidth:"100%", touchAction:"none" }}>
-          <rect x={bandL} y={LAY-46} width={Math.max(0,bandR-bandL)} height={46}
-            fill={sigmaColor+"18"} stroke={sigmaColor+"55"} strokeWidth={1.5} rx={5}/>
-          <line x1={14} y1={LAY} x2={LW-14} y2={LAY} stroke="#94a3b8" strokeWidth={2}/>
-          <line x1={LCX} y1={LAY-58} x2={LCX} y2={LAY+12} stroke="#EA580C" strokeWidth={2} strokeDasharray="5 3"/>
-          <text x={LCX} y={LAY+26} textAnchor="middle" fill="#EA580C" fontSize={12} fontWeight="bold" fontFamily="serif">μ</text>
-          <text x={Math.max(20, LCX-sigma*LSCALE)} y={LAY-50} textAnchor="middle" fill={sigmaColor+"aa"} fontSize={9}>−σ</text>
-          <text x={Math.min(LW-20, LCX+sigma*LSCALE)} y={LAY-50} textAnchor="middle" fill={sigmaColor+"aa"} fontSize={9}>+σ</text>
-          {LAB_Z.map((z,i) => {
-            const px = Math.max(16, Math.min(LW-16, LCX+z*sigma*LSCALE));
-            return <circle key={i} cx={px} cy={LAY-20} r={10} fill={LAB_COLORS[i]+"99"} stroke={LAB_COLORS[i]} strokeWidth={2}/>;
-          })}
+      <button
+        onClick={() => setSubmitted(true)}
+        disabled={!ready}
+        className="px-6 py-3 rounded-xl text-sm font-bold transition-all"
+        style={{
+          background: ready ? "rgba(167,139,250,0.15)" : "rgba(100,116,139,0.08)",
+          border: `1px solid ${ready ? "rgba(167,139,250,0.5)" : "#334155"}`,
+          color: ready ? "#a78bfa" : "#475569",
+          cursor: ready ? "pointer" : "not-allowed",
+        }}
+      >
+        שלח לחונך
+      </button>
+    </section>
+  );
+}
+
+// ─── Lab: Spread Simulator ───────────────────────────────────────────────────
+
+function SpreadLab() {
+  const [spread, setSpread] = useState(50);
+  const [bonus, setBonus] = useState(0);
+
+  const mean = 80;
+  const baseOffsets = [-20, -10, 0, 10, 20];
+  const factor = spread / 100;
+  const data = baseOffsets.map(off => mean + off * factor + bonus);
+  const minVal = Math.min(...data);
+  const maxVal = Math.max(...data);
+  const rangeVal = Math.round(maxVal - minVal);
+
+  // SVG
+  const W = 400, H = 90;
+  const padL = 12, padR = 12, plotW = W - padL - padR;
+  const displayMin = 30 + bonus;
+  const displayMax = 130 + bonus;
+  const displayRange = displayMax - displayMin;
+  const toX = (v: number) => padL + ((v - displayMin) / displayRange) * plotW;
+  const dotY = 36;
+
+  return (
+    <section
+      className="mb-12"
+      style={{ border: "8px solid #334155", borderRadius: 40, padding: "2.5rem", background: "#020617" }}
+    >
+      <h3 className="text-white text-lg font-bold text-center mb-1">סימולטור פיזור וטווח</h3>
+      <p className="text-slate-400 text-sm text-center mb-6">הזיזו את הסליידר — הנקודות מתפזרות או מתכווצות. לחצו +5 בונוס וראו מה קורה לטווח.</p>
+
+      {/* SVG dot plot */}
+      <div className="rounded-xl border border-slate-700 p-3 mb-6" style={{ background: "#0a0f1e" }}>
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+          {/* Axis */}
+          <line x1={padL} y1={dotY + 14} x2={W - padR} y2={dotY + 14} stroke="#334155" strokeWidth={1} />
+
+          {/* Range bar */}
+          {rangeVal > 0 && (
+            <rect
+              x={toX(minVal)} y={dotY + 20} width={Math.max(2, toX(maxVal) - toX(minVal))} height={7}
+              rx={3.5} fill="rgba(96,165,250,0.2)" stroke="#60a5fa" strokeWidth={1.5}
+            />
+          )}
+
+          {/* Mean line */}
+          <line x1={toX(mean + bonus)} y1={dotY - 18} x2={toX(mean + bonus)} y2={dotY + 30} stroke="#f59e0b" strokeWidth={1.5} strokeDasharray="4,3" />
+          <text x={toX(mean + bonus)} y={dotY - 22} textAnchor="middle" fill="#f59e0b" fontSize={9} fontWeight={700}>{`ממוצע=${Math.round(mean + bonus)}`}</text>
+
+          {/* Dots */}
+          {data.map((v, i) => (
+            <g key={i}>
+              <circle cx={toX(v)} cy={dotY} r={10} fill="rgba(96,165,250,0.2)" stroke="#60a5fa" strokeWidth={2} />
+              <text x={toX(v)} y={dotY + 4} textAnchor="middle" fill="#60a5fa" fontSize={8} fontWeight={700}>{Math.round(v)}</text>
+            </g>
+          ))}
+
+          {/* Range label */}
+          <text x={W / 2} y={H - 4} textAnchor="middle" fill="#94a3b8" fontSize={10} fontWeight={600}>{`טווח = ${rangeVal}`}</text>
         </svg>
       </div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginTop:12 }}>
-        <div style={{ borderRadius:10, background:CARD2, border:`1px solid rgba(60,54,42,0.15)`, padding:"10px 8px", textAlign:"center" }}>
-          <div style={{ color:MUTED, fontSize:10, marginBottom:4 }}>סטיית תקן (σ)</div>
-          <div style={{ color:sigmaColor, fontWeight:700, fontSize:15, fontFamily:"monospace" }}>{sigma.toFixed(1)}</div>
-        </div>
-        <div style={{ borderRadius:10, background:CARD2, border:`1px solid rgba(60,54,42,0.15)`, padding:"10px 8px", textAlign:"center" }}>
-          <div style={{ color:MUTED, fontSize:10, marginBottom:4 }}>שונות (σ²)</div>
-          <div style={{ color:"#7c3aed", fontWeight:700, fontSize:15, fontFamily:"monospace" }}>{(sigma*sigma).toFixed(2)}</div>
-        </div>
-        <div style={{ borderRadius:10, background: sigma<=1.5?"rgba(220,252,231,1)":CARD2, border: sigma<=1.5?"1px solid rgba(22,163,74,0.4)":`1px solid rgba(60,54,42,0.15)`, padding:"10px 8px", textAlign:"center" }}>
-          <div style={{ color: sigma<=1.5?"#15803d":MUTED, fontSize:10, marginBottom:4 }}>הומוגני?</div>
-          <div style={{ color: sigma<=1.5?"#15803d":TEXT, fontWeight:700 }}>{sigma<=1.5?"כן":"לא"}</div>
-        </div>
+      {/* Spread slider */}
+      <div className="flex items-center gap-4 mb-4">
+        <span className="text-slate-400 text-sm whitespace-nowrap">פיזור:</span>
+        <input
+          type="range" min={0} max={100} step={1} value={spread}
+          onChange={e => setSpread(Number(e.target.value))}
+          className="flex-1"
+          style={{ accentColor: "#60a5fa" }}
+        />
+        <span className="text-blue-400 font-mono font-bold text-sm w-10 text-left">{spread}%</span>
       </div>
-      <p style={{ color:MUTED, fontSize:11, textAlign:"center", marginTop:10, lineHeight:1.5 }}>{label}</p>
-    </div>
-  );
-}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────────────────────
-
-type Step = { label:string; guide:string; prompt:string; answer:string; explain:string };
-type Ex   = { id:"basic"|"frequency"|"advanced"; tabLabel:string; difficulty:string; title:string; problem:string; pitfalls:{title:string;body:string}[]; goldenPrompt:string; steps:Step[] };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// EXERCISES
-// ─────────────────────────────────────────────────────────────────────────────
-
-const EXERCISES: Ex[] = [
-  {
-    id:"basic", tabLabel:"טווח", difficulty:"בסיסי",
-    title:"טווח ועקביות — שתי כיתות",
-    problem:
-      "שתי כיתות נבחנו באותו מבחן. לשתיהן ממוצע=80, אך הציונים שונים:\n\n" +
-      "יא'1 (עקבית):   78, 79, 80, 81, 82\n" +
-      "יא'2 (קיצונית): 60, 70, 80, 90, 100\n\n" +
-      "(א) חשב את הטווח של כל כיתה.\n" +
-      "(ב) איזו כיתה הומוגנית יותר לפי הטווח?\n" +
-      "(ג) מה החסרון של הטווח כמדד פיזור?",
-    pitfalls: [
-      { title:"⚠️ טווח = מקס − מינ",     body:"טווח = הערך הגבוה ביותר פחות הנמוך. לא ממוצע הפרשים!" },
-      { title:"הומוגני = טווח קטן",       body:"טווח קטן → ציונים קרובים → כיתה אחידה יותר." },
-      { title:"חסרון: רגישות לקיצוניים",  body:"ציון קיצוני אחד משנה את הטווח דרמטית גם אם שאר הנתונים קרובים." },
-    ],
-    goldenPrompt:
-      "\n\nאתה מורה למתמטיקה. אני פותר תרגיל על מדדי פיזור.\n" +
-      "שתי כיתות, ממוצע=80:\nיא'1: 78,79,80,81,82\nיא'2: 60,70,80,90,100\n\n" +
-      "נחה אותי:\n1. כיצד לחשב טווח לכל כיתה.\n2. מי הומוגנית יותר.\n3. מה חסרון הטווח.\n" +
-      "שאל 'מוכן?' בין שלב לשלב. אל תפתור ישירות.",
-    steps: [
-      { label:"שלב 1 — טווח יא'1", guide:"יא'1: 78,79,80,81,82. זהה מקסימום ומינימום וחשב טווח.",
-        prompt:"\n\nיא'1: 78,79,80,81,82. הנחה אותי לזהות מקסימום ומינימום ולחשב טווח.",
-        answer:"מקסימום=82, מינימום=78, טווח = 82−78 = 4",
-        explain:"ציוני יא'1 קרובים מאוד — טווח קטן מאוד." },
-      { label:"שלב 2 — טווח יא'2 והשוואה", guide:"יא'2: 60,70,80,90,100. חשב טווח והשווה ליא'1.",
-        prompt:"\n\nיא'2: 60,70,80,90,100. הנחה אותי לחשב טווח ולהשוות ליא'1.",
-        answer:"מקסימום=100, מינימום=60, טווח = 100−60 = 40\nיא'1 הומוגנית (טווח=4) | יא'2 הטרוגנית (טווח=40)",
-        explain:"טווח של יא'2 גדול פי 10 — ציוניה הרבה יותר מפוזרים." },
-      { label:"שלב 3 — חסרון הטווח", guide:"מה יקרה לטווח של יא'1 אם ציון אחד ישתנה ל-20?",
-        prompt:"\n\nיא'1 עם ציון חריג: 20,79,80,81,82. הנחה אותי לחשב טווח ולהסביר מדוע הטווח מטעה כאן.",
-        answer:"טווח חדש = 82−20 = 62 — גדל פי 15 בגלל ציון אחד קיצוני!",
-        explain:"הטווח מושפע מאוד מנתון קיצוני אחד. לכן נעדיף סטיית תקן." },
-    ],
-  },
-  {
-    id:"frequency", tabLabel:"סטיית תקן", difficulty:"בינוני",
-    title:"סטיית תקן (σ) — חישוב שלב אחר שלב",
-    problem:
-      "נתונים זהים (ממוצע=80 לשתיהן):\n\n" +
-      "יא'1: 78, 79, 80, 81, 82\n" +
-      "יא'2: 60, 70, 80, 90, 100\n\n" +
-      "(א) חשב σ לכל כיתה: σ = √[Σ(xi−μ)²/n]\n" +
-      "(ב) מי רחוקה יותר מהממוצע?\n" +
-      "(ג) פרש: מה σ גדול אומר על הכיתה?",
-    pitfalls: [
-      { title:"⚠️ σ ≠ טווח",       body:"σ לוקחת בחשבון את כל הנתונים, לא רק קצוות." },
-      { title:"ריבוע לפני שורש!",  body:"חשב Σ(xi−μ)², חלק ב-n ואז שורש. לא שורש לכל הפרש." },
-      { title:"σ גבוה = הטרוגני",  body:"σ גדולה → נתונים מפוזרים → פחות אחיד." },
-    ],
-    goldenPrompt:
-      "\n\nאתה מורה למתמטיקה. אני לומד סטיית תקן.\n" +
-      "יא'1: 78,79,80,81,82  יא'2: 60,70,80,90,100. ממוצע=80 לשתיהן.\n\n" +
-      "נחה אותי:\n1. כיצד לחשב σ ליא'1 שלב אחרי שלב.\n2. כיצד לחשב σ ליא'2.\n3. כיצד לפרש.\n" +
-      "שאל 'מוכן?' בין שלב לשלב. אל תפתור ישירות.",
-    steps: [
-      { label:"שלב 1 — ממוצע שתי הכיתות", guide:"ממוצע = סכום / n. שתיהן: סכום=400, n=5, ממוצע=80.",
-        prompt:"\n\nיא'1: 78,79,80,81,82 ויא'2: 60,70,80,90,100. הנחה אותי לחשב ממוצע לכל כיתה.",
-        answer:"ממוצע יא'1 = 400/5 = 80\nממוצע יא'2 = 400/5 = 80",
-        explain:"ממוצע זהה! הטווח וσ הם שמספרים את ההבדל האמיתי." },
-      { label:"שלב 2 — σ של יא'1", guide:"הפרשים: −2,−1,0,1,2. ריבועים: 4,1,0,1,4. σ=√(10/5)≈1.41.",
-        prompt:"\n\nיא'1: 78,79,80,81,82, μ=80. הנחה אותי לחשב הפרשים, לרבע, לחלק ב-5 ולשורש.",
-        answer:"הפרשים: −2,−1,0,1,2\nריבועים: 4,1,0,1,4 → סכום=10\nσ(יא'1) = √(10/5) = √2 ≈ 1.41",
-        explain:"σ נמוך מאוד — ציוני יא'1 צמודים לממוצע." },
-      { label:"שלב 3 — σ של יא'2 ופרשנות", guide:"הפרשים: −20,−10,0,10,20. σ=√(1000/5)≈14.14.",
-        prompt:"\n\nיא'2: 60,70,80,90,100, μ=80. הנחה אותי לחשב σ ולהשוות ל-σ(יא'1)=1.41.",
-        answer:"הפרשים: −20,−10,0,10,20\nריבועים: 400,100,0,100,400 → סכום=1000\nσ(יא'2) = √(1000/5) ≈ 14.14",
-        explain:"σ(יא'2)≈14.14 גדול פי 10 → יא'2 הטרוגנית בהרבה." },
-    ],
-  },
-  {
-    id:"advanced", tabLabel:"שונות וטרנספורמציה", difficulty:"מתקדם",
-    title:"שונות וחוקי טרנספורמציה — Var(aX+b)",
-    problem:
-      "נתונים: יא'1: 78,79,80,81,82  |  יא'2: 60,70,80,90,100\n\n" +
-      "(א) חשב שונות (Var=σ²) לכל כיתה.\n" +
-      "(ב) המורה הוסיפה בונוס 10 לכולם ביא'2. מה יקרה ל-σ ולשונות?\n" +
-      "(ג) הסבר: Var(X+b)=Var(X)  ו-Var(aX)=a²·Var(X).",
-    pitfalls: [
-      { title:"⚠️ X+b לא משנה σ",    body:"הוספת קבוע לכולם מזיזה ממוצע אך לא משנה פיזור." },
-      { title:"aX כן משנה — בריבוע", body:"כפל ב-a מכפיל σ ב-a, ואת Var ב-a². לא באותו גורם!" },
-      { title:"Var = σ², לא σ",       body:"שונות = ריבוע סטיית תקן. אל תבלבל בין השניים." },
-    ],
-    goldenPrompt:"",
-    steps: [
-      { label:"שלב 1 — שונות (Var) לכל כיתה", guide:"Var = σ². יא'1: σ≈1.41 → Var=2. יא'2: σ≈14.14 → Var=200.",
-        prompt:"\n\nהנחה אותי לחשב שונות לכל כיתה ולהסביר הקשר בין σ ל-Var.",
-        answer:"Var(יא'1) = (1.41)² ≈ 2\nVar(יא'2) = (14.14)² ≈ 200",
-        explain:"שונות = σ². יא'2 פזורה פי 100 מיא'1 בשונות." },
-      { label:"שלב 2 — בונוס 10: מה קורה?", guide:"Var(X+b)=Var(X), σ(X+b)=σ(X). הממוצע משתנה, הפיזור לא.",
-        prompt:"\n\nהמורה הוסיפה 10 לכולם ביא'2: 70,80,90,100,110. הנחה אותי לחשב σ.",
-        answer:"σ(יא'2 עם בונוס) = √200 ≈ 14.14 — זהה!\nממוצע חדש = 90",
-        explain:"הזזת כל נתון באותה כמות לא משנה מרחקים → פיזור זהה." },
-      { label:"שלב 3 — Var(aX) = a²·Var(X)", guide:"כפל ב-2: σ×2, Var×4.",
-        prompt:"\n\nיא'1 מוכפלת ב-2: 156,158,160,162,164. הנחה אותי לחשב σ ו-Var.",
-        answer:"σ(2·יא'1) = 2·1.41 ≈ 2.83\nVar(2·יא'1) = 4·2 = 8\nכלל: Var(aX) = a²·Var(X)",
-        explain:"כפל ב-2 מכפיל הפרשים ב-2, לכן σ×2 ו-Var×4." },
-    ],
-  },
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STEP — BASE  (copy prompt)
-// ─────────────────────────────────────────────────────────────────────────────
-
-function StepBase({ step, idx, unlocked, onDone, ac }: { step:Step; idx:number; unlocked:boolean; onDone():void; ac:string }) {
-  const [open, setOpen]     = useState(false);
-  const [done, setDone]     = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  async function copy() { await navigator.clipboard.writeText(step.prompt); setCopied(true); setTimeout(()=>setCopied(false),2000); }
-
-  const borderColor = !unlocked ? BORDER : done ? "rgba(22,163,74,0.4)" : `rgba(${ac},0.3)`;
-  const bg          = !unlocked ? "rgba(255,255,255,0.4)" : done ? "rgba(220,252,231,0.5)" : CARD2;
-
-  return (
-    <div style={{ borderRadius:12, border:`1px solid ${borderColor}`, background:bg, padding:"1rem", marginBottom:10, opacity: !unlocked?0.5:1 }}>
-      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom: unlocked?10:0 }}>
-        <span style={{ width:20, height:20, borderRadius:"50%", border:`1.5px solid ${!unlocked?BORDER:done?"rgba(22,163,74,0.6)":`rgba(${ac},0.6)`}`, background: !unlocked?"transparent":done?"rgba(220,252,231,1)":`rgba(${ac},0.08)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color: !unlocked?MUTED:done?"#15803d":`rgb(${ac})`, flexShrink:0 }}>
-          {!unlocked?"🔒":done?"✓":idx+1}
-        </span>
-        <p style={{ fontWeight:600, fontSize:13, color: !unlocked?MUTED:TEXT2, margin:0 }}>{step.label}</p>
-      </div>
-      {unlocked && (
-        <div style={{ marginRight:30, display:"flex", flexDirection:"column", gap:10 }}>
-          <p style={{ color:MUTED, fontSize:13, margin:0 }}>{step.guide}</p>
-          {!done && (
-            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-              <p style={{ color:MUTED, fontSize:11, margin:0 }}>📋 פרומפט מוכן:</p>
-              <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:10, padding:"10px 14px", color:TEXT2, fontSize:12, lineHeight:1.6 }}>{step.prompt}</div>
-              <button onClick={copy} style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 12px", borderRadius:10, fontSize:12, background: copied?"rgba(22,163,74,0.1)":CARD2, border: copied?"1px solid rgba(22,163,74,0.4)":`1px solid ${BORDER}`, color: copied?"#15803d":TEXT2, cursor:"pointer", alignSelf:"flex-start" }}>
-                {copied ? <><Check size={11}/>הועתק!</> : <><Copy size={11}/>העתק פרומפט</>}
-              </button>
-            </div>
-          )}
-          {!open && !done && (
-            <button onClick={()=>setOpen(true)} style={{ padding:"6px 14px", borderRadius:10, fontSize:12, background:`rgba(${ac},0.08)`, border:`1px solid rgba(${ac},0.3)`, color:`rgb(${ac})`, cursor:"pointer", alignSelf:"flex-start" }}>
-              הצג פתרון ▼
-            </button>
-          )}
-          {(open||done) && (
-            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-              <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:10, padding:"10px 14px" }}>
-                <code style={{ color:"#15803d", fontSize:13, fontFamily:"monospace", whiteSpace:"pre-wrap" }}>{step.answer}</code>
-              </div>
-              <p style={{ color:TEXT2, fontSize:13, margin:0 }}>{step.explain}</p>
-            </div>
-          )}
-          {open && !done && (
-            <button onClick={()=>{setDone(true);onDone();}} style={{ padding:"6px 16px", borderRadius:10, fontSize:12, background:`rgba(${ac},0.08)`, border:`1px solid rgba(${ac},0.3)`, color:`rgb(${ac})`, cursor:"pointer", alignSelf:"flex-start" }}>
-              המשך ←
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STEP — INPUT  (student writes prompt)
-// ─────────────────────────────────────────────────────────────────────────────
-
-function StepInput({ step, idx, unlocked, onDone, ac, advanced=false }: { step:Step; idx:number; unlocked:boolean; onDone():void; ac:string; advanced?:boolean }) {
-  const [approved, setApproved] = useState(false);
-  const [open,     setOpen]     = useState(false);
-  const [done,     setDone]     = useState(false);
-
-  const borderColor = !unlocked ? BORDER : done ? "rgba(22,163,74,0.4)" : `rgba(${ac},0.35)`;
-  const bg          = !unlocked ? "rgba(255,255,255,0.4)" : done ? "rgba(220,252,231,0.4)" : `rgba(${ac},0.04)`;
-
-  return (
-    <div style={{ borderRadius:12, border:`1px solid ${borderColor}`, background:bg, padding:"1rem", marginBottom:10, opacity: !unlocked?0.5:1 }}>
-      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom: unlocked?10:0 }}>
-        <span style={{ width:20, height:20, borderRadius:"50%", border:`1.5px solid ${!unlocked?BORDER:done?"rgba(22,163,74,0.6)":`rgba(${ac},0.6)`}`, background: !unlocked?"transparent":done?"rgba(220,252,231,1)":`rgba(${ac},0.08)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color: !unlocked?MUTED:done?"#15803d":`rgb(${ac})`, flexShrink:0 }}>
-          {!unlocked?"🔒":done?"✓":idx+1}
-        </span>
-        <p style={{ fontWeight:600, fontSize:13, color: !unlocked?MUTED:TEXT2, margin:0, flex:1 }}>{step.label}</p>
-        {unlocked && !done && <span style={{ fontSize:11, color:`rgb(${ac})`, border:`1px solid rgba(${ac},0.3)`, borderRadius:6, padding:"2px 8px", display:"flex", alignItems:"center", gap:3 }}><PenLine size={9}/>כתוב פרומפט</span>}
-      </div>
-      {unlocked && (
-        <div style={{ marginRight:30, display:"flex", flexDirection:"column", gap:10 }}>
-          <p style={{ color:MUTED, fontSize:13, margin:0 }}>{step.guide}</p>
-          {!approved && (
-            <PromptInput label="✍️ כתוב פרומפט משלך:" placeholder={advanced?"":"לדוגמה: כיצד מחשבים σ? הנחה אותי שלב אחרי שלב…"} onApprove={()=>setApproved(true)} accentRgbStr={ac}/>
-          )}
-          {approved && !open && (
-            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-              <div style={{ background:"rgba(220,252,231,1)", border:"2px solid #16a34a", borderRadius:10, padding:"8px 12px", color:TEXT, fontSize:12, fontWeight:600 }}>✅ שלח ל-AI, קבל עזרה, ואז חזור.</div>
-              <button onClick={()=>setOpen(true)} style={{ padding:"6px 14px", borderRadius:10, fontSize:12, background:`rgba(${ac},0.08)`, border:`1px solid rgba(${ac},0.3)`, color:`rgb(${ac})`, cursor:"pointer", alignSelf:"flex-start" }}>הצג פתרון ▼</button>
-            </div>
-          )}
-          {(open||done) && (
-            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-              <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:10, padding:"10px 14px" }}>
-                <code style={{ color:"#15803d", fontSize:13, fontFamily:"monospace", whiteSpace:"pre-wrap" }}>{step.answer}</code>
-              </div>
-              <p style={{ color:TEXT2, fontSize:13, margin:0 }}>{step.explain}</p>
-            </div>
-          )}
-          {open && !done && (
-            <button onClick={()=>{setDone(true);onDone();}} style={{ padding:"6px 16px", borderRadius:10, fontSize:12, background:`rgba(${ac},0.08)`, border:`1px solid rgba(${ac},0.3)`, color:`rgb(${ac})`, cursor:"pointer", alignSelf:"flex-start" }}>המשך ←</button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CONFETTI
-// ─────────────────────────────────────────────────────────────────────────────
-
-function Confetti({ on }: { on:boolean }) {
-  if (!on) return null;
-  const pts = Array.from({length:28},(_,i)=>{
-    const a=(i/28)*360, d=40+Math.random()*60;
-    return { x:Math.cos(a*Math.PI/180)*d, y:-(Math.random()*80+15), c:["#16A34A","#EA580C","#DC2626","#3b82f6"][i%4], s:3+Math.random()*4, r:Math.random()*720, dl:Math.random()*.3 };
-  });
-  return (
-    <div style={{ pointerEvents:"none", position:"absolute", inset:0, overflow:"hidden" }} aria-hidden>
-      {pts.map((p,i)=>(
-        <div key={i} style={{ position:"absolute", left:"50%", top:"40%", width:p.s, height:p.s, background:p.c, borderRadius:2, animation:`confettiBurst .9s ease-out ${p.dl}s both`, ["--tx" as string]:`${p.x}px`, ["--ty" as string]:`${p.y}px`, ["--rot" as string]:`${p.r}deg` }}/>
-      ))}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SOLUTION WRAPPERS
-// ─────────────────────────────────────────────────────────────────────────────
-
-function SolutionBase({ steps, onComplete, ac }: { steps:Step[]; onComplete():void; ac:string }) {
-  const [open, setOpen]         = useState(false);
-  const [count, setCount]       = useState(0);
-  const [confetti, setConfetti] = useState(false);
-  const allDone = count === steps.length;
-  const done = useCallback(()=>{ setCount(c=>{ const n=c+1; if(n===steps.length){setConfetti(true);setTimeout(()=>setConfetti(false),1400);onComplete();} return n; }); },[steps.length,onComplete]);
-  return (
-    <div style={{ position:"relative", background:CARD, border:`1px solid rgba(${ac},0.25)`, borderRadius:16, padding:"1.5rem", marginBottom:"1.5rem", boxShadow:`0 4px 16px rgba(${ac},0.08)` }}>
-      <Confetti on={confetti}/>
-      <h3 style={{ color:TEXT, fontSize:16, fontWeight:700, margin:"0 0 4px" }}>פתרון מלא — בסיסי</h3>
-      <p style={{ color:MUTED, fontSize:13, margin:"0 0 16px" }}>כל שלב כולל פרומפט מוכן — העתק, שלח ל-AI, ואז הצג פתרון</p>
-      {!open
-        ? <button onClick={()=>setOpen(true)} style={{ padding:"10px 22px", borderRadius:12, background:`rgba(${ac},0.1)`, border:`1px solid rgba(${ac},0.35)`, color:`rgb(${ac})`, fontWeight:700, fontSize:13, cursor:"pointer" }}>✅ התחל פתרון</button>
-        : <div>
-            <div style={{ height:6, background:DIV, borderRadius:4, overflow:"hidden", marginBottom:12 }}>
-              <div style={{ height:"100%", borderRadius:4, background:`rgb(${ac})`, width:`${(count/steps.length)*100}%`, transition:"width 0.4s" }}/>
-            </div>
-            {allDone && <div style={{ background:"rgba(220,252,231,1)", border:"1.5px solid rgba(22,163,74,0.5)", borderRadius:12, padding:"12px 16px", textAlign:"center", color:"#15803d", fontWeight:700, marginBottom:12 }}>🏆 מצוין! טווח(יא'1)=4 ← הומוגנית | טווח(יא'2)=40 ← הטרוגנית</div>}
-            {steps.map((s,i)=><StepBase key={i} step={s} idx={i} unlocked={i===0||count>=i} onDone={done} ac={ac}/>)}
-          </div>
-      }
-    </div>
-  );
-}
-
-function SolutionMedium({ steps, onComplete, ac }: { steps:Step[]; onComplete():void; ac:string }) {
-  const [open, setOpen]         = useState(false);
-  const [count, setCount]       = useState(0);
-  const [confetti, setConfetti] = useState(false);
-  const allDone = count === steps.length;
-  const done = useCallback(()=>{ setCount(c=>{ const n=c+1; if(n===steps.length){setConfetti(true);setTimeout(()=>setConfetti(false),1400);onComplete();} return n; }); },[steps.length,onComplete]);
-  return (
-    <div style={{ position:"relative", background:CARD, border:`1px solid rgba(${ac},0.25)`, borderRadius:16, padding:"1.5rem", marginBottom:"1.5rem", boxShadow:`0 4px 16px rgba(${ac},0.08)` }}>
-      <Confetti on={confetti}/>
-      <h3 style={{ color:TEXT, fontSize:16, fontWeight:700, margin:"0 0 4px" }}>פתרון מלא — בינוני</h3>
-      <p style={{ color:MUTED, fontSize:13, margin:"0 0 16px" }}>שלב 1: פרומפט מוכן. שלבים 2-3: <span style={{ color:`rgb(${ac})`, fontWeight:600 }}>עליך לכתוב</span></p>
-      {!open
-        ? <button onClick={()=>setOpen(true)} style={{ padding:"10px 22px", borderRadius:12, background:`rgba(${ac},0.1)`, border:`1px solid rgba(${ac},0.35)`, color:`rgb(${ac})`, fontWeight:700, fontSize:13, cursor:"pointer" }}>✅ התחל פתרון</button>
-        : <div>
-            <div style={{ height:6, background:DIV, borderRadius:4, overflow:"hidden", marginBottom:12 }}>
-              <div style={{ height:"100%", borderRadius:4, background:`rgb(${ac})`, width:`${(count/steps.length)*100}%`, transition:"width 0.4s" }}/>
-            </div>
-            {allDone && <div style={{ background:"rgba(220,252,231,1)", border:"1.5px solid rgba(22,163,74,0.5)", borderRadius:12, padding:"12px 16px", textAlign:"center", color:"#15803d", fontWeight:700, marginBottom:12 }}>🏆 מעולה! σ(יא'1)≈1.41 ← הומוגנית | σ(יא'2)≈14.14 ← הטרוגנית</div>}
-            {steps.map((s,i)=>i<1?<StepBase key={i} step={s} idx={i} unlocked={i===0||count>=i} onDone={done} ac={ac}/>:<StepInput key={i} step={s} idx={i} unlocked={i===0||count>=i} onDone={done} ac={ac}/>)}
-          </div>
-      }
-    </div>
-  );
-}
-
-function SolutionAdvanced({ steps, onComplete, ac }: { steps:Step[]; onComplete():void; ac:string }) {
-  const [gateText,  setGateText]  = useState("");
-  const [gateError, setGateError] = useState("");
-  const [gateOk,    setGateOk]    = useState(false);
-  const [open,      setOpen]      = useState(false);
-  const [count,     setCount]     = useState(0);
-  const [confetti,  setConfetti]  = useState(false);
-  const allDone = count === steps.length;
-  const done = useCallback(()=>{ setCount(c=>{ const n=c+1; if(n===steps.length){setConfetti(true);setTimeout(()=>setConfetti(false),1400);onComplete();} return n; }); },[steps.length,onComplete]);
-
-  function submitGate() {
-    const t = gateText.trim();
-    if (t.length < 30)       { setGateError("הפרומפט קצר מדי — לפחות 30 תווים."); return; }
-    if (FORBIDDEN.some(w=>t.includes(w))) { setGateError("🚫 בקש הדרכה, לא פתרון."); return; }
-    const ADV = ["σ","שונות","Var","טרנספורמציה","כפל","חיבור","קבוע","הסבר","תסביר","כיצד","שלב","פיזור","ריבוע"];
-    if (!ADV.some(w=>t.includes(w))) { setGateError("💡 כלול מילת מפתח (σ / שונות / Var…)."); return; }
-    setGateOk(true);
-  }
-
-  return (
-    <div style={{ position:"relative", background:CARD, border:`1px solid rgba(${ac},0.25)`, borderRadius:16, padding:"1.5rem", marginBottom:"1.5rem", boxShadow:`0 4px 16px rgba(${ac},0.08)` }}>
-      <Confetti on={confetti}/>
-      <h3 style={{ color:TEXT, fontSize:16, fontWeight:700, margin:"0 0 4px" }}>פתרון מלא — מתקדם</h3>
-      <p style={{ color:MUTED, fontSize:13, margin:"0 0 16px" }}>אפס סיוע מובנה. <span style={{ color:`rgb(${ac})`, fontWeight:600 }}>כתוב את כל הפרומפטים בעצמך.</span></p>
-
-      {!gateOk && (
-        <div style={{ background:`rgba(${ac},0.05)`, border:`1px solid rgba(${ac},0.25)`, borderRadius:14, padding:"1.25rem", display:"flex", flexDirection:"column", gap:12 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-            <Lock size={14} color={`rgb(${ac})`}/>
-            <p style={{ fontWeight:600, color:TEXT, fontSize:13, margin:0 }}>שלב 0 — נסח את הפרומפט הזהב שלך</p>
-          </div>
-          <p style={{ color:MUTED, fontSize:13, margin:0, lineHeight:1.6 }}>כתוב פרומפט פתיחה שיכלול: הגדרת הבעיה (שתי הכיתות, σ שחישבת), מה אתה רוצה ללמוד על שונות וטרנספורמציה, ובקשה להדרכה — לא פתרון.</p>
-          <textarea value={gateText} onChange={e=>{setGateText(e.target.value);setGateError("");}} dir="rtl"
-            style={{ width:"100%", background:CARD, border:`1px solid rgba(${ac},0.3)`, borderRadius:10, padding:12, color:TEXT, fontSize:13, resize:"none", minHeight:90, boxSizing:"border-box", fontFamily:"inherit" }}/>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <button onClick={submitGate} style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 16px", borderRadius:10, fontSize:12, background:`rgba(${ac},0.1)`, border:`1px solid rgba(${ac},0.35)`, color:`rgb(${ac})`, fontWeight:600, cursor:"pointer" }}>
-              <Check size={11}/>בדוק פרומפט
-            </button>
-            {gateText.length > 0 && <span style={{ color:MUTED, fontSize:11 }}>{gateText.length} תווים</span>}
-          </div>
-          {gateError && <p style={{ fontSize:12, borderRadius:10, padding:"8px 12px", border:`1px solid rgba(${ac},0.3)`, background:`rgba(${ac},0.06)`, color:`rgb(${ac})`, margin:0 }}>{gateError}</p>}
-        </div>
-      )}
-
-      {gateOk && !open && (
-        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-          <div style={{ background:"rgba(220,252,231,1)", border:"2px solid #16a34a", borderRadius:10, padding:"10px 14px", display:"flex", alignItems:"center", gap:8 }}>
-            <CheckCircle size={13} color="#16a34a"/><span style={{ color:TEXT, fontSize:12, fontWeight:600 }}>פרומפט ראשוני מאושר! שלח ל-AI ואז התחל שלבים.</span>
-          </div>
-          <button onClick={()=>setOpen(true)} style={{ display:"flex", alignItems:"center", gap:6, padding:"10px 22px", borderRadius:12, background:`rgba(${ac},0.1)`, border:`1px solid rgba(${ac},0.35)`, color:`rgb(${ac})`, fontWeight:700, fontSize:13, cursor:"pointer", alignSelf:"flex-start" }}>
-            🔓 התחל שלבי פתרון
+      {/* Bonus button */}
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={() => setBonus(b => b + 5)}
+          className="px-4 py-2 rounded-xl text-sm font-bold"
+          style={{ background: "rgba(96,165,250,0.1)", border: "1.5px solid rgba(96,165,250,0.4)", color: "#60a5fa" }}
+        >
+          +5 בונוס
+        </button>
+        {bonus > 0 && (
+          <button
+            onClick={() => setBonus(0)}
+            className="px-4 py-2 rounded-xl text-sm font-semibold"
+            style={{ background: "rgba(100,116,139,0.1)", border: "1px solid rgba(100,116,139,0.3)", color: "#64748b" }}
+          >
+            איפוס
           </button>
-        </div>
-      )}
+        )}
+        {bonus > 0 && (
+          <span className="text-emerald-400 text-sm font-bold">
+            +{bonus} נקודות — הטווח נשאר {rangeVal} יחידות!
+          </span>
+        )}
+      </div>
 
-      {open && (
-        <div>
-          <div style={{ height:6, background:DIV, borderRadius:4, overflow:"hidden", marginBottom:12 }}>
-            <div style={{ height:"100%", borderRadius:4, background:`rgb(${ac})`, width:`${(count/steps.length)*100}%`, transition:"width 0.4s" }}/>
-          </div>
-          {allDone && <div style={{ background:"rgba(220,252,231,1)", border:"1.5px solid rgba(22,163,74,0.5)", borderRadius:12, padding:"12px 16px", textAlign:"center", color:"#15803d", fontWeight:700, marginBottom:12 }}>🏆 כל הכבוד! Var(X+b)=Var(X) | Var(aX)=a²·Var(X)</div>}
-          {steps.map((s,i)=><StepInput key={i} step={s} idx={i} unlocked={i===0||count>=i} onDone={done} ac={ac} advanced/>)}
+      {/* Stats tiles */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded-xl border border-slate-700 p-3 text-center" style={{ background: "#0f172a" }}>
+          <div className="text-slate-500 text-xs mb-1">טווח</div>
+          <div className="text-blue-400 font-bold text-xl font-mono">{rangeVal}</div>
         </div>
-      )}
-    </div>
+        <div className="rounded-xl border border-slate-700 p-3 text-center" style={{ background: "#0f172a" }}>
+          <div className="text-slate-500 text-xs mb-1">ממוצע</div>
+          <div className="text-amber-400 font-bold text-xl font-mono">{Math.round(mean + bonus)}</div>
+        </div>
+        <div className="rounded-xl border border-slate-700 p-3 text-center" style={{ background: "#0f172a" }}>
+          <div className="text-slate-500 text-xs mb-1">אחידות</div>
+          <div className="text-sm font-bold" style={{ color: rangeVal < 10 ? "#34d399" : rangeVal < 25 ? "#f59e0b" : "#f43f5e" }}>
+            {rangeVal < 10 ? "גבוהה" : rangeVal < 25 ? "בינונית" : "נמוכה"}
+          </div>
+        </div>
+      </div>
+
+      {/* Verification text */}
+      <p className="text-center text-slate-500 text-xs mt-4">
+        תוספת קבועה (בונוס) מזיזה את כל הנקודות — אבל המרחק ביניהן לא משתנה. הטווח נשמר!
+      </p>
+    </section>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LEVEL PANEL
-// ─────────────────────────────────────────────────────────────────────────────
-
-function LevelPanel({ ex }: { ex:Ex }) {
-  const [levelDone, setLevelDone] = useState(false);
-  const ac  = accentRgb(ex.id);
-  const col = accentColor(ex.id);
-
-  const badgeStyle: React.CSSProperties = {
-    fontSize:13, fontWeight:700, padding:"4px 14px", borderRadius:999,
-    background:`rgba(${ac},0.12)`, border:`1px solid rgba(${ac},0.4)`, color:col,
-  };
-
-  return (
-    <div>
-      {/* Title row */}
-      <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:"1.5rem" }}>
-        <span style={badgeStyle}>{ex.difficulty}</span>
-        <h2 style={{ color:TEXT, fontSize:20, fontWeight:800, margin:0 }}>{ex.title}</h2>
-      </div>
-      <div style={{ height:1, background:DIV, marginBottom:"1.5rem" }}/>
-
-      {/* Silent diagram */}
-      <div style={{ borderRadius:16, border:`1px solid rgba(${ac},0.3)`, background:CARD2, padding:"1.5rem", display:"flex", flexDirection:"column", alignItems:"center", marginBottom:"1.5rem", boxShadow:`0 4px 16px rgba(${ac},0.1)` }}>
-        <p style={{ color:col, fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:14 }}>
-          {ex.id==="basic" ? "שתי כיתות — פיזור על ציר" : ex.id==="frequency" ? "צורת ההתפלגות — צרה מול רחבה" : "σ ו-σ² — מדדי הפיזור"}
-        </p>
-        {ex.id==="basic"     && <DiagramNumberLines/>}
-        {ex.id==="frequency" && <DiagramBellCurves/>}
-        {ex.id==="advanced"  && <DiagramSigmaCards/>}
-        <p style={{ color:MUTED, fontSize:11, marginTop:10, textAlign:"center" }}>
-          {ex.id==="basic" ? "נסה לאמוד מה הטווח לפני שממשיכים" : ex.id==="frequency" ? "איזו כיתה 'רחבה' יותר — זו עם σ גדול יותר" : "שונות = σ² — לא אותו דבר!"}
-        </p>
-      </div>
-
-      {/* Problem */}
-      <div style={{ borderRadius:16, border:`1px solid rgba(${ac},0.3)`, background:CARD2, padding:"1.5rem", marginBottom:"1.5rem" }}>
-        <div style={{ color:MUTED, fontSize:10, textTransform:"uppercase", letterSpacing:"0.1em", fontWeight:600, marginBottom:10 }}>📝 השאלה</div>
-        <pre style={{ color:TEXT, fontSize:14, lineHeight:1.7, whiteSpace:"pre-wrap", fontFamily:"inherit", margin:"0 0 10px" }}>{ex.problem}</pre>
-        <p style={{ color:MUTED, fontSize:12, margin:0 }}>💡 נסה לפתור לפני שתמשיך</p>
-      </div>
-
-      {/* Pitfalls */}
-      <Pitfalls items={ex.pitfalls}/>
-
-      {/* Golden prompt */}
-      {ex.id !== "advanced" && (
-        <div style={{ borderRadius:16, border:`1px solid rgba(${ac},0.35)`, background:CARD2, overflow:"hidden", marginBottom:"1.5rem", boxShadow:`0 4px 16px rgba(${ac},0.1)` }}>
-          <div style={{ padding:"1rem 1.25rem", borderBottom:`1px solid rgba(${ac},0.2)`, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-              <div style={{ width:34, height:34, borderRadius:10, background:`rgba(${ac},0.1)`, border:`1px solid rgba(${ac},0.3)`, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <Target size={15} color={col}/>
-              </div>
-              <div>
-                <p style={{ fontWeight:700, color:TEXT, fontSize:13, margin:0 }}>הפרומפט הזהב</p>
-                <p style={{ color:MUTED, fontSize:11, margin:0 }}>העתק ושלח ל-AI שלך</p>
-              </div>
-            </div>
-            <CopyBtn text={ex.goldenPrompt}/>
-          </div>
-          <div style={{ padding:"1rem 1.25rem" }}>
-            <pre style={{ color:TEXT2, fontSize:13, lineHeight:1.7, whiteSpace:"pre-wrap", fontFamily:"inherit", margin:0 }}>{ex.goldenPrompt}</pre>
-          </div>
-        </div>
-      )}
-
-      {/* Solution */}
-      {ex.id==="basic"     && <SolutionBase     steps={ex.steps} onComplete={()=>setLevelDone(true)} ac={ac}/>}
-      {ex.id==="frequency" && <SolutionMedium   steps={ex.steps} onComplete={()=>setLevelDone(true)} ac={ac}/>}
-      {ex.id==="advanced"  && <SolutionAdvanced steps={ex.steps} onComplete={()=>setLevelDone(true)} ac={ac}/>}
-
-      {/* Interactive lab */}
-      <div>
-        <div style={{ display:"flex", alignItems:"center", gap:8, borderTop:`1px solid ${DIV}`, paddingTop:16, marginBottom:12 }}>
-          <div style={{ width:8, height:8, borderRadius:"50%", background:levelDone?"#16A34A":col, animation:"pulse 2s infinite" }}/>
-          <p style={{ color:col, fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em", margin:0 }}>סימולטור אינטראקטיבי</p>
-        </div>
-        <AnimatePresence>
-          {levelDone && (
-            <motion.div initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} exit={{opacity:0}}
-              style={{ background:"rgba(220,252,231,1)", border:"1.5px solid rgba(22,163,74,0.4)", borderRadius:14, padding:"14px 18px", display:"flex", alignItems:"center", gap:12, marginBottom:12 }}>
-              <Sparkles size={18} color="#16A34A" style={{ flexShrink:0 }}/>
-              <div>
-                <p style={{ color:"#15803d", fontWeight:700, fontSize:13, margin:"0 0 2px" }}>
-                  {ex.id==="basic" ? "טווח(יא'1)=4 לעומת טווח(יא'2)=40 — נסה σ=0.3 ו-σ=3!"
-                   : ex.id==="frequency" ? "σ(יא'1)≈1.41, σ(יא'2)≈14.14 — הגדל σ וראה את הפיזור!"
-                   : "Var(X+b)=Var(X) | Var(aX)=a²·Var(X) — שחק עם הסימולטור!"}
-                </p>
-                <p style={{ color:MUTED, fontSize:11, margin:0 }}>הזז את הסליידר לראות כיצד σ משפיע על הפיזור</p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <DispersionLab active={levelDone}/>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE
-// ─────────────────────────────────────────────────────────────────────────────
-
-const TABS = [
-  { id:"basic",     label:"בסיסי",  textColor:"#16A34A", border:"rgba(22,163,74,0.5)",   bg:"rgba(22,163,74,0.08)"   },
-  { id:"frequency", label:"בינוני", textColor:"#EA580C", border:"rgba(234,88,12,0.5)",   bg:"rgba(234,88,12,0.08)"   },
-  { id:"advanced",  label:"מתקדם",  textColor:"#DC2626", border:"rgba(220,38,38,0.5)",   bg:"rgba(220,38,38,0.08)"   },
-];
+// ─── Main Page ───────────────────────────────────────────────────────────────
 
 export default function StatisticsDispersionPage() {
-  const [activeId, setActiveId] = useState<Ex["id"]>("basic");
-  const scrollRef = useRef<HTMLDivElement>(null);
+  // Level 1
+  const [l1Done, setL1Done] = useState<boolean[]>(Array(L1_STEPS.length).fill(false));
+  const l1Complete = l1Done.every(Boolean);
 
-  function switchTab(id: Ex["id"]) {
-    setActiveId(id);
-    setTimeout(()=>scrollRef.current?.scrollIntoView({behavior:"smooth",block:"start"}),50);
-  }
+  // Level 2
+  const [l2Status, setL2Status] = useState<"idle" | "ok" | "hint">("idle");
+  const l2Complete = l2Status === "ok";
 
-  const ex = EXERCISES.find(e=>e.id===activeId)!;
+  // Level 3
+  const [l3Submitted, setL3Submitted] = useState(false);
 
   return (
-    <main
-      style={{ minHeight:"100vh", background:BG, backgroundImage:"radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize:"24px 24px", color:TEXT2 } as React.CSSProperties}
-      dir="rtl"
-    >
-      <style>{`
-        @keyframes confettiBurst { to { transform:translate(var(--tx),var(--ty)) rotate(var(--rot)); opacity:0; } }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-        textarea:focus, input[type="text"]:focus { outline:none; }
-      `}</style>
-
+    <main className="min-h-screen" style={{ background: "#0a0f1e" }} dir="rtl">
       {/* Header */}
-      <div style={{ borderBottom:`1px solid rgba(60,54,42,0.15)`, background:BG }}>
-        <div style={{ maxWidth:"56rem", margin:"0 auto", padding:"0.9rem 1.5rem", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"1rem" }}>
+      <div className="border-b border-slate-800">
+        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 style={{ fontSize:22, fontWeight:700, color:TEXT, margin:0 }}>📊 מדדי פיזור</h1>
-            <p style={{ fontSize:13, color:MUTED, margin:"2px 0 0" }}>טווח, סטיית תקן ושונות — ואיך לשאול AI את השאלות הנכונות</p>
+            <h1 className="text-xl font-bold text-white">מדדי פיזור — טווח</h1>
+            <p className="text-slate-400 text-sm mt-0.5">כיתה י׳ — סטטיסטיקה</p>
           </div>
           <Link
             href="/topic/grade10/statistics"
-            style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 14px", background:"#4A4A4A", border:"1px solid #333", borderRadius:10, fontSize:14, fontWeight:600, color:"#FFFFFF", textDecoration:"none", whiteSpace:"nowrap", transition:"background 0.15s" }}
-            onMouseEnter={e=>{ (e.currentTarget as HTMLAnchorElement).style.background="#2D2D2D"; }}
-            onMouseLeave={e=>{ (e.currentTarget as HTMLAnchorElement).style.background="#4A4A4A"; }}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white no-underline"
+            style={{ background: "#1e293b", border: "1px solid #334155" }}
           >
-            <span style={{fontSize:16}}>←</span>חזרה
+            <span>←</span> חזרה
           </Link>
         </div>
       </div>
 
-      <div style={{ maxWidth:"56rem", margin:"0 auto", padding:"2rem 1rem 5rem" }}>
+      <div className="max-w-3xl mx-auto px-4 py-8">
 
-        {/* Tab bar */}
-        <div ref={scrollRef} style={{ display:"flex", gap:4, background:"rgba(255,255,255,0.7)", backdropFilter:"blur(8px)", border:`1px solid rgba(60,54,42,0.15)`, borderRadius:14, padding:4, marginBottom:"2rem" }}>
-          {TABS.map(t=>{
-            const e = EXERCISES.find(x=>x.id===t.id)!;
-            const active = activeId===t.id;
-            return (
-              <button key={t.id} onClick={()=>switchTab(t.id as Ex["id"])}
-                style={{ flex:1, padding:"10px 12px", borderRadius:10, fontSize:13, fontWeight:600, transition:"all 0.2s", cursor:"pointer", border: active?`1.5px solid ${t.border}`:"1px solid transparent", background: active?t.bg:"transparent", color: active?t.textColor:MUTED }}>
-                <span style={{ display:"block" }}>{t.label}</span>
-                <span style={{ display:"block", fontSize:11, fontWeight:400, opacity:0.7, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{e.tabLabel}</span>
-              </button>
-            );
-          })}
+        {/* ── Level 1 ── */}
+        <Level1 done={l1Done} setDone={setL1Done} />
+
+        {/* ── Level 2 (locked until L1 complete) ── */}
+        {!l1Complete ? (
+          <div className="mb-12 rounded-2xl border border-slate-800 p-6 flex items-center gap-4 opacity-40">
+            <Lock size={20} className="text-slate-600" />
+            <div>
+              <p className="text-slate-500 font-semibold text-sm">שלב ב׳ — נעול</p>
+              <p className="text-slate-600 text-xs">סיימו את כל שלבי ההעתקה כדי להמשיך</p>
+            </div>
+          </div>
+        ) : (
+          <Level2 status={l2Status} setStatus={setL2Status} />
+        )}
+
+        {/* ── Level 3 (locked until L2 complete) ── */}
+        {!l2Complete ? (
+          <div className="mb-12 rounded-2xl border border-slate-800 p-6 flex items-center gap-4 opacity-40">
+            <Lock size={20} className="text-slate-600" />
+            <div>
+              <p className="text-slate-500 font-semibold text-sm">שלב ג׳ — נעול</p>
+              <p className="text-slate-600 text-xs">סיימו את שלב הכתיבה כדי להמשיך</p>
+            </div>
+          </div>
+        ) : (
+          <Level3 submitted={l3Submitted} setSubmitted={setL3Submitted} />
+        )}
+
+        {/* ── Lab ── */}
+        <SpreadLab />
+
+        {/* Back link */}
+        <div className="text-center pt-4 pb-8">
+          <Link href="/topic/grade10/statistics" className="text-slate-500 hover:text-slate-300 text-sm no-underline">
+            ← חזרה לסטטיסטיקה
+          </Link>
         </div>
-
-        <AnimatePresence mode="wait">
-          <motion.div key={activeId} initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.2}}>
-            <LevelPanel ex={ex}/>
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Mark as complete */}
-        <div style={{ marginTop: "1.5rem" }}>
-          <MarkComplete subtopicId="/grade10/statistics/dispersion" level={activeId as "basic" | "medium" | "advanced"} />
-        </div>
-
       </div>
     </main>
   );

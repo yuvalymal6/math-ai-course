@@ -12,6 +12,8 @@ import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 import katex from "katex";
 import "katex/dist/katex.min.css";
+import TrigAdvancedDiagram, { eRatioToAlpha, FULL_BAC_DEG } from "@/app/components/TrigAdvancedDiagram";
+import RectangleDiagram from "@/app/components/RectangleDiagram";
 
 // ─── KaTeX renderers ─────────────────────────────────────────────────────────
 
@@ -57,54 +59,6 @@ const TABS = [
 
 // ─── SVG diagrams (silent — no numbers, no answers) ───────────────────────────
 
-function RectangleDiagramSVG() {
-  // Rectangle ABCD: AD=8 (tall), AF=4 (narrow on AB). Proportions: height >> width of F
-  // A(bottom-left), B(bottom-right), C(top-right), D(top-left)
-  // Scale: AD~120px height, AF~60px. Rectangle width ~150px.
-  const Ax = 50, Ay = 170, Dx = 50, Dy = 30;   // left side (A bottom, D top)
-  const Bx = 200, By = 170, Cx = 200, Cy = 30;  // right side
-  // F at AF/AB ratio ≈ 4/12 ≈ 0.33 of AB from A
-  const Fx = Ax + (Bx - Ax) * 0.33, Fy = Ay;
-  // E extends past B — line from D through F to E
-  // Direction D→F: (Fx-Dx, Fy-Dy) = (Fx-50, 140)
-  // E is where this line continues past F at y=Ay: that's F itself.
-  // E must be on AB extended past B. Using the line slope from D(50,30) to F(~100,170):
-  // slope = (170-30)/(100-50) = 140/50 = 2.8. At B's x=200: y = 30 + 2.8*(200-50) = 450 — way past.
-  // The line DF exits the bottom at F. E is beyond B on the ground level.
-  // Extend DF past F: at y=170, x progresses. Past F, the line goes right and below.
-  // For the diagram, E is on AB extended. Line DE passes through F.
-  // Using parametric: from D(50,30), direction to F(100,170). t=1 is F. t>1 continues.
-  // At t=1.5: x = 50 + 1.5*50 = 125, y = 30 + 1.5*140 = 240 — below ground.
-  // E must be at ground level (y=170) which is t=1 (= F). Contradiction for a straight line.
-  // The correct geometry: E is on BC extended (right side extended downward), NOT on AB.
-  // Let's place E on the extension of side BC downward: E = (200, 220).
-  const Ex = Bx, Ey = By + 40; // E below B on BC extension
-  return (
-    <svg viewBox="0 0 260 230" className="w-full max-w-[250px] mx-auto" aria-hidden>
-      {/* Rectangle ABCD */}
-      <rect x={Ax} y={Dy} width={Bx - Ax} height={Ay - Dy} fill="rgba(99,102,241,0.04)" stroke="#334155" strokeWidth="2" />
-      {/* BC extended to E (dashed, downward from B) */}
-      <line x1={Bx} y1={By} x2={Ex} y2={Ey} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="6,3" />
-      {/* Line DF through F to E */}
-      <line x1={Dx} y1={Dy} x2={Ex} y2={Ey} stroke="#6366f1" strokeWidth="2" />
-      {/* Right angle at A */}
-      <polyline points={`${Ax + 10},${Ay} ${Ax + 10},${Ay - 10} ${Ax},${Ay - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-      {/* Right angle at B */}
-      <polyline points={`${Bx - 10},${By} ${Bx - 10},${By - 10} ${Bx},${By - 10}`} fill="none" stroke="#94a3b8" strokeWidth="1.5" />
-      {/* Point F on AB */}
-      <circle cx={Fx} cy={Fy} r="3.5" fill="#10b981" />
-      {/* Point E below B */}
-      <circle cx={Ex} cy={Ey} r="3.5" fill="#f59e0b" />
-      {/* Vertex labels */}
-      <text x={Ax - 16} y={Ay + 4} fontSize="13" fill="#475569" fontWeight="700">A</text>
-      <text x={Bx + 6} y={By - 4} fontSize="13" fill="#475569" fontWeight="700">B</text>
-      <text x={Cx + 6} y={Cy + 4} fontSize="13" fill="#475569" fontWeight="700">C</text>
-      <text x={Dx - 16} y={Dy + 4} fontSize="13" fill="#475569" fontWeight="700">D</text>
-      <text x={Fx - 4} y={Fy + 16} fontSize="12" fill="#10b981" fontWeight="700">F</text>
-      <text x={Ex + 8} y={Ey + 4} fontSize="12" fill="#f59e0b" fontWeight="700">E</text>
-    </svg>
-  );
-}
 
 function ParallelogramSVG() {
   // Parallelogram ABCD: A(bottom-left), B(bottom-right), C(top-right), D(top-left-ish)
@@ -133,41 +87,6 @@ function ParallelogramSVG() {
   );
 }
 
-function TriangleAltitudesSVG() {
-  // Triangle ABC with E on BC, altitudes BD⊥AE and CF⊥AE(extended)
-  return (
-    <svg viewBox="0 0 300 180" className="w-full max-w-[280px] mx-auto" aria-hidden>
-      {/* Main triangle ABC: A(150,20) B(40,155) C(260,155) */}
-      <polygon points="150,20 40,155 260,155" fill="rgba(220,38,38,0.04)" stroke="#334155" strokeWidth="2" />
-      {/* E on BC */}
-      <circle cx={130} cy={155} r="3" fill="#10b981" />
-      {/* Segment AE */}
-      <line x1={150} y1={20} x2={130} y2={155} stroke="#334155" strokeWidth="1.5" />
-      {/* AE extended past E (dashed) for CF */}
-      <line x1={130} y1={155} x2={115} y2={195} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="5,3" />
-      {/* Altitude BD ⊥ AE: D on AE */}
-      <line x1={40} y1={155} x2={142} y2={75} stroke="#6366f1" strokeWidth="2" strokeDasharray="6,3" />
-      <circle cx={142} cy={75} r="2.5" fill="#6366f1" />
-      {/* Right angle at D */}
-      <rect x={138} y={71} width="7" height="7" fill="none" stroke="#6366f1" strokeWidth="1.2" transform="rotate(-7, 142, 75)" />
-      {/* Altitude CF ⊥ AE extended: F past E */}
-      <line x1={260} y1={155} x2={122} y2={175} stroke="#a78bfa" strokeWidth="2" strokeDasharray="6,3" />
-      <circle cx={122} cy={175} r="2.5" fill="#a78bfa" />
-      {/* Right angle at F */}
-      <rect x={118} y={171} width="7" height="7" fill="none" stroke="#a78bfa" strokeWidth="1.2" transform="rotate(-7, 122, 175)" />
-      {/* Angle α at E (inside △BDE) */}
-      <path d="M 137,148 A 10,10 0 0,0 130,142" fill="none" stroke="#DC2626" strokeWidth="1.5" />
-      <text x="120" y="143" fontSize="11" fill="#DC2626" fontWeight="700" fontStyle="italic">α</text>
-      {/* Vertices */}
-      <text x="148" y="14" fontSize="13" fill="#475569" fontWeight="700">A</text>
-      <text x="22" y="162" fontSize="13" fill="#475569" fontWeight="700">B</text>
-      <text x="264" y="162" fontSize="13" fill="#475569" fontWeight="700">C</text>
-      <text x="144" y="70" fontSize="11" fill="#6366f1" fontWeight="700">D</text>
-      <text x="132" y="168" fontSize="11" fill="#10b981" fontWeight="700">E</text>
-      <text x="108" y="182" fontSize="11" fill="#a78bfa" fontWeight="700">F</text>
-    </svg>
-  );
-}
 
 function _OrigAirplaneSVG() {
   return (
@@ -427,8 +346,8 @@ function LadderAdvanced({ steps, goldenPrompt, borderRgb }: { steps: PromptStep[
 const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    problem: "במלבן ABCD אורך הצלע AD הוא 8 ס\"מ. נקודה F נמצאת על הצלע AB כך ש-AF = 4 ס\"מ. מאריכים את הצלע AB עד לנקודה E כך שהקטע DE עובר דרך F.\n\nא. חשב את הזווית ∠ADF.\nב. מצא את אורך הקטע BE (רמז: השתמש בדמיון משולשים).\nג. מהו היחס בין שטח המשולש △ADF לשטח המשולש △BEF?",
-    diagram: <RectangleDiagramSVG />,
+    problem: "במלבן ABCD אורך הצלע AD הוא 8 ס\"מ. נקודה F נמצאת על הצלע AB כך ש-AF = 4 ס\"מ. מאריכים את הצלע BC עד לנקודה E כך שהקטע DE עובר דרך F. נתון כי BF הוא שליש מאורך הצלע AB.\n\nא. חשב את הזווית ∠ADF.\nב. מצא את אורך הקטע BE (רמז: השתמש בדמיון משולשים).\nג. מהו היחס בין שטח המשולש △ADF לשטח המשולש △BEF?",
+    diagram: <RectangleDiagram />,
     pitfalls: [
       { title: "⚠️ זוויות מתחלפות", text: "זהירות! זווית E אינה שווה לזווית ADF — הן זוויות מתחלפות רק אם תזהה את המקבילים הנכונים." },
       { title: "💡 יחס שטחים", text: "זכור: יחס השטחים הוא ריבוע יחס הדמיון, לא יחס הדמיון עצמו!" },
@@ -485,8 +404,8 @@ const exercises: ExerciseDef[] = [
   },
   {
     id: "advanced",
-    problem: "נתון משולש △ABC. נקודה E נמצאת על הבסיס BC. אורך השוק AB הוא k ס\"מ ואורך השוק AC הוא 1.6k ס\"מ. מורידים גבהים BD ו-CF לקטע AE (או להמשכו).\n\nא. הבע את אורך הגובה BD באמצעות הפרמטר k וזווית ∠BDE = α.\nב. דמיון משולשים: הוכח כי המשולשים △BDE ו-△CFE דומים.\nג. הבעה באמצעות k ו-α: מצא את היחס BE / CE.\nד. מצא את היחס בין שטח המשולש △ACF לבין שטח המשולש △ABF, והבע אותו באמצעות α בלבד.",
-    diagram: <TriangleAltitudesSVG />,
+    problem: "נתון משולש △ABC. נקודה E נמצאת על הבסיס BC. זווית ∠BAE = α. אורך השוק AB הוא k ס\"מ ואורך השוק AC הוא 1.6k ס\"מ. מורידים גבהים BD ו-CF לקטע AE (או להמשכו).\n\nא. הבע את אורך הגובה BD באמצעות הפרמטרים k ו-α.\nב. דמיון משולשים: הוכח כי המשולשים △BDE ו-△CFE דומים.\nג. הבעה באמצעות k ו-α: מצא את היחס BE / CE.\nד. מצא את היחס בין שטח המשולש △ACF לבין שטח המשולש △ABF, והבע אותו באמצעות α בלבד.",
+    diagram: <TrigAdvancedDiagram />,
     pitfalls: [
       { title: "⚠️ זוויות קודקודיות", text: "שימו לב לזיהוי הזוויות! טעות נפוצה היא להתבלבל בין ∠BED ל-∠CEF. הן זוויות קודקודיות, ולכן שוות זו לזו. השתמשו בזה לדמיון." },
       { title: "💡 ניצבים מתאימים", text: "בחישוב היחסים והשטחים, זכרו לבדוק את הניצבים המתאימים. הניצב מול הזווית α הוא BD, לא AE. אל תניחו ש-E היא אמצע קטע!" },
@@ -648,104 +567,76 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
 function RectangleLab() {
   const [AF, setAF] = useState(4);
-  const [AD, setAD] = useState(8);
-  const [showDefault, setShowDefault] = useState(false);
+  const AD = 8;
+  const AB = 6; // fixed: BF = AB/3 = 2 when AF=4
 
-  // Triangle ADF: right angle at A, AD vertical, AF horizontal
+  const BF = Math.max(0.5, AB - AF);
+  const BE = (AD * BF) / Math.max(AF, 0.1);
+  const ratioAFBF = AF / BF;
+
   const DF = Math.sqrt(AD * AD + AF * AF);
-  const angleDeg = Math.atan2(AF, AD) * (180 / Math.PI);
+  const angleADF = Math.atan2(AF, AD) * (180 / Math.PI);
 
-  // For the extended construction: line from D(0,AD) through F(AF,0)
-  // In the rectangle of width W, BF = W - AF
-  // By similar triangles: BE/AD = BF/AF
-  // Let W = AF + BF, choose W such that BF is reasonable
-  // For the original problem: AD=8, AF=10, let's say W = AF * 1.5 = 15, so BF = 5
-  const W_rect = AF * 1.5; // rectangle width
-  const BF = W_rect - AF;
-  const BE = (AD * BF) / AF;
-
-  // Areas
   const areaADF = (AD * AF) / 2;
   const areaBEF = (BE * BF) / 2;
-  const areaRatio = areaADF > 0 && areaBEF > 0 ? (areaADF / areaBEF) : 0;
+  const areaRatio = areaBEF > 0 ? areaADF / areaBEF : 0;
 
-  // SVG coords
-  const svgW = 320, svgH = 200;
-  const sc = Math.min((svgW - 80) / W_rect, (svgH - 60) / AD, 8);
-  const pA = { x: 30, y: svgH - 20 };
-  const pB = { x: 30 + W_rect * sc, y: svgH - 20 };
-  const pC = { x: pB.x, y: svgH - 20 - AD * sc };
-  const pD = { x: pA.x, y: svgH - 20 - AD * sc };
-  const pF = { x: pA.x + AF * sc, y: pA.y };
-  // E is past B on the bottom line
-  const pE = { x: pB.x + BE * sc * 0.8, y: pB.y };
-
-  // Default detection
-  const isDefault = AF === 10 && AD === 8;
+  const isExerciseDefault = AF === 4;
 
   return (
-    <section style={{ border: "2px solid rgba(45,90,39,0.5)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת מלבן ודמיון</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את AF ואת AD — צפו בזמן אמת בתיבות למטה.</p>
+    <section style={{ border: "2px solid rgba(45,90,39,0.5)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת מלבן ודמיון</h3>
+      <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את AF — צפו כיצד BE משתנה בהתאם לדמיון.</p>
 
-      {/* Dual sliders */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>AF (מרחק על AB)</span>
-            <span style={{ color: "#10b981", fontWeight: 700 }}>{AF}</span>
-          </div>
-          <input type="range" min={2} max={15} step={0.5} value={AF} onChange={e => { const v = +e.target.value; setAF(v); if (v === 4 && AD === 8) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#10b981" }} />
+      {/* Interactive diagram */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(45,90,39,0.25)", background: "#fff", padding: "0.5rem", marginBottom: "1.5rem" }}>
+        <RectangleDiagram af={AF} ab={AB} />
+      </div>
+
+      {/* AF slider */}
+      <div style={{ marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem", border: "1px solid rgba(45,90,39,0.15)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+          <span style={{ fontWeight: 600 }}>אורך AF (מתוך AB = {AB})</span>
+          <span style={{ color: "#10b981", fontWeight: 700, fontFamily: "monospace" }}>{AF}</span>
         </div>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>AD (גובה המלבן)</span>
-            <span style={{ color: "#6366f1", fontWeight: 700 }}>{AD}</span>
+        <input type="range" min={0.5} max={5.5} step={0.5} value={AF}
+          onChange={e => setAF(+e.target.value)}
+          style={{ width: "100%", accentColor: "#10b981" }} />
+        {isExerciseDefault && (
+          <div style={{ color: "#16a34a", fontSize: 10, fontWeight: 600, marginTop: 4, textAlign: "center" }}>
+            נתוני התרגיל: AF = 4, BF = 2 (שליש מ-AB)
           </div>
-          <input type="range" min={5} max={15} step={0.5} value={AD} onChange={e => { const v = +e.target.value; setAD(v); if (v === 8 && AF === 4) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else { setShowDefault(false); } }} style={{ width: "100%", accentColor: "#6366f1" }} />
+        )}
+      </div>
+
+      {/* Similarity chain: AF/BF = AD/BE */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr auto 1fr", gap: 8, alignItems: "center", marginBottom: "1rem" }}>
+        <div style={{ borderRadius: 14, background: "rgba(99,102,241,0.06)", border: "2px solid rgba(99,102,241,0.25)", padding: "12px 8px", textAlign: "center" }}>
+          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>AF / BF</div>
+          <div style={{ color: "#6366f1", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{ratioAFBF.toFixed(2)}</div>
+          <div style={{ color: "#6B7280", fontSize: 9, marginTop: 2 }}>{AF} / {BF.toFixed(1)}</div>
+        </div>
+        <div style={{ color: "#1A1A1A", fontSize: 16, fontWeight: 800 }}>=</div>
+        <div style={{ borderRadius: 14, background: "rgba(99,102,241,0.06)", border: "2px solid rgba(99,102,241,0.25)", padding: "12px 8px", textAlign: "center" }}>
+          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>AD / BE</div>
+          <div style={{ color: "#6366f1", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{(AD / BE).toFixed(2)}</div>
+          <div style={{ color: "#6B7280", fontSize: 9, marginTop: 2 }}>{AD} / {BE.toFixed(1)}</div>
+        </div>
+        <div style={{ color: "#1A1A1A", fontSize: 16, fontWeight: 800 }}>→</div>
+        <div style={{ borderRadius: 14, background: "rgba(245,158,11,0.06)", border: "2px solid rgba(245,158,11,0.35)", padding: "12px 8px", textAlign: "center" }}>
+          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>BE</div>
+          <div style={{ color: "#f59e0b", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{BE.toFixed(1)}</div>
         </div>
       </div>
 
-      {/* Message zone */}
-      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={showDefault} />
-
-      {/* Clean SVG — only letters, right-angle marks, no numbers */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem", boxShadow: "0 4px 16px rgba(0,212,255,0.08)" }}>
-        <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", display: "block" }} aria-hidden>
-          {/* Rectangle ABCD */}
-          <rect x={pA.x} y={pD.y} width={pB.x - pA.x} height={pA.y - pD.y} fill="rgba(99,102,241,0.04)" stroke="#334155" strokeWidth="2" />
-          {/* Extension AB to E (dashed) */}
-          <line x1={pB.x} y1={pB.y} x2={pE.x} y2={pE.y} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="6,3" />
-          {/* Line DF through F to E */}
-          <line x1={pD.x} y1={pD.y} x2={pE.x} y2={pE.y} stroke="#6366f1" strokeWidth="2" />
-          {/* Right angle marks at A and B */}
-          <polyline points={`${pA.x + 8},${pA.y} ${pA.x + 8},${pA.y - 8} ${pA.x},${pA.y - 8}`} fill="none" stroke="#94a3b8" strokeWidth="1" />
-          <polyline points={`${pB.x - 8},${pB.y} ${pB.x - 8},${pB.y - 8} ${pB.x},${pB.y - 8}`} fill="none" stroke="#94a3b8" strokeWidth="1" />
-          {/* Point F */}
-          <circle cx={pF.x} cy={pF.y} r="3.5" fill="#10b981" />
-          {/* Point E */}
-          <circle cx={pE.x} cy={pE.y} r="3.5" fill="#f59e0b" />
-          {/* Vertices */}
-          <text x={pA.x - 14} y={pA.y + 4} fontSize="12" fill="#475569" fontWeight="600">A</text>
-          <text x={pB.x - 4} y={pB.y + 16} fontSize="12" fill="#475569" fontWeight="600">B</text>
-          <text x={pC.x + 6} y={pC.y + 4} fontSize="12" fill="#475569" fontWeight="600">C</text>
-          <text x={pD.x - 14} y={pD.y + 4} fontSize="12" fill="#475569" fontWeight="600">D</text>
-          <text x={pF.x - 4} y={pF.y + 16} fontSize="11" fill="#10b981" fontWeight="700">F</text>
-          <text x={pE.x - 2} y={pE.y + 16} fontSize="11" fill="#f59e0b" fontWeight="700">E</text>
-        </svg>
-      </div>
-
-      {/* Data display */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: 8, textAlign: "center" }}>
+      {/* Data row */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, textAlign: "center" }}>
         {[
-          { label: "AD", val: AD.toFixed(1), color: "#6366f1" },
-          { label: "AF", val: AF.toFixed(1), color: "#10b981" },
-          { label: "BF", val: BF.toFixed(1), color: "#f59e0b" },
-          { label: "BE", val: BE.toFixed(2), color: "#DC2626" },
-          { label: "∠ADF", val: angleDeg.toFixed(1) + "°", color: "#a78bfa" },
-          { label: "S△ADF/S△BEF", val: areaRatio.toFixed(2), color: "#00d4ff" },
+          { label: "∠ADF", val: angleADF.toFixed(1) + "°", color: "#a78bfa" },
+          { label: "DF", val: DF.toFixed(1), color: "#6366f1" },
+          { label: "S△ADF / S△BEF", val: areaRatio.toFixed(2), color: "#DC2626" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 6px", boxShadow: "0 2px 6px rgba(60,54,42,0.03)" }}>
+          <div key={r.label} style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
             <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
             <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
           </div>
@@ -896,124 +787,87 @@ function ParallelogramLab() {
 // ─── Lab: Triangle with external altitudes ────────────────────────────────────
 
 function TriangleAltitudesLab() {
-  const [k, setK] = useState(20);
-  const [alpha, setAlpha] = useState(50);
+  const [alpha, setAlpha] = useState(40);
+
   const alphaRad = (alpha * Math.PI) / 180;
-  const [showDefault, setShowDefault] = useState(false);
+  const angleCAE = FULL_BAC_DEG - alpha; // ∠CAE = ∠BAC − α
 
-  const AB = k;
-  const AC = 1.6 * k;
-  const BD = k * Math.sin(alphaRad);
-  const BE = k * Math.cos(alphaRad);
-  // By similarity △BDE ~ △CFE: CF/BD = CE/BE = AC/AB = 1.6
-  const CE = BE * 1.6;
-  const CF = BD * 1.6;
-  // Area ratio: S(ACF)/S(ABF) — both triangles share base AF on line AE
-  // S(ACF) = 0.5 * AF * CF, S(ABF) = 0.5 * AF * BD (same base along AE, heights CF and BD)
-  // Wait, that's not quite right. Let me think:
-  // △ABD has height BD from B to AE. △ACF has height CF from C to AE.
-  // Area(△ABE) = 0.5 * AE_part * BD... actually simpler:
-  // S(ACF)/S(ABF) = CF/BD = 1.6 (they share the same base on line AE extended)
-  // Actually: S(△ACF)/S(△ABF) depends on the full geometry.
-  // Simpler: S(△ACF) = 0.5 * AF * CF, S(△ABD) = 0.5 * AD * BD
-  // But we want S(△ACF)/S(△ABF).
-  // Both triangles have a vertex on line AE. Their bases from B and C to AE are BD and CF.
-  // S(△ABF) = 0.5 * |AF'| * BD where AF' is the segment... this is complex.
-  // Let's just compute: ratio = (AC * CF) / (AB * BD) = (1.6k * 1.6*BD) / (k * BD) = 2.56
-  // Actually: S(△ACE)/S(△ABE) = (CE * CF) / (BE * BD) = (1.6*BE * 1.6*BD) / (BE * BD) = 2.56
-  // That's the ratio of triangles sharing vertex A with bases on BC.
-  // For S(△ACF)/S(△ABF): they share vertex F. Heights from A... no.
-  // Let me just use: areaRatio = CF/BD = 1.6 (constant, independent of α)
-  const areaRatio = CF / BD; // = 1.6 always
+  // Exact formulas: BD = k·sin(α), CF = 1.6k·sin(∠BAC − α)
+  const bdSinVal = Math.sin(alphaRad);
+  const cfSinVal = Math.sin((angleCAE * Math.PI) / 180);
 
-  // SVG dynamic
-  const svgW = 320, svgH = 200;
-  const sc = Math.min(6, (svgW - 80) / (BE + CE), (svgH - 60) / Math.max(BD, CF));
-  const Ax = svgW / 2, Ay = 20;
-  const Ex = svgW / 2 - 10, Ey = svgH - 20;
-  const Bx = Ex - BE * sc, By = Ey;
-  const Cx = Ex + CE * sc, Cy = Ey;
-  // D on AE at distance from E
-  const AElen = Math.sqrt((Ex - Ax) * (Ex - Ax) + (Ey - Ay) * (Ey - Ay));
-  const DonAE = 0.45; // approximate position
-  const Dx = Ax + DonAE * (Ex - Ax), Dy = Ay + DonAE * (Ey - Ay);
-  // F past E on AE extended
-  const Fx = Ex + 0.15 * (Ex - Ax), Fy = Ey + 0.15 * (Ey - Ay);
+  // Compute E position (derived from α) for the eRatio display
+  // Use the geometry engine's result via eRatioToAlpha inverse
+  // Direct: θ_AE = θ_AB − α → E.x = Ax + (h/sin(θ_AE)) * cos(θ_AE)
+  const AB_ANG = Math.atan2(230, 60 - 187.6); // ≈ 1.55
+  const thetaAE = AB_ANG - alphaRad;
+  const s = 230 / Math.sin(thetaAE);
+  const Ex = 187.6 + s * Math.cos(thetaAE);
+  const eRatio = Math.max(0, Math.min(1, (Ex - 60) / 480));
 
   return (
-    <section style={{ border: "2px solid rgba(153,27,27,0.5)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת גבהים חיצוניים ודמיון</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנו את k ואת α — צפו ביחסים הקבועים.</p>
+    <section style={{ border: "2px solid rgba(153,27,27,0.5)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת גבהים חיצוניים ודמיון</h3>
+      <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את הסליידרים — הדיאגרמה והערכים מתעדכנים בזמן אמת.</p>
 
-      {/* Dual sliders */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem" }}>
+      {/* Interactive diagram */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(153,27,27,0.25)", background: "#fff", padding: "0.5rem", marginBottom: "1.5rem" }}>
+        <TrigAdvancedDiagram alpha={alpha} />
+      </div>
+
+      {/* Sliders */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem", border: "1px solid rgba(153,27,27,0.15)" }}>
+        {/* α slider — primary control */}
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>פרמטר k</span>
-            <span style={{ color: "#DC2626", fontWeight: 700 }}>{k}</span>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+            <span style={{ fontWeight: 600 }}>∠BAE = α</span>
+            <span style={{ color: "#DC2626", fontWeight: 700, fontFamily: "monospace" }}>{alpha}°</span>
           </div>
-          <input type="range" min={10} max={50} step={1} value={k} onChange={e => { const v = +e.target.value; setK(v); if (v === 20 && alpha === 50) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else setShowDefault(false); }} style={{ width: "100%", accentColor: "#DC2626" }} />
+          <input type="range" min={5} max={80} step={1} value={alpha}
+            onChange={e => setAlpha(+e.target.value)}
+            style={{ width: "100%", accentColor: "#DC2626" }} />
         </div>
+        {/* E position slider — linked to α */}
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>זווית α</span>
-            <span style={{ color: "#a78bfa", fontWeight: 700 }}>{alpha}°</span>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+            <span style={{ fontWeight: 600 }}>מיקום E על BC</span>
+            <span style={{ color: "#1a3a6e", fontWeight: 700, fontFamily: "monospace" }}>{eRatio.toFixed(2)}</span>
           </div>
-          <input type="range" min={20} max={75} step={1} value={alpha} onChange={e => { const v = +e.target.value; setAlpha(v); if (v === 50 && k === 20) { setShowDefault(true); setTimeout(() => setShowDefault(false), 10000); } else setShowDefault(false); }} style={{ width: "100%", accentColor: "#a78bfa" }} />
+          <input type="range" min={0.05} max={0.95} step={0.01}
+            value={eRatio}
+            onChange={e => setAlpha(Math.round(eRatioToAlpha(+e.target.value)))}
+            style={{ width: "100%", accentColor: "#1a3a6e" }} />
         </div>
       </div>
 
-      {/* Message zone */}
-      <LabMessage text="חזרת לנתוני התרגיל המקורי 🙂" type="success" visible={showDefault} />
-
-      {/* Dynamic SVG — clean, no numbers */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem" }}>
-        <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", display: "block" }} aria-hidden>
-          {/* Main triangle */}
-          <polygon points={`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`} fill="rgba(220,38,38,0.04)" stroke="#334155" strokeWidth="2" />
-          {/* Segment AE */}
-          <line x1={Ax} y1={Ay} x2={Ex} y2={Ey} stroke="#334155" strokeWidth="1.5" />
-          {/* AE extended (dashed) */}
-          <line x1={Ex} y1={Ey} x2={Fx} y2={Fy} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="5,3" />
-          {/* Altitude BD */}
-          <line x1={Bx} y1={By} x2={Dx} y2={Dy} stroke="#6366f1" strokeWidth="2" strokeDasharray="6,3" />
-          {/* Altitude CF */}
-          <line x1={Cx} y1={Cy} x2={Fx} y2={Fy} stroke="#a78bfa" strokeWidth="2" strokeDasharray="6,3" />
-          {/* Right angle marks */}
-          <rect x={Dx - 4} y={Dy - 4} width="7" height="7" fill="none" stroke="#6366f1" strokeWidth="1.2" />
-          <rect x={Fx - 4} y={Fy - 4} width="7" height="7" fill="none" stroke="#a78bfa" strokeWidth="1.2" />
-          {/* E marker */}
-          <circle cx={Ex} cy={Ey} r="3" fill="#10b981" />
-          {/* Vertices */}
-          <text x={Ax - 4} y={Ay - 6} fontSize="12" fill="#475569" fontWeight="600" textAnchor="middle">A</text>
-          <text x={Bx - 12} y={By + 4} fontSize="12" fill="#475569" fontWeight="600">B</text>
-          <text x={Cx + 6} y={Cy + 4} fontSize="12" fill="#475569" fontWeight="600">C</text>
-          <text x={Dx + 8} y={Dy - 2} fontSize="11" fill="#6366f1" fontWeight="700">D</text>
-          <text x={Ex + 8} y={Ey + 4} fontSize="11" fill="#10b981" fontWeight="700">E</text>
-          <text x={Fx + 8} y={Fy + 4} fontSize="11" fill="#a78bfa" fontWeight="700">F</text>
-        </svg>
+      {/* BD and CF formula cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: "1rem" }}>
+        <div style={{ borderRadius: 14, background: "rgba(99,102,241,0.06)", border: "2px solid rgba(99,102,241,0.3)", padding: "14px 12px", textAlign: "center" }}>
+          <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, marginBottom: 6 }}>BD (גובה מ-B)</div>
+          <div style={{ color: "#6366f1", fontWeight: 800, fontSize: 22, fontFamily: "monospace" }}>{bdSinVal.toFixed(3)}k</div>
+          <div style={{ color: "#6B7280", fontSize: 10, marginTop: 4 }}>= k · sin({alpha}°)</div>
+        </div>
+        <div style={{ borderRadius: 14, background: "rgba(167,139,250,0.06)", border: "2px solid rgba(167,139,250,0.3)", padding: "14px 12px", textAlign: "center" }}>
+          <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, marginBottom: 6 }}>CF (גובה מ-C)</div>
+          <div style={{ color: "#a78bfa", fontWeight: 800, fontSize: 22, fontFamily: "monospace" }}>{(1.6 * cfSinVal).toFixed(3)}k</div>
+          <div style={{ color: "#6B7280", fontSize: 10, marginTop: 4 }}>= 1.6k · sin({angleCAE.toFixed(1)}°)</div>
+        </div>
       </div>
 
-      {/* Area ratio banner */}
-      <LabMessage text={`S(△ACF) / S(△ABF) = ${areaRatio.toFixed(2)} — יחס קבוע! (CF/BD = AC/AB = 1.6)`} type="special" visible={true} />
-
-      {/* Data display */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(85px, 1fr))", gap: 8, textAlign: "center" }}>
-        {[
-          { label: "AB = k", val: AB.toFixed(0), color: "#334155" },
-          { label: "AC = 1.6k", val: AC.toFixed(0), color: "#334155" },
-          { label: "BD = k·sin(α)", val: BD.toFixed(1), color: "#6366f1" },
-          { label: "CF = 1.6k·sin(α)", val: CF.toFixed(1), color: "#a78bfa" },
-          { label: "BE", val: BE.toFixed(1), color: "#10b981" },
-          { label: "CE", val: CE.toFixed(1), color: "#f59e0b" },
-          { label: "∠BDE = α", val: `${alpha}°`, color: "#DC2626" },
-          { label: "BE/CE", val: (BE / CE).toFixed(3), color: "#00d4ff" },
-        ].map(r => (
-          <div key={r.label} style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(0,212,255,0.2)", padding: "10px 4px" }}>
-            <div style={{ color: "#6B7280", fontSize: 8, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
-            <div style={{ color: r.color, fontWeight: 700, fontSize: 13, fontFamily: "monospace" }}>{r.val}</div>
-          </div>
-        ))}
+      {/* Insight row — constant ratio AC/AB = 1.6, plus ∠BAC */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, textAlign: "center" }}>
+        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
+          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>AC / AB</div>
+          <div style={{ color: "#16a34a", fontWeight: 800, fontSize: 15, fontFamily: "monospace" }}>1.600</div>
+        </div>
+        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
+          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>∠BAC</div>
+          <div style={{ color: "#334155", fontWeight: 700, fontSize: 15, fontFamily: "monospace" }}>{FULL_BAC_DEG.toFixed(1)}°</div>
+        </div>
+        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
+          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>∠CAE</div>
+          <div style={{ color: "#334155", fontWeight: 700, fontSize: 15, fontFamily: "monospace" }}>{angleCAE.toFixed(1)}°</div>
+        </div>
       </div>
     </section>
   );

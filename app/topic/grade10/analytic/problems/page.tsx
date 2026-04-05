@@ -12,6 +12,7 @@ import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 import katex from "katex";
 import "katex/dist/katex.min.css";
+import AnalyticParallelogramDiagram from "@/app/components/AnalyticParallelogramDiagram";
 
 // ─── KaTeX renderers ─────────────────────────────────────────────────────────
 
@@ -387,126 +388,151 @@ function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
 
 // ─── SVG Diagrams ─────────────────────────────────────────────────────────────
 
-function BasicDiagram() {
-  // Rectangle A(0,0), B(6,0), C(6,4), D(0,4) with diagonals
-  const originX = 50, originY = 250, scale = 25;
-  const toX = (v: number) => originX + v * scale;
-  const toY = (v: number) => originY - v * scale;
-
-  return (
-    <svg viewBox="0 0 400 300" className="w-full max-w-sm mx-auto" aria-hidden>
-      {/* Axes */}
-      <line x1={toX(-1)} y1={toY(0)} x2={toX(9)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1.2} />
-      <line x1={toX(0)} y1={toY(-1)} x2={toX(0)} y2={toY(7)} stroke="#94a3b8" strokeWidth={1.2} />
-      <polygon points={`${toX(9)},${toY(0)} ${toX(9) - 5},${toY(0) - 3} ${toX(9) - 5},${toY(0) + 3}`} fill="#94a3b8" />
-      <polygon points={`${toX(0)},${toY(7)} ${toX(0) - 3},${toY(7) + 5} ${toX(0) + 3},${toY(7) + 5}`} fill="#94a3b8" />
-      <text x={toX(9) + 6} y={toY(0) + 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">x</text>
-      <text x={toX(0) + 6} y={toY(7) - 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">y</text>
-
-      {/* Rectangle fill */}
-      <polygon points={`${toX(0)},${toY(0)} ${toX(6)},${toY(0)} ${toX(6)},${toY(4)} ${toX(0)},${toY(4)}`} fill="rgba(22,163,74,0.06)" stroke="#16A34A" strokeWidth={2} strokeLinejoin="round" />
-
-      {/* Diagonals */}
-      <line x1={toX(0)} y1={toY(0)} x2={toX(6)} y2={toY(4)} stroke="#f59e0b" strokeWidth={1.5} strokeDasharray="5,3" />
-      <line x1={toX(6)} y1={toY(0)} x2={toX(0)} y2={toY(4)} stroke="#a78bfa" strokeWidth={1.5} strokeDasharray="5,3" />
-
-      {/* Center point */}
-      <circle cx={toX(3)} cy={toY(2)} r={4} fill="#f59e0b" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(3) + 6} y={toY(2) - 6} fontSize={10} fill="#f59e0b" fontWeight={600} fontFamily="sans-serif">?</text>
-
-      {/* Vertices */}
-      <circle cx={toX(0)} cy={toY(0)} r={4} fill="#16A34A" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(0) - 4} y={toY(0) + 16} fontSize={11} fill="#16A34A" fontWeight={600} fontFamily="sans-serif">A</text>
-
-      <circle cx={toX(6)} cy={toY(0)} r={4} fill="#16A34A" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(6) + 6} y={toY(0) + 16} fontSize={11} fill="#16A34A" fontWeight={600} fontFamily="sans-serif">B</text>
-
-      <circle cx={toX(6)} cy={toY(4)} r={4} fill="#16A34A" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(6) + 6} y={toY(4) - 6} fontSize={11} fill="#16A34A" fontWeight={600} fontFamily="sans-serif">C</text>
-
-      <circle cx={toX(0)} cy={toY(4)} r={4} fill="#64748b" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(0) - 14} y={toY(4) - 6} fontSize={11} fill="#64748b" fontWeight={600} fontFamily="sans-serif">D?</text>
-    </svg>
-  );
-}
 
 function MediumDiagram() {
-  // Parallelogram A(1,1), B(5,3), C(7,7), D(3,5)
-  const originX = 50, originY = 250, scale = 25;
-  const toX = (v: number) => originX + v * scale;
-  const toY = (v: number) => originY - v * scale;
+  // A(2,2), B(10,6), C(14,14), D=? → D(6,10) for parallelogram
+  // M = midpoint AC = (8,8)
+  const sc = 16, ox = 20, oy = 280;
+  const toX = (v: number) => ox + v * sc;
+  const toY = (v: number) => oy - v * sc;
+
+  const A = { x: 2, y: 2 }, B = { x: 10, y: 6 }, C = { x: 14, y: 14 };
+  const M = { x: (A.x + C.x) / 2, y: (A.y + C.y) / 2 }; // (8,8)
 
   return (
-    <svg viewBox="0 0 400 300" className="w-full max-w-sm mx-auto" aria-hidden>
+    <svg viewBox="0 0 280 280" className="w-full max-w-xs mx-auto" aria-hidden>
+      {/* Grid lines */}
+      {[0, 2, 4, 6, 8, 10, 12, 14, 16].map(v => (
+        <g key={v}>
+          <line x1={toX(v)} y1={toY(0)} x2={toX(v)} y2={toY(16)} stroke="#f1f5f9" strokeWidth={0.6} />
+          <line x1={toX(0)} y1={toY(v)} x2={toX(16)} y2={toY(v)} stroke="#f1f5f9" strokeWidth={0.6} />
+        </g>
+      ))}
+
       {/* Axes */}
-      <line x1={toX(-1)} y1={toY(0)} x2={toX(10)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1.2} />
-      <line x1={toX(0)} y1={toY(-1)} x2={toX(0)} y2={toY(9)} stroke="#94a3b8" strokeWidth={1.2} />
-      <polygon points={`${toX(10)},${toY(0)} ${toX(10) - 5},${toY(0) - 3} ${toX(10) - 5},${toY(0) + 3}`} fill="#94a3b8" />
-      <polygon points={`${toX(0)},${toY(9)} ${toX(0) - 3},${toY(9) + 5} ${toX(0) + 3},${toY(9) + 5}`} fill="#94a3b8" />
-      <text x={toX(10) + 6} y={toY(0) + 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">x</text>
-      <text x={toX(0) + 6} y={toY(9) - 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">y</text>
+      <line x1={toX(-0.5)} y1={toY(0)} x2={toX(16.5)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1.2} />
+      <line x1={toX(0)} y1={toY(-0.5)} x2={toX(0)} y2={toY(16.5)} stroke="#94a3b8" strokeWidth={1.2} />
+      <text x={toX(16.5) + 4} y={toY(0) + 4} fontSize={10} fill="#94a3b8" fontStyle="italic">x</text>
+      <text x={toX(0) + 4} y={toY(16.5) - 2} fontSize={10} fill="#94a3b8" fontStyle="italic">y</text>
 
-      {/* Parallelogram fill */}
-      <polygon points={`${toX(1)},${toY(1)} ${toX(5)},${toY(3)} ${toX(7)},${toY(7)} ${toX(3)},${toY(5)}`} fill="rgba(234,88,12,0.06)" stroke="#EA580C" strokeWidth={2} strokeLinejoin="round" />
+      {/* Partial shape: A-B and B-C (known sides) */}
+      <line x1={toX(A.x)} y1={toY(A.y)} x2={toX(B.x)} y2={toY(B.y)} stroke="#EA580C" strokeWidth={2} />
+      <line x1={toX(B.x)} y1={toY(B.y)} x2={toX(C.x)} y2={toY(C.y)} stroke="#EA580C" strokeWidth={2} />
 
-      {/* Diagonals */}
-      <line x1={toX(1)} y1={toY(1)} x2={toX(7)} y2={toY(7)} stroke="#f59e0b" strokeWidth={1.5} strokeDasharray="5,3" />
-      <line x1={toX(5)} y1={toY(3)} x2={toX(3)} y2={toY(5)} stroke="#a78bfa" strokeWidth={1.5} strokeDasharray="5,3" />
+      {/* Dashed sides to D? area */}
+      <line x1={toX(C.x)} y1={toY(C.y)} x2={toX(6)} y2={toY(10)} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="5,3" />
+      <line x1={toX(A.x)} y1={toY(A.y)} x2={toX(6)} y2={toY(10)} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="5,3" />
 
-      {/* Vertices */}
-      <circle cx={toX(1)} cy={toY(1)} r={4} fill="#EA580C" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(1) - 4} y={toY(1) + 16} fontSize={11} fill="#EA580C" fontWeight={600} fontFamily="sans-serif">A</text>
+      {/* Diagonals (dashed) */}
+      <line x1={toX(A.x)} y1={toY(A.y)} x2={toX(C.x)} y2={toY(C.y)} stroke="#f59e0b" strokeWidth={1.3} strokeDasharray="4,3" />
+      <line x1={toX(B.x)} y1={toY(B.y)} x2={toX(6)} y2={toY(10)} stroke="#a78bfa" strokeWidth={1.3} strokeDasharray="4,3" />
 
-      <circle cx={toX(5)} cy={toY(3)} r={4} fill="#EA580C" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(5) + 6} y={toY(3) + 14} fontSize={11} fill="#EA580C" fontWeight={600} fontFamily="sans-serif">B</text>
+      {/* Midpoint M */}
+      <circle cx={toX(M.x)} cy={toY(M.y)} r={3.5} fill="#f59e0b" stroke="#fff" strokeWidth={1.5} />
+      <text x={toX(M.x) + 6} y={toY(M.y) - 4} fontSize={9} fill="#f59e0b" fontWeight={700}>M</text>
 
-      <circle cx={toX(7)} cy={toY(7)} r={4} fill="#EA580C" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(7) + 6} y={toY(7) - 6} fontSize={11} fill="#EA580C" fontWeight={600} fontFamily="sans-serif">C</text>
+      {/* Vertices A, B, C */}
+      {[
+        { p: A, label: "A", dx: -6, dy: 14, color: "#EA580C" },
+        { p: B, label: "B", dx: 6, dy: 14, color: "#EA580C" },
+        { p: C, label: "C", dx: 6, dy: -4, color: "#EA580C" },
+      ].map(v => (
+        <g key={v.label}>
+          <circle cx={toX(v.p.x)} cy={toY(v.p.y)} r={3.5} fill={v.color} stroke="#fff" strokeWidth={1.5} />
+          <text x={toX(v.p.x) + v.dx} y={toY(v.p.y) + v.dy} fontSize={11} fill={v.color} fontWeight={700}>{v.label}</text>
+          <text x={toX(v.p.x) + v.dx} y={toY(v.p.y) + v.dy + 10} fontSize={7} fill="#6B7280" fontWeight={600}>({v.p.x},{v.p.y})</text>
+        </g>
+      ))}
 
-      <circle cx={toX(3)} cy={toY(5)} r={4} fill="#64748b" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(3) - 16} y={toY(5) - 6} fontSize={11} fill="#64748b" fontWeight={600} fontFamily="sans-serif">D?</text>
+      {/* D? */}
+      <circle cx={toX(6)} cy={toY(10)} r={3.5} fill="#64748b" stroke="#fff" strokeWidth={1.5} strokeDasharray="3,2" />
+      <text x={toX(6) - 16} y={toY(10) - 4} fontSize={11} fill="#64748b" fontWeight={700}>D?</text>
     </svg>
   );
 }
 
 function AdvancedDiagram() {
-  // Square with A(1,2), B(5,4), one possible C and D shown
-  // Rotation +90: C(3,8), D(-1,6)
-  const originX = 50, originY = 250, scale = 25;
-  const toX = (v: number) => originX + v * scale;
-  const toY = (v: number) => originY - v * scale;
+  // L1: y=mx through O. P(t, mt). M(t, 0). Q = foot of altitude from M to OP.
+  const m = 1.5, t = 4;
+  const P = { x: t, y: m * t };
+  const M = { x: t, y: 0 };
+  const Q = { x: t / (1 + m * m), y: m * t / (1 + m * m) };
+
+  const sc = 22, ox = 40, oy = 200;
+  const toX = (v: number) => ox + v * sc;
+  const toY = (v: number) => oy - v * sc;
 
   return (
-    <svg viewBox="0 0 400 300" className="w-full max-w-sm mx-auto" aria-hidden>
+    <svg viewBox="0 0 280 230" className="w-full max-w-xs mx-auto" aria-hidden>
+      {/* Grid */}
+      {[0, 1, 2, 3, 4, 5, 6, 7].map(v => (
+        <g key={v}>
+          <line x1={toX(v)} y1={toY(0)} x2={toX(v)} y2={toY(8)} stroke="#f1f5f9" strokeWidth={0.5} />
+          <line x1={toX(0)} y1={toY(v)} x2={toX(8)} y2={toY(v)} stroke="#f1f5f9" strokeWidth={0.5} />
+        </g>
+      ))}
+
       {/* Axes */}
-      <line x1={toX(-3)} y1={toY(0)} x2={toX(9)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1.2} />
-      <line x1={toX(0)} y1={toY(-1)} x2={toX(0)} y2={toY(10)} stroke="#94a3b8" strokeWidth={1.2} />
-      <polygon points={`${toX(9)},${toY(0)} ${toX(9) - 5},${toY(0) - 3} ${toX(9) - 5},${toY(0) + 3}`} fill="#94a3b8" />
-      <polygon points={`${toX(0)},${toY(10)} ${toX(0) - 3},${toY(10) + 5} ${toX(0) + 3},${toY(10) + 5}`} fill="#94a3b8" />
-      <text x={toX(9) + 6} y={toY(0) + 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">x</text>
-      <text x={toX(0) + 6} y={toY(10) - 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">y</text>
+      <line x1={toX(-0.5)} y1={toY(0)} x2={toX(7.5)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1.2} />
+      <line x1={toX(0)} y1={toY(-0.5)} x2={toX(0)} y2={toY(8.5)} stroke="#94a3b8" strokeWidth={1.2} />
+      <text x={toX(7.5) + 4} y={toY(0) + 4} fontSize={10} fill="#94a3b8" fontStyle="italic">x</text>
+      <text x={toX(0) + 4} y={toY(8.5) - 2} fontSize={10} fill="#94a3b8" fontStyle="italic">y</text>
 
-      {/* Square (option 1) fill */}
-      <polygon points={`${toX(1)},${toY(2)} ${toX(5)},${toY(4)} ${toX(3)},${toY(8)} ${toX(-1)},${toY(6)}`} fill="rgba(220,38,38,0.06)" stroke="#DC2626" strokeWidth={2} strokeLinejoin="round" strokeDasharray="6,3" />
+      {/* L1: y=mx (blue line through O and past P) */}
+      <line x1={toX(0)} y1={toY(0)} x2={toX(P.x + 1)} y2={toY((P.x + 1) * m)} stroke="#3b82f6" strokeWidth={1.5} />
+      <text x={toX(P.x + 0.8)} y={toY((P.x + 0.8) * m) - 6} fontSize={9} fill="#3b82f6" fontWeight={600} fontStyle="italic">y=mx</text>
 
-      {/* Right-angle mark at B */}
-      <polyline points={`${toX(5) - 8},${toY(4) - 6} ${toX(5) - 14},${toY(4) - 2} ${toX(5) - 6},${toY(4) + 4}`} fill="none" stroke="#34d399" strokeWidth={2} />
+      {/* △OQM fill (blue) */}
+      <polygon points={`${toX(0)},${toY(0)} ${toX(Q.x)},${toY(Q.y)} ${toX(M.x)},${toY(M.y)}`}
+        fill="rgba(59,130,246,0.10)" stroke="none" />
 
-      {/* Side AB (solid) */}
-      <line x1={toX(1)} y1={toY(2)} x2={toX(5)} y2={toY(4)} stroke="#DC2626" strokeWidth={2.5} />
+      {/* △MQP fill (purple) */}
+      <polygon points={`${toX(M.x)},${toY(M.y)} ${toX(Q.x)},${toY(Q.y)} ${toX(P.x)},${toY(P.y)}`}
+        fill="rgba(167,139,250,0.10)" stroke="none" />
 
-      {/* Vertices */}
-      <circle cx={toX(1)} cy={toY(2)} r={4} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(1) - 4} y={toY(2) + 16} fontSize={11} fill="#DC2626" fontWeight={600} fontFamily="sans-serif">A</text>
+      {/* PM vertical (height from P to x-axis) */}
+      <line x1={toX(P.x)} y1={toY(P.y)} x2={toX(M.x)} y2={toY(M.y)} stroke="#1a1a2e" strokeWidth={1.5} />
 
-      <circle cx={toX(5)} cy={toY(4)} r={4} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(5) + 6} y={toY(4) + 14} fontSize={11} fill="#DC2626" fontWeight={600} fontFamily="sans-serif">B</text>
+      {/* OP hypotenuse */}
+      <line x1={toX(0)} y1={toY(0)} x2={toX(P.x)} y2={toY(P.y)} stroke="#1a1a2e" strokeWidth={1.5} />
 
-      <circle cx={toX(3)} cy={toY(8)} r={4} fill="#64748b" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(3) + 6} y={toY(8) - 6} fontSize={11} fill="#64748b" fontWeight={600} fontFamily="sans-serif">C?</text>
+      {/* MQ altitude (from M to OP) */}
+      <line x1={toX(M.x)} y1={toY(M.y)} x2={toX(Q.x)} y2={toY(Q.y)} stroke="#DC2626" strokeWidth={1.8} strokeDasharray="4,3" />
 
-      <circle cx={toX(-1)} cy={toY(6)} r={4} fill="#64748b" stroke="#fff" strokeWidth={1.5} />
-      <text x={toX(-1) - 16} y={toY(6) - 6} fontSize={11} fill="#64748b" fontWeight={600} fontFamily="sans-serif">D?</text>
+      {/* Right angle at M */}
+      <polyline points={`${toX(M.x) - 7},${toY(0)} ${toX(M.x) - 7},${toY(0) - 7} ${toX(M.x)},${toY(0) - 7}`} fill="none" stroke="#1a1a2e" strokeWidth={1} />
+
+      {/* Right angle at Q (MQ ⊥ OP) */}
+      {(() => {
+        // perpendicular mark at Q between QM direction and QO direction
+        const sz = 6;
+        const qmU = { x: (M.x - Q.x), y: (M.y - Q.y) };
+        const qmL = Math.sqrt(qmU.x ** 2 + qmU.y ** 2) || 1;
+        const u1 = { x: qmU.x / qmL * sz, y: -qmU.y / qmL * sz }; // screen coords (flip y)
+        const qoU = { x: -Q.x, y: -Q.y };
+        const qoL = Math.sqrt(qoU.x ** 2 + qoU.y ** 2) || 1;
+        const u2 = { x: qoU.x / qoL * sz, y: qoU.y / qoL * sz }; // toward O on L1 (already in math coords)
+        // In SVG: we need to convert
+        const qSx = toX(Q.x), qSy = toY(Q.y);
+        return <polyline points={`${qSx + u1.x},${qSy + u1.y} ${qSx + u1.x - u2.x * sc / Math.abs(sc)},${qSy + u1.y + u2.y * sc / Math.abs(sc)} ${qSx - u2.x * sc / Math.abs(sc)},${qSy + u2.y * sc / Math.abs(sc)}`} fill="none" stroke="#DC2626" strokeWidth={1} />;
+      })()}
+
+      {/* Points */}
+      <circle cx={toX(0)} cy={toY(0)} r={3} fill="#1a1a2e" stroke="#fff" strokeWidth={1} />
+      <text x={toX(0) - 10} y={toY(0) + 12} fontSize={10} fill="#1a1a2e" fontWeight={700}>O</text>
+
+      <circle cx={toX(P.x)} cy={toY(P.y)} r={3.5} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
+      <text x={toX(P.x) + 6} y={toY(P.y) - 4} fontSize={10} fill="#DC2626" fontWeight={700}>P(t, mt)</text>
+
+      <circle cx={toX(M.x)} cy={toY(M.y)} r={3} fill="#1a1a2e" stroke="#fff" strokeWidth={1} />
+      <text x={toX(M.x) + 4} y={toY(M.y) + 14} fontSize={10} fill="#1a1a2e" fontWeight={700}>M(t, 0)</text>
+
+      <circle cx={toX(Q.x)} cy={toY(Q.y)} r={3.5} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
+      <text x={toX(Q.x) - 8} y={toY(Q.y) - 8} fontSize={10} fill="#DC2626" fontWeight={700}>Q</text>
+
+      {/* Labels for triangles */}
+      <text x={(toX(0) + toX(Q.x) + toX(M.x)) / 3} y={(toY(0) + toY(Q.y) + toY(M.y)) / 3 + 4} fontSize={8} fill="#3b82f6" fontWeight={700} textAnchor="middle">△OQM</text>
+      <text x={(toX(M.x) + toX(Q.x) + toX(P.x)) / 3} y={(toY(M.y) + toY(Q.y) + toY(P.y)) / 3 + 4} fontSize={8} fill="#a78bfa" fontWeight={700} textAnchor="middle">△MQP</text>
     </svg>
   );
 }
@@ -516,51 +542,60 @@ function AdvancedDiagram() {
 const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    title: "המלבן החבוי",
-    problem: "במערכת צירים נתונות שלוש נקודות:\nA(0,0), B(6,0), C(6,4)\n\nא. מצא את הנקודה D כך ש-ABCD יהיה מלבן.\nב. חשב את אורכי שני האלכסונים של המלבן והראה שהם שווים.\nג. מצא את מרכז המלבן (נקודת חיתוך האלכסונים).",
-    diagram: <BasicDiagram />,
+    title: "המעוין החבוי",
+    problem: "נתונה מקבילית ABCD שאלכסוניה נפגשים בראשית הצירים O(0,0).\nנתון: A(-4, -2). הצלע BC מקבילה לציר ה-x. משוואת האלכסון BD היא y = -2x.\n\nא. מצאו את שיעורי הקודקוד C (השתמשו בתכונה שראשית הצירים היא אמצע האלכסון AC).\nב. מצאו את שיעורי הקודקוד B (רמז: לכל הנקודות על ישר המקביל לציר ה-x יש אותו שיעור y).\nג. מצאו את שיעורי הקודקוד D.\nד. הוכיחו כי המקבילית ABCD היא מעוין (רמז: בדקו האם האלכסונים מאונכים זה לזה).\nה. חשבו את שטח המעוין (שטח מעוין שווה למחצית מכפלת האלכסונים).",
+    diagram: <AnalyticParallelogramDiagram />,
     pitfalls: [
-      { title: "⚠️ תכונות המלבן", text: "במלבן הצלעות הנגדיות שוות ומקבילות. D חייבת להיות באותו x כמו A ובאותו y כמו C." },
-      { title: "🔦 אלכסוני מלבן", text: "במלבן האלכסונים שווים באורכם וחוצים זה את זה. מרכז המלבן = אמצע כל אלכסון." },
+      { title: "⚠️ טעות בשיקוף", text: "כשמשקפים דרך הראשית, שני הסימנים מתהפכים. C = (4, 2) ולא (4, -2) או (-4, 2)." },
+      { title: "💡 ישר אופקי", text: "\"מקביל לציר ה-x\" פירושו y = קבוע. כלומר B נמצאת על הישר y = 2 (כמו C), ולא צריך לחשב שיפוע." },
+      { title: "🔦 ניצבות אלכסונים", text: "תנאי לניצבות: m₁ · m₂ = -1. שיפוע AC = 0.5, שיפוע BD = -2. מכפלה: 0.5 · (-2) = -1 → האלכסונים מאונכים → מעוין." },
     ],
-    goldenPrompt: `\nהיי, אני תלמיד/ה כיתה י' ומצרף/ת שאלה בגאומטריה אנליטית על מלבן במערכת צירים.\nאני רוצה שתהיה המורה הפרטי שלי — תעזור לי להבין ולא לתת תשובות ישירות.\n\nאל תפתור עבורי — שאל אותי שאלות מכווינות.\nסרוק את הנתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    goldenPrompt: `\nהיי, אני תלמיד/ה כיתה י' ומצרף/ת שאלה בגאומטריה אנליטית על מקבילית ומעוין במערכת צירים.\nאני רוצה שתהיה המורה הפרטי שלי — תעזור לי להבין ולא לתת תשובות ישירות.\n\nאל תפתור עבורי — שאל אותי שאלות מכווינות.\nסרוק את הנתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
     steps: [
-      { phase: "סעיף א׳", label: "מציאת D", coaching: "", prompt: "תעזור לי למצוא את הנקודה D כך ש-ABCD יהיה מלבן. מה צריך להתקיים כדי שצורה תהיה מלבן?", keywords: [], keywordHint: "", contextWords: ["מלבן", "קודקוד", "צלע", "מקביל", "שווה", "נקודה", "D", "קואורדינטות"] },
-      { phase: "סעיף ב׳", label: "אלכסונים שווים", coaching: "", prompt: "מצאתי את D. כיצד אוכיח שהאלכסונים AC ו-BD שווים באורכם?", keywords: [], keywordHint: "", contextWords: ["אלכסון", "מרחק", "שורש", "נוסחה", "אורך", "שווה", "הוכחה", "AC", "BD"] },
-      { phase: "סעיף ג׳", label: "מרכז המלבן", coaching: "", prompt: "כיצד אמצא את מרכז המלבן? מה הקשר בין מרכז המלבן לאלכסונים?", keywords: [], keywordHint: "", contextWords: ["מרכז", "אמצע", "אלכסון", "חיתוך", "נקודה", "חצי", "ממוצע", "קואורדינטות"] },
+      { phase: "סעיף א׳", label: "אמצע קטע — מציאת C", coaching: "", prompt: "הסבר לי שבגלל ש-O(0,0) היא אמצע AC, סכום האיקסים וסכום הוואיים חייב להיות 0. לכן C היא פשוט הנגדי של A.", keywords: [], keywordHint: "", contextWords: ["אמצע", "קטע", "ראשית", "סכום", "נגדי", "שיקוף", "C", "קואורדינטות"] },
+      { phase: "סעיף ב׳", label: "חיתוך — מציאת B", coaching: "", prompt: "הנקודה B נמצאת על המפגש בין הישר האופקי y=2 לבין הישר y=-2x. הסבר לי: איך מציבים y=2 במשוואת האלכסון כדי למצוא את x?", keywords: [], keywordHint: "", contextWords: ["חיתוך", "הצבה", "אופקי", "y=2", "y=-2x", "B", "משוואה"] },
+      { phase: "סעיף ג׳", label: "מציאת D", coaching: "", prompt: "הסבר לי: אם O(0,0) הוא אמצע BD, ואני יודע את B, איך אמצא את D?", keywords: [], keywordHint: "", contextWords: ["אמצע", "D", "שיקוף", "סימטריה", "BD", "ראשית"] },
+      { phase: "סעיף ד׳", label: "הוכחת מעוין", coaching: "", prompt: "הסבר לי: שיפוע AC הוא 0.5 ושיפוע BD הוא -2. מכיוון ש-0.5 · (-2) = -1, האלכסונים מאונכים, מה שהופך כל מקבילית למעוין.", keywords: [], keywordHint: "", contextWords: ["שיפוע", "ניצב", "מאונך", "מכפלה", "-1", "מעוין", "הוכחה"] },
+      { phase: "סעיף ה׳", label: "שטח המעוין", coaching: "", prompt: "שטח מעוין = מחצית מכפלת האלכסונים. הסבר לי איך לחשב את אורכי AC ו-BD ואז למצוא את השטח.", keywords: [], keywordHint: "", contextWords: ["שטח", "מעוין", "אלכסון", "מרחק", "מחצית", "מכפלה", "נוסחה"] },
     ],
   },
   {
     id: "medium",
-    title: "המקבילית המסתורית",
-    problem: "במערכת צירים נתונות שלוש נקודות:\nA(1,1), B(5,3), C(7,7)\nABCD הוא מקבילית.\n\nא. מצא את הנקודה D.\nב. בדוק: האם ABCD הוא מעוין (4 צלעות שוות)?\nג. בדוק: האם ABCD הוא מלבן (אלכסונים שווים)?",
+    title: "המקבילית והדמיון",
+    problem: "לפניכם מערכת צירים ובה שלוש נקודות: A(2, 2), B(10, 6) ו-C(14, 14). עליכם למצוא את הנקודה D כך שהמרובע ABCD יהיה מקבילית.\n\nא. מצאו את משוואת האלכסון AC.\nב. מצאו את נקודת אמצע הקטע AC (נסמנה ב-M).\nג. הסבירו מדוע נקודה M חייבת להיות גם אמצע הקטע BD.\nד. מצאו את שיעורי הנקודה D והוכיחו כי △ABM ~ △CDM. מהו יחס הדמיון?\nה. חשבו את שטח המקבילית ABCD (רמז: חשבו שטח משולש אחד והכפילו).",
     diagram: <MediumDiagram />,
     pitfalls: [
-      { title: "⚠️ טריק האמצע למציאת D", text: "במקבילית האלכסונים חוצים זה את זה. אמצע AC = אמצע BD. מכאן אפשר למצוא את D." },
-      { title: "🔦 סיווג מרובע", text: "מעוין = 4 צלעות שוות. מלבן = אלכסונים שווים. ריבוע = גם וגם. חשבו כל אורך בנפרד!" },
+      { title: "⚠️ חישוב אמצע קטע", text: "טעות בסימני ה-x וה-y מובילה לנקודה M שגויה. בדקו: M = ((2+14)/2, (2+14)/2) = (8, 8)." },
+      { title: "💡 סדר קודקודים", text: "ב-ABCD הקודקודים הולכים ברצף! אם מערבבים את הסדר (למשל ACBD) לא תתקבל מקבילית." },
+      { title: "🔦 הוכחת דמיון", text: "∠AMB = ∠CMD (קודקודיות). צריך להראות גם יחסי צלעות שווים: AM/CM = BM/DM = 1." },
     ],
-    goldenPrompt: `אני בכיתה י', מצרף לך תרגיל בגאומטריה אנליטית על מקבילית וסיווג מרובעים.\n\nאל תיתן לי את הפתרון — שאל אותי שאלות מנחות על תכונות מקביליות, מעוינים ומלבנים.\nסרוק את הנתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״`,
+    goldenPrompt: `אני תלמיד כיתה י' ברמה בינונית. אני עובד על תרגיל אנליטית ב-localhost (מקבילית ודמיון).\n\nהחוקים שלנו: אל תיתן פתרונות! אם אני שואל שאלה, ענה לי ברמז בלבד. אם אני טועה בניסוח הגיאומטרי (למשל: "הצדדים שווים" במקום "הצלעות הנגדיות שוות"), תקן אותי מיד. המטרה שלי היא לבנות את הפתרון בעצמי דרך הדרכה שלך.`,
     steps: [
-      { phase: "סעיף א׳", label: "מציאת D במקבילית", coaching: "", prompt: "ABCD מקבילית עם A(1,1), B(5,3), C(7,7). תעזור לי למצוא את D באמצעות תכונות המקבילית.", keywords: [], keywordHint: "", contextWords: ["מקבילית", "אמצע", "אלכסון", "חוצה", "D", "וקטור", "נגדי", "שווה"] },
-      { phase: "סעיף ב׳", label: "בדיקת מעוין", coaching: "", prompt: "מצאתי את D. כיצד אבדוק אם המקבילית היא מעוין? מה צריך לחשב?", keywords: [], keywordHint: "", contextWords: ["מעוין", "צלע", "אורך", "שווה", "ארבע", "מרחק", "נוסחה", "AB", "BC"] },
-      { phase: "סעיף ג׳", label: "בדיקת מלבן", coaching: "", prompt: "כיצד אבדוק אם המקבילית היא מלבן? מה הקשר לאלכסונים?", keywords: [], keywordHint: "", contextWords: ["מלבן", "אלכסון", "שווה", "אורך", "AC", "BD", "מרחק", "נוסחה"] },
+      { phase: "סעיף א׳", label: "משוואת AC", coaching: "", prompt: "מצא את משוואת הישר העובר דרך A(2,2) ו-C(14,14). מהו השיפוע? מהו ערך ה-b?", keywords: [], keywordHint: "", contextWords: ["שיפוע", "משוואה", "ישר", "y=mx+b", "AC", "עולה", "קואורדינטה"] },
+      { phase: "סעיף ב׳", label: "אמצע AC", coaching: "", prompt: "חשב את נקודת האמצע M של הקטע AC. השתמש בנוסחת אמצע קטע.", keywords: [], keywordHint: "", contextWords: ["אמצע", "קטע", "נוסחה", "ממוצע", "M", "חצי", "סכום"] },
+      { phase: "סעיף ג׳", label: "למה M = אמצע BD", coaching: "", prompt: "הסבר מדוע במקבילית, אמצע אלכסון אחד הוא גם אמצע האלכסון השני.", keywords: [], keywordHint: "", contextWords: ["מקבילית", "אלכסון", "חוצה", "אמצע", "תכונה", "BD", "M"] },
+      { phase: "סעיף ד׳", label: "מציאת D + דמיון", coaching: "", prompt: "מצא את D כך ש-M=(8,8) הוא אמצע BD. לאחר מכן, הוכח ש-△ABM דומה ל-△CDM.", keywords: [], keywordHint: "", contextWords: ["D", "שיקוף", "דמיון", "משולש", "ABM", "CDM", "יחס", "קודקודית", "צלע"] },
+      { phase: "סעיף ה׳", label: "שטח המקבילית", coaching: "", prompt: "חשב את שטח המקבילית ABCD. רמז: חשב שטח משולש אחד (למשל △ABC) והכפל ב-2.", keywords: [], keywordHint: "", contextWords: ["שטח", "מקבילית", "משולש", "בסיס", "גובה", "נוסחה", "חצי", "כפול"] },
     ],
   },
   {
     id: "advanced",
-    title: "הריבוע המושלם",
-    problem: "במערכת צירים נתונות שתי נקודות:\nA(1,2), B(5,4)\nAB הוא צלע של ריבוע ABCD.\n\nא. מצא את C ו-D (שתי אפשרויות באמצעות סיבוב 90°).\nב. הוכח שהצורה אכן ריבוע.\nג. חשב את שטח הריבוע.",
+    title: "דמיון פרמטרי — גובה ליתר",
+    problem: "נתון הישר L₁ שמשוואתו y = mx (m > 0). הנקודה P נמצאת על הישר ברביע הראשון.\nמהנקודה P מורידים אנך לציר ה-x שפוגש אותו בנקודה M.\nבמשולש ישר-הזווית OMP (כאשר O הוא ראשית הצירים), מורידים את הגובה מ-M ליתר OP. רגל הגובה היא הנקודה Q.\n\nא. בטאו את שיעורי הנקודות P ו-M בעזרת הפרמטר t (כאשר x_P = t).\nב. מצאו את שיעורי הנקודה Q (השתמשו בפרמטרים m, t).\nג. הוכיחו כי △OQM ~ △MQP. מהו יחס הדמיון?\nד. הוכיחו כי היחס בין שטח △OQM לשטח △MQP תלוי אך ורק בשיפוע m, ולא במיקום P.\nה. מצאו עבור איזה שיפוע m המשולשים △OQM ו-△MQP חופפים.",
     diagram: <AdvancedDiagram />,
     pitfalls: [
-      { title: "⚠️ וקטור סיבוב 90°", text: "אם הוקטור מ-A ל-B הוא (dx,dy), סיבוב 90° נגד כיוון השעון נותן (-dy,dx) ועם כיוון השעון (dy,-dx)." },
-      { title: "💡 שטח ריבוע", text: "שטח = צלע². אורך הצלע = מרחק AB. אפשר גם: שטח = אלכסון²/2." },
+      { title: "⚠️ פחד מפרמטרים", text: "אל תציבו מספרים במקום m ו-t! עבדו עם המשתנים — ההכללה בסעיף ד' דורשת ביטויים כלליים." },
+      { title: "💡 אלגברה של Q", text: "Q היא רגל הגובה מ-M ל-OP. השתמשו בנוסחת היטל: Q = (OM·cos²α, OM·sinα·cosα) כאשר α = arctan(m)." },
+      { title: "🔦 היתר המשותפת", text: "שני המשולשים △OQM ו-△MQP חולקים את הצלע MQ ויש להם זוויות ישרות ב-Q. זה מספיק לדמיון!" },
     ],
-    goldenPrompt: "",
-    advancedGateQuestion: "לפני שמתחילים — כתוב פרומפט שמסביר: כיצד מבצעים סיבוב 90° של וקטור? איך מוכיחים שמרובע הוא ריבוע? כיצד מחשבים שטח ריבוע? (לפחות 80 תווים)",
+    goldenPrompt: `אני תלמיד ברמה מתקדמת. אני פותר תרגיל אנליטי-פרמטרי.\n\nהנחיות למנטור:\n1. אל תפתור לי אלגברית! אם אני מסתבך עם Q, שאל אותי: "איך מוצאים רגל גובה ליתר במשולש ישר-זווית?"\n2. אם אני מנסה להציב מספרים במקום m, עצור אותי והסבר למה הוכחה פרמטרית חזקה יותר.\n3. דרוש ממני ניסוח מתמטי פורמלי של יחסי שטחים ותלות בפרמטרים.`,
+    advancedGateQuestion: "לפני שמתחילים — נסח פרומפט שמבקש מה-AI לבדוק: מהו הקשר בין השיפוע m לבין יחס השטחים של שני המשולשים שנוצרים מהגובה ליתר? ולמה היחס לא תלוי במיקום P? (לפחות 80 תווים)",
     steps: [
-      { phase: "סעיף א׳", label: "מציאת C ו-D בסיבוב", coaching: "", prompt: "הוקטור AB=(4,2). תעזור לי למצוא את C ו-D על ידי סיבוב 90° של הוקטור.", keywords: [], keywordHint: "", contextWords: ["סיבוב", "וקטור", "90", "מעלות", "ניצב", "dx", "dy", "אפשרויות"] },
-      { phase: "סעיף ב׳", label: "הוכחת ריבוע", coaching: "", prompt: "מצאתי 4 קודקודים. כיצד אוכיח שזה אכן ריבוע? מה צריך לבדוק?", keywords: [], keywordHint: "", contextWords: ["ריבוע", "צלע", "שווה", "ניצב", "אלכסון", "שיפוע", "מכפלה", "הוכחה"] },
-      { phase: "סעיף ג׳", label: "שטח הריבוע", coaching: "", prompt: "כיצד אחשב את שטח הריבוע אם ידוע אורך הצלע?", keywords: [], keywordHint: "", contextWords: ["שטח", "ריבוע", "צלע", "ריבוע", "מרחק", "AB", "חישוב", "נוסחה"] },
+      { phase: "סעיף א׳", label: "ביטוי P ו-M בעזרת t", coaching: "", prompt: "אם P נמצאת על y=mx וערך ה-x שלה הוא t, מהן הקואורדינטות של P ושל M (רגל האנך לציר x)?", keywords: [], keywordHint: "", contextWords: ["P", "M", "t", "mt", "ציר", "אנך", "קואורדינטות", "הצבה"] },
+      { phase: "סעיף ב׳", label: "מציאת Q — רגל הגובה", coaching: "", prompt: "Q היא רגל הגובה מ-M ליתר OP. כיצד אמצא את שיעורי Q בעזרת m ו-t? (רמז: השתמשו בהיטל וקטורי)", keywords: [], keywordHint: "", contextWords: ["גובה", "יתר", "היטל", "Q", "ניצב", "OP", "פרמטר", "1+m²"] },
+      { phase: "סעיף ג׳", label: "הוכחת דמיון △OQM ~ △MQP", coaching: "", prompt: "נסח פרומפט שמבקש מה-AI לבדוק אם הביטוי האלגברי שקיבלת לשיעורי Q הגיוני גיאומטרית, ואז הוכח את הדמיון.", keywords: [], keywordHint: "", contextWords: ["דמיון", "זווית", "ישרה", "Q", "ניצב", "משותף", "OQM", "MQP", "יחס"] },
+      { phase: "סעיף ד׳", label: "יחס שטחים תלוי ב-m בלבד", coaching: "", prompt: "נסח פרומפט שמבקש מה-AI להסביר: מדוע יחס השטחים △OQM / △MQP שווה ל-1/m² ולמה הוא לא תלוי ב-t?", keywords: [], keywordHint: "", contextWords: ["שטח", "יחס", "m", "t", "פרמטר", "קבוע", "שיפוע", "תלוי", "בלתי"] },
+      { phase: "סעיף ה׳", label: "שיפוע החפיפה", coaching: "", prompt: "עבור איזה m המשולשים חופפים? מה המשמעות הגיאומטרית של m=1?", keywords: [], keywordHint: "", contextWords: ["חפיפה", "m=1", "45", "שווה", "שווה-שוקיים", "ישר-זווית", "שיפוע"] },
     ],
   },
 ];
@@ -664,81 +699,80 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 // ─── Lab 1: RectangleLab (Basic) ──────────────────────────────────────────────
 
 function RectangleLab() {
-  const [width, setWidth] = useState(6);
-  const [height, setHeight] = useState(4);
+  const [ax, setAx] = useState(-4);
 
-  const diagonal = Math.sqrt(width * width + height * height);
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const area = width * height;
-  const perimeter = 2 * (width + height);
+  // Geometry: A = (ax, ax/2), C = (-ax, -ax/2), B on y=-2x at y=-ax/2, D symmetric to B
+  const ay = ax / 2;
+  const bx = ax / 4, by = -ay;
+  const cx = -ax, cy = -ay;
+  const dx = -bx, dy = -by;
 
-  const originX = 50, originY = 250, scale = 25;
-  const toX = (v: number) => originX + v * scale;
-  const toY = (v: number) => originY - v * scale;
+  const slopeAC = 0.5;  // always: (cy-ay)/(cx-ax) = (-ay-ay)/(-ax-ax) = -2ay/(-2ax) = ay/ax = 0.5
+  const slopeBD = -2;    // always: on y=-2x
+  const product = slopeAC * slopeBD; // always -1
+
+  const AC = Math.sqrt((cx - ax) ** 2 + (cy - ay) ** 2);
+  const BD = Math.sqrt((dx - bx) ** 2 + (dy - by) ** 2);
+  const area = 0.5 * AC * BD;
 
   return (
-    <section style={{ border: "1px solid rgba(225,29,72,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המלבן</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה רוחב וגובה כדי לראות אלכסונים, מרכז, שטח והיקף.</p>
+    <section style={{ border: "1px solid rgba(22,163,74,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginTop: "2rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת המעוין</h3>
+      <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את x של נקודה A — צפו כיצד המעוין משתנה תוך שמירה על ניצבות.</p>
 
-      {/* Sliders */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem 2rem", marginBottom: "2rem", background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>רוחב</span>
-            <span style={{ color: "#e11d48", fontWeight: 700 }}>{width}</span>
-          </div>
-          <input type="range" min={1} max={10} step={1} value={width} onChange={e => setWidth(+e.target.value)} style={{ width: "100%", accentColor: "#e11d48" }} />
+      {/* Interactive diagram */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(22,163,74,0.25)", background: "#fff", padding: "0.5rem", marginBottom: "1.5rem" }}>
+        <AnalyticParallelogramDiagram ax={ax} />
+      </div>
+
+      {/* Slider: x of A */}
+      <div style={{ marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem", border: "1px solid rgba(22,163,74,0.15)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+          <span style={{ fontWeight: 600 }}>A.x (קואורדינטת x של A)</span>
+          <span style={{ color: "#16A34A", fontWeight: 700, fontFamily: "monospace" }}>{ax}</span>
         </div>
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-            <span>גובה</span>
-            <span style={{ color: "#e11d48", fontWeight: 700 }}>{height}</span>
-          </div>
-          <input type="range" min={1} max={8} step={1} value={height} onChange={e => setHeight(+e.target.value)} style={{ width: "100%", accentColor: "#e11d48" }} />
+        <input type="range" min={-8} max={-1} step={0.5} value={ax}
+          onChange={e => setAx(+e.target.value)}
+          style={{ width: "100%", accentColor: "#16A34A" }} />
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#6B7280", marginTop: 4 }}>
+          <span>A = ({ax}, {ay})</span>
+          <span>C = ({cx}, {cy})</span>
+          <span>B = ({bx}, {by})</span>
+          <span>D = ({dx}, {dy})</span>
         </div>
       </div>
 
-      {/* SVG */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(225,29,72,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(225,29,72,0.08)" }}>
-        <svg viewBox="0 0 400 300" style={{ width: "100%", display: "block" }} aria-hidden>
-          {/* Axes */}
-          <line x1={toX(-1)} y1={toY(0)} x2={toX(12)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1.2} />
-          <line x1={toX(0)} y1={toY(-1)} x2={toX(0)} y2={toY(9)} stroke="#94a3b8" strokeWidth={1.2} />
-          <polygon points={`${toX(12)},${toY(0)} ${toX(12) - 5},${toY(0) - 3} ${toX(12) - 5},${toY(0) + 3}`} fill="#94a3b8" />
-          <polygon points={`${toX(0)},${toY(9)} ${toX(0) - 3},${toY(9) + 5} ${toX(0) + 3},${toY(9) + 5}`} fill="#94a3b8" />
-          <text x={toX(12) + 6} y={toY(0) + 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">x</text>
-          <text x={toX(0) + 6} y={toY(9) - 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">y</text>
-
-          {/* Rectangle */}
-          <polygon points={`${toX(0)},${toY(0)} ${toX(width)},${toY(0)} ${toX(width)},${toY(height)} ${toX(0)},${toY(height)}`} fill="rgba(225,29,72,0.06)" stroke="#e11d48" strokeWidth={2} strokeLinejoin="round" />
-
-          {/* Diagonals */}
-          <line x1={toX(0)} y1={toY(0)} x2={toX(width)} y2={toY(height)} stroke="#f59e0b" strokeWidth={1.5} strokeDasharray="5,3" />
-          <line x1={toX(width)} y1={toY(0)} x2={toX(0)} y2={toY(height)} stroke="#a78bfa" strokeWidth={1.5} strokeDasharray="5,3" />
-
-          {/* Center */}
-          <circle cx={toX(centerX)} cy={toY(centerY)} r={5} fill="#f59e0b" stroke="#fff" strokeWidth={2} />
-
-          {/* Vertex labels */}
-          <text x={toX(0) - 8} y={toY(0) + 14} fontSize={10} fill="#e11d48" fontWeight={700} fontFamily="sans-serif">A</text>
-          <text x={toX(width) + 4} y={toY(0) + 14} fontSize={10} fill="#e11d48" fontWeight={700} fontFamily="sans-serif">B</text>
-          <text x={toX(width) + 4} y={toY(height) - 6} fontSize={10} fill="#e11d48" fontWeight={700} fontFamily="sans-serif">C</text>
-          <text x={toX(0) - 8} y={toY(height) - 6} fontSize={10} fill="#e11d48" fontWeight={700} fontFamily="sans-serif">D</text>
-        </svg>
+      {/* Slope meter — the key insight */}
+      <div style={{ borderRadius: 14, background: "rgba(22,163,74,0.04)", border: "2px solid rgba(22,163,74,0.3)", padding: "14px 16px", marginBottom: "1rem", textAlign: "center" }}>
+        <div style={{ color: "#1A1A1A", fontSize: 12, fontWeight: 700, marginBottom: 8 }}>מד שיפועים — הוכחת ניצבות</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.3)" }}>
+            <div style={{ fontSize: 9, color: "#6B7280", fontWeight: 600 }}>שיפוע AC</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#3b82f6", fontFamily: "monospace" }}>{slopeAC}</div>
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1A1A" }}>×</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.3)" }}>
+            <div style={{ fontSize: 9, color: "#6B7280", fontWeight: 600 }}>שיפוע BD</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#a78bfa", fontFamily: "monospace" }}>{slopeBD}</div>
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1A1A" }}>=</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(22,163,74,0.1)", border: "2px solid #16A34A" }}>
+            <div style={{ fontSize: 9, color: "#6B7280", fontWeight: 600 }}>מכפלה</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#16A34A", fontFamily: "monospace" }}>{product}</div>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#16A34A" }}>→ מעוין!</div>
+        </div>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10, textAlign: "center" }}>
+      {/* Data row */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, textAlign: "center" }}>
         {[
-          { label: "אלכסון", val: diagonal.toFixed(2), color: "#f59e0b" },
-          { label: "מרכז", val: `(${centerX.toFixed(1)}, ${centerY.toFixed(1)})`, color: "#e11d48" },
-          { label: "שטח", val: area.toFixed(1), color: "#16A34A" },
-          { label: "היקף", val: perimeter.toFixed(1), color: "#3b82f6" },
+          { label: "אלכסון AC", val: AC.toFixed(2), color: "#3b82f6" },
+          { label: "אלכסון BD", val: BD.toFixed(2), color: "#a78bfa" },
+          { label: "שטח = ½·AC·BD", val: area.toFixed(1), color: "#16A34A" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(225,29,72,0.35)", padding: 12, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+          <div key={r.label} style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
+            <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
             <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}
@@ -750,142 +784,157 @@ function RectangleLab() {
 // ─── Lab 2: ParallelogramLab (Medium) ─────────────────────────────────────────
 
 function ParallelogramLab() {
-  const [abDx, setAbDx] = useState(4);
-  const [abDy, setAbDy] = useState(2);
-  const [adDx, setAdDx] = useState(2);
-  const [adDy, setAdDy] = useState(4);
+  // A and C fixed, B moves → D follows to keep parallelogram
+  const A = { x: 2, y: 2 }, C = { x: 14, y: 14 };
+  const M = { x: (A.x + C.x) / 2, y: (A.y + C.y) / 2 }; // (8,8)
+  const [bx, setBx] = useState(10);
+  const [by, setBy] = useState(6);
+  const [guess, setGuess] = useState("");
+  const [verified, setVerified] = useState(false);
 
-  // A fixed at (1,1)
-  const ax = 1, ay = 1;
-  const bx = ax + abDx, by = ay + abDy;
-  const dx = ax + adDx, dy = ay + adDy;
-  const cx = bx + adDx, cy = by + adDy;
+  // D = 2M - B (so M is midpoint of BD)
+  const D = { x: 2 * M.x - bx, y: 2 * M.y - by };
 
-  // Side lengths
-  const sideAB = Math.sqrt(abDx * abDx + abDy * abDy);
-  const sideBC = Math.sqrt(adDx * adDx + adDy * adDy);
-  const sideCD = sideAB; // opposite
-  const sideDA = sideBC; // opposite
+  // Distances from M
+  const AM = Math.sqrt((M.x - A.x) ** 2 + (M.y - A.y) ** 2);
+  const CM = Math.sqrt((M.x - C.x) ** 2 + (M.y - C.y) ** 2);
+  const BM = Math.sqrt((M.x - bx) ** 2 + (M.y - by) ** 2);
+  const DM = Math.sqrt((M.x - D.x) ** 2 + (M.y - D.y) ** 2);
+  const ratio = AM > 0 && BM > 0 ? (AM / CM).toFixed(3) + " : " + (BM / DM).toFixed(3) : "—";
 
-  // Diagonals
-  const diagAC = Math.sqrt((cx - ax) ** 2 + (cy - ay) ** 2);
-  const diagBD = Math.sqrt((dx - bx) ** 2 + (dy - by) ** 2);
+  // Area = |cross product of AB and AD|
+  const areaVal = Math.abs((bx - A.x) * (D.y - A.y) - (by - A.y) * (D.x - A.x));
 
-  // Classification
-  const isRhombus = Math.abs(sideAB - sideBC) < 0.01;
-  const isRectangle = Math.abs(diagAC - diagBD) < 0.01;
-  const isSquare = isRhombus && isRectangle;
-  const classify = isSquare ? "ריבוע!" : isRhombus ? "מעוין" : isRectangle ? "מלבן" : "מקבילית";
+  // SVG mapping
+  const sc = 14, ox = 16, oy = 260;
+  const toX = (v: number) => ox + v * sc;
+  const toY = (v: number) => oy - v * sc;
 
-  const originX = 50, originY = 250, scale = 25;
-  const toX = (v: number) => originX + v * scale;
-  const toY = (v: number) => originY - v * scale;
+  // Verify guess
+  const checkGuess = () => {
+    const match = guess.replace(/\s/g, "").match(/\(?([-\d.]+),([-\d.]+)\)?/);
+    if (match) {
+      const gx = parseFloat(match[1]), gy = parseFloat(match[2]);
+      setVerified(Math.abs(gx - D.x) < 0.5 && Math.abs(gy - D.y) < 0.5);
+    }
+  };
 
   return (
-    <section style={{ border: "1px solid rgba(225,29,72,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת המקבילית</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את וקטורי AB ו-AD כדי לראות את המקבילית, האלכסונים והסיווג.</p>
-
-      {/* Sliders */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem 2rem", marginBottom: "2rem", background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div style={{ color: "#e11d48", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", borderBottom: "1px solid rgba(225,29,72,0.3)", paddingBottom: 6 }}>וקטור AB</div>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-              <span>dx</span>
-              <span style={{ color: "#e11d48", fontWeight: 700 }}>{abDx}</span>
-            </div>
-            <input type="range" min={1} max={8} step={1} value={abDx} onChange={e => setAbDx(+e.target.value)} style={{ width: "100%", accentColor: "#e11d48" }} />
-          </div>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-              <span>dy</span>
-              <span style={{ color: "#e11d48", fontWeight: 700 }}>{abDy}</span>
-            </div>
-            <input type="range" min={-4} max={4} step={1} value={abDy} onChange={e => setAbDy(+e.target.value)} style={{ width: "100%", accentColor: "#e11d48" }} />
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div style={{ color: "#3b82f6", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", borderBottom: "1px solid rgba(59,130,246,0.3)", paddingBottom: 6 }}>וקטור AD</div>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-              <span>dx</span>
-              <span style={{ color: "#3b82f6", fontWeight: 700 }}>{adDx}</span>
-            </div>
-            <input type="range" min={-4} max={8} step={1} value={adDx} onChange={e => setAdDx(+e.target.value)} style={{ width: "100%", accentColor: "#3b82f6" }} />
-          </div>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-              <span>dy</span>
-              <span style={{ color: "#3b82f6", fontWeight: 700 }}>{adDy}</span>
-            </div>
-            <input type="range" min={0} max={8} step={1} value={adDy} onChange={e => setAdDy(+e.target.value)} style={{ width: "100%", accentColor: "#3b82f6" }} />
-          </div>
-        </div>
-      </div>
-
-      {/* Classification badge */}
-      <div style={{ borderRadius: 12, background: isSquare ? "rgba(22,163,74,0.1)" : isRhombus || isRectangle ? "rgba(245,158,11,0.1)" : "rgba(225,29,72,0.08)", border: `2px solid ${isSquare ? "#16A34A" : isRhombus || isRectangle ? "#f59e0b" : "#e11d48"}`, padding: "10px 16px", marginBottom: "1.5rem", textAlign: "center", color: isSquare ? "#16A34A" : isRhombus || isRectangle ? "#d97706" : "#e11d48", fontWeight: 700, fontSize: 14 }}>
-        סיווג: {classify}
-      </div>
+    <section style={{ border: "1px solid rgba(234,88,12,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginTop: "2rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת המקבילית והדמיון</h3>
+      <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את B — צפו כיצד D עוקבת כדי לשמור על מקבילית.</p>
 
       {/* SVG */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(225,29,72,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(225,29,72,0.08)" }}>
-        <svg viewBox="0 0 400 300" style={{ width: "100%", display: "block" }} aria-hidden>
+      <div style={{ borderRadius: 16, border: `1px solid ${verified ? "rgba(22,163,74,0.5)" : "rgba(234,88,12,0.25)"}`, background: verified ? "rgba(22,163,74,0.03)" : "#fff", padding: "0.5rem", marginBottom: "1.5rem", transition: "all 0.3s" }}>
+        <svg viewBox="0 0 260 260" className="w-full max-w-xs mx-auto" style={{ display: "block" }} aria-hidden>
+          {/* Grid */}
+          {[0, 2, 4, 6, 8, 10, 12, 14, 16].map(v => (
+            <g key={v}>
+              <line x1={toX(v)} y1={toY(0)} x2={toX(v)} y2={toY(16)} stroke="#f1f5f9" strokeWidth={0.5} />
+              <line x1={toX(0)} y1={toY(v)} x2={toX(16)} y2={toY(v)} stroke="#f1f5f9" strokeWidth={0.5} />
+            </g>
+          ))}
           {/* Axes */}
-          <line x1={toX(-2)} y1={toY(0)} x2={toX(13)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1.2} />
-          <line x1={toX(0)} y1={toY(-1)} x2={toX(0)} y2={toY(9)} stroke="#94a3b8" strokeWidth={1.2} />
-          <polygon points={`${toX(13)},${toY(0)} ${toX(13) - 5},${toY(0) - 3} ${toX(13) - 5},${toY(0) + 3}`} fill="#94a3b8" />
-          <polygon points={`${toX(0)},${toY(9)} ${toX(0) - 3},${toY(9) + 5} ${toX(0) + 3},${toY(9) + 5}`} fill="#94a3b8" />
-          <text x={toX(13) + 6} y={toY(0) + 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">x</text>
-          <text x={toX(0) + 6} y={toY(9) - 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">y</text>
+          <line x1={toX(-0.5)} y1={toY(0)} x2={toX(16.5)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1} />
+          <line x1={toX(0)} y1={toY(-0.5)} x2={toX(0)} y2={toY(16.5)} stroke="#94a3b8" strokeWidth={1} />
+          <text x={toX(16.5) + 3} y={toY(0) + 3} fontSize={9} fill="#94a3b8" fontStyle="italic">x</text>
+          <text x={toX(0) + 3} y={toY(16.5) - 1} fontSize={9} fill="#94a3b8" fontStyle="italic">y</text>
 
           {/* Parallelogram */}
-          <polygon points={`${toX(ax)},${toY(ay)} ${toX(bx)},${toY(by)} ${toX(cx)},${toY(cy)} ${toX(dx)},${toY(dy)}`} fill="rgba(225,29,72,0.06)" stroke="#e11d48" strokeWidth={2} strokeLinejoin="round" />
+          <polygon
+            points={`${toX(A.x)},${toY(A.y)} ${toX(bx)},${toY(by)} ${toX(C.x)},${toY(C.y)} ${toX(D.x)},${toY(D.y)}`}
+            fill={verified ? "rgba(22,163,74,0.08)" : "rgba(234,88,12,0.06)"}
+            stroke={verified ? "#16A34A" : "#EA580C"} strokeWidth={1.8} strokeLinejoin="round" />
 
-          {/* Diagonals */}
-          <line x1={toX(ax)} y1={toY(ay)} x2={toX(cx)} y2={toY(cy)} stroke="#f59e0b" strokeWidth={1.5} strokeDasharray="5,3" />
-          <line x1={toX(bx)} y1={toY(by)} x2={toX(dx)} y2={toY(dy)} stroke="#a78bfa" strokeWidth={1.5} strokeDasharray="5,3" />
+          {/* Diagonal AC (amber) */}
+          <line x1={toX(A.x)} y1={toY(A.y)} x2={toX(C.x)} y2={toY(C.y)} stroke="#f59e0b" strokeWidth={1.3} strokeDasharray="4,3" />
+          {/* Diagonal BD (purple) */}
+          <line x1={toX(bx)} y1={toY(by)} x2={toX(D.x)} y2={toY(D.y)} stroke="#a78bfa" strokeWidth={1.3} strokeDasharray="4,3" />
+
+          {/* M */}
+          <circle cx={toX(M.x)} cy={toY(M.y)} r={3} fill="#f59e0b" stroke="#fff" strokeWidth={1} />
+          <text x={toX(M.x) + 5} y={toY(M.y) - 3} fontSize={8} fill="#f59e0b" fontWeight={700}>M({M.x},{M.y})</text>
 
           {/* Vertices */}
-          <circle cx={toX(ax)} cy={toY(ay)} r={4} fill="#e11d48" stroke="#fff" strokeWidth={1.5} />
-          <text x={toX(ax) - 8} y={toY(ay) + 14} fontSize={10} fill="#e11d48" fontWeight={700}>A</text>
-
-          <circle cx={toX(bx)} cy={toY(by)} r={4} fill="#e11d48" stroke="#fff" strokeWidth={1.5} />
-          <text x={toX(bx) + 4} y={toY(by) + 14} fontSize={10} fill="#e11d48" fontWeight={700}>B</text>
-
-          <circle cx={toX(cx)} cy={toY(cy)} r={4} fill="#e11d48" stroke="#fff" strokeWidth={1.5} />
-          <text x={toX(cx) + 4} y={toY(cy) - 6} fontSize={10} fill="#e11d48" fontWeight={700}>C</text>
-
-          <circle cx={toX(dx)} cy={toY(dy)} r={4} fill="#e11d48" stroke="#fff" strokeWidth={1.5} />
-          <text x={toX(dx) - 12} y={toY(dy) - 6} fontSize={10} fill="#e11d48" fontWeight={700}>D</text>
+          {[
+            { p: A, label: "A", color: "#EA580C", dx: -6, dy: 12 },
+            { p: { x: bx, y: by }, label: "B", color: "#EA580C", dx: 5, dy: 12 },
+            { p: C, label: "C", color: "#EA580C", dx: 5, dy: -4 },
+            { p: D, label: "D", color: verified ? "#16A34A" : "#64748b", dx: -6, dy: -4 },
+          ].map(v => (
+            <g key={v.label}>
+              <circle cx={toX(v.p.x)} cy={toY(v.p.y)} r={3} fill={v.color} stroke="#fff" strokeWidth={1} />
+              <text x={toX(v.p.x) + v.dx} y={toY(v.p.y) + v.dy} fontSize={10} fill={v.color} fontWeight={700}>{v.label}</text>
+            </g>
+          ))}
         </svg>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, textAlign: "center", marginBottom: 10 }}>
+      {/* B slider */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem", border: "1px solid rgba(234,88,12,0.15)" }}>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+            <span style={{ fontWeight: 600 }}>B.x</span>
+            <span style={{ color: "#EA580C", fontWeight: 700, fontFamily: "monospace" }}>{bx}</span>
+          </div>
+          <input type="range" min={3} max={15} step={1} value={bx} onChange={e => { setBx(+e.target.value); setVerified(false); }} style={{ width: "100%", accentColor: "#EA580C" }} />
+        </div>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+            <span style={{ fontWeight: 600 }}>B.y</span>
+            <span style={{ color: "#EA580C", fontWeight: 700, fontFamily: "monospace" }}>{by}</span>
+          </div>
+          <input type="range" min={0} max={15} step={1} value={by} onChange={e => { setBy(+e.target.value); setVerified(false); }} style={{ width: "100%", accentColor: "#EA580C" }} />
+        </div>
+      </div>
+
+      {/* Coordinate meter */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, textAlign: "center", marginBottom: "1rem" }}>
         {[
-          { label: "AB", val: sideAB.toFixed(2), color: "#e11d48" },
-          { label: "BC", val: sideBC.toFixed(2), color: "#3b82f6" },
-          { label: "CD", val: sideCD.toFixed(2), color: "#e11d48" },
+          { label: "AM", val: AM.toFixed(1), color: "#f59e0b" },
+          { label: "MC", val: CM.toFixed(1), color: "#f59e0b" },
+          { label: "BM", val: BM.toFixed(1), color: "#a78bfa" },
+          { label: "MD", val: DM.toFixed(1), color: "#a78bfa" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(225,29,72,0.35)", padding: 12, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
+          <div key={r.label} style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "8px 4px" }}>
+            <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 2 }}>{r.label}</div>
             <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, textAlign: "center" }}>
-        {[
-          { label: "DA", val: sideDA.toFixed(2), color: "#3b82f6" },
-          { label: "אלכסון AC", val: diagAC.toFixed(2), color: "#f59e0b" },
-          { label: "אלכסון BD", val: diagBD.toFixed(2), color: "#a78bfa" },
-        ].map(r => (
-          <div key={r.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(225,29,72,0.35)", padding: 12, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
-            <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
+
+      {/* Similarity ratio + area */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, textAlign: "center", marginBottom: "1.5rem" }}>
+        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
+          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>יחס דמיון △ABM ~ △CDM</div>
+          <div style={{ color: "#EA580C", fontWeight: 800, fontSize: 16, fontFamily: "monospace" }}>{ratio}</div>
+        </div>
+        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "10px 6px" }}>
+          <div style={{ color: "#6B7280", fontSize: 9, fontWeight: 600, marginBottom: 4 }}>שטח ABCD</div>
+          <div style={{ color: "#16A34A", fontWeight: 800, fontSize: 16, fontFamily: "monospace" }}>{areaVal}</div>
+        </div>
+      </div>
+
+      {/* Guess D */}
+      <div style={{ borderRadius: 14, background: "rgba(234,88,12,0.04)", border: `2px solid ${verified ? "#16A34A" : "rgba(234,88,12,0.25)"}`, padding: "14px 16px", textAlign: "center", transition: "all 0.3s" }}>
+        <div style={{ color: "#1A1A1A", fontSize: 12, fontWeight: 700, marginBottom: 8 }}>הזינו את הקואורדינטות של D:</div>
+        <div style={{ display: "flex", gap: 8, justifyContent: "center", alignItems: "center" }}>
+          <input
+            type="text" value={guess} dir="ltr"
+            onChange={e => { setGuess(e.target.value); setVerified(false); }}
+            onKeyDown={e => { if (e.key === "Enter") checkGuess(); }}
+            placeholder="(x, y)"
+            style={{ width: 100, padding: "6px 10px", borderRadius: 8, border: "1px solid #d1d5db", fontSize: 14, fontFamily: "monospace", textAlign: "center" }}
+          />
+          <button onClick={checkGuess} style={{ padding: "6px 14px", borderRadius: 8, background: "#EA580C", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
+            בדיקה
+          </button>
+        </div>
+        {verified && (
+          <div style={{ color: "#16A34A", fontWeight: 700, fontSize: 13, marginTop: 8 }}>
+            נכון! D = ({D.x}, {D.y}) — המקבילית שלמה!
           </div>
-        ))}
+        )}
       </div>
     </section>
   );
@@ -894,155 +943,151 @@ function ParallelogramLab() {
 // ─── Lab 3: SquareBuilderLab (Advanced) ───────────────────────────────────────
 
 function SquareBuilderLab() {
-  const [aX, setAX] = useState(1);
-  const [aY, setAY] = useState(2);
-  const [bX, setBX] = useState(5);
-  const [bY, setBY] = useState(4);
-  const [rotDir, setRotDir] = useState<"+90" | "-90">("+90");
+  const [m, setM] = useState(1.5);
+  const [t, setT] = useState(4);
 
-  const dxAB = bX - aX;
-  const dyAB = bY - aY;
+  // P on L1: y=mx
+  const P = { x: t, y: m * t };
+  const M = { x: t, y: 0 };
+  // Q = foot of altitude from M to OP (hypotenuse)
+  const denom = 1 + m * m;
+  const Q = { x: t / denom, y: m * t / denom };
 
-  // Rotation: +90 (CCW) => perpendicular = (-dy, dx); -90 (CW) => (dy, -dx)
-  const perpX = rotDir === "+90" ? -dyAB : dyAB;
-  const perpY = rotDir === "+90" ? dxAB : -dxAB;
+  // Distances
+  const OQ = Math.sqrt(Q.x ** 2 + Q.y ** 2);
+  const QM = Math.sqrt((Q.x - M.x) ** 2 + Q.y ** 2);
+  const QP = Math.sqrt((P.x - Q.x) ** 2 + (P.y - Q.y) ** 2);
+  const OM = t;
+  const MP = m * t;
+  const OP = t * Math.sqrt(denom);
 
-  const cX = bX + perpX;
-  const cY = bY + perpY;
-  const dX = aX + perpX;
-  const dY = aY + perpY;
+  // Areas
+  const areaOQM = OQ * QM / 2;
+  const areaMQP = QM * QP / 2;
+  const areaRatio = areaMQP > 0.001 ? areaOQM / areaMQP : 0;
+  const isCongruent = Math.abs(m - 1) < 0.05;
 
-  const side = Math.sqrt(dxAB * dxAB + dyAB * dyAB);
-  const diag = side * Math.SQRT2;
-  const area = side * side;
-
-  const originX = 50, originY = 250, scale = 25;
-  const toX = (v: number) => originX + v * scale;
-  const toY = (v: number) => originY - v * scale;
-
-  // Right-angle mark at B
-  const sz = 10;
-  const lenAB = side || 1;
-  // Direction from B toward A (in screen coords)
-  const uBAsx = (-dxAB * scale) / (lenAB * scale);
-  const uBAsy = (dyAB * scale) / (lenAB * scale);
-  // Direction from B toward C (in screen coords)
-  const lenPerp = Math.sqrt(perpX * perpX + perpY * perpY) || 1;
-  const uBCsx = (perpX * scale) / (lenPerp * scale);
-  const uBCsy = (-perpY * scale) / (lenPerp * scale);
-
-  const raBx = toX(bX);
-  const raBy = toY(bY);
-  const ra1x = raBx + sz * uBAsx;
-  const ra1y = raBy + sz * uBAsy;
-  const ra2x = raBx + sz * (uBAsx + uBCsx);
-  const ra2y = raBy + sz * (uBAsy + uBCsy);
-  const ra3x = raBx + sz * uBCsx;
-  const ra3y = raBy + sz * uBCsy;
+  // SVG mapping
+  const maxCoord = Math.max(t + 1, m * t + 1, 5);
+  const sc = 200 / maxCoord;
+  const ox = 36, oy = 36 + maxCoord * sc;
+  const toX = (v: number) => ox + v * sc;
+  const toY = (v: number) => oy - v * sc;
 
   return (
-    <section style={{ border: "1px solid rgba(225,29,72,0.35)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת בניית ריבוע</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>בחר נקודות A ו-B, בחר כיוון סיבוב, ובנה ריבוע!</p>
-
-      {/* Sliders */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem 2rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div style={{ color: "#e11d48", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", borderBottom: "1px solid rgba(225,29,72,0.3)", paddingBottom: 6 }}>נקודה A</div>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-              <span>Ax</span>
-              <span style={{ color: "#e11d48", fontWeight: 700 }}>{aX}</span>
-            </div>
-            <input type="range" min={-2} max={6} step={1} value={aX} onChange={e => setAX(+e.target.value)} style={{ width: "100%", accentColor: "#e11d48" }} />
-          </div>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-              <span>Ay</span>
-              <span style={{ color: "#e11d48", fontWeight: 700 }}>{aY}</span>
-            </div>
-            <input type="range" min={-2} max={6} step={1} value={aY} onChange={e => setAY(+e.target.value)} style={{ width: "100%", accentColor: "#e11d48" }} />
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div style={{ color: "#3b82f6", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", borderBottom: "1px solid rgba(59,130,246,0.3)", paddingBottom: 6 }}>נקודה B</div>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-              <span>Bx</span>
-              <span style={{ color: "#3b82f6", fontWeight: 700 }}>{bX}</span>
-            </div>
-            <input type="range" min={-2} max={8} step={1} value={bX} onChange={e => setBX(+e.target.value)} style={{ width: "100%", accentColor: "#3b82f6" }} />
-          </div>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
-              <span>By</span>
-              <span style={{ color: "#3b82f6", fontWeight: 700 }}>{bY}</span>
-            </div>
-            <input type="range" min={-2} max={8} step={1} value={bY} onChange={e => setBY(+e.target.value)} style={{ width: "100%", accentColor: "#3b82f6" }} />
-          </div>
-        </div>
-      </div>
-
-      {/* Rotation toggle */}
-      <div style={{ display: "flex", justifyContent: "center", gap: 12, marginBottom: "2rem" }}>
-        <button
-          onClick={() => setRotDir("+90")}
-          style={{ padding: "8px 20px", borderRadius: 12, fontSize: 13, fontWeight: 600, cursor: "pointer", border: `2px solid ${rotDir === "+90" ? "#e11d48" : "rgba(107,114,128,0.3)"}`, background: rotDir === "+90" ? "rgba(225,29,72,0.1)" : "rgba(255,255,255,0.75)", color: rotDir === "+90" ? "#e11d48" : "#6B7280", transition: "all 0.2s" }}
-        >
-          +90° (נגד השעון)
-        </button>
-        <button
-          onClick={() => setRotDir("-90")}
-          style={{ padding: "8px 20px", borderRadius: 12, fontSize: 13, fontWeight: 600, cursor: "pointer", border: `2px solid ${rotDir === "-90" ? "#3b82f6" : "rgba(107,114,128,0.3)"}`, background: rotDir === "-90" ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.75)", color: rotDir === "-90" ? "#3b82f6" : "#6B7280", transition: "all 0.2s" }}
-        >
-          -90° (עם השעון)
-        </button>
-      </div>
+    <section style={{ border: `2px solid ${isCongruent ? "rgba(22,163,74,0.5)" : "rgba(139,38,53,0.4)"}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginTop: "2rem", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", transition: "border-color 0.3s" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 4 }}>מעבדת הגובה ליתר — דמיון פרמטרי</h3>
+      <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: "1.5rem" }}>הזיזו את m ו-t — ראו שיחס השטחים תלוי רק ב-m!</p>
 
       {/* SVG */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(225,29,72,0.25)", background: "#fff", padding: "1rem", marginBottom: "2rem", boxShadow: "0 4px 16px rgba(225,29,72,0.08)" }}>
-        <svg viewBox="0 0 400 300" style={{ width: "100%", display: "block" }} aria-hidden>
+      <div style={{ borderRadius: 16, border: `1px solid ${isCongruent ? "rgba(22,163,74,0.35)" : "rgba(139,38,53,0.25)"}`, background: isCongruent ? "rgba(22,163,74,0.02)" : "#fff", padding: "0.5rem", marginBottom: "1.5rem", transition: "all 0.3s" }}>
+        <svg viewBox={`0 0 ${Math.ceil(toX(maxCoord) + 30)} ${Math.ceil(oy + 30)}`} className="w-full max-w-sm mx-auto" style={{ display: "block" }} aria-hidden>
           {/* Axes */}
-          <line x1={toX(-3)} y1={toY(0)} x2={toX(12)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1.2} />
-          <line x1={toX(0)} y1={toY(-2)} x2={toX(0)} y2={toY(10)} stroke="#94a3b8" strokeWidth={1.2} />
-          <polygon points={`${toX(12)},${toY(0)} ${toX(12) - 5},${toY(0) - 3} ${toX(12) - 5},${toY(0) + 3}`} fill="#94a3b8" />
-          <polygon points={`${toX(0)},${toY(10)} ${toX(0) - 3},${toY(10) + 5} ${toX(0) + 3},${toY(10) + 5}`} fill="#94a3b8" />
-          <text x={toX(12) + 6} y={toY(0) + 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">x</text>
-          <text x={toX(0) + 6} y={toY(10) - 4} fontSize={11} fill="#94a3b8" fontStyle="italic" fontFamily="serif">y</text>
+          <line x1={toX(-0.5)} y1={toY(0)} x2={toX(maxCoord + 0.5)} y2={toY(0)} stroke="#94a3b8" strokeWidth={1} />
+          <line x1={toX(0)} y1={toY(-0.5)} x2={toX(0)} y2={toY(maxCoord + 0.5)} stroke="#94a3b8" strokeWidth={1} />
+          <text x={toX(maxCoord + 0.5) + 3} y={toY(0) + 3} fontSize={9} fill="#94a3b8" fontStyle="italic">x</text>
+          <text x={toX(0) + 3} y={toY(maxCoord + 0.5) - 1} fontSize={9} fill="#94a3b8" fontStyle="italic">y</text>
 
-          {/* Square */}
-          <polygon points={`${toX(aX)},${toY(aY)} ${toX(bX)},${toY(bY)} ${toX(cX)},${toY(cY)} ${toX(dX)},${toY(dY)}`} fill="rgba(225,29,72,0.06)" stroke="#e11d48" strokeWidth={2} strokeLinejoin="round" />
+          {/* L1: y=mx */}
+          <line x1={toX(0)} y1={toY(0)} x2={toX(t + 0.5)} y2={toY((t + 0.5) * m)} stroke="#3b82f6" strokeWidth={1.3} />
 
-          {/* Right-angle mark at B */}
-          {side > 0.1 && (
-            <polyline points={`${ra1x},${ra1y} ${ra2x},${ra2y} ${ra3x},${ra3y}`} fill="none" stroke="#34d399" strokeWidth={2} />
-          )}
+          {/* △OQM fill (blue) */}
+          <polygon points={`${toX(0)},${toY(0)} ${toX(Q.x)},${toY(Q.y)} ${toX(M.x)},${toY(M.y)}`}
+            fill="rgba(59,130,246,0.12)" stroke="none" />
 
-          {/* Vertices */}
-          <circle cx={toX(aX)} cy={toY(aY)} r={4} fill="#e11d48" stroke="#fff" strokeWidth={1.5} />
-          <text x={toX(aX) - 8} y={toY(aY) + 14} fontSize={10} fill="#e11d48" fontWeight={700}>A({aX},{aY})</text>
+          {/* △MQP fill (purple) */}
+          <polygon points={`${toX(M.x)},${toY(M.y)} ${toX(Q.x)},${toY(Q.y)} ${toX(P.x)},${toY(P.y)}`}
+            fill="rgba(167,139,250,0.12)" stroke="none" />
 
-          <circle cx={toX(bX)} cy={toY(bY)} r={4} fill="#3b82f6" stroke="#fff" strokeWidth={1.5} />
-          <text x={toX(bX) + 4} y={toY(bY) + 14} fontSize={10} fill="#3b82f6" fontWeight={700}>B({bX},{bY})</text>
+          {/* Triangle edges */}
+          <line x1={toX(0)} y1={toY(0)} x2={toX(P.x)} y2={toY(P.y)} stroke="#1a1a2e" strokeWidth={1.5} />
+          <line x1={toX(P.x)} y1={toY(P.y)} x2={toX(M.x)} y2={toY(M.y)} stroke="#1a1a2e" strokeWidth={1.5} />
+          <line x1={toX(0)} y1={toY(0)} x2={toX(M.x)} y2={toY(M.y)} stroke="#1a1a2e" strokeWidth={1.5} />
 
-          <circle cx={toX(cX)} cy={toY(cY)} r={4} fill="#f59e0b" stroke="#fff" strokeWidth={1.5} />
-          <text x={toX(cX) + 4} y={toY(cY) - 6} fontSize={10} fill="#f59e0b" fontWeight={700}>C({cX},{cY})</text>
+          {/* Altitude MQ (red dashed) */}
+          <line x1={toX(M.x)} y1={toY(M.y)} x2={toX(Q.x)} y2={toY(Q.y)} stroke="#DC2626" strokeWidth={1.8} strokeDasharray="4,3" />
 
-          <circle cx={toX(dX)} cy={toY(dY)} r={4} fill="#a78bfa" stroke="#fff" strokeWidth={1.5} />
-          <text x={toX(dX) - 12} y={toY(dY) - 6} fontSize={10} fill="#a78bfa" fontWeight={700}>D({dX},{dY})</text>
+          {/* Right-angle at M */}
+          <polyline points={`${toX(M.x) - 6},${toY(0)} ${toX(M.x) - 6},${toY(0) - 6} ${toX(M.x)},${toY(0) - 6}`} fill="none" stroke="#1a1a2e" strokeWidth={1} />
+
+          {/* Points */}
+          <circle cx={toX(0)} cy={toY(0)} r={3} fill="#1a1a2e" stroke="#fff" strokeWidth={1} />
+          <text x={toX(0) - 10} y={toY(0) + 12} fontSize={9} fill="#1a1a2e" fontWeight={700}>O</text>
+
+          <circle cx={toX(P.x)} cy={toY(P.y)} r={3.5} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
+          <text x={toX(P.x) + 5} y={toY(P.y) - 4} fontSize={9} fill="#DC2626" fontWeight={700}>P</text>
+
+          <circle cx={toX(M.x)} cy={toY(M.y)} r={3} fill="#1a1a2e" stroke="#fff" strokeWidth={1} />
+          <text x={toX(M.x) + 4} y={toY(M.y) + 12} fontSize={9} fill="#1a1a2e" fontWeight={700}>M</text>
+
+          <circle cx={toX(Q.x)} cy={toY(Q.y)} r={3.5} fill="#DC2626" stroke="#fff" strokeWidth={1.5} />
+          <text x={toX(Q.x) - 6} y={toY(Q.y) - 6} fontSize={9} fill="#DC2626" fontWeight={700}>Q</text>
+
+          {/* Triangle labels */}
+          <text x={(toX(0) + toX(Q.x) + toX(M.x)) / 3 - 4} y={(toY(0) + toY(Q.y) + toY(M.y)) / 3 + 3} fontSize={7} fill="#3b82f6" fontWeight={700}>OQM</text>
+          <text x={(toX(M.x) + toX(Q.x) + toX(P.x)) / 3 - 4} y={(toY(M.y) + toY(Q.y) + toY(P.y)) / 3 + 3} fontSize={7} fill="#a78bfa" fontWeight={700}>MQP</text>
         </svg>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, textAlign: "center" }}>
+      {/* Sliders */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem", background: "rgba(255,255,255,0.75)", borderRadius: 16, padding: "1.25rem", border: "1px solid rgba(139,38,53,0.15)" }}>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+            <span style={{ fontWeight: 600 }}>שיפוע m</span>
+            <span style={{ color: "#DC2626", fontWeight: 700, fontFamily: "monospace" }}>{m.toFixed(1)}</span>
+          </div>
+          <input type="range" min={0.3} max={3} step={0.1} value={m}
+            onChange={e => setM(+e.target.value)}
+            style={{ width: "100%", accentColor: "#DC2626" }} />
+        </div>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1A1A1A", marginBottom: 4 }}>
+            <span style={{ fontWeight: 600 }}>מיקום P (t)</span>
+            <span style={{ color: "#3b82f6", fontWeight: 700, fontFamily: "monospace" }}>{t}</span>
+          </div>
+          <input type="range" min={1} max={8} step={0.5} value={t}
+            onChange={e => setT(+e.target.value)}
+            style={{ width: "100%", accentColor: "#3b82f6" }} />
+        </div>
+      </div>
+
+      {/* Live proof: area ratio */}
+      <div style={{ borderRadius: 14, background: isCongruent ? "rgba(22,163,74,0.06)" : "rgba(139,38,53,0.04)", border: `2px solid ${isCongruent ? "#16A34A" : "rgba(139,38,53,0.3)"}`, padding: "14px 16px", marginBottom: "1rem", textAlign: "center", transition: "all 0.3s" }}>
+        <div style={{ color: "#1A1A1A", fontSize: 12, fontWeight: 700, marginBottom: 8 }}>
+          {isCongruent ? "חפיפה! m = 1 → המשולשים זהים" : "יחס שטחים — תלוי רק ב-m"}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.3)" }}>
+            <div style={{ fontSize: 8, color: "#6B7280", fontWeight: 600 }}>S(△OQM)</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#3b82f6", fontFamily: "monospace" }}>{areaOQM.toFixed(2)}</div>
+          </div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1A1A" }}>/</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.3)" }}>
+            <div style={{ fontSize: 8, color: "#6B7280", fontWeight: 600 }}>S(△MQP)</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#a78bfa", fontFamily: "monospace" }}>{areaMQP.toFixed(2)}</div>
+          </div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1A1A" }}>=</div>
+          <div style={{ padding: "6px 12px", borderRadius: 8, background: isCongruent ? "rgba(22,163,74,0.1)" : "rgba(220,38,38,0.1)", border: `2px solid ${isCongruent ? "#16A34A" : "#DC2626"}` }}>
+            <div style={{ fontSize: 8, color: "#6B7280", fontWeight: 600 }}>1/m²</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: isCongruent ? "#16A34A" : "#DC2626", fontFamily: "monospace" }}>{areaRatio.toFixed(3)}</div>
+          </div>
+        </div>
+        <div style={{ color: "#6B7280", fontSize: 10, marginTop: 8 }}>
+          הזיזו את t — היחס {areaRatio.toFixed(3)} נשאר קבוע! (= 1/m² = 1/{(m * m).toFixed(2)})
+        </div>
+      </div>
+
+      {/* Data row */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, textAlign: "center" }}>
         {[
-          { label: "צלע", val: side.toFixed(2), color: "#e11d48" },
-          { label: "אלכסון", val: diag.toFixed(2), color: "#f59e0b" },
-          { label: "שטח", val: area.toFixed(2), color: "#16A34A" },
+          { label: "OQ", val: OQ.toFixed(2), color: "#3b82f6" },
+          { label: "QM", val: QM.toFixed(2), color: "#DC2626" },
+          { label: "QP", val: QP.toFixed(2), color: "#a78bfa" },
+          { label: "דמיון OQ/QP", val: (OQ / (QP || 1)).toFixed(3), color: "#1A1A1A" },
         ].map(r => (
-          <div key={r.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(225,29,72,0.35)", padding: 12, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>{r.label}</div>
-            <div style={{ color: r.color, fontWeight: 700, fontSize: 14, fontFamily: "monospace" }}>{r.val}</div>
+          <div key={r.label} style={{ borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0", padding: "8px 4px" }}>
+            <div style={{ color: "#6B7280", fontSize: 8, fontWeight: 600, marginBottom: 2 }}>{r.label}</div>
+            <div style={{ color: r.color, fontWeight: 700, fontSize: 13, fontFamily: "monospace" }}>{r.val}</div>
           </div>
         ))}
       </div>

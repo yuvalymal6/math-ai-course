@@ -12,6 +12,7 @@ import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 import katex from "katex";
 import "katex/dist/katex.min.css";
+import GradesBarChart from "@/app/components/GradesBarChart";
 
 // ─── KaTeX renderers ─────────────────────────────────────────────────────────
 
@@ -412,43 +413,64 @@ function BasicDiagram() {
 }
 
 function MediumDiagram() {
-  // Frequency table — neighborhood houses with family stacks
-  const houses = [
-    { kids: 0, families: 5 },
-    { kids: 1, families: 8 },
-    { kids: 2, families: "x" },
-    { kids: 3, families: 10 },
-    { kids: 4, families: 2 },
+  const data = [
+    { kids: 0, families: 5, label: "5" },
+    { kids: 1, families: 4, label: "x" },
+    { kids: 2, families: 8, label: "8" },
+    { kids: 3, families: 10, label: "10" },
+    { kids: 4, families: 2, label: "2" },
   ];
-  const w = 320, h = 150;
-  const houseW = 50, gap = 12, startX = 15;
+
+  const svgW = 380, svgH = 220;
+  const padL = 55, padR = 15, padT = 20, padB = 50;
+  const chartW = svgW - padL - padR;
+  const chartH = svgH - padT - padB;
+  const maxVal = 12;
+  const barW = 42;
+  const barGap = (chartW - data.length * barW) / (data.length + 1);
+  const gridLines = [0, 2, 4, 6, 8, 10];
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full max-w-sm mx-auto" aria-hidden>
-      {/* Ground */}
-      <line x1={5} y1={h - 15} x2={w - 5} y2={h - 15} stroke="#cbd5e1" strokeWidth="1" />
-      {houses.map((house, i) => {
-        const cx = startX + i * (houseW + gap) + houseW / 2;
-        const isX = house.families === "x";
+    <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full max-w-md mx-auto" aria-hidden>
+      {/* Y-axis grid lines */}
+      {gridLines.map(v => {
+        const y = padT + chartH - (v / maxVal) * chartH;
         return (
-          <g key={i}>
-            {/* House shape */}
-            <rect x={cx - 20} y={h - 55} width={40} height={40} rx={4} fill={isX ? "rgba(245,158,11,0.1)" : "rgba(99,102,241,0.06)"} stroke={isX ? "#f59e0b" : "#94a3b8"} strokeWidth="1.5" />
-            {/* Roof */}
-            <polygon points={`${cx - 22},${h - 55} ${cx},${h - 72} ${cx + 22},${h - 55}`} fill={isX ? "rgba(245,158,11,0.15)" : "rgba(99,102,241,0.08)"} stroke={isX ? "#f59e0b" : "#94a3b8"} strokeWidth="1" />
-            {/* Family count */}
-            <text x={cx} y={h - 30} fontSize="14" fill={isX ? "#f59e0b" : "#6366f1"} fontWeight="700" textAnchor="middle">
-              {isX ? "x" : house.families}
-            </text>
-            {/* Kids label */}
-            <text x={cx} y={h - 4} fontSize="9" fill="#64748b" fontWeight="600" textAnchor="middle">
-              {house.kids} ילדים
-            </text>
+          <g key={v}>
+            <line x1={padL} y1={y} x2={svgW - padR} y2={y} stroke="#e5e7eb" strokeWidth="1" />
+            <text x={padL - 8} y={y + 4} fontSize="9" fill="#374151" fontWeight="600" textAnchor="end">{v}</text>
           </g>
         );
       })}
-      {/* Average indicator */}
-      <text x={w / 2} y={14} fontSize="10" fill="#a78bfa" fontWeight="700" textAnchor="middle">ממוצע = 1.8 ילדים למשפחה</text>
+
+      {/* Axes */}
+      <line x1={padL} y1={padT} x2={padL} y2={padT + chartH} stroke="#9ca3af" strokeWidth="1.5" />
+      <line x1={padL} y1={padT + chartH} x2={svgW - padR} y2={padT + chartH} stroke="#9ca3af" strokeWidth="1.5" />
+
+      {/* Bars */}
+      {data.map((d, i) => {
+        const isX = d.label === "x";
+        const x = padL + barGap + i * (barW + barGap);
+        const h = isX ? chartH * 0.5 : (d.families / maxVal) * chartH;
+        const y = padT + chartH - h;
+        return (
+          <g key={i}>
+            {isX ? (
+              <rect x={x} y={y} width={barW} height={h} rx={3} fill="rgba(148,163,184,0.08)" stroke="#94a3b8" strokeWidth="2" strokeDasharray="6,4" />
+            ) : (
+              <rect x={x} y={y} width={barW} height={h} rx={3} fill="#6366f1" opacity={0.75} />
+            )}
+            <text x={x + barW / 2} y={isX ? y + h / 2 + 5 : y - 5} fontSize={isX ? "14" : "11"} fill="#1A1A1A" fontWeight="800" textAnchor="middle">{d.label}</text>
+            <text x={x + barW / 2} y={padT + chartH + 16} fontSize="10" fill="#1A1A1A" fontWeight="700" textAnchor="middle">{d.kids}</text>
+          </g>
+        );
+      })}
+
+      {/* X-axis label */}
+      <text x={padL + chartW / 2} y={svgH - 4} fontSize="11" fill="#374151" fontWeight="700" textAnchor="middle">מספר ילדים במשפחה</text>
+
+      {/* Y-axis label (rotated) */}
+      <text x={14} y={padT + chartH / 2} fontSize="10" fill="#374151" fontWeight="700" textAnchor="middle" transform={`rotate(-90, 14, ${padT + chartH / 2})`}>מספר משפחות (שכיחות)</text>
     </svg>
   );
 }
@@ -487,7 +509,7 @@ const exercises: ExerciseDef[] = [
     id: "basic",
     title: "איזון המאזניים",
     problem: "לפניך רשימת ציונים של 10 תלמידים:\n60, 65, 70, 72, 75, 80, 82, 85, 90 וציון נוסף x.\nידוע כי הממוצע הכיתתי הוא 75.\n\nא. מצא את הציון x.\nב. מצא את השכיח ואת החציון של כל עשרת הציונים.\nג. אם נחליף את הציון הנמוך ביותר (60) בציון 0, האם הממוצע ישתנה? האם החציון ישתנה? נמקו.",
-    diagram: <BasicDiagram />,
+    diagram: <GradesBarChart />,
     pitfalls: [
       { title: "⚠️ בניית המשוואה", text: "שימו לב: הממוצע הוא 75. כשאתם בונים את המשוואה, אל תשכחו שסכום הציונים צריך להיות שווה ל-75 × 10 = 750." },
       { title: "💡 חציון תלוי ב-x", text: "טעות נפוצה: לחשב חציון לפני שמוצאים את x. החציון תלוי במיקום של x ברצף המספרים!" },
@@ -533,6 +555,123 @@ const exercises: ExerciseDef[] = [
   },
 ];
 
+
+// ─── FormulaBar (inline interactive formula section) ─────────────────────────
+
+function FormulaBar() {
+  const [activeTab, setActiveTab] = useState<"mean" | "median" | "mode" | null>(null);
+
+  const tabs = [
+    { id: "mean" as const, label: "📊 ממוצע", tex: String.raw`\bar{x}`, color: "#6366f1", borderColor: "rgba(99,102,241,0.35)" },
+    { id: "median" as const, label: "📏 חציון", tex: String.raw`Me`, color: "#f59e0b", borderColor: "rgba(245,158,11,0.35)" },
+    { id: "mode" as const, label: "🔁 שכיח", tex: String.raw`Mo`, color: "#a78bfa", borderColor: "rgba(167,139,250,0.35)" },
+  ];
+
+  return (
+    <div className="formula-bar" style={{ borderRadius: 12, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
+      <div className="formula-title" style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
+
+      {/* Tab buttons */}
+      <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
+        {tabs.map(t => {
+          const isActive = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(isActive ? null : t.id)}
+              style={{
+                flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
+                border: `1.5px solid ${isActive ? t.borderColor : "rgba(244,63,94,0.15)"}`,
+                background: isActive ? `${t.color}0D` : "rgba(244,63,94,0.03)",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
+              <span style={{ color: isActive ? t.color : "#f43f5e" }}><Tex>{t.tex}</Tex></span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Expanded content */}
+      {activeTab === "mean" && (
+        <motion.div key="mean" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(99,102,241,0.25)", background: "rgba(238,242,255,0.95)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <TexBlock>{String.raw`\bar{x} = \frac{\sum x_i}{n} = \frac{x_1 + x_2 + \cdots + x_n}{n}`}</TexBlock>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>איך מחשבים?</strong>
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>סכמו את כל הערכים.</li>
+                  <li>חלקו בכמות הערכים (<Tex>n</Tex>).</li>
+                </ol>
+              </div>
+              <div style={{ marginTop: 10, color: "#4338ca", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                💡 אם ידוע הממוצע ויש נעלם — בנו משוואה:<br/>
+                <span dir="ltr" style={{ fontFamily: "monospace" }}>סכום ידוע + x = ממוצע × n</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "median" && (
+        <motion.div key="median" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(245,158,11,0.3)", background: "rgba(255,251,235,0.95)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <TexBlock>{String.raw`\text{Position} = \frac{N+1}{2}`}</TexBlock>
+            </div>
+            <ol dir="rtl" style={{ margin: "0 0 12px", paddingInlineStart: 20, color: "#1A1A1A", fontSize: 12, lineHeight: 2.2, fontWeight: 500 }}>
+              <li><strong>סדרו</strong> את כל הערכים מהקטן לגדול.</li>
+              <li><strong>חשבו</strong> את המיקום: <span dir="ltr" style={{ fontFamily: "monospace", fontWeight: 700 }}>(N+1) ÷ 2</span></li>
+              <li><strong>מצאו</strong> את הערך במיקום הזה — זהו החציון.</li>
+            </ol>
+            <div style={{ borderRadius: 10, background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)", padding: "10px 14px", color: "#92400e", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+              💡 אם המיקום בין שני ערכים — קחו את הממוצע שלהם.<br/>
+              💡 בטבלת שכיחויות — ספרו שכיחות מצטברת עד שעוברים את המיקום.
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "mode" && (
+        <motion.div key="mode" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(167,139,250,0.3)", background: "rgba(245,243,255,0.95)", padding: "16px" }}>
+            <svg viewBox="0 0 240 90" style={{ width: "100%", maxWidth: 260, display: "block", margin: "0 auto 12px" }} aria-hidden>
+              {[
+                { h: 30, label: "2" },
+                { h: 45, label: "5" },
+                { h: 72, label: "8" },
+                { h: 45, label: "5" },
+                { h: 22, label: "3" },
+              ].map((bar, i) => {
+                const isMax = i === 2;
+                const x = 12 + i * 46;
+                return (
+                  <g key={i}>
+                    <rect x={x} y={82 - bar.h} width={36} height={bar.h} rx={3} fill={isMax ? "#a78bfa" : "#e2e8f0"} stroke={isMax ? "#7c3aed" : "none"} strokeWidth={isMax ? 2.5 : 0} />
+                    <text x={x + 18} y={82 - bar.h - 4} fontSize="10" fill={isMax ? "#5b21b6" : "#6B7280"} fontWeight="800" textAnchor="middle">{bar.label}</text>
+                    {isMax && <text x={x + 18} y={82 - bar.h - 16} fontSize="11" fill="#7c3aed" fontWeight="800" textAnchor="middle">★</text>}
+                    <text x={x + 18} y={82} fontSize="9" fill="#374151" fontWeight="600" textAnchor="middle" dy="10">{i}</text>
+                  </g>
+                );
+              })}
+            </svg>
+            <p style={{ color: "#1A1A1A", fontSize: 13, lineHeight: 1.8, textAlign: "center", margin: "0 0 10px", fontWeight: 600 }}>
+              השכיח = ערך ציר ה-X של העמודה הגבוהה ביותר.
+            </p>
+            <div style={{ borderRadius: 10, background: "rgba(167,139,250,0.08)", border: "1px solid rgba(167,139,250,0.2)", padding: "10px 14px", color: "#5b21b6", fontSize: 11, fontWeight: 600, lineHeight: 1.7, textAlign: "center" }}>
+              💡 ייתכנו שני שכיחים (דו-שכיחי) או אף אחד אם כל הערכים שווי-תדירות.
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 // ─── ExerciseCard ─────────────────────────────────────────────────────────────
 
 function ExerciseCard({ ex }: { ex: ExerciseDef }) {
@@ -546,37 +685,8 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   return (
     <section className="exercise-section" style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
 
-      {/* Formula bar — central tendency (KaTeX) */}
-      <div className="formula-bar" style={{ borderRadius: 12, border: "1px solid rgba(244,63,94,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(244,63,94,0.12)" }}>
-        <div className="formula-title" style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
-
-        {/* Context: variable definitions */}
-        <div style={{ borderRadius: 10, background: "rgba(244,63,94,0.05)", border: "1px solid rgba(244,63,94,0.15)", padding: "10px 14px", marginBottom: 16, textAlign: "center" }}>
-          <div className="formula-label" style={{ color: "#2D3436", fontSize: 13, lineHeight: 1.8 }}>
-            <Tex>{String.raw`\bar{x}`}</Tex> — ממוצע &nbsp;&nbsp;·&nbsp;&nbsp;
-            <Tex>{String.raw`Me`}</Tex> — חציון &nbsp;&nbsp;·&nbsp;&nbsp;
-            <Tex>{String.raw`Mo`}</Tex> — שכיח
-          </div>
-        </div>
-
-        <div className="formula-grid-stats">
-          {/* Mean */}
-          <div className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
-            <div className="formula-label" style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>📊 ממוצע</div>
-            <div style={{ color: "#f43f5e" }}><TexBlock>{String.raw`\bar{x} = \frac{\sum x_i}{n}`}</TexBlock></div>
-          </div>
-          {/* Median */}
-          <div className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
-            <div className="formula-label" style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>📏 חציון</div>
-            <div style={{ color: "#f43f5e" }}><TexBlock>{String.raw`Me = \text{median}(x_1, \ldots, x_n)`}</TexBlock></div>
-          </div>
-          {/* Mode */}
-          <div className="formula-item" style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
-            <div className="formula-label" style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>🔁 שכיח</div>
-            <div style={{ color: "#f43f5e" }}><TexBlock>{String.raw`Mo = \text{mode}(x_1, \ldots, x_n)`}</TexBlock></div>
-          </div>
-        </div>
-      </div>
+      {/* Formula bar — interactive central tendency guides */}
+      <FormulaBar />
 
       {/* Title */}
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: "2rem" }}>
@@ -663,22 +773,6 @@ function BarChartLab() {
       <p style={{ color: "#6B7280", fontSize: 13, textAlign: "center", marginBottom: 4 }}>הזיזו סליידרים — צפו בממוצע, חציון ושכיח בזמן אמת.</p>
       <p style={{ color: onTarget ? "#16a34a" : "#f59e0b", fontSize: 13, fontWeight: 700, textAlign: "center", marginBottom: "1.5rem" }}>🎯 ממוצע יעד: {targetAvg}</p>
 
-      {/* Metric cards — always visible */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: "1.5rem" }}>
-        <div style={{ borderRadius: 14, background: onTarget ? "rgba(22,163,74,0.08)" : "#fff", border: `2px solid ${onTarget ? "#16a34a" : "#e2e8f0"}`, padding: "12px 8px", textAlign: "center", boxShadow: onTarget ? "0 0 16px rgba(22,163,74,0.2)" : "none", transition: "all 0.3s" }}>
-          <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>ממוצע</div>
-          <div style={{ color: onTarget ? "#16a34a" : "#6366f1", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{mean.toFixed(1)}</div>
-        </div>
-        <div style={{ borderRadius: 14, background: "#fff", border: "2px solid #e2e8f0", padding: "12px 8px", textAlign: "center" }}>
-          <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>חציון</div>
-          <div style={{ color: "#f59e0b", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{median.toFixed(1)}</div>
-        </div>
-        <div style={{ borderRadius: 14, background: "#fff", border: "2px solid #e2e8f0", padding: "12px 8px", textAlign: "center" }}>
-          <div style={{ color: "#6B7280", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>שכיח</div>
-          <div style={{ color: "#a78bfa", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{modeStr}</div>
-        </div>
-      </div>
-
       {/* SVG Histogram with mean line */}
       <div style={{ borderRadius: 16, border: "1px solid rgba(0,212,255,0.25)", background: "#fff", padding: "1rem", marginBottom: "1.5rem" }}>
         <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", display: "block" }} aria-hidden>
@@ -707,8 +801,8 @@ function BarChartLab() {
             return (
               <g key={i}>
                 <rect x={x} y={y} width={barW} height={h} rx={3} fill={isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#6366f1"} opacity={isX ? 1 : 0.6} />
-                <text x={x + barW / 2} y={y - 3} fontSize="8" fill={isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#6366f1"} fontWeight="700" textAnchor="middle">{v}</text>
-                <text x={x + barW / 2} y={padT + chartH + 12} fontSize="7" fill="#94a3b8" textAnchor="middle">{isX ? "x" : `#${i + 1}`}</text>
+                <text x={x + barW / 2} y={y - 3} fontSize="8" fill="#1A1A1A" fontWeight="700" textAnchor="middle">{v}</text>
+                <text x={x + barW / 2} y={padT + chartH + 12} fontSize="7" fill="#374151" fontWeight="600" textAnchor="middle">{isX ? "x" : `#${i + 1}`}</text>
               </g>
             );
           })}
@@ -723,9 +817,9 @@ function BarChartLab() {
           const isX = i === xIndex;
           return (
             <div key={i} style={{ borderRadius: 10, border: `1.5px solid ${isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#e2e8f0"}`, background: isX ? (onTarget ? "rgba(22,163,74,0.04)" : "rgba(245,158,11,0.04)") : "#fff", padding: "8px 10px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#6B7280", marginBottom: 3 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#1A1A1A", marginBottom: 3 }}>
                 <span style={{ fontWeight: isX ? 700 : 500 }}>{isX ? "x" : `תלמיד ${i + 1}`}</span>
-                <span style={{ color: isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#334155", fontWeight: 700, fontFamily: "monospace" }}>{v}</span>
+                <span style={{ color: isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#1A1A1A", fontWeight: 700, fontFamily: "monospace" }}>{v}</span>
               </div>
               <input type="range" min={0} max={100} step={1} value={v} onChange={e => setScore(i, +e.target.value)} style={{ width: "100%", accentColor: isX ? (onTarget ? "#16a34a" : "#f59e0b") : "#6366f1" }} />
             </div>
@@ -733,9 +827,29 @@ function BarChartLab() {
         })}
       </div>
 
-      {/* Dynamic formula */}
-      <div style={{ borderRadius: 12, border: "1px solid rgba(0,212,255,0.2)", background: "rgba(255,255,255,0.9)", padding: "10px", textAlign: "center", fontFamily: "monospace", fontSize: 11, color: "#334155", direction: "ltr", overflowX: "auto" }}>
-        ({scores.join(" + ")}) ÷ 10 = <span style={{ fontWeight: 700, color: onTarget ? "#16a34a" : "#f59e0b" }}>{mean.toFixed(2)}</span>
+      {/* Metric cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+        <div style={{ borderRadius: 14, background: onTarget ? "rgba(22,163,74,0.08)" : "#fff", border: `2px solid ${onTarget ? "#16a34a" : "#e2e8f0"}`, padding: "12px 8px", textAlign: "center", boxShadow: onTarget ? "0 0 16px rgba(22,163,74,0.2)" : "none", transition: "all 0.3s" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 4 }}>
+            <span style={{ color: "#374151", fontSize: 10, fontWeight: 600 }}>ממוצע</span>
+            <button onClick={() => document.querySelector(".formula-bar")?.scrollIntoView({ behavior: "smooth", block: "center" })} aria-label="עזרה — ממוצע" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, fontSize: 13, color: "#9ca3af" }}>ⓘ</button>
+          </div>
+          <div style={{ color: onTarget ? "#16a34a" : "#6366f1", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{mean.toFixed(1)}</div>
+        </div>
+        <div style={{ borderRadius: 14, background: "#fff", border: "2px solid #e2e8f0", padding: "12px 8px", textAlign: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 4 }}>
+            <span style={{ color: "#374151", fontSize: 10, fontWeight: 600 }}>חציון</span>
+            <button onClick={() => document.querySelector(".formula-bar")?.scrollIntoView({ behavior: "smooth", block: "center" })} aria-label="עזרה — חציון" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, fontSize: 13, color: "#9ca3af" }}>ⓘ</button>
+          </div>
+          <div style={{ color: "#f59e0b", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{median.toFixed(1)}</div>
+        </div>
+        <div style={{ borderRadius: 14, background: "#fff", border: "2px solid #e2e8f0", padding: "12px 8px", textAlign: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 4 }}>
+            <span style={{ color: "#374151", fontSize: 10, fontWeight: 600 }}>שכיח</span>
+            <button onClick={() => document.querySelector(".formula-bar")?.scrollIntoView({ behavior: "smooth", block: "center" })} aria-label="עזרה — שכיח" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, fontSize: 13, color: "#9ca3af" }}>ⓘ</button>
+          </div>
+          <div style={{ color: "#a78bfa", fontWeight: 800, fontSize: 20, fontFamily: "monospace" }}>{modeStr}</div>
+        </div>
       </div>
     </section>
   );

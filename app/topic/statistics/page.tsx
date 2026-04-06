@@ -5,28 +5,41 @@ import { Brain, ChevronRight } from "lucide-react";
 
 const SUBTOPICS = [
   {
-    id: "central",
-    symbol: "μ",
-    title: "מדדי מרכז",
-    description: "ממוצע, חציון והשפעת ערכים חריגים — מתי כל מדד מייצג טוב יותר?",
+    id: "descriptive",
+    symbol: "μσ",
+    title: "מדדי תיאור",
+    description: "ממוצע, חציון, סטיית תקן וטרנספורמציות — כל מדדי התיאור במקום אחד",
     exercises: [
-      "שכר: ממוצע מול חציון — מה מייצג את הרוב?",
-      "השפעת ערך חריג (outlier) על הממוצע לעומת החציון",
-      "בחירת המדד הנכון: נדל\"ן, בחינות, הכנסות",
+      "ממוצע, חציון ושכיח — חישוב מנתונים גולמיים",
+      "סטיית תקן — חישוב והשוואת פיזור בין שתי כיתות",
+      "הכלל הכללי Y = aX + b — מה קורה למדדים?",
     ],
     color: "cyan",
   },
   {
-    id: "dispersion",
-    symbol: "σ",
-    title: "מדדי פיזור",
-    description: "סטיית תקן, פרשי ציונים ושינויים לינאריים — מה קורה כשמוסיפים קבוע?",
+    id: "regression",
+    symbol: "📈",
+    title: "רגרסיה לינארית",
+    description: "מקדם מתאם r, ישר ניבוי ŷ = a + bx, ניבוי ערכים והגבלותיו",
     exercises: [
-      "חישוב סטיית תקן לסדרה קטנה — צעד אחר צעד",
-      "השוואת פיזור בין שתי כיתות עם ממוצע זהה",
-      "כלל השינוי הלינארי: +5 לכל ציון / ×2 — מה קורה לסטייה?",
+      "חישוב שיפוע ישר רגרסיה מנתונים סטטיסטיים",
+      "פרשנות מקדם המתאם — מתי r חזק ומתי חלש?",
+      "ניבוי מחוץ לטווח (אקסטרפולציה) — למה זה מסוכן?",
+    ],
+    color: "cyan",
+  },
+  {
+    id: "normal",
+    symbol: "🔔",
+    title: "התפלגות נורמלית",
+    description: "ציון תקן z, אחוזונים, טבלת z, כלל 68-95-99.7",
+    exercises: [
+      "ציון תקן — חישוב z ומציאת אחוזון",
+      "אחוז תלמידים בין שני ציונים — שימוש בטבלת z",
+      "השוואת שתי התפלגויות — מי ביצע טוב יותר יחסית?",
     ],
     color: "rose",
+    href: "/topic/probability/normal",
   },
 ];
 
@@ -71,7 +84,7 @@ export default function StatisticsHub() {
             return (
               <Link
                 key={s.id}
-                href={`/topic/statistics/${s.id}`}
+                href={s.href ?? `/topic/statistics/${s.id}`}
                 className={`block rounded-2xl border p-6 transition-all duration-200 hover:scale-[1.01] hover:shadow-lg ${c.bg} ${c.border}`}
               >
                 <div className="flex items-start gap-4">

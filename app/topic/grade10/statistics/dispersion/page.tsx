@@ -1143,9 +1143,6 @@ export default function DispersionPage() {
         {/* Sub-topic progress */}
         <SubtopicProgress subtopicId="grade10/statistics/dispersion" />
 
-        {/* Formula Bar */}
-        <FormulaBar />
-
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
           {TABS.map(tab => {
@@ -1159,6 +1156,9 @@ export default function DispersionPage() {
             );
           })}
         </div>
+
+        {/* Formula Bar */}
+        <FormulaBar />
 
         {/* Active card */}
         <motion.div key={selectedLevel} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>

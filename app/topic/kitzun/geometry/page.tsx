@@ -54,15 +54,15 @@ type ExerciseDef = {
 // ─── Station config ───────────────────────────────────────────────────────────
 
 const STATION = {
-  basic:    { stationName: "\u05EA\u05D7\u05E0\u05D4 \u05E8\u05D0\u05E9\u05D5\u05E0\u05D4", badge: "\u05DE\u05EA\u05D7\u05D9\u05DC",  badgeCls: "bg-green-600 text-white",  accentCls: "text-green-400",   ladderBorder: "#16A34A", glowBorder: "rgba(22,163,74,0.35)",  glowShadow: "0 4px 16px rgba(22,163,74,0.12)",  glowRgb: "22,163,74",  accentColor: "#16A34A", borderHex: "#2D5A27", borderRgb: "45,90,39"   },
-  medium:   { stationName: "\u05EA\u05D7\u05E0\u05D4 \u05E9\u05E0\u05D9\u05D9\u05D4",  badge: "\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9",  badgeCls: "bg-orange-600 text-white", accentCls: "text-orange-400",  ladderBorder: "#EA580C", glowBorder: "rgba(234,88,12,0.35)",  glowShadow: "0 4px 16px rgba(234,88,12,0.12)",  glowRgb: "234,88,12", accentColor: "#EA580C", borderHex: "#A34F26", borderRgb: "163,79,38"  },
-  advanced: { stationName: "\u05EA\u05D7\u05E0\u05D4 \u05E9\u05DC\u05D9\u05E9\u05D9\u05EA", badge: "\u05DE\u05EA\u05E7\u05D3\u05DD",  badgeCls: "bg-red-700 text-white",    accentCls: "text-red-400",     ladderBorder: "#DC2626", glowBorder: "rgba(220,38,38,0.35)",  glowShadow: "0 4px 16px rgba(220,38,38,0.12)",  glowRgb: "220,38,38", accentColor: "#DC2626", borderHex: "#8B2635", borderRgb: "139,38,53" },
+  basic:    { stationName: "תחנה ראשונה", badge: "מתחיל",  badgeCls: "bg-green-600 text-white",  accentCls: "text-green-400",   ladderBorder: "#16A34A", glowBorder: "rgba(22,163,74,0.35)",  glowShadow: "0 4px 16px rgba(22,163,74,0.12)",  glowRgb: "22,163,74",  accentColor: "#16A34A", borderHex: "#2D5A27", borderRgb: "45,90,39"   },
+  medium:   { stationName: "תחנה שנייה",  badge: "בינוני",  badgeCls: "bg-orange-600 text-white", accentCls: "text-orange-400",  ladderBorder: "#EA580C", glowBorder: "rgba(234,88,12,0.35)",  glowShadow: "0 4px 16px rgba(234,88,12,0.12)",  glowRgb: "234,88,12", accentColor: "#EA580C", borderHex: "#A34F26", borderRgb: "163,79,38"  },
+  advanced: { stationName: "תחנה שלישית", badge: "מתקדם",  badgeCls: "bg-red-700 text-white",    accentCls: "text-red-400",     ladderBorder: "#DC2626", glowBorder: "rgba(220,38,38,0.35)",  glowShadow: "0 4px 16px rgba(220,38,38,0.12)",  glowRgb: "220,38,38", accentColor: "#DC2626", borderHex: "#8B2635", borderRgb: "139,38,53" },
 } as const;
 
 const TABS = [
-  { id: "basic",    label: "\u05DE\u05EA\u05D7\u05D9\u05DC",  textColor: "text-green-400",   border: "border-green-600",   bg: "bg-green-600/10",   glowColor: "rgba(22,163,74,0.3)"   },
-  { id: "medium",   label: "\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9", textColor: "text-orange-400",  border: "border-orange-600",  bg: "bg-orange-600/10",  glowColor: "rgba(234,88,12,0.3)"   },
-  { id: "advanced", label: "\u05DE\u05EA\u05E7\u05D3\u05DD",  textColor: "text-red-400",     border: "border-red-700",     bg: "bg-red-700/10",     glowColor: "rgba(220,38,38,0.3)"   },
+  { id: "basic",    label: "מתחיל",  textColor: "text-green-400",   border: "border-green-600",   bg: "bg-green-600/10",   glowColor: "rgba(22,163,74,0.3)"   },
+  { id: "medium",   label: "בינוני", textColor: "text-orange-400",  border: "border-orange-600",  bg: "bg-orange-600/10",  glowColor: "rgba(234,88,12,0.3)"   },
+  { id: "advanced", label: "מתקדם",  textColor: "text-red-400",     border: "border-red-700",     bg: "bg-red-700/10",     glowColor: "rgba(220,38,38,0.3)"   },
 ];
 
 // ─── SVG diagrams (silent — no numbers, no answers) ─────────────────────────
@@ -72,7 +72,7 @@ function BasicSVG() {
     <svg viewBox="0 0 280 170" className="w-full max-w-sm mx-auto" aria-hidden>
       {/* Wall */}
       <rect x="50" y="20" width="180" height="10" fill="#94a3b8" rx="3" />
-      <text x="140" y="16" textAnchor="middle" fill="#6B7280" fontSize="10">{"\u05E7\u05D9\u05E8"}</text>
+      <text x="140" y="16" textAnchor="middle" fill="#6B7280" fontSize="10">{"קיר"}</text>
       {/* Rectangle */}
       <rect x="50" y="30" width="180" height="100" fill="none" stroke="#16A34A" strokeWidth="2" rx="2" />
       {/* Fence ticks — left */}
@@ -85,7 +85,7 @@ function BasicSVG() {
       <text x="35" y="82" textAnchor="middle" fill="#16A34A" fontSize="14" fontWeight="bold">x</text>
       <text x="246" y="82" textAnchor="middle" fill="#16A34A" fontSize="14" fontWeight="bold">x</text>
       <text x="140" y="82" textAnchor="middle" fill="#f59e0b" fontSize="14" fontWeight="bold">y</text>
-      <text x="140" y="158" textAnchor="middle" fill="#6B7280" fontSize="10">{"\u05D2\u05D3\u05E8 \u05DC\u05D9\u05D3 \u05E7\u05D9\u05E8 \u2014 \u05E9\u05DC\u05D5\u05E9 \u05E6\u05DC\u05E2\u05D5\u05EA"}</text>
+      <text x="140" y="158" textAnchor="middle" fill="#6B7280" fontSize="10">{"גדר ליד קיר — שלוש צלעות"}</text>
     </svg>
   );
 }
@@ -112,7 +112,7 @@ function MediumSVG() {
       <line x1={CX} y1={RECT_TOP} x2={CX+R} y2={RECT_TOP} stroke="#a78bfa" strokeWidth="1" strokeDasharray="4,3" />
       <text x={CX+R/2} y={RECT_TOP-6} textAnchor="middle" fill="#a78bfa" fontSize="10">r</text>
       {/* Title */}
-      <text x={CX} y={20} textAnchor="middle" fill="#6B7280" fontSize="10">{"\u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF \u2014 \u05DE\u05DC\u05D1\u05DF + \u05D7\u05E6\u05D9 \u05E2\u05D9\u05D2\u05D5\u05DC"}</text>
+      <text x={CX} y={20} textAnchor="middle" fill="#6B7280" fontSize="10">{"חלון נורמן — מלבן + חצי עיגול"}</text>
     </svg>
   );
 }
@@ -122,42 +122,42 @@ function AdvancedSVG() {
     <svg viewBox="0 0 300 150" className="w-full max-w-sm mx-auto" aria-hidden>
       {/* Wire */}
       <line x1="30" y1="30" x2="270" y2="30" stroke="#94a3b8" strokeWidth="4" strokeLinecap="round" />
-      <text x="150" y="18" textAnchor="middle" fill="#6B7280" fontSize="10">{"\u05D7\u05D5\u05D8"}</text>
+      <text x="150" y="18" textAnchor="middle" fill="#6B7280" fontSize="10">{"חוט"}</text>
       {/* Cut mark */}
       <line x1="160" y1="18" x2="160" y2="42" stroke="#DC2626" strokeWidth="2.5" strokeLinecap="round" />
       {/* x label */}
       <text x="95" y="46" textAnchor="middle" fill="#3b82f6" fontSize="9">x</text>
       {/* L-x label */}
-      <text x="215" y="46" textAnchor="middle" fill="#DC2626" fontSize="9">{"\u05E9\u05D0\u05E8\u05D9\u05EA"}</text>
+      <text x="215" y="46" textAnchor="middle" fill="#DC2626" fontSize="9">{"שארית"}</text>
       {/* Arrow to square */}
       <line x1="85" y1="48" x2="70" y2="62" stroke="#3b82f6" strokeWidth="1" strokeDasharray="4,2" />
       {/* Square outline */}
       <rect x="30" y="65" width="65" height="65" fill="none" stroke="#3b82f6" strokeWidth="2" rx="2" />
-      <text x="62" y="102" textAnchor="middle" fill="#3b82f6" fontSize="11" fontWeight="bold">{"\u05E8\u05D9\u05D1\u05D5\u05E2"}</text>
+      <text x="62" y="102" textAnchor="middle" fill="#3b82f6" fontSize="11" fontWeight="bold">{"ריבוע"}</text>
       {/* Arrow to circle */}
       <line x1="220" y1="48" x2="225" y2="62" stroke="#DC2626" strokeWidth="1" strokeDasharray="4,2" />
       {/* Circle outline */}
       <circle cx="230" cy="100" r="35" fill="none" stroke="#DC2626" strokeWidth="2" />
-      <text x="230" y="104" textAnchor="middle" fill="#DC2626" fontSize="11" fontWeight="bold">{"\u05E2\u05D9\u05D2\u05D5\u05DC"}</text>
+      <text x="230" y="104" textAnchor="middle" fill="#DC2626" fontSize="11" fontWeight="bold">{"עיגול"}</text>
     </svg>
   );
 }
 
 // ─── Prompt Coach Atoms ───────────────────────────────────────────────────────
 
-function CopyBtn({ text, label = "\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8" }: { text: string; label?: string }) {
+function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; label?: string }) {
   const [c, setC] = useState(false);
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setC(true); setTimeout(() => setC(false), 2000); }}
       style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(148,163,184,0.25)", color: "#2D3436", fontWeight: 500, cursor: "pointer" }}
     >
-      {c ? <Check size={13} /> : <Copy size={13} />}{c ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : label}
+      {c ? <Check size={13} /> : <Copy size={13} />}{c ? "הועתק!" : label}
     </button>
   );
 }
 
-function GoldenPromptCard({ prompt, title = "\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E8\u05D0\u05E9\u05D9", glowRgb = "22,163,74", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
+function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "22,163,74", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
   return (
     <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)` }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
@@ -165,7 +165,7 @@ function GoldenPromptCard({ prompt, title = "\u05E4\u05E8\u05D5\u05DE\u05E4\u05D
         <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
       </div>
       <p style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
-      <CopyBtn text={prompt} label="\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05DC\u05D0" />
+      <CopyBtn text={prompt} label="העתק פרומפט מלא" />
     </div>
   );
 }
@@ -179,10 +179,10 @@ function TutorStepBasic({ step, glowRgb = "22,163,74", borderRgb = "45,90,39" }:
       </div>
       <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
-          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>&#9997;&#65039; {"\u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05D4\u05DE\u05D5\u05DB\u05DF"}</div>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>&#9997;&#65039; {"הפרומפט המוכן"}</div>
           <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(${borderRgb},0.35)`, padding: 12, fontSize: 11, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word" }}>{step.prompt}</div>
         </div>
-        <CopyBtn text={step.prompt} label="\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05DE\u05D5\u05E7\u05D3" />
+        <CopyBtn text={step.prompt} label="העתק פרומפט ממוקד" />
       </div>
     </div>
   );
@@ -196,7 +196,7 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
 
   const validate = () => {
     if (text.trim().length < 20) {
-      setResult({ score: 0, blocked: false, hint: "\u05D4\u05E0\u05D9\u05E1\u05D5\u05D7 \u05E7\u05E6\u05E8 \u05DE\u05D3\u05D9 \u2014 \u05DB\u05EA\u05D5\u05D1 \u05DC\u05E4\u05D7\u05D5\u05EA 20 \u05EA\u05D5\u05D5\u05D9\u05DD." });
+      setResult({ score: 0, blocked: false, hint: "הניסוח קצר מדי — כתוב לפחות 20 תווים." });
       return;
     }
     const res = calculatePromptScore(text, step.contextWords ?? []);
@@ -226,14 +226,14 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
         <textarea
           value={text} rows={3} dir="rtl" disabled={passed}
           onChange={(e) => { setText(e.target.value); setResult(null); }}
-          placeholder="\u05E0\u05E1\u05D7 \u05DB\u05D0\u05DF \u05D0\u05EA \u05D4\u05E9\u05D0\u05DC\u05D4 \u05E9\u05DC\u05DA \u05DC-AI (\u05D1\u05E7\u05E9 \u05D4\u05DB\u05D5\u05D5\u05E0\u05D4, \u05DC\u05D0 \u05E4\u05EA\u05E8\u05D5\u05DF)..."
+          placeholder="נסח כאן את השאלה שלך ל-AI (בקש הכוונה, לא פתרון)..."
           style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: "rgba(255,255,255,0.05)", border: `1px solid ${passed ? "rgba(245,158,11,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
         />
 
         {result && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", marginBottom: 4, fontWeight: 600 }}>
-              <span>{"\u05E6\u05D9\u05D5\u05DF \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8"}</span>
+              <span>{"ציון הפרומפט"}</span>
               <span style={{ fontWeight: 800 }}>{result.score}/100</span>
             </div>
             <div style={{ height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}>
@@ -244,7 +244,7 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
 
         {!result && (
           <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(${borderRgb},0.4)`, color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>
-            &#129302; {"\u05D1\u05D3\u05D9\u05E7\u05EA AI \u05DE\u05D3\u05D5\u05DE\u05D4"}
+            &#129302; {"בדיקת AI מדומה"}
           </button>
         )}
 
@@ -263,16 +263,16 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
         {passed && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#15803d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>
-              &#9989; {"\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05E6\u05D5\u05D9\u05DF!"} {"\u05E6\u05D9\u05D5\u05DF:"} <strong style={{ color: "#14532d" }}>{result!.score}/100</strong>
+              &#9989; {"פרומפט מצוין!"} {"ציון:"} <strong style={{ color: "#14532d" }}>{result!.score}/100</strong>
             </div>
             <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>
-              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7 \u05DC-AI"}
+              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "הועתק!" : "העתק ל-AI"}
             </button>
           </motion.div>
         )}
 
         {result && !passed && (
-          <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#6B7280", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>{"\u05E0\u05E1\u05D4 \u05E9\u05D5\u05D1"}</button>
+          <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#6B7280", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>{"נסה שוב"}</button>
         )}
       </div>
     </div>
@@ -293,7 +293,7 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
 
   const validate = () => {
     if (text.trim().length < 20) {
-      setResult({ score: 0, blocked: false, hint: "\u05D4\u05E0\u05D9\u05E1\u05D5\u05D7 \u05E7\u05E6\u05E8 \u05DE\u05D3\u05D9 \u2014 \u05DB\u05EA\u05D5\u05D1 \u05DC\u05E4\u05D7\u05D5\u05EA 20 \u05EA\u05D5\u05D5\u05D9\u05DD." });
+      setResult({ score: 0, blocked: false, hint: "הניסוח קצר מדי — כתוב לפחות 20 תווים." });
       return;
     }
     const r = calculatePromptScore(text, step.contextWords ?? []);
@@ -315,14 +315,14 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
           value={text} rows={3} dir="rtl"
           readOnly={passed}
           onChange={(e) => { if (!passed) { setText(e.target.value); setResult(null); } }}
-          placeholder="\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E9\u05DC\u05DA \u05DC\u05E1\u05E2\u05D9\u05E3 \u05D6\u05D4..."
+          placeholder="כתוב את הפרומפט שלך לסעיף זה..."
           style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: passed ? "rgba(220,252,231,0.3)" : "rgba(255,255,255,0.05)", border: `1px solid ${passed ? "rgba(52,211,153,0.25)" : "rgba(139,38,53,0.25)"}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
         />
 
         {result && (
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", fontWeight: 600 }}>
-              <span>{"\u05E6\u05D9\u05D5\u05DF"}</span>
+              <span>{"ציון"}</span>
               <span style={{ fontWeight: 800 }}>{result.score}/100</span>
             </div>
             <div style={{ height: 5, borderRadius: 99, background: "#E5E7EB", overflow: "hidden" }}>
@@ -334,16 +334,16 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
         {result && !passed && result.hint && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             style={{ borderRadius: 12, padding: 12, fontSize: 12, lineHeight: 1.6, color: "#1A1A1A", background: result.blocked ? "rgba(254,226,226,1)" : "rgba(255,251,235,1)", border: `2px solid ${result.blocked ? "#dc2626" : "#d97706"}` }}>
-            {result.blocked ? "\u26A0\uFE0F" : "\uD83D\uDCA1"} {result.hint}
+            {result.blocked ? "⚠️" : "💡"} {result.hint}
           </motion.div>
         )}
 
         {passed && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#15803d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>&#9989; {"\u05E0\u05D9\u05E1\u05D5\u05D7 \u05DE\u05E2\u05D5\u05DC\u05D4! \u05D4\u05E1\u05E2\u05D9\u05E3 \u05D4\u05D1\u05D0 \u05E0\u05E4\u05EA\u05D7."}</div>
+            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#15803d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>&#9989; {"ניסוח מעולה! הסעיף הבא נפתח."}</div>
             <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
               style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>
-              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7 \u05E0\u05D9\u05E1\u05D5\u05D7"}
+              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "הועתק!" : "העתק ניסוח"}
             </button>
           </motion.div>
         )}
@@ -351,7 +351,7 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
         {!passed && (
           <button onClick={validate}
             style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(220,38,38,0.35)", color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>
-            &#129302; {"\u05D1\u05D3\u05D9\u05E7\u05EA AI \u05DE\u05D3\u05D5\u05DE\u05D4"}
+            &#129302; {"בדיקת AI מדומה"}
           </button>
         )}
       </div>
@@ -379,10 +379,10 @@ function LadderBase({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: Prompt
               <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
               {!completed[i] ? (
                 <button onClick={() => markDone(i)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.1)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
-                  &#10003; {"\u05E1\u05D9\u05D9\u05DE\u05EA\u05D9 \u05E1\u05E2\u05D9\u05E3 \u05D6\u05D4"}
+                  &#10003; {"סיימתי סעיף זה"}
                 </button>
               ) : (
-                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>&#9989; {"\u05D4\u05D5\u05E9\u05DC\u05DD"}</div>
+                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>&#9989; {"הושלם"}</div>
               )}
             </>
           ) : (
@@ -425,8 +425,8 @@ function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
         onPass={() => setMasterPassed(true)}
         accentColor="#991b1b"
         accentRgb="153,27,27"
-        requiredPhrase="\u05E1\u05E8\u05D5\u05E7 \u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D5\u05E2\u05E6\u05D5\u05E8"
-        subjectWords={["\u05E7\u05D9\u05E6\u05D5\u05DF", "\u05E9\u05D8\u05D7", "\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E8\u05D9\u05D1\u05D5\u05E2", "\u05E2\u05D9\u05D2\u05D5\u05DC", "\u05D7\u05D5\u05D8"]}
+        requiredPhrase="סרוק נתונים ועצור"
+        subjectWords={["קיצון", "שטח", "מינימום", "נגזרת", "ריבוע", "עיגול", "חוט"]}
       />
 
       {steps.map((s, i) => (
@@ -447,8 +447,8 @@ function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
       {allPassed && (
         <div style={{ borderRadius: 16, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: "1.25rem 1.5rem", marginTop: 16, textAlign: "center" }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>&#127942;</div>
-          <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>{"\u05DB\u05DC \u05D4\u05DB\u05D1\u05D5\u05D3 \u2014 \u05D4\u05E9\u05DC\u05DE\u05EA \u05D0\u05EA \u05D4\u05E8\u05DE\u05D4 \u05D4\u05DE\u05EA\u05E7\u05D3\u05DE\u05EA!"}</div>
-          <div style={{ color: "#166534", fontSize: 13 }}>{"\u05E2\u05D1\u05E8\u05EA \u05D1\u05D4\u05E6\u05DC\u05D7\u05D4 \u05D0\u05EA \u05DB\u05DC \u05D4\u05E1\u05E2\u05D9\u05E4\u05D9\u05DD."}</div>
+          <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>{"כל הכבוד — השלמת את הרמה המתקדמת!"}</div>
+          <div style={{ color: "#166534", fontSize: 13 }}>{"עברת בהצלחה את כל הסעיפים."}</div>
         </div>
       )}
     </div>
@@ -460,53 +460,53 @@ function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
 const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    title: "\u05D2\u05D3\u05E8 \u05DC\u05D9\u05D3 \u05E7\u05D9\u05E8 \u2014 \u05DE\u05E7\u05E1\u05D5\u05DD \u05E9\u05D8\u05D7",
-    problem: "\u05D7\u05E7\u05DC\u05D0\u05D9 \u05DE\u05E2\u05D5\u05E0\u05D9\u05D9\u05DF \u05DC\u05D2\u05D3\u05D5\u05E8 \u05D7\u05DC\u05E7\u05D4 \u05DE\u05DC\u05D1\u05E0\u05D9\u05EA \u05D4\u05E6\u05DE\u05D5\u05D3\u05D4 \u05DC\u05E7\u05D9\u05E8 \u05D0\u05D1\u05DF, \u05DB\u05DA \u05E9\u05E0\u05D3\u05E8\u05E9 \u05D2\u05D9\u05D3\u05D5\u05E8 \u05E8\u05E7 \u05E2\u05D1\u05D5\u05E8 \u05E9\u05DC\u05D5\u05E9 \u05E6\u05DC\u05E2\u05D5\u05EA. \u05DC\u05E8\u05E9\u05D5\u05EA\u05D5 L \u05DE\u05D8\u05E8\u05D9\u05DD \u05E9\u05DC \u05D2\u05D3\u05E8.\n\n\u05D0. \u05D1\u05D8\u05D0 \u05D0\u05EA y \u05D1\u05E2\u05D6\u05E8\u05EA x \u05D5-L.\n\u05D1. \u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05E9\u05D8\u05D7 A(x).\n\u05D2. \u05DE\u05E6\u05D0 \u05D0\u05EA x \u05E9\u05DE\u05DE\u05E7\u05E1\u05DD \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7.\n\u05D3. \u05D0\u05DE\u05EA \u05E9\u05DE\u05D3\u05D5\u05D1\u05E8 \u05D1\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD \u05D1\u05D0\u05DE\u05E6\u05E2\u05D5\u05EA \u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4.",
+    title: "גדר ליד קיר — מקסום שטח",
+    problem: "חקלאי מעוניין לגדור חלקה מלבנית הצמודה לקיר אבן, כך שנדרש גידור רק עבור שלוש צלעות. לרשותו L מטרים של גדר.\n\nא. בטא את y בעזרת x ו-L.\nב. כתוב את פונקציית השטח A(x).\nג. מצא את x שממקסם את השטח.\nד. אמת שמדובר במקסימום באמצעות נגזרת שנייה.",
     diagram: <BasicSVG />,
     pitfalls: [
-      { title: "\u26A0\uFE0F \u05E9\u05DC\u05D5\u05E9 \u05E6\u05DC\u05E2\u05D5\u05EA \u05D1\u05DC\u05D1\u05D3", text: "\u05D4\u05E7\u05D9\u05E8 \u05DE\u05D7\u05DC\u05D9\u05E3 \u05D0\u05EA \u05D4\u05E6\u05DC\u05E2 \u05D4\u05E8\u05D1\u05D9\u05E2\u05D9\u05EA \u2014 \u05D4\u05D0\u05D9\u05DC\u05D5\u05E5 \u05DB\u05D5\u05DC\u05DC \u05E8\u05E7 3 \u05E6\u05DC\u05E2\u05D5\u05EA \u05E9\u05DC \u05D2\u05D3\u05E8, \u05DC\u05D0 4. \u05EA\u05DC\u05DE\u05D9\u05D3\u05D9\u05DD \u05E8\u05D1\u05D9\u05DD \u05DB\u05D5\u05EA\u05D1\u05D9\u05DD \u05D0\u05D9\u05DC\u05D5\u05E5 \u05DC\u05D0\u05E8\u05D1\u05E2 \u05E6\u05DC\u05E2\u05D5\u05EA \u05D1\u05DE\u05E7\u05D5\u05DD \u05DC\u05E9\u05DC\u05D5\u05E9." },
-      { title: "\u26A0\uFE0F \u05DC\u05D0\u05E9\u05E8 \u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD", text: "\u05DE\u05E6\u05D9\u05D0\u05EA \u05E0\u05E7\u05D5\u05D3\u05D4 \u05E7\u05E8\u05D9\u05D8\u05D9\u05EA \u05D4\u05D9\u05D0 \u05D7\u05E6\u05D9 \u05DE\u05D4\u05E2\u05D1\u05D5\u05D3\u05D4. \u05D7\u05D5\u05D1\u05D4 \u05DC\u05D1\u05D3\u05D5\u05E7 \u05E2\u05DD \u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4 \u05D0\u05D5 \u05D8\u05D1\u05DC\u05EA \u05E1\u05D9\u05DE\u05E0\u05D9\u05DD \u05E9\u05D6\u05D4 \u05D0\u05DB\u05DF \u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD." },
+      { title: "⚠️ שלוש צלעות בלבד", text: "הקיר מחליף את הצלע הרביעית — האילוץ כולל רק 3 צלעות של גדר, לא 4. תלמידים רבים כותבים אילוץ לארבע צלעות במקום לשלוש." },
+      { title: "⚠️ לאשר מקסימום", text: "מציאת נקודה קריטית היא חצי מהעבודה. חובה לבדוק עם נגזרת שנייה או טבלת סימנים שזה אכן מקסימום." },
     ],
-    goldenPrompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05D1\u05DB\u05D9\u05EA\u05D4 \u05D9\u05D0\u05F3 \u05D5\u05E8\u05D5\u05E6\u05D4 \u05DC\u05E4\u05EA\u05D5\u05E8 \u05D9\u05D7\u05D3 \u05D1\u05E2\u05D9\u05D9\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05EA:\n\u05D7\u05E7\u05DC\u05D0\u05D9 \u05D2\u05D5\u05D3\u05E8 \u05D7\u05DC\u05E7\u05D4 \u05DE\u05DC\u05D1\u05E0\u05D9\u05EA \u05E6\u05DE\u05D5\u05D3\u05D4 \u05DC\u05E7\u05D9\u05E8 \u05D0\u05D1\u05DF \u05E2\u05DD L \u05DE\u05D8\u05E8\u05D9\u05DD \u05E9\u05DC \u05D2\u05D3\u05E8 (3 \u05E6\u05DC\u05E2\u05D5\u05EA). \u05DE\u05E7\u05E1\u05DD \u05E9\u05D8\u05D7.\n\u05E4\u05E2\u05DC \u05DB\u05DE\u05E0\u05D8\u05D5\u05E8 \u2014 \u05D0\u05DC \u05EA\u05D9\u05EA\u05DF \u05E4\u05EA\u05E8\u05D5\u05DF \u05DE\u05D5\u05DB\u05DF. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05E9\u05DC\u05D1 \u05D0\u05D7\u05E8\u05D9 \u05E9\u05DC\u05D1:\n1. \u05E9\u05D0\u05DC \u05D0\u05D5\u05EA\u05D9 \u05D0\u05D9\u05D6\u05D4 \u05DE\u05E9\u05EA\u05E0\u05D4 \u05DC\u05D1\u05D7\u05D5\u05E8 \u05D5\u05DC\u05DE\u05D4.\n2. \u05E2\u05D6\u05D5\u05E8 \u05DC\u05D9 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05D0\u05D9\u05DC\u05D5\u05E5 \u05D5\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05DE\u05D8\u05E8\u05D4.\n3. \u05EA\u05DF \u05DC\u05D9 \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DC\u05DE\u05E6\u05D5\u05D0 \u05E7\u05D9\u05E6\u05D5\u05DF \u05DC\u05D1\u05D3 \u2014 \u05D4\u05EA\u05E2\u05E8\u05D1 \u05E8\u05E7 \u05D0\u05DD \u05D8\u05E2\u05D9\u05EA\u05D9.\n\u05DB\u05DC \u05E9\u05DC\u05D1: \u05E9\u05D0\u05DC \u201C\u05DE\u05D5\u05DB\u05DF \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA?\u201D \u05DC\u05E4\u05E0\u05D9 \u05E9\u05EA\u05EA\u05E7\u05D3\u05DD.",
+    goldenPrompt: "אני תלמיד בכיתה יא׳ ורוצה לפתור יחד בעיית קיצון גיאומטרית:\nחקלאי גודר חלקה מלבנית צמודה לקיר אבן עם L מטרים של גדר (3 צלעות). מקסם שטח.\nפעל כמנטור — אל תיתן פתרון מוכן. תנחה אותי שלב אחרי שלב:\n1. שאל אותי איזה משתנה לבחור ולמה.\n2. עזור לי לכתוב את האילוץ ופונקציית המטרה.\n3. תן לי לגזור ולמצוא קיצון לבד — התערב רק אם טעיתי.\nכל שלב: שאל “מוכן להמשיך?” לפני שתתקדם.",
     steps: [
-      { phase: "\u05E9\u05DC\u05D1 \u05D0\u2032", label: "\u05D4\u05D2\u05D3\u05E8 \u05DE\u05E9\u05EA\u05E0\u05D4 \u05D5\u05EA\u05D7\u05D5\u05DD",  coaching: "", prompt: "\u05D0\u05E0\u05D9 \u05E4\u05D5\u05EA\u05E8 \u05D1\u05E2\u05D9\u05D9\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF: \u05D7\u05DC\u05E7\u05D4 \u05DE\u05DC\u05D1\u05E0\u05D9\u05EA \u05DC\u05D9\u05D3 \u05E7\u05D9\u05E8 \u05E2\u05DD L \u05DE\u05D8\u05E8\u05D9\u05DD \u05E9\u05DC \u05D2\u05D3\u05E8 (3 \u05E6\u05DC\u05E2\u05D5\u05EA). \u05DE\u05D4\u05D5 \u05D4\u05DE\u05E9\u05EA\u05E0\u05D4 \u05D4\u05E0\u05DB\u05D5\u05DF x, \u05D5\u05DE\u05D4\u05D5 \u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4 \u05E9\u05DC\u05D5? \u05E9\u05D0\u05DC \u05D0\u05D5\u05EA\u05D9 \u05D5\u05D0\u05DC \u05EA\u05DE\u05E9\u05D9\u05DA \u05DC\u05E4\u05E0\u05D9 \u05E9\u05D0\u05E2\u05E0\u05D4.", keywords: [], keywordHint: "", contextWords: ["\u05DE\u05E9\u05EA\u05E0\u05D4", "\u05EA\u05D7\u05D5\u05DD", "\u05D2\u05D3\u05E8", "\u05E7\u05D9\u05E8", "\u05E6\u05DC\u05E2\u05D5\u05EA", "x"] },
-      { phase: "\u05E9\u05DC\u05D1 \u05D1\u2032", label: "\u05DB\u05EA\u05D5\u05D1 \u05D0\u05D9\u05DC\u05D5\u05E5 \u05D5\u05D1\u05D8\u05D0 y", coaching: "", prompt: "\u05E9\u05E0\u05D9 \u05E6\u05DC\u05E2\u05D5\u05EA \u05D1\u05E8\u05D5\u05D7\u05D1 x \u05D5\u05D0\u05D7\u05EA \u05D1\u05D0\u05D5\u05E8\u05DA y, \u05E1\u05D4\u05F4\u05DB L \u05DE\u05D8\u05E8\u05D9\u05DD. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05D0\u05D9\u05DC\u05D5\u05E5 \u05D5\u05DC\u05D1\u05D5\u05D3\u05D3 y. \u05E9\u05D0\u05DC \u05D0\u05DD \u05D0\u05E0\u05D9 \u05D9\u05D5\u05D3\u05E2 \u05DB\u05DE\u05D4 \u05E6\u05DC\u05E2\u05D5\u05EA \u05D9\u05E9.", keywords: [], keywordHint: "", contextWords: ["\u05D0\u05D9\u05DC\u05D5\u05E5", "y", "\u05D1\u05D5\u05D3\u05D3", "\u05E6\u05DC\u05E2\u05D5\u05EA", "\u05D2\u05D3\u05E8", "L"] },
-      { phase: "\u05E9\u05DC\u05D1 \u05D2\u2032", label: "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05DE\u05D8\u05E8\u05D4",      coaching: "", prompt: "\u05E8\u05D5\u05D7\u05D1 x, \u05D0\u05D5\u05E8\u05DA y \u05EA\u05DC\u05D5\u05D9 \u05D1-L \u05D5-x. \u05D4\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05DB\u05EA\u05D5\u05D1 A(x) = \u05E9\u05D8\u05D7 \u05D5\u05DC\u05E4\u05E8\u05D5\u05E1. \u05D0\u05DC \u05EA\u05D9\u05EA\u05DF \u05D0\u05EA \u05D4\u05EA\u05E9\u05D5\u05D1\u05D4 \u2014 \u05E9\u05D0\u05DC \u05D0\u05D5\u05EA\u05D9.", keywords: [], keywordHint: "", contextWords: ["\u05E9\u05D8\u05D7", "A(x)", "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4", "\u05D4\u05E6\u05D1", "\u05DE\u05D8\u05E8\u05D4", "\u05E4\u05E8\u05D5\u05E1"] },
-      { phase: "\u05E9\u05DC\u05D1 \u05D3\u2032", label: "\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DE\u05E6\u05D0 \u05E7\u05D9\u05E6\u05D5\u05DF",    coaching: "", prompt: "\u05D9\u05E9 \u05DC\u05D9 \u05D0\u05EA A(x) \u05DB\u05E4\u05D5\u05DC\u05D9\u05E0\u05D5\u05DD \u05DE\u05D3\u05E8\u05D2\u05D4 2. \u05D4\u05E1\u05D1\u05E8 \u05DC\u05D9 \u05DB\u05D9\u05E6\u05D3 \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DC\u05DE\u05E6\u05D5\u05D0 \u05E7\u05D9\u05E6\u05D5\u05DF. \u05EA\u05DF \u05DC\u05D9 \u05DC\u05E0\u05E1\u05D5\u05EA \u05DC\u05D1\u05D3 \u05D5\u05EA\u05D0\u05DE\u05EA.", keywords: [], keywordHint: "", contextWords: ["\u05D2\u05D6\u05D5\u05E8", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E7\u05D9\u05E6\u05D5\u05DF", "\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD", "\u05D0\u05E4\u05E1", "A'(x)"] },
+      { phase: "שלב א′", label: "הגדר משתנה ותחום",  coaching: "", prompt: "אני פותר בעיית קיצון: חלקה מלבנית ליד קיר עם L מטרים של גדר (3 צלעות). מהו המשתנה הנכון x, ומהו תחום ההגדרה שלו? שאל אותי ואל תמשיך לפני שאענה.", keywords: [], keywordHint: "", contextWords: ["משתנה", "תחום", "גדר", "קיר", "צלעות", "x"] },
+      { phase: "שלב ב′", label: "כתוב אילוץ ובטא y", coaching: "", prompt: "שני צלעות ברוחב x ואחת באורך y, סה״כ L מטרים. תנחה אותי לכתוב את האילוץ ולבודד y. שאל אם אני יודע כמה צלעות יש.", keywords: [], keywordHint: "", contextWords: ["אילוץ", "y", "בודד", "צלעות", "גדר", "L"] },
+      { phase: "שלב ג′", label: "פונקציית מטרה",      coaching: "", prompt: "רוחב x, אורך y תלוי ב-L ו-x. הנחה אותי לכתוב A(x) = שטח ולפרוס. אל תיתן את התשובה — שאל אותי.", keywords: [], keywordHint: "", contextWords: ["שטח", "A(x)", "פונקציה", "הצב", "מטרה", "פרוס"] },
+      { phase: "שלב ד′", label: "גזור ומצא קיצון",    coaching: "", prompt: "יש לי את A(x) כפולינום מדרגה 2. הסבר לי כיצד לגזור ולמצוא קיצון. תן לי לנסות לבד ותאמת.", keywords: [], keywordHint: "", contextWords: ["גזור", "נגזרת", "קיצון", "מקסימום", "אפס", "A'(x)"] },
     ],
   },
   {
     id: "medium",
-    title: "\u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF \u2014 \u05DE\u05E7\u05E1\u05D5\u05DD \u05E9\u05D8\u05D7",
-    problem: "\u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF \u05DE\u05D5\u05E8\u05DB\u05D1 \u05DE\u05DE\u05DC\u05D1\u05DF \u05E9\u05E2\u05DC\u05D9\u05D5 \u05D7\u05E6\u05D9 \u05E2\u05D9\u05D2\u05D5\u05DC \u05E2\u05DD \u05D0\u05D5\u05EA\u05D5 \u05E8\u05D5\u05D7\u05D1. \u05D4\u05D9\u05E7\u05E3 \u05D4\u05DB\u05D5\u05DC\u05DC \u05E9\u05DC \u05D4\u05D7\u05DC\u05D5\u05DF \u05D4\u05D5\u05D0 P \u05DE\u05D8\u05E8. \u05DE\u05E6\u05D0 \u05D0\u05EA \u05DE\u05DE\u05D3\u05D9 \u05D4\u05DE\u05DC\u05D1\u05DF (\u05E8\u05D5\u05D7\u05D1 2r \u05D5\u05D2\u05D5\u05D1\u05D4 h) \u05DB\u05D3\u05D9 \u05DC\u05DE\u05E7\u05E1\u05DD \u05D0\u05EA \u05E9\u05D8\u05D7 \u05D4\u05D7\u05DC\u05D5\u05DF.\n\n\u05D0. \u05D1\u05D8\u05D0 \u05D0\u05EA \u05D0\u05D9\u05DC\u05D5\u05E5 \u05D4\u05D4\u05D9\u05E7\u05E3 \u05D1\u05E2\u05D6\u05E8\u05EA r \u05D5-h.\n\u05D1. \u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05E9\u05D8\u05D7 A(r) \u05D1\u05DE\u05E9\u05EA\u05E0\u05D4 \u05D0\u05D7\u05D3.\n\u05D2. \u05DE\u05E6\u05D0 \u05D0\u05EA r \u05E9\u05DE\u05DE\u05E7\u05E1\u05DD \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7.\n\u05D3. \u05D7\u05E9\u05D1 \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9.",
+    title: "חלון נורמן — מקסום שטח",
+    problem: "חלון נורמן מורכב ממלבן שעליו חצי עיגול עם אותו רוחב. היקף הכולל של החלון הוא P מטר. מצא את ממדי המלבן (רוחב 2r וגובה h) כדי למקסם את שטח החלון.\n\nא. בטא את אילוץ ההיקף בעזרת r ו-h.\nב. כתוב את פונקציית השטח A(r) במשתנה אחד.\nג. מצא את r שממקסם את השטח.\nד. חשב את השטח המקסימלי.",
     diagram: <MediumSVG />,
     pitfalls: [
-      { title: "\u26A0\uFE0F \u05D4\u05D9\u05E7\u05E3 \u05D4\u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC", text: "\u05D4\u05D9\u05E7\u05E3 \u05D4\u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC \u05D4\u05D5\u05D0 \u03C0r (\u05DC\u05D0 2\u03C0r). \u05D0\u05DC \u05EA\u05DB\u05E4\u05D9\u05DC \u05D1-2 \u2014 \u05D6\u05D4 \u05D7\u05E6\u05D9 \u05E2\u05D9\u05D2\u05D5\u05DC, \u05DC\u05D0 \u05E2\u05D9\u05D2\u05D5\u05DC \u05E9\u05DC\u05DD." },
-      { title: "\u26A0\uFE0F \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC", text: "\u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC \u05E9\u05DC \u05D4\u05D7\u05DC\u05D5\u05DF \u05DB\u05D5\u05DC\u05DC \u05D2\u05DD \u05DE\u05DC\u05D1\u05DF \u05D5\u05D2\u05DD \u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC. \u05EA\u05DC\u05DE\u05D9\u05D3\u05D9\u05DD \u05E8\u05D1\u05D9\u05DD \u05E9\u05D5\u05DB\u05D7\u05D9\u05DD \u05D0\u05EA \u05D7\u05E6\u05D9 \u05D4\u05E2\u05D9\u05D2\u05D5\u05DC." },
+      { title: "⚠️ היקף החצי-עיגול", text: "היקף החצי-עיגול הוא πr (לא 2πr). אל תכפיל ב-2 — זה חצי עיגול, לא עיגול שלם." },
+      { title: "⚠️ השטח הכולל", text: "השטח הכולל של החלון כולל גם מלבן וגם חצי-עיגול. תלמידים רבים שוכחים את חצי העיגול." },
     ],
-    goldenPrompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05D1\u05DB\u05D9\u05EA\u05D4 \u05D9\u05D0\u2032 \u05D5\u05E8\u05D5\u05E6\u05D4 \u05DC\u05E4\u05EA\u05D5\u05E8 \u05D1\u05E2\u05D9\u05D9\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05E2\u05DC \u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF:\n\u05DE\u05DC\u05D1\u05DF + \u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC, \u05D4\u05D9\u05E7\u05E3 \u05DB\u05D5\u05DC\u05DC = P \u05DE\u05D8\u05E8. \u05DE\u05E7\u05E1\u05DD \u05E9\u05D8\u05D7.\n\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9:\n1. \u05DB\u05D9\u05E6\u05D3 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D0\u05D9\u05DC\u05D5\u05E5 \u05D4\u05D4\u05D9\u05E7\u05E3 (\u05D6\u05D4\u05D4 \u05DC\u05D9 \u05D0\u05EA \u05D7\u05E6\u05D9 \u05D4\u05D4\u05D9\u05E7\u05E3 \u05E9\u05DC \u05D4\u05E2\u05D9\u05D2\u05D5\u05DC).\n2. \u05DB\u05D9\u05E6\u05D3 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC.\n3. \u05DB\u05D9\u05E6\u05D3 \u05DC\u05D4\u05E6\u05D1\u05D9\u05E2 \u05E2\u05DC r \u05D4\u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9.\n\u05E9\u05D0\u05DC \u201C\u05DE\u05D5\u05DB\u05DF?\u201D \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1.",
+    goldenPrompt: "אני תלמיד בכיתה יא′ ורוצה לפתור בעיית קיצון על חלון נורמן:\nמלבן + חצי-עיגול, היקף כולל = P מטר. מקסם שטח.\nנחה אותי:\n1. כיצד לכתוב את אילוץ ההיקף (זהה לי את חצי ההיקף של העיגול).\n2. כיצד לכתוב את השטח הכולל.\n3. כיצד להצביע על r המקסימלי.\nשאל “מוכן?” אחרי כל שלב.",
     steps: [
-      { phase: "\u05E9\u05DC\u05D1 \u05D0\u2032", label: "\u05DE\u05E9\u05EA\u05E0\u05D4 \u05D5\u05D0\u05D9\u05DC\u05D5\u05E5 \u05D4\u05D9\u05E7\u05E3", coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["\u05D4\u05D9\u05E7\u05E3", "r", "h", "\u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC", "\u05D0\u05D9\u05DC\u05D5\u05E5", "\u05D1\u05D5\u05D3\u05D3", "\u03C0"] },
-      { phase: "\u05E9\u05DC\u05D1 \u05D1\u2032", label: "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05E9\u05D8\u05D7",       coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["\u05E9\u05D8\u05D7", "r", "h", "\u05D4\u05E6\u05D1", "\u05E4\u05E9\u05D8", "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4", "\u05DE\u05DC\u05D1\u05DF"] },
-      { phase: "\u05E9\u05DC\u05D1 \u05D2\u2032", label: "\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DE\u05E6\u05D0 \u05E7\u05D9\u05E6\u05D5\u05DF",    coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["\u05D2\u05D6\u05D5\u05E8", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E7\u05D9\u05E6\u05D5\u05DF", "\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD", "r", "\u05D0\u05E4\u05E1"] },
-      { phase: "\u05E9\u05DC\u05D1 \u05D3\u2032", label: "\u05DE\u05DE\u05D3\u05D9 \u05D4\u05D7\u05DC\u05D5\u05DF",          coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["\u05D7\u05E9\u05D1", "h", "r", "\u05E9\u05D8\u05D7", "\u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9", "\u05D4\u05E6\u05D1"] },
+      { phase: "שלב א′", label: "משתנה ואילוץ היקף", coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["היקף", "r", "h", "חצי-עיגול", "אילוץ", "בודד", "π"] },
+      { phase: "שלב ב′", label: "פונקציית שטח",       coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["שטח", "r", "h", "הצב", "פשט", "פונקציה", "מלבן"] },
+      { phase: "שלב ג′", label: "גזור ומצא קיצון",    coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["גזור", "נגזרת", "קיצון", "מקסימום", "r", "אפס"] },
+      { phase: "שלב ד′", label: "ממדי החלון",          coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["חשב", "h", "r", "שטח", "מקסימלי", "הצב"] },
     ],
   },
   {
     id: "advanced",
-    title: "\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD \u05E9\u05D8\u05D7 \u05DB\u05D5\u05DC\u05DC \u2014 \u05D7\u05D5\u05D8 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E2\u05D9\u05D2\u05D5\u05DC",
-    problem: "\u05D7\u05D5\u05D8 \u05D1\u05D0\u05D5\u05E8\u05DA L \u05E0\u05D7\u05EA\u05DA \u05DC\u05E9\u05E0\u05D9 \u05D7\u05DC\u05E7\u05D9\u05DD. \u05DE\u05D4\u05D7\u05DC\u05E7 \u05D4\u05E8\u05D0\u05E9\u05D5\u05DF \u05DB\u05D5\u05E4\u05DC\u05D9\u05DD \u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05DE\u05D4\u05E9\u05E0\u05D9 \u05E2\u05D9\u05D2\u05D5\u05DC. \u05DB\u05D9\u05E6\u05D3 \u05DC\u05D7\u05EA\u05D5\u05DA \u05D0\u05EA \u05D4\u05D7\u05D5\u05D8 \u05DB\u05D3\u05D9 \u05E9\u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC (\u05E8\u05D9\u05D1\u05D5\u05E2 + \u05E2\u05D9\u05D2\u05D5\u05DC) \u05D9\u05D4\u05D9\u05D4 \u05DE\u05D9\u05E0\u05D9\u05DE\u05DC\u05D9?\n\n\u05D0. \u05D1\u05D8\u05D0 \u05D0\u05EA \u05E6\u05DC\u05E2 a \u05D5\u05E8\u05D3\u05D9\u05D5\u05E1 r \u05D1\u05E2\u05D6\u05E8\u05EA x \u05D5-L.\n\u05D1. \u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC.\n\u05D2. \u05DE\u05E6\u05D0 \u05D0\u05EA x \u05E9\u05DE\u05DE\u05D6\u05E2\u05E8 \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC.",
+    title: "מינימום שטח כולל — חוט לריבוע ועיגול",
+    problem: "חוט באורך L נחתך לשני חלקים. מהחלק הראשון כופלים ריבוע ומהשני עיגול. כיצד לחתוך את החוט כדי שהשטח הכולל (ריבוע + עיגול) יהיה מינימלי?\n\nא. בטא את צלע a ורדיוס r בעזרת x ו-L.\nב. כתוב את פונקציית השטח הכולל.\nג. מצא את x שממזער את השטח הכולל.",
     diagram: <AdvancedSVG />,
     pitfalls: [
-      { title: "\u26A0\uFE0F \u05D4\u05D9\u05E7\u05E3 \u05E8\u05D9\u05D1\u05D5\u05E2 \u2260 \u05E6\u05DC\u05E2", text: "\u05D4\u05D9\u05E7\u05E3 \u05E8\u05D9\u05D1\u05D5\u05E2 = 4a, \u05DC\u05DB\u05DF \u05E6\u05DC\u05E2 a = \u05D7\u05DC\u05E7 \u05D4\u05D7\u05D5\u05D8 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D7\u05DC\u05E7\u05D9 4. \u05D0\u05DC \u05EA\u05D1\u05DC\u05D1\u05DC \u05D4\u05D9\u05E7\u05E3 \u05E2\u05DD \u05E6\u05DC\u05E2." },
-      { title: "\u26A0\uFE0F \u05D1\u05D3\u05E7\u05D5 \u05D2\u05DD \u05E7\u05E6\u05D5\u05D5\u05EA \u05D4\u05EA\u05D7\u05D5\u05DD", text: "\u05D4\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD \u05D9\u05DB\u05D5\u05DC \u05DC\u05D4\u05D9\u05D5\u05EA \u05D1\u05E7\u05E6\u05D5\u05D5\u05EA \u05D4\u05EA\u05D7\u05D5\u05DD (x=0 \u05D0\u05D5 x=L). \u05D1\u05D3\u05E7\u05D5 \u05D0\u05EA \u05D4\u05E2\u05E8\u05DA \u05D1\u05E0\u05E7\u05D5\u05D3\u05D5\u05EA \u05D4\u05E7\u05E6\u05D4 \u05D5\u05D4\u05E9\u05D5\u05D5\u05D5 \u05DC\u05E0\u05E7\u05D5\u05D3\u05D4 \u05D4\u05E7\u05E8\u05D9\u05D8\u05D9\u05EA!" },
+      { title: "⚠️ היקף ריבוע ≠ צלע", text: "היקף ריבוע = 4a, לכן צלע a = חלק החוט לריבוע חלקי 4. אל תבלבל היקף עם צלע." },
+      { title: "⚠️ בדקו גם קצוות התחום", text: "המינימום יכול להיות בקצוות התחום (x=0 או x=L). בדקו את הערך בנקודות הקצה והשווו לנקודה הקריטית!" },
     ],
     goldenPrompt: "",
-    advancedGateQuestion: "\u05DC\u05E4\u05E0\u05D9 \u05E9\u05DE\u05EA\u05D7\u05D9\u05DC\u05D9\u05DD \u2014 \u05DB\u05EA\u05D5\u05D1 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E9\u05DC\u05DD \u05E9\u05DE\u05E1\u05D1\u05D9\u05E8 \u05DC-AI \u05D0\u05D9\u05DA \u05DC\u05E0\u05D4\u05DC \u05D1\u05E2\u05D9\u05D9\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05E2\u05DC \u05D7\u05D5\u05D8 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E2\u05D9\u05D2\u05D5\u05DC. \u05DB\u05DC\u05D5\u05DC: \u05D4\u05D2\u05D3\u05E8\u05EA \u05EA\u05E4\u05E7\u05D9\u05D3, \u05D0\u05D9\u05E1\u05D5\u05E8 \u05E4\u05EA\u05E8\u05D5\u05DF, \u05D1\u05E7\u05E9\u05EA \u05D4\u05E0\u05D7\u05D9\u05D4, \u05D4\u05E0\u05D5\u05E9\u05D0 \u05D4\u05DE\u05EA\u05DE\u05D8\u05D9, \u05D5\u05D3\u05E8\u05D9\u05E9\u05EA \u05D4\u05DE\u05EA\u05E0\u05D4 \u05D1\u05D9\u05DF \u05E1\u05E2\u05D9\u05E4\u05D9\u05DD.",
+    advancedGateQuestion: "לפני שמתחילים — כתוב פרומפט שלם שמסביר ל-AI איך לנהל בעיית קיצון על חוט לריבוע ועיגול. כלול: הגדרת תפקיד, איסור פתרון, בקשת הנחיה, הנושא המתמטי, ודרישת המתנה בין סעיפים.",
     steps: [
-      { phase: "\u05E9\u05DC\u05D1 \u05D0\u2032", label: "\u05D4\u05D2\u05D3\u05E8 \u05DE\u05E9\u05EA\u05E0\u05D9\u05DD",             coaching: "", prompt: "\u05D7\u05D5\u05D8 \u05D1\u05D0\u05D5\u05E8\u05DA L \u05E0\u05D7\u05EA\u05DA \u05DC\u05E9\u05E0\u05D9 \u05D7\u05DC\u05E7\u05D9\u05DD. \u05D7\u05DC\u05E7 \u05D0\u05D7\u05D3 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2, \u05D4\u05E9\u05E0\u05D9 \u05DC\u05E2\u05D9\u05D2\u05D5\u05DC. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05D4\u05D2\u05D3\u05D9\u05E8 \u05D0\u05EA \u05E6\u05DC\u05E2 \u05D4\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E8\u05D3\u05D9\u05D5\u05E1 \u05D4\u05E2\u05D9\u05D2\u05D5\u05DC \u05D1\u05E2\u05D6\u05E8\u05EA x. \u05D0\u05DC \u05EA\u05D9\u05EA\u05DF \u05EA\u05E9\u05D5\u05D1\u05D5\u05EA.", keywords: [], keywordHint: "", contextWords: ["x", "\u05E6\u05DC\u05E2", "\u05E8\u05D3\u05D9\u05D5\u05E1", "\u05E8\u05D9\u05D1\u05D5\u05E2", "\u05E2\u05D9\u05D2\u05D5\u05DC", "\u05D4\u05D9\u05E7\u05E3"] },
-      { phase: "\u05E9\u05DC\u05D1 \u05D1\u2032", label: "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05E9\u05D8\u05D7 \u05DB\u05D5\u05DC\u05DC",        coaching: "", prompt: "\u05E9\u05D8\u05D7 \u05E8\u05D9\u05D1\u05D5\u05E2 + \u05E9\u05D8\u05D7 \u05E2\u05D9\u05D2\u05D5\u05DC. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x. \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.", keywords: [], keywordHint: "", contextWords: ["\u05E9\u05D8\u05D7", "x", "\u05E8\u05D9\u05D1\u05D5\u05E2", "\u05E2\u05D9\u05D2\u05D5\u05DC", "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4", "\u05DB\u05EA\u05D5\u05D1"] },
-      { phase: "\u05E9\u05DC\u05D1 \u05D2\u2032", label: "\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DE\u05E6\u05D0 \u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD",          coaching: "", prompt: "\u05D9\u05E9 \u05DC\u05D9 \u05D0\u05EA A(x). \u05D4\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05E0\u05E7\u05D5\u05D3\u05EA \u05D4\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD. \u05D1\u05D3\u05D5\u05E7 \u05D2\u05DD \u05E7\u05E6\u05D5\u05D5\u05EA \u05D4\u05EA\u05D7\u05D5\u05DD. \u05D0\u05DC \u05EA\u05D2\u05DC\u05D4 \u05EA\u05E9\u05D5\u05D1\u05D5\u05EA.", keywords: [], keywordHint: "", contextWords: ["\u05D2\u05D6\u05D5\u05E8", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E7\u05D9\u05E6\u05D5\u05DF", "\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD", "x", "\u05E7\u05E6\u05D5\u05D5\u05EA"] },
+      { phase: "שלב א′", label: "הגדר משתנים",             coaching: "", prompt: "חוט באורך L נחתך לשני חלקים. חלק אחד לריבוע, השני לעיגול. תנחה אותי להגדיר את צלע הריבוע ורדיוס העיגול בעזרת x. אל תיתן תשובות.", keywords: [], keywordHint: "", contextWords: ["x", "צלע", "רדיוס", "ריבוע", "עיגול", "היקף"] },
+      { phase: "שלב ב′", label: "פונקציית שטח כולל",        coaching: "", prompt: "שטח ריבוע + שטח עיגול. תנחה אותי לכתוב את פונקציית השטח הכולל כפונקציה של x. אל תפתור עבורי.", keywords: [], keywordHint: "", contextWords: ["שטח", "x", "ריבוע", "עיגול", "פונקציה", "כתוב"] },
+      { phase: "שלב ג′", label: "גזור ומצא מינימום",          coaching: "", prompt: "יש לי את A(x). הנחה אותי לגזור ולמצוא את נקודת המינימום. בדוק גם קצוות התחום. אל תגלה תשובות.", keywords: [], keywordHint: "", contextWords: ["גזור", "נגזרת", "קיצון", "מינימום", "x", "קצוות"] },
     ],
   },
 ];
@@ -537,10 +537,10 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       {/* Problem */}
       <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", marginBottom: "2rem" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>&#128221; {"\u05D4\u05E9\u05D0\u05DC\u05D4"}</div>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>&#128221; {"השאלה"}</div>
           <button onClick={handleCopyProblem} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.15)" : "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.2)", color: copiedProblem ? "#15803d" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
             {copiedProblem ? <Check size={11} /> : <Copy size={11} />}
-            {copiedProblem ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7"}
+            {copiedProblem ? "הועתק!" : "העתק"}
           </button>
         </div>
         <pre style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
@@ -548,7 +548,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
       {/* Pitfalls */}
       <div style={{ marginBottom: "2rem" }}>
-        <div style={{ color: "#DC2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>{"\u26A0\uFE0F"} {"\u05E9\u05D2\u05D9\u05D0\u05D5\u05EA \u05E0\u05E4\u05D5\u05E6\u05D5\u05EA"}</div>
+        <div style={{ color: "#DC2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>{"⚠️"} {"שגיאות נפוצות"}</div>
         {ex.pitfalls.map((p, i) => (
           <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.25)", background: "rgba(220,38,38,0.05)", padding: "0.85rem 1rem", marginBottom: 8 }}>
             <div style={{ color: "#DC2626", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>{p.title}</div>
@@ -559,7 +559,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
       {/* Prompt Ladder */}
       <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.7)", padding: "1.25rem", boxShadow: s.glowShadow }}>
-        <div style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; {"\u05DE\u05D3\u05E8\u05D9\u05DA \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8\u05D9\u05DD"}</div>
+        <div style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; {"מדריך הפרומפטים"}</div>
         {ex.id === "basic"    && <LadderBase   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
       </div>
@@ -577,14 +577,14 @@ function FormulaBar() {
   const [activeTab, setActiveTab] = useState<"cond" | "second" | "constraint" | null>(null);
 
   const tabs = [
-    { id: "cond" as const,       label: "\u05EA\u05E0\u05D0\u05D9 \u05E7\u05D9\u05E6\u05D5\u05DF",    tex: "f'(x)=0",            color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
-    { id: "second" as const,     label: "\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4",  tex: "f''(x) \\gtrless 0",  color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
-    { id: "constraint" as const, label: "\u05D0\u05D9\u05DC\u05D5\u05E5 \u05D5\u05D4\u05E6\u05D1\u05D4",  tex: "g(x,y)=c",            color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
+    { id: "cond" as const,       label: "תנאי קיצון",    tex: "f'(x)=0",            color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "second" as const,     label: "נגזרת שנייה",  tex: "f''(x) \\gtrless 0",  color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
+    { id: "constraint" as const, label: "אילוץ והצבה",  tex: "g(x,y)=c",            color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
   ];
 
   return (
     <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: "1.25rem" }}>
-      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>{"\u05E0\u05D5\u05E1\u05D7\u05D0\u05D5\u05EA"}</div>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>{"נוסחאות"}</div>
 
       <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
         {tabs.map(t => {
@@ -616,14 +616,14 @@ function FormulaBar() {
             </div>
             <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>{"\u05D4\u05E1\u05D1\u05E8:"}</strong> {"\u05E0\u05E7\u05D5\u05D3\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05DE\u05EA\u05E7\u05D1\u05DC\u05EA \u05DB\u05D0\u05E9\u05E8 \u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05DE\u05EA\u05D0\u05E4\u05E1\u05EA."}
+                <strong>{"הסבר:"}</strong> {"נקודת קיצון מתקבלת כאשר הנגזרת מתאפסת."}
                 <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
-                  <li>{"\u05E4\u05EA\u05E8\u05D5 "}<InlineMath>{"f'(x)=0"}</InlineMath>.</li>
-                  <li>{"\u05D0\u05DE\u05EA\u05D5 \u05E2\u05DD \u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4 \u05D0\u05D5 \u05D8\u05D1\u05DC\u05EA \u05E1\u05D9\u05DE\u05E0\u05D9\u05DD."}</li>
+                  <li>{"פתרו "}<InlineMath>{"f'(x)=0"}</InlineMath>.</li>
+                  <li>{"אמתו עם נגזרת שנייה או טבלת סימנים."}</li>
                 </ol>
               </div>
               <div style={{ marginTop: 10, color: "#16a34a", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
-                &#128161; {"\u05D3\u05D5\u05D2\u05DE\u05D4: "}<InlineMath>{"A(x) = 60x - 2x^2"}</InlineMath> {"\u2192 "}<InlineMath>{"A'(x)=60-4x=0"}</InlineMath> {"\u2192 "}<InlineMath>{"x=15"}</InlineMath>
+                &#128161; {"דוגמה: "}<InlineMath>{"A(x) = 60x - 2x^2"}</InlineMath> {"→ "}<InlineMath>{"A'(x)=60-4x=0"}</InlineMath> {"→ "}<InlineMath>{"x=15"}</InlineMath>
               </div>
             </div>
           </div>
@@ -639,14 +639,14 @@ function FormulaBar() {
             </div>
             <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>{"\u05D4\u05E1\u05D1\u05E8:"}</strong> {"\u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05D4\u05E9\u05E0\u05D9\u05D9\u05D4 \u05E7\u05D5\u05D1\u05E2\u05EA \u05D0\u05EA \u05E1\u05D5\u05D2 \u05D4\u05E7\u05D9\u05E6\u05D5\u05DF:"}
+                <strong>{"הסבר:"}</strong> {"הנגזרת השנייה קובעת את סוג הקיצון:"}
                 <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
-                  <li><InlineMath>{"f''(x_0) > 0"}</InlineMath> {"\u2192 \u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD (\u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E7\u05DE\u05D5\u05E8\u05D4 \u05DC\u05DE\u05E2\u05DC\u05D4)"}</li>
-                  <li><InlineMath>{"f''(x_0) < 0"}</InlineMath> {"\u2192 \u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD (\u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E7\u05DE\u05D5\u05E8\u05D4 \u05DC\u05DE\u05D8\u05D4)"}</li>
+                  <li><InlineMath>{"f''(x_0) > 0"}</InlineMath> {"→ מינימום (הפונקציה קמורה למעלה)"}</li>
+                  <li><InlineMath>{"f''(x_0) < 0"}</InlineMath> {"→ מקסימום (הפונקציה קמורה למטה)"}</li>
                 </ul>
               </div>
               <div style={{ marginTop: 10, color: "#EA580C", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
-                &#128161; {"\u05D0\u05DD "}<InlineMath>{"f''(x_0)=0"}</InlineMath> {"\u2014 \u05D4\u05E9\u05EA\u05DE\u05E9\u05D5 \u05D1\u05D8\u05D1\u05DC\u05EA \u05E1\u05D9\u05DE\u05E0\u05D9\u05DD."}
+                &#128161; {"אם "}<InlineMath>{"f''(x_0)=0"}</InlineMath> {"— השתמשו בטבלת סימנים."}
               </div>
             </div>
           </div>
@@ -662,14 +662,14 @@ function FormulaBar() {
             </div>
             <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>{"\u05D4\u05E1\u05D1\u05E8:"}</strong> {"\u05D1\u05D1\u05E2\u05D9\u05D5\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05D9\u05E9 \u05E9\u05E0\u05D9 \u05E9\u05DC\u05D1\u05D9\u05DD:"}
+                <strong>{"הסבר:"}</strong> {"בבעיות קיצון יש שני שלבים:"}
                 <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
-                  <li>{"\u05D1\u05D8\u05D0\u05D5 \u05DE\u05E9\u05EA\u05E0\u05D4 \u05D0\u05D7\u05D3 \u05DE\u05D4\u05D0\u05D9\u05DC\u05D5\u05E5 (\u05DC\u05DE\u05E9\u05DC: "}<InlineMath>{"y = L - 2x"}</InlineMath>{")."}</li>
-                  <li>{"\u05D4\u05E6\u05D9\u05D1\u05D5 \u05DC\u05EA\u05D5\u05DA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05DE\u05D8\u05E8\u05D4 \u2014 \u05D5\u05E7\u05D9\u05D1\u05DC\u05EA\u05DD \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05D1\u05DE\u05E9\u05EA\u05E0\u05D4 \u05D0\u05D7\u05D3."}</li>
+                  <li>{"בטאו משתנה אחד מהאילוץ (למשל: "}<InlineMath>{"y = L - 2x"}</InlineMath>{")."}</li>
+                  <li>{"הציבו לתוך פונקציית המטרה — וקיבלתם פונקציה במשתנה אחד."}</li>
                 </ol>
               </div>
               <div style={{ marginTop: 10, color: "#DC2626", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
-                &#128161; {"\u05D3\u05D5\u05D2\u05DE\u05D4: "}<InlineMath>{"2x+y=L"}</InlineMath> {"\u2192 "}<InlineMath>{"A = x \\cdot (L-2x)"}</InlineMath>
+                &#128161; {"דוגמה: "}<InlineMath>{"2x+y=L"}</InlineMath> {"→ "}<InlineMath>{"A = x \\cdot (L-2x)"}</InlineMath>
               </div>
             </div>
           </div>
@@ -706,18 +706,18 @@ function FenceLab() {
 
   return (
     <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; {"\u05DE\u05E2\u05D1\u05D3\u05EA \u05D2\u05D3\u05E8 \u05DC\u05D9\u05D3 \u05E7\u05D9\u05E8"}</h3>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; {"מעבדת גדר ליד קיר"}</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
-        {"\u05E9\u05D8\u05D7 \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x"}
+        {"שטח כפונקציה של x"}
       </p>
 
       <div className="flex gap-3 justify-center flex-wrap">
         {/* Shape SVG */}
         <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05D7\u05DC\u05E7\u05D4 \u05DE\u05DC\u05D1\u05E0\u05D9\u05EA"}</p>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"חלקה מלבנית"}</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <line x1={rX} y1={rY} x2={rX + rW} y2={rY} stroke="#94a3b8" strokeWidth={4} strokeLinecap="round" />
-            <text x={rX + rW / 2} y={rY - 5} fill="#6B7280" fontSize={9} textAnchor="middle">{"\u05E7\u05D9\u05E8"}</text>
+            <text x={rX + rW / 2} y={rY - 5} fill="#6B7280" fontSize={9} textAnchor="middle">{"קיר"}</text>
             <motion.rect animate={{ x: rX, y: rY, width: rW, height: rH }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               fill={atMax ? "#10b98120" : "#22c55e10"} stroke={atMax ? "#10b981" : "#22c55e"} strokeWidth={atMax ? 2.5 : 1.5} rx={2} />
@@ -729,7 +729,7 @@ function FenceLab() {
         </div>
         {/* Graph SVG */}
         <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x"}</p>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"שטח כפונקציה של x"}</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <polyline points={pts.join(" ")} fill="none" stroke="#22c55e" strokeWidth={2} opacity={0.8} />
             <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#94a3b8" strokeWidth={1} />
@@ -751,30 +751,30 @@ function FenceLab() {
       {/* Slider */}
       <div style={{ marginTop: "1.25rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
-          <span style={{ color: "#6B7280" }}>{"\u05E8\u05D5\u05D7\u05D1 "}<span style={{ fontFamily: "monospace", color: "#2D3436" }}>x</span></span>
-          <span style={{ fontFamily: "monospace", color: atMax ? "#16a34a" : "#2D3436", fontWeight: 700 }}>{w} {"\u05DE\u2032"}</span>
+          <span style={{ color: "#6B7280" }}>{"רוחב "}<span style={{ fontFamily: "monospace", color: "#2D3436" }}>x</span></span>
+          <span style={{ fontFamily: "monospace", color: atMax ? "#16a34a" : "#2D3436", fontWeight: 700 }}>{w} {"מ′"}</span>
         </div>
         <input type="range" min={5} max={25} step={1} value={w}
           onChange={e => setW(parseInt(e.target.value))} className="w-full" style={{ accentColor: "#16a34a" }} />
-        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>{"\u05D2\u05E8\u05D5\u05E8 \u05D0\u05EA \u05D4\u05E1\u05DC\u05D9\u05D9\u05D3\u05E8 \u05DB\u05D3\u05D9 \u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05D4\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD"}</p>
+        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>{"גרור את הסליידר כדי למצוא את המקסימום"}</p>
       </div>
 
       {/* Tiles */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
         <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"\u05E8\u05D5\u05D7\u05D1 x"}</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{w} {"\u05DE\u2032"}</p>
+          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"רוחב x"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{w} {"מ′"}</p>
         </div>
         <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"\u05D0\u05D5\u05E8\u05DA y"}</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{y} {"\u05DE\u2032"}</p>
+          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"אורך y"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{y} {"מ′"}</p>
         </div>
         <div style={{ background: atMax ? "rgba(220,252,231,0.7)" : "rgba(255,255,255,0.75)", border: atMax ? "1px solid #86efac" : "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12, transition: "all 0.3s" }}>
-          <p style={{ color: atMax ? "#16a34a" : "#6B7280", marginBottom: 4 }}>{"\u05E9\u05D8\u05D7 A"}</p>
-          <p style={{ fontFamily: "monospace", color: atMax ? "#15803d" : "#1A1A1A", fontWeight: 700 }}>{A} {"\u05DE\u2032\u00B2"}</p>
+          <p style={{ color: atMax ? "#16a34a" : "#6B7280", marginBottom: 4 }}>{"שטח A"}</p>
+          <p style={{ fontFamily: "monospace", color: atMax ? "#15803d" : "#1A1A1A", fontWeight: 700 }}>{A} {"מ′²"}</p>
         </div>
       </div>
-      {atMax && <p style={{ color: "#16a34a", fontSize: 13, fontWeight: 700, textAlign: "center", marginTop: "0.75rem" }}>{"\u05E9\u05D8\u05D7 \u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9!"}</p>}
+      {atMax && <p style={{ color: "#16a34a", fontSize: 13, fontWeight: 700, textAlign: "center", marginTop: "0.75rem" }}>{"שטח מקסימלי!"}</p>}
     </section>
   );
 }
@@ -810,14 +810,14 @@ function NormanLab() {
 
   return (
     <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; {"\u05DE\u05E2\u05D1\u05D3\u05EA \u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF"}</h3>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; {"מעבדת חלון נורמן"}</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
-        {"\u05E9\u05D8\u05D7 \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC r"}
+        {"שטח כפונקציה של r"}
       </p>
 
       <div className="flex gap-3 justify-center flex-wrap">
         <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E6\u05D5\u05E8\u05EA \u05D4\u05D7\u05DC\u05D5\u05DF"}</p>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"צורת החלון"}</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <motion.rect animate={{ x: cx - rPx, y: rectTop, width: rPx * 2, height: hPx }}
               transition={{ type: "spring", stiffness: 250, damping: 28 }}
@@ -832,7 +832,7 @@ function NormanLab() {
           </svg>
         </div>
         <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC r"}</p>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"שטח כפונקציה של r"}</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <polyline points={normanPts.join(" ")} fill="none" stroke="#f59e0b" strokeWidth={2} opacity={0.8} />
             <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#94a3b8" strokeWidth={1} />
@@ -854,29 +854,29 @@ function NormanLab() {
 
       <div style={{ marginTop: "1.25rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
-          <span style={{ color: "#6B7280" }}>{"\u05E8\u05D3\u05D9\u05D5\u05E1 "}<span style={{ fontFamily: "monospace", color: "#2D3436" }}>r</span></span>
-          <span style={{ fontFamily: "monospace", color: atMax ? "#ea580c" : "#2D3436", fontWeight: 700 }}>{r.toFixed(2)} {"\u05DE\u2032"}</span>
+          <span style={{ color: "#6B7280" }}>{"רדיוס "}<span style={{ fontFamily: "monospace", color: "#2D3436" }}>r</span></span>
+          <span style={{ fontFamily: "monospace", color: atMax ? "#ea580c" : "#2D3436", fontWeight: 700 }}>{r.toFixed(2)} {"מ′"}</span>
         </div>
         <input type="range" min={0.3} max={2.4} step={0.05} value={r}
           onChange={e => setR(parseFloat(e.target.value))} className="w-full" style={{ accentColor: "#ea580c" }} />
-        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>{"\u05D2\u05E8\u05D5\u05E8 \u05D0\u05EA \u05D4\u05E1\u05DC\u05D9\u05D9\u05D3\u05E8 \u05DB\u05D3\u05D9 \u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05D4\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD"}</p>
+        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>{"גרור את הסליידר כדי למצוא את המקסימום"}</p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
         <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"\u05E8\u05D3\u05D9\u05D5\u05E1 r"}</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{r.toFixed(2)} {"\u05DE\u2032"}</p>
+          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"רדיוס r"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{r.toFixed(2)} {"מ′"}</p>
         </div>
         <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"\u05D2\u05D5\u05D1\u05D4 h"}</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{h.toFixed(2)} {"\u05DE\u2032"}</p>
+          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"גובה h"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{h.toFixed(2)} {"מ′"}</p>
         </div>
         <div style={{ background: atMax ? "rgba(255,237,213,0.7)" : "rgba(255,255,255,0.75)", border: atMax ? "1px solid #fdba74" : "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12, transition: "all 0.3s" }}>
-          <p style={{ color: atMax ? "#ea580c" : "#6B7280", marginBottom: 4 }}>{"\u05E9\u05D8\u05D7 A"}</p>
+          <p style={{ color: atMax ? "#ea580c" : "#6B7280", marginBottom: 4 }}>{"שטח A"}</p>
           <p style={{ fontFamily: "monospace", color: atMax ? "#c2410c" : "#1A1A1A", fontWeight: 700 }}>{A.toFixed(3)}</p>
         </div>
       </div>
-      {atMax && <p style={{ color: "#ea580c", fontSize: 13, fontWeight: 700, textAlign: "center", marginTop: "0.75rem" }}>{"\u05E9\u05D8\u05D7 \u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9!"}</p>}
+      {atMax && <p style={{ color: "#ea580c", fontSize: 13, fontWeight: 700, textAlign: "center", marginTop: "0.75rem" }}>{"שטח מקסימלי!"}</p>}
     </section>
   );
 }
@@ -912,22 +912,22 @@ function WireLab() {
 
   return (
     <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; {"\u05DE\u05E2\u05D1\u05D3\u05EA \u05D7\u05D5\u05D8 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E2\u05D9\u05D2\u05D5\u05DC"}</h3>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; {"מעבדת חוט לריבוע ועיגול"}</h3>
       <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
-        {"\u05E9\u05D8\u05D7 \u05DB\u05D5\u05DC\u05DC \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x"}
+        {"שטח כולל כפונקציה של x"}
       </p>
 
       <div className="flex gap-3 justify-center flex-wrap">
         <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E2\u05D9\u05D2\u05D5\u05DC"}</p>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"ריבוע ועיגול"}</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <text x={sqCX} y={14} textAnchor="middle" fill="#3b82f6" fontSize={9} fontWeight="bold">{"\u05E8\u05D9\u05D1\u05D5\u05E2"}</text>
-            <text x={cirCX} y={14} textAnchor="middle" fill="#DC2626" fontSize={9} fontWeight="bold">{"\u05E2\u05D9\u05D2\u05D5\u05DC"}</text>
+            <text x={sqCX} y={14} textAnchor="middle" fill="#3b82f6" fontSize={9} fontWeight="bold">{"ריבוע"}</text>
+            <text x={cirCX} y={14} textAnchor="middle" fill="#DC2626" fontSize={9} fontWeight="bold">{"עיגול"}</text>
             <motion.rect animate={{ x: sqCX - sqPx / 2, y: midY - sqPx / 2, width: sqPx, height: sqPx }}
               transition={{ type: "spring", stiffness: 280, damping: 28 }}
               fill="#3b82f633" stroke="#3b82f6" strokeWidth={2} />
             <motion.text animate={{ x: sqCX, y: midY + sqPx / 2 + 12 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              textAnchor="middle" fill="#3b82f6" fontSize={9}>{"\u05E6\u05DC\u05E2"}={side.toFixed(1)}</motion.text>
+              textAnchor="middle" fill="#3b82f6" fontSize={9}>{"צלע"}={side.toFixed(1)}</motion.text>
             <motion.circle animate={{ cx: cirCX, cy: midY, r: rPx }}
               transition={{ type: "spring", stiffness: 280, damping: 28 }}
               fill="#DC262633" stroke="#DC2626" strokeWidth={2} />
@@ -936,7 +936,7 @@ function WireLab() {
           </svg>
         </div>
         <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05DB\u05D5\u05DC\u05DC \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x"}</p>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"שטח כולל כפונקציה של x"}</p>
           <svg width={SW2} height={SH2} viewBox={`0 0 ${SW2} ${SH2}`}>
             <polyline points={wirePts.join(" ")} fill="none" stroke="#DC2626" strokeWidth={2} opacity={0.8} />
             <line x1={CP2} y1={SH2 - CP2} x2={SW2 - CP2 / 2} y2={SH2 - CP2} stroke="#94a3b8" strokeWidth={1} />
@@ -958,29 +958,29 @@ function WireLab() {
 
       <div style={{ marginTop: "1.25rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
-          <span style={{ color: "#6B7280" }}>{"\u05D7\u05DC\u05E7 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 "}<span style={{ fontFamily: "monospace", color: "#2D3436" }}>x</span></span>
-          <span style={{ fontFamily: "monospace", color: atMin ? "#dc2626" : "#2D3436", fontWeight: 700 }}>{x} {"\u05E1\u05F4\u05DE"}</span>
+          <span style={{ color: "#6B7280" }}>{"חלק לריבוע "}<span style={{ fontFamily: "monospace", color: "#2D3436" }}>x</span></span>
+          <span style={{ fontFamily: "monospace", color: atMin ? "#dc2626" : "#2D3436", fontWeight: 700 }}>{x} {"ס״מ"}</span>
         </div>
         <input type="range" min={5} max={95} step={1} value={x}
           onChange={e => setX(parseInt(e.target.value))} className="w-full" style={{ accentColor: "#dc2626" }} />
-        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>{"\u05D2\u05E8\u05D5\u05E8 \u05D0\u05EA \u05D4\u05E1\u05DC\u05D9\u05D9\u05D3\u05E8 \u05DB\u05D3\u05D9 \u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05D4\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD"}</p>
+        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>{"גרור את הסליידר כדי למצוא את המינימום"}</p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
         <div style={{ background: "rgba(219,234,254,0.5)", border: "1px solid rgba(59,130,246,0.3)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#3b82f6", marginBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05E8\u05D9\u05D1\u05D5\u05E2"}</p>
+          <p style={{ color: "#3b82f6", marginBottom: 4 }}>{"שטח ריבוע"}</p>
           <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{Asq.toFixed(1)}</p>
         </div>
         <div style={{ background: "rgba(254,226,226,0.5)", border: "1px solid rgba(220,38,38,0.3)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#DC2626", marginBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05E2\u05D9\u05D2\u05D5\u05DC"}</p>
+          <p style={{ color: "#DC2626", marginBottom: 4 }}>{"שטח עיגול"}</p>
           <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{Aci.toFixed(1)}</p>
         </div>
         <div style={{ background: atMin ? "rgba(220,252,231,0.7)" : "rgba(255,255,255,0.75)", border: atMin ? "1px solid #86efac" : "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12, transition: "all 0.3s" }}>
-          <p style={{ color: atMin ? "#16a34a" : "#6B7280", marginBottom: 4 }}>{"\u05E1\u05D4\u05F4\u05DB"}</p>
+          <p style={{ color: atMin ? "#16a34a" : "#6B7280", marginBottom: 4 }}>{"סה״כ"}</p>
           <p style={{ fontFamily: "monospace", color: atMin ? "#15803d" : "#1A1A1A", fontWeight: 700 }}>{Atotal.toFixed(1)}</p>
         </div>
       </div>
-      {atMin && <p style={{ color: "#16a34a", fontSize: 13, fontWeight: 700, textAlign: "center", marginTop: "0.75rem" }}>{"\u05E9\u05D8\u05D7 \u05DE\u05D9\u05E0\u05D9\u05DE\u05DC\u05D9!"}</p>}
+      {atMin && <p style={{ color: "#16a34a", fontSize: 13, fontWeight: 700, textAlign: "center", marginTop: "0.75rem" }}>{"שטח מינימלי!"}</p>}
     </section>
   );
 }
@@ -1017,8 +1017,8 @@ export default function KitzunGeometryPage() {
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
         <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>{"\u05D1\u05E2\u05D9\u05D5\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u2014 \u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05D4 \u05DE\u05D9\u05E9\u05D5\u05E8\u05D9\u05EA \u05E2\u05DD AI"}</h1>
-            <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>{"\u05D0\u05D9\u05DC\u05D5\u05E6\u05D9 \u05D4\u05D9\u05E7\u05E3 \u05D5\u05E9\u05D8\u05D7 \u2014 \u05EA\u05E8\u05D2\u05DD \u05E6\u05D9\u05D5\u05E8 \u05DC\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4"}</p>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>{"בעיות קיצון — גיאומטריה מישורית עם AI"}</h1>
+            <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>{"אילוצי היקף ושטח — תרגם ציור לפונקציה"}</p>
           </div>
           <Link
             href="/topic/kitzun"
@@ -1026,8 +1026,8 @@ export default function KitzunGeometryPage() {
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.2)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.1)"; }}
           >
-            <span style={{ fontSize: 16 }}>{"\u2190"}</span>
-            {"\u05D7\u05D6\u05E8\u05D4"}
+            <span style={{ fontSize: 16 }}>{"←"}</span>
+            {"חזרה"}
           </Link>
         </div>
       </div>
@@ -1035,8 +1035,6 @@ export default function KitzunGeometryPage() {
       <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
 
         <SubtopicProgress subtopicId="kitzun/geometry" />
-
-        <FormulaBar />
 
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
@@ -1051,6 +1049,8 @@ export default function KitzunGeometryPage() {
             );
           })}
         </div>
+
+        <FormulaBar />
 
         {/* Active card */}
         <motion.div key={selectedLevel} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>

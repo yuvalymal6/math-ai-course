@@ -902,8 +902,6 @@ export default function TangentPage() {
 
         <SubtopicProgress subtopicId="analytic/tangent" />
 
-        <FormulaBar />
-
         {/* Level Selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
           {TABS.map(tab => {
@@ -917,6 +915,8 @@ export default function TangentPage() {
             );
           })}
         </div>
+
+        <FormulaBar />
 
         {/* Active card */}
         <motion.div key={selectedLevel} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>

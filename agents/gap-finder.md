@@ -1,5 +1,8 @@
 # סוכן מאבחן חוסרים
 
+## הכנה חובה
+קרא את agents/page-structure.md לפני כל בדיקה.
+
 ## הכנה חובה לפני כל פעולה
 קרא את agents/grade10-quality-standard.md בלבד.
 

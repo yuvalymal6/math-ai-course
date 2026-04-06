@@ -8,7 +8,6 @@ import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer"
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
 import LabMessage from "@/app/components/LabMessage";
-import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 import katex from "katex";
 import "katex/dist/katex.min.css";
@@ -951,8 +950,6 @@ function ParameterExpLab() {
 
 export default function ExponentialCalculusPage() {
   const [activeTab, setActiveTab] = useState<"basic" | "medium" | "advanced">("basic");
-  useDefaultToast();
-
   const ex = exercises.find(e => e.id === activeTab)!;
 
   const labMap: Record<string, React.ReactNode> = {
@@ -1002,13 +999,11 @@ export default function ExponentialCalculusPage() {
         <ExerciseCard ex={ex} />
 
         {/* Lab */}
-        <LabMessage>
-          {labMap[activeTab]}
-        </LabMessage>
+        {labMap[activeTab]}
 
         {/* MarkComplete */}
         <div style={{ marginTop: "2rem" }}>
-          <MarkComplete subtopicId="grade12/calculus/exponential" />
+          <MarkComplete subtopicId="grade12/calculus/exponential" level={activeTab} />
         </div>
 
         {/* Footer back link */}

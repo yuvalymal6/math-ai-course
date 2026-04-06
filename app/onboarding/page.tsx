@@ -54,7 +54,7 @@ export default function OnboardingPage() {
       if (res.ok) {
         // Sync to localStorage for instant cross-page access
         try { localStorage.setItem("math-grade", gradeId); } catch {}
-        router.push("/");
+        router.push("/onboarding/units");
         router.refresh();
       }
     } catch {

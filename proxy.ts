@@ -29,8 +29,14 @@ export function proxy(request: NextRequest) {
   }
 
   // Authenticated but no grade selected → redirect to onboarding
-  if (pathname !== "/onboarding" && !gradeCookie?.value) {
+  if (!pathname.startsWith("/onboarding") && !gradeCookie?.value) {
     return NextResponse.redirect(new URL("/onboarding", request.url));
+  }
+
+  // Grade selected but no units → redirect to units selection
+  const unitsCookie = request.cookies.get("math-units");
+  if (!pathname.startsWith("/onboarding") && gradeCookie?.value && !unitsCookie?.value) {
+    return NextResponse.redirect(new URL("/onboarding/units", request.url));
   }
 
   return NextResponse.next();

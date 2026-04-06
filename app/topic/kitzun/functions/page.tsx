@@ -7,8 +7,6 @@ import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
-import LabMessage from "@/app/components/LabMessage";
-import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 
 // ─── Global CSS ───────────────────────────────────────────────────────────────
@@ -510,11 +508,11 @@ function ParabolaViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
         {atMax && <span className="text-green-400" style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מקסימום!</span>}
       </div>
       <div className="flex gap-3 justify-center flex-wrap">
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>f(x) = −x² + 9</p>
+        <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>f(x) = −x² + 9</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <line x1={ox - 8} y1={oy} x2={SW - 6} y2={oy} stroke="#334155" strokeWidth={1} />
-            <line x1={ox} y1={SH - 4} x2={ox} y2={6} stroke="#334155" strokeWidth={1} />
+            <line x1={ox - 8} y1={oy} x2={SW - 6} y2={oy} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={ox} y1={SH - 4} x2={ox} y2={6} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
             <polyline points={parPts.join(" ")} fill="none" stroke="#22c55e" strokeWidth={2} opacity={0.9} />
             <motion.rect
               animate={{ x: rLeft, y: rTop, width: rRight - rLeft, height: rBot - rTop }}
@@ -526,24 +524,24 @@ function ParabolaViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
             <motion.text animate={{ x: rRight + 14, y: oy - y * syL / 2 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               textAnchor="start" fill="#f97316" fontSize={9}>y={y.toFixed(2)}</motion.text>
             <motion.circle animate={{ cx: rRight, cy: rTop }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 5 : 3.5} fill={atMax ? "#22c55e" : "#86efac"} stroke="#0f172a" strokeWidth={1.5} />
+              r={atMax ? 5 : 3.5} fill={atMax ? "#22c55e" : "#86efac"} stroke="#fff" strokeWidth={1.5} />
             <motion.circle animate={{ cx: rLeft, cy: rTop }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 5 : 3.5} fill={atMax ? "#22c55e" : "#86efac"} stroke="#0f172a" strokeWidth={1.5} />
+              r={atMax ? 5 : 3.5} fill={atMax ? "#22c55e" : "#86efac"} stroke="#fff" strokeWidth={1.5} />
           </svg>
         </div>
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>A(x) = 2x(9 − x²)</p>
+        <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>A(x) = 2x(9 − x²)</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <polyline points={aPts.join(" ")} fill="none" stroke="#22c55e" strokeWidth={2} opacity={0.8} />
-            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#334155" strokeWidth={1} />
-            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="#334155" strokeWidth={1} />
+            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
             <circle cx={maxDotX} cy={maxDotY} r={9} fill="#22c55e30" />
             <circle cx={maxDotX} cy={maxDotY} r={5} fill="#22c55e" />
             <text x={maxDotX + 8} y={maxDotY - 6} fill="#22c55e" fontSize={9}>max</text>
             <motion.line animate={{ x1: dotX, x2: dotX }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               y1={SH - CP} y2={CP / 2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
             <motion.circle animate={{ cx: dotX, cy: dotY }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 7 : 5} fill={atMax ? "#22c55e" : "#f97316"} stroke="#0f172a" strokeWidth={2} />
+              r={atMax ? 7 : 5} fill={atMax ? "#22c55e" : "#f97316"} stroke="#fff" strokeWidth={2} />
             <motion.text animate={{ x: dotX + 8, y: Math.max(dotY - 4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               fill={atMax ? "#22c55e" : "#f97316"} fontSize={10}>A={A.toFixed(1)}</motion.text>
           </svg>
@@ -617,11 +615,11 @@ function DistanceViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
         {atMin && <span className="text-amber-400" style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מינימום!</span>}
       </div>
       <div className="flex gap-3 justify-center flex-wrap">
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>f(x) = √x עם נקודה (4, 0)</p>
+        <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>f(x) = √x עם נקודה (4, 0)</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <line x1={ox - 6} y1={oy} x2={SW - 4} y2={oy} stroke="#334155" strokeWidth={1} />
-            <line x1={ox} y1={SH - 4} x2={ox} y2={8} stroke="#334155" strokeWidth={1} />
+            <line x1={ox - 6} y1={oy} x2={SW - 4} y2={oy} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={ox} y1={SH - 4} x2={ox} y2={8} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
             <polyline points={sqrtPts.join(" ")} fill="none" stroke="#f59e0b" strokeWidth={2.2} opacity={0.9} />
             <motion.line
               animate={{ x1: ax, y1: ay, x2: bx, y2: by }}
@@ -631,30 +629,30 @@ function DistanceViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
             <circle cx={bx} cy={by} r={5} fill="#f43f5e" />
             <text x={bx + 6} y={by - 5} fill="#f43f5e" fontSize={9}>(4, 0)</text>
             <motion.circle animate={{ cx: ax, cy: ay }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMin ? 6 : 4.5} fill={atMin ? "#22c55e" : "#f59e0b"} stroke="#0f172a" strokeWidth={2} />
+              r={atMin ? 6 : 4.5} fill={atMin ? "#22c55e" : "#f59e0b"} stroke="#fff" strokeWidth={2} />
             <motion.text animate={{ x: ax - 6, y: ay - 9 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
               textAnchor="end" fill={atMin ? "#22c55e" : "#f59e0b"} fontSize={9}>t={t.toFixed(2)}</motion.text>
             {[1, 2, 3, 4].map(v => (
               <g key={v}>
-                <line x1={ox + v * sxL} y1={oy - 3} x2={ox + v * sxL} y2={oy + 3} stroke="#334155" strokeWidth={1} />
+                <line x1={ox + v * sxL} y1={oy - 3} x2={ox + v * sxL} y2={oy + 3} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
                 <text x={ox + v * sxL} y={oy + 11} textAnchor="middle" fill="#475569" fontSize={8}>{v}</text>
               </g>
             ))}
           </svg>
         </div>
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>D²(t) = t² − 7t + 16</p>
+        <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>D²(t) = t² − 7t + 16</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <polyline points={d2Pts.join(" ")} fill="none" stroke="#f59e0b" strokeWidth={2} opacity={0.8} />
-            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#334155" strokeWidth={1} />
-            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="#334155" strokeWidth={1} />
+            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
             <circle cx={minDotXd} cy={minDotYd} r={9} fill="#22c55e30" />
             <circle cx={minDotXd} cy={minDotYd} r={5} fill="#22c55e" />
             <text x={minDotXd + 8} y={minDotYd - 6} fill="#22c55e" fontSize={9}>min</text>
             <motion.line animate={{ x1: dotXd, x2: dotXd }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               y1={SH - CP} y2={CP / 2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
             <motion.circle animate={{ cx: dotXd, cy: dotYd }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMin ? 7 : 5} fill={atMin ? "#22c55e" : "#f97316"} stroke="#0f172a" strokeWidth={2} />
+              r={atMin ? 7 : 5} fill={atMin ? "#22c55e" : "#f97316"} stroke="#fff" strokeWidth={2} />
             <motion.text animate={{ x: dotXd + 8, y: Math.max(dotYd - 4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               fill={atMin ? "#22c55e" : "#f97316"} fontSize={10}>D²={D2.toFixed(2)}</motion.text>
           </svg>
@@ -738,11 +736,11 @@ function TwoParabolasViz({ levelId }: { levelId: "basic" | "medium" | "advanced"
         {atMax && <span className="text-rose-400" style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מקסימום!</span>}
       </div>
       <div className="flex gap-3 justify-center flex-wrap">
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>f(x)=x² ו-g(x)=−x²+8</p>
+        <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>f(x)=x² ו-g(x)=−x²+8</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <line x1={10} y1={oy} x2={SW - 6} y2={oy} stroke="#334155" strokeWidth={1} />
-            <line x1={ox} y1={SH - 6} x2={ox} y2={6} stroke="#334155" strokeWidth={1} />
+            <line x1={10} y1={oy} x2={SW - 6} y2={oy} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={ox} y1={SH - 6} x2={ox} y2={6} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
             <polyline points={gPts.join(" ")} fill="none" stroke="#f43f5e" strokeWidth={2} opacity={0.9} />
             <polyline points={fPts.join(" ")} fill="none" stroke="#3b82f6" strokeWidth={2} opacity={0.9} />
             <text x={ox + 2.0 * sxL + 2} y={oy - (-4 + 8) * syL - 3} fill="#f43f5e" fontSize={8}>g(x)</text>
@@ -757,28 +755,28 @@ function TwoParabolasViz({ levelId }: { levelId: "basic" | "medium" | "advanced"
             <motion.text animate={{ x: rRight + 16, y: (rTop + rBot) / 2 + 4 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
               textAnchor="start" fill="#f97316" fontSize={8}>h={height.toFixed(2)}</motion.text>
             <motion.circle animate={{ cx: rRight, cy: rTop }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMax ? 5 : 3} fill="#f43f5e" stroke="#0f172a" strokeWidth={1.5} />
+              r={atMax ? 5 : 3} fill="#f43f5e" stroke="#fff" strokeWidth={1.5} />
             <motion.circle animate={{ cx: rLeft, cy: rTop }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMax ? 5 : 3} fill="#f43f5e" stroke="#0f172a" strokeWidth={1.5} />
+              r={atMax ? 5 : 3} fill="#f43f5e" stroke="#fff" strokeWidth={1.5} />
             <motion.circle animate={{ cx: rRight, cy: rBot }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMax ? 5 : 3} fill="#3b82f6" stroke="#0f172a" strokeWidth={1.5} />
+              r={atMax ? 5 : 3} fill="#3b82f6" stroke="#fff" strokeWidth={1.5} />
             <motion.circle animate={{ cx: rLeft, cy: rBot }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMax ? 5 : 3} fill="#3b82f6" stroke="#0f172a" strokeWidth={1.5} />
+              r={atMax ? 5 : 3} fill="#3b82f6" stroke="#fff" strokeWidth={1.5} />
           </svg>
         </div>
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>A(x) = 2x(8 − 2x²)</p>
+        <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>A(x) = 2x(8 − 2x²)</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <polyline points={aPts.join(" ")} fill="none" stroke="#f43f5e" strokeWidth={2} opacity={0.8} />
-            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#334155" strokeWidth={1} />
-            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="#334155" strokeWidth={1} />
+            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
             <circle cx={maxDotXa} cy={maxDotYa} r={9} fill="#f43f5e30" />
             <circle cx={maxDotXa} cy={maxDotYa} r={5} fill="#f43f5e" />
             <text x={maxDotXa + 8} y={maxDotYa - 6} fill="#f43f5e" fontSize={9}>max</text>
             <motion.line animate={{ x1: dotXa, x2: dotXa }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               y1={SH - CP} y2={CP / 2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
             <motion.circle animate={{ cx: dotXa, cy: dotYa }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 7 : 5} fill={atMax ? "#f43f5e" : "#f97316"} stroke="#0f172a" strokeWidth={2} />
+              r={atMax ? 7 : 5} fill={atMax ? "#f43f5e" : "#f97316"} stroke="#fff" strokeWidth={2} />
             <motion.text animate={{ x: dotXa + 8, y: Math.max(dotYa - 4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               fill={atMax ? "#f43f5e" : "#f97316"} fontSize={10}>A={A.toFixed(2)}</motion.text>
           </svg>
@@ -878,7 +876,7 @@ const exercises: ExerciseDef[] = [
       { title: "נקודות חיתוך", text: "הפרבולות נחתכות ב-x = ±2. תחום הבעיה: 0 < x < 2." },
       { title: "סימטריה",       text: "המלבן סימטרי סביב ציר y — רוחב = 2x, לא x. אל תשכח את הגורם 2." },
     ],
-    goldenPrompt: "\n\n",
+    goldenPrompt: `אני תלמיד כיתה י"א ומצרף בעיית קיצון: מלבן חסום בין שתי פרבולות f(x)=x² ו-g(x)=−x²+8.\n\nאתה המורה שלי — אל תפתור עבורי. שאל אותי שאלות מכווינות בלבד.\n\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.`,
     subjectWords: ["פרבולה", "f(x)", "g(x)", "מלבן", "שטח", "מקסימום", "קיצון", "גזור", "הפרש"],
     subjectHint:  "פרבולה / f(x) / g(x) / מלבן / שטח מקסימלי",
     steps: [
@@ -951,6 +949,9 @@ export default function KitzunFunctionsPage() {
       </div>
 
       <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
+
+        {/* SubtopicProgress */}
+        <SubtopicProgress subtopicId="/kitzun/functions" />
 
         {/* Tab selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>

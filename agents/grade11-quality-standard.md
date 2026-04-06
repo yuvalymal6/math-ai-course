@@ -1,10 +1,11 @@
 # DNA של רמה 100 — כיתה יא׳ (שאלון 804)
 
 ## כלל עיצוב בסיסי — כיתה יא
-מעבדות בכיתה יא משתמשות ב-Island Protocol (רקע כהה):
+כל המעבדות בכיתה יא משתמשות ברקע בהיר בלבד.
+סגנון מעבדה תקין לכיתה יא:
 ```
-border: "8px solid #334155", borderRadius: "40px",
-padding: "2.5rem", background: "#020617"
+border: "1px solid ...", borderRadius: 24,
+background: "rgba(255,255,255,0.82)"
 ```
 
 ---
@@ -120,9 +121,9 @@ padding: "2.5rem", background: "#020617"
 | הסתברות | `ProbabilityLab` | 2 (P(A), P(B\|A)) | P(A∩B), P(B), עץ |
 | קיצון גיאומטרי | `OptimizationLab` | 1 (x) | שטח, היקף, מקסימום |
 
-### עיצוב — Island Protocol
+### עיצוב — רקע בהיר
 ```tsx
-style={{ border: "8px solid #334155", borderRadius: "40px", padding: "2.5rem", background: "#020617" }}
+style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)" }}
 ```
 
 ---
@@ -156,13 +157,12 @@ import MasterPromptGate from "@/app/components/MasterPromptGate";
 
 | אלמנט | ערך |
 |--------|------|
-| רקע דף | `#0a0f1e` (כהה) |
-| רקע כרטיס | `#0f172a` |
-| Lab background | `#020617` (Island Protocol) |
-| Accent (cyan) | `#00d4ff` |
-| טקסט ראשי | `#e2e8f0` |
-| טקסט משני | `#94a3b8` |
-| Border default | `#334155` |
+| רקע דף | `#F3EFE0` (בז׳ חם) |
+| רקע כרטיס | `rgba(255,255,255,0.82)` |
+| Lab background | `rgba(255,255,255,0.82)` |
+| טקסט ראשי | `#1A1A1A` / `#2D3436` |
+| טקסט משני | `#6B7280` |
+| גבולות | `rgba(60,54,42,0.15)` |
 
 **שלושת צבעי הרמות:** ירוק (basic) → כתום (medium) → אדום (advanced)
 
@@ -201,4 +201,4 @@ import MasterPromptGate from "@/app/components/MasterPromptGate";
 - [ ] כפתור חזרה לדף האב
 - [ ] ערכת צבעים עקבית (ירוק/כתום/אדום)
 - [ ] אנימציות עם framer-motion
-- [ ] Island Protocol למעבדות
+- [ ] מעבדות ברקע בהיר (ללא Island Protocol)

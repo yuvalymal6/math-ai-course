@@ -71,8 +71,8 @@ function BasicSVG() {
   return (
     <svg viewBox="0 0 260 160" className="w-full max-w-sm mx-auto" aria-hidden>
       {/* Axes */}
-      <line x1={40} y1={130} x2={240} y2={130} stroke="#94a3b8" strokeWidth={1.2} />
-      <line x1={40} y1={130} x2={40} y2={15} stroke="#94a3b8" strokeWidth={1.2} />
+      <line x1={40} y1={130} x2={240} y2={130} stroke="#6B7280" strokeWidth={1.2} />
+      <line x1={40} y1={130} x2={40} y2={15} stroke="#6B7280" strokeWidth={1.2} />
       <text x={245} y={134} fontSize={10} fill="#64748b" fontFamily="sans-serif">x</text>
       <text x={36} y={12} fontSize={10} fill="#64748b" fontFamily="sans-serif">y</text>
       {/* Parabola shape — opening up, no numbers */}
@@ -90,8 +90,8 @@ function MediumSVG() {
   return (
     <svg viewBox="0 0 280 180" className="w-full max-w-sm mx-auto" aria-hidden>
       {/* Axes */}
-      <line x1={40} y1={140} x2={260} y2={140} stroke="#94a3b8" strokeWidth={1.2} />
-      <line x1={140} y1={170} x2={140} y2={10} stroke="#94a3b8" strokeWidth={1.2} />
+      <line x1={40} y1={140} x2={260} y2={140} stroke="#6B7280" strokeWidth={1.2} />
+      <line x1={140} y1={170} x2={140} y2={10} stroke="#6B7280" strokeWidth={1.2} />
       <text x={265} y={144} fontSize={10} fill="#64748b" fontFamily="sans-serif">x</text>
       <text x={136} y={8} fontSize={10} fill="#64748b" fontFamily="sans-serif">y</text>
       {/* S-shaped cubic — no numbers */}
@@ -114,8 +114,8 @@ function AdvancedSVG() {
   return (
     <svg viewBox="0 0 280 180" className="w-full max-w-sm mx-auto" aria-hidden>
       {/* Axes */}
-      <line x1={40} y1={140} x2={260} y2={140} stroke="#94a3b8" strokeWidth={1.2} />
-      <line x1={60} y1={170} x2={60} y2={10} stroke="#94a3b8" strokeWidth={1.2} />
+      <line x1={40} y1={140} x2={260} y2={140} stroke="#6B7280" strokeWidth={1.2} />
+      <line x1={60} y1={170} x2={60} y2={10} stroke="#6B7280" strokeWidth={1.2} />
       <text x={265} y={144} fontSize={10} fill="#64748b" fontFamily="sans-serif">x</text>
       <text x={56} y={8} fontSize={10} fill="#64748b" fontFamily="sans-serif">y</text>
       {/* Cubic silhouette — ax^3 + bx^2 shape */}
@@ -140,7 +140,7 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setC(true); setTimeout(() => setC(false), 2000); }}
-      style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(148,163,184,0.25)", color: "#e2e8f0", fontWeight: 500, cursor: "pointer" }}
+      style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(148,163,184,0.25)", color: "#2D3436", fontWeight: 500, cursor: "pointer" }}
     >
       {c ? <Check size={13} /> : <Copy size={13} />}{c ? "הועתק!" : label}
     </button>
@@ -149,12 +149,12 @@ function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; labe
 
 function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "22,163,74", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
   return (
-    <div style={{ borderRadius: 16, background: "#0f172a", padding: "1.25rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)` }}>
+    <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)` }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span style={{ fontSize: 14 }}>&#10024;</span>
-        <span style={{ color: "#e2e8f0", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
+        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
       </div>
-      <p style={{ color: "#e2e8f0", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
+      <p style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
       <CopyBtn text={prompt} label="העתק פרומפט מלא" />
     </div>
   );
@@ -164,13 +164,13 @@ function TutorStepBasic({ step, glowRgb = "22,163,74", borderRgb = "45,90,39" }:
   return (
     <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid rgba(${glowRgb},0.45)`, marginBottom: 8, boxShadow: `0 0 14px rgba(${glowRgb},0.18)` }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(15,23,42,0.8)", borderBottom: `1px solid rgba(${glowRgb},0.25)` }}>
-        <span style={{ color: "#e2e8f0", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
-        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
+        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
       <div style={{ background: "rgba(15,23,42,0.5)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
-          <div style={{ color: "#94a3b8", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>&#9997;&#65039; הפרומפט המוכן</div>
-          <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(${borderRgb},0.35)`, padding: 12, fontSize: 11, color: "#e2e8f0", lineHeight: 1.6, wordBreak: "break-word" }}>{step.prompt}</div>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>&#9997;&#65039; הפרומפט המוכן</div>
+          <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(${borderRgb},0.35)`, padding: 12, fontSize: 11, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word" }}>{step.prompt}</div>
         </div>
         <CopyBtn text={step.prompt} label="העתק פרומפט ממוקד" />
       </div>
@@ -198,8 +198,8 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
     <div style={{ borderRadius: 12, border: `1px solid rgba(${borderRgb},0.3)`, background: "rgba(15,23,42,0.4)", padding: "14px 16px", marginBottom: 8, opacity: 0.4, userSelect: "none", display: "flex", alignItems: "center", gap: 10 }}>
       <span style={{ fontSize: 16 }}>&#128274;</span>
       <div>
-        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
-        <span style={{ color: "#94a3b8", fontSize: 11, marginRight: 8 }}>{step.label}</span>
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
+        <span style={{ color: "#6B7280", fontSize: 11, marginRight: 8 }}>{step.label}</span>
       </div>
     </div>
   );
@@ -209,20 +209,20 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
   return (
     <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${passed ? "rgba(245,158,11,0.55)" : `rgba(${borderRgb},0.35)`}`, marginBottom: 8, boxShadow: passed ? "0 0 16px rgba(245,158,11,0.25)" : "none", transition: "border-color 0.3s, box-shadow 0.3s" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(15,23,42,0.8)", borderBottom: `1px solid ${passed ? "rgba(245,158,11,0.3)" : `rgba(${borderRgb},0.2)`}` }}>
-        {passed ? <CheckCircle size={14} color="#34d399" /> : <span style={{ color: "#e2e8f0", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
-        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
+        {passed ? <CheckCircle size={14} color="#34d399" /> : <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
       <div style={{ background: "rgba(15,23,42,0.5)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <textarea
           value={text} rows={3} dir="rtl" disabled={passed}
           onChange={(e) => { setText(e.target.value); setResult(null); }}
           placeholder="נסח כאן את השאלה שלך ל-AI (בקש הכוונה, לא פתרון)..."
-          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: "rgba(255,255,255,0.05)", border: `1px solid ${passed ? "rgba(245,158,11,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#e2e8f0", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: "rgba(255,255,255,0.05)", border: `1px solid ${passed ? "rgba(245,158,11,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
         />
 
         {result && (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#e2e8f0", marginBottom: 4, fontWeight: 600 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", marginBottom: 4, fontWeight: 600 }}>
               <span>ציון הפרומפט</span>
               <span style={{ fontWeight: 800 }}>{result.score}/100</span>
             </div>
@@ -233,7 +233,7 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
         )}
 
         {!result && (
-          <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(${borderRgb},0.4)`, color: "#e2e8f0", cursor: "pointer", fontWeight: 500 }}>
+          <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(${borderRgb},0.4)`, color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>
             &#129302; בדיקת AI מדומה
           </button>
         )}
@@ -262,7 +262,7 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
         )}
 
         {result && !passed && (
-          <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#94a3b8", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>נסה שוב</button>
+          <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#6B7280", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>נסה שוב</button>
         )}
       </div>
     </div>
@@ -277,7 +277,7 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
 
   if (locked) return (
     <div style={{ borderRadius: 12, border: "1px solid rgba(139,38,53,0.3)", background: "rgba(15,23,42,0.4)", padding: "12px 16px", opacity: 0.45, userSelect: "none", display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-      <span>&#128274;</span><span style={{ color: "#94a3b8", fontSize: 12 }}>{step.phase} — {step.label}</span>
+      <span>&#128274;</span><span style={{ color: "#6B7280", fontSize: 12 }}>{step.phase} — {step.label}</span>
     </div>
   );
 
@@ -297,7 +297,7 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
         {passed
           ? <CheckCircle size={14} color="#34d399" />
           : <span style={{ color: "#fca5a5", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
-        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
 
       <div style={{ background: "rgba(15,23,42,0.5)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
@@ -306,12 +306,12 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
           readOnly={passed}
           onChange={(e) => { if (!passed) { setText(e.target.value); setResult(null); } }}
           placeholder="כתוב את הפרומפט שלך לסעיף זה..."
-          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: passed ? "rgba(6,78,59,0.15)" : "rgba(255,255,255,0.05)", border: `1px solid ${passed ? "rgba(52,211,153,0.25)" : "rgba(139,38,53,0.25)"}`, color: passed ? "#6ee7b7" : "#e2e8f0", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: passed ? "rgba(6,78,59,0.15)" : "rgba(255,255,255,0.05)", border: `1px solid ${passed ? "rgba(52,211,153,0.25)" : "rgba(139,38,53,0.25)"}`, color: passed ? "#6ee7b7" : "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
         />
 
         {result && (
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#e2e8f0", fontWeight: 600 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", fontWeight: 600 }}>
               <span>ציון</span>
               <span style={{ fontWeight: 800 }}>{result.score}/100</span>
             </div>
@@ -340,7 +340,7 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
 
         {!passed && (
           <button onClick={validate}
-            style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(220,38,38,0.35)", color: "#e2e8f0", cursor: "pointer", fontWeight: 500 }}>
+            style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(220,38,38,0.35)", color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>
             &#129302; בדיקת AI מדומה
           </button>
         )}
@@ -423,14 +423,14 @@ function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
         <div key={i} style={{ marginBottom: 8 }}>
           {(!masterPassed || i >= unlockedCount) ? (
             <div style={{ borderRadius: 14, border: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.6)", padding: "14px 16px", opacity: 0.5, pointerEvents: "none" as const, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ color: "#94a3b8", fontSize: 13, fontWeight: 600 }}>{ s.phase } — { s.label }</span>
+              <span style={{ color: "#6B7280", fontSize: 13, fontWeight: 600 }}>{ s.phase } — { s.label }</span>
               <span style={{ fontSize: 16 }}>&#128274;</span>
             </div>
           ) : (
             <div>
               <div style={{ borderRadius: 14, border: "1px solid rgba(22,163,74,0.3)", background: "rgba(15,23,42,0.8)", padding: "14px 16px", marginBottom: 8 }}>
                 <div style={{ color: "#4ade80", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{ s.phase } — { s.label }</div>
-                <div style={{ color: "#e2e8f0", fontSize: 13, lineHeight: 1.6 }}>{ s.prompt }</div>
+                <div style={{ color: "#2D3436", fontSize: 13, lineHeight: 1.6 }}>{ s.prompt }</div>
               </div>
               <button onClick={() => setUnlockedCount(v => Math.max(v, i + 2))} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.1)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#4ade80", cursor: "pointer" }}>
                 &#10003; סיימתי סעיף זה
@@ -517,14 +517,14 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
     setTimeout(() => setCopiedProblem(false), 2000);
   }
   return (
-    <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "#0f172a", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.3)" }}>
+    <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.3)" }}>
 
       {/* Title */}
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: "2rem" }}>
         <span className={`text-sm font-black px-4 py-1.5 rounded-full shrink-0 ${s.badgeCls}`}>{s.badge}</span>
         <h2 className={`text-xl font-extrabold uppercase tracking-widest ${s.accentCls}`} style={{ margin: 0 }}>{s.stationName}</h2>
       </div>
-      <div style={{ height: 1, background: "#334155", marginBottom: "2rem" }} />
+      <div style={{ height: 1, background: "rgba(60,54,42,0.15)", marginBottom: "2rem" }} />
 
       {/* Diagram */}
       <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(15,23,42,0.8)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
@@ -532,13 +532,13 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       {/* Problem */}
       <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.03)", padding: "1.5rem", marginBottom: "2rem" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <div style={{ color: "#94a3b8", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>&#128221; השאלה</div>
-          <button onClick={handleCopyProblem} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.15)" : "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.2)", color: copiedProblem ? "#4ade80" : "#94a3b8", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>&#128221; השאלה</div>
+          <button onClick={handleCopyProblem} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.15)" : "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.2)", color: copiedProblem ? "#4ade80" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
             {copiedProblem ? <Check size={11} /> : <Copy size={11} />}
             {copiedProblem ? "הועתק!" : "העתק"}
           </button>
         </div>
-        <pre style={{ color: "#e2e8f0", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
+        <pre style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
       </div>
 
       {/* Pitfalls */}
@@ -547,14 +547,14 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
         {ex.pitfalls.map((p, i) => (
           <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.25)", background: "rgba(220,38,38,0.08)", padding: "0.85rem 1rem", marginBottom: 8 }}>
             <div style={{ color: "#fca5a5", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>{p.title}</div>
-            {p.text && <div style={{ color: "#e2e8f0", fontSize: 13.5, lineHeight: 1.65 }}>{p.text}</div>}
+            {p.text && <div style={{ color: "#2D3436", fontSize: 13.5, lineHeight: 1.65 }}>{p.text}</div>}
           </div>
         ))}
       </div>
 
       {/* Prompt Ladder */}
       <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(15,23,42,0.6)", padding: "1.25rem", boxShadow: s.glowShadow }}>
-        <div style={{ color: "#e2e8f0", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; מדריך הפרומפטים</div>
+        <div style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
       </div>
@@ -578,8 +578,8 @@ function FormulaBar() {
   ];
 
   return (
-    <div style={{ borderRadius: 12, border: "1px solid #334155", background: "#0f172a", padding: "1.25rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
-      <div style={{ color: "#94a3b8", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
+    <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: "1.25rem", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
 
       <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
         {tabs.map(t => {
@@ -590,13 +590,13 @@ function FormulaBar() {
               onClick={() => setActiveTab(isActive ? null : t.id)}
               style={{
                 flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
-                border: `1.5px solid ${isActive ? t.borderColor : "#334155"}`,
+                border: `1.5px solid ${isActive ? t.borderColor : "rgba(60,54,42,0.15)"}`,
                 background: isActive ? `${t.color}15` : "rgba(255,255,255,0.02)",
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
               }}
             >
-              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#94a3b8" }}>{t.label}</span>
-              <span style={{ color: isActive ? t.color : "#94a3b8" }}><InlineMath>{t.tex}</InlineMath></span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
+              <span style={{ color: isActive ? t.color : "#6B7280" }}><InlineMath>{t.tex}</InlineMath></span>
             </button>
           );
         })}
@@ -610,7 +610,7 @@ function FormulaBar() {
               <DisplayMath>{"(x^n)' = n \\cdot x^{n-1}"}</DisplayMath>
             </div>
             <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
-              <div style={{ color: "#e2e8f0", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
                 <strong>הסבר:</strong> כדי לגזור <InlineMath>{"x^n"}</InlineMath>, מורידים את החזקה כמקדם ומפחיתים 1 מהחזקה.
                 <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
                   <li>מורידים את n להיות מקדם.</li>
@@ -634,7 +634,7 @@ function FormulaBar() {
               <DisplayMath>{"f'(x_0)=0 \\;\\Rightarrow\\; \\text{extremum candidate}"}</DisplayMath>
             </div>
             <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
-              <div style={{ color: "#e2e8f0", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
                 <strong>הסבר:</strong> נקודת קיצון מתקבלת כאשר הנגזרת מתאפסת. לסיווג:
                 <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
                   <li>פתרו <InlineMath>{"f'(x)=0"}</InlineMath>.</li>
@@ -658,7 +658,7 @@ function FormulaBar() {
               <DisplayMath>{"f'(x)>0 \\;\\Rightarrow\\; \\text{increasing}, \\quad f'(x)<0 \\;\\Rightarrow\\; \\text{decreasing}"}</DisplayMath>
             </div>
             <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px" }}>
-              <div style={{ color: "#e2e8f0", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
                 <strong>הסבר:</strong> מונוטוניות נקבעת לפי סימן הנגזרת בכל קטע:
                 <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
                   <li><InlineMath>{"f'(x) > 0"}</InlineMath> \u2192 הפונקציה <strong>עולה</strong> בקטע.</li>
@@ -712,12 +712,12 @@ function ParabolaLab() {
     ? `\u05E2\u05D5\u05DC\u05D4: (\u2212\u221E, ${xVertex.toFixed(1)}), \u05D9\u05D5\u05E8\u05D3\u05EA: (${xVertex.toFixed(1)}, \u221E)`
     : "\u2014";
 
-  const curveColor = a > 0 ? "#3b82f6" : a < 0 ? "#f43f5e" : "#94a3b8";
+  const curveColor = a > 0 ? "#3b82f6" : a < 0 ? "#f43f5e" : "#6B7280";
 
   return (
-    <section style={{ border: "8px solid #334155", borderRadius: 40, padding: "2.5rem", background: "#020617", marginTop: "2rem" }}>
-      <h3 style={{ color: "#e2e8f0", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; מעבדת פרבולה</h3>
-      <p style={{ color: "#94a3b8", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
+    <section style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; מעבדת פרבולה</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
         f(x) = <span style={{ color: "#16A34A", fontFamily: "monospace", fontWeight: 700 }}>{a}</span>x&sup2; + (<span style={{ color: "#16A34A", fontFamily: "monospace", fontWeight: 700 }}>{b}</span>)x + <span style={{ color: "#16A34A", fontFamily: "monospace", fontWeight: 700 }}>{c}</span>
       </p>
 
@@ -728,8 +728,8 @@ function ParabolaLab() {
           { label: "b (x)", val: b, min: -6, max: 6, step: 1, set: setB },
           { label: "c (קבוע)", val: c, min: -5, max: 10, step: 1, set: setC },
         ].map(sl => (
-          <div key={sl.label} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid #334155", padding: "1rem", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>
+          <div key={sl.label} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", padding: "1rem", boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
               <span>{sl.label}</span>
               <span style={{ color: "#16A34A", fontFamily: "monospace", fontWeight: 700 }}>{sl.val}</span>
             </div>
@@ -763,12 +763,12 @@ function ParabolaLab() {
           { label: "מונוטוניות", val: mono },
         ].map(row => (
           <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(22,163,74,0.3)", padding: 14, boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}>
-            <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 6 }}>{row.label}</div>
+            <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>{row.label}</div>
             <div style={{ color: "#4ade80", fontWeight: 700, fontSize: 12, fontFamily: "monospace" }}>{row.val}</div>
           </div>
         ))}
       </div>
-      <p style={{ color: "#94a3b8", fontSize: 12, textAlign: "center", marginTop: "0.5rem" }}>
+      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "0.5rem" }}>
         f&apos;(x) = <span style={{ color: "#4ade80", fontFamily: "monospace" }}>{fpStr}</span>
       </p>
     </section>
@@ -814,9 +814,9 @@ function CubicLab() {
   const fpStr = `${3 * a3}x\u00B2 ${b1 >= 0 ? "+" : "\u2212"} ${Math.abs(b1)}`;
 
   return (
-    <section style={{ border: "8px solid #334155", borderRadius: 40, padding: "2.5rem", background: "#020617", marginTop: "2rem" }}>
-      <h3 style={{ color: "#e2e8f0", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; מעבדת פולינום מדרגה 3</h3>
-      <p style={{ color: "#94a3b8", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
+    <section style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; מעבדת פולינום מדרגה 3</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
         f(x) = <span style={{ color: "#EA580C", fontFamily: "monospace", fontWeight: 700 }}>{a3}</span>x&sup3; + (<span style={{ color: "#EA580C", fontFamily: "monospace", fontWeight: 700 }}>{b1}</span>)x
       </p>
 
@@ -826,8 +826,8 @@ function CubicLab() {
           { label: "a (x\u00B3)", val: a3, min: -3, max: 3, step: 0.5, set: setA3 },
           { label: "b (x)", val: b1, min: -6, max: 6, step: 0.5, set: setB1 },
         ].map(sl => (
-          <div key={sl.label} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid #334155", padding: "1rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>
+          <div key={sl.label} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", padding: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
               <span>{sl.label}</span>
               <span style={{ color: "#EA580C", fontFamily: "monospace", fontWeight: 700 }}>{sl.val}</span>
             </div>
@@ -867,12 +867,12 @@ function CubicLab() {
           { label: "\u05E0\u05E7\u2032 \u05E4\u05D9\u05EA\u05D5\u05DC", val: inflectionX !== null ? `(${inflectionX.toFixed(1)}, ${inflectionY!.toFixed(1)})` : "\u2014" },
         ].map(row => (
           <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(234,88,12,0.3)", padding: 14 }}>
-            <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 6 }}>{row.label}</div>
+            <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>{row.label}</div>
             <div style={{ color: "#fb923c", fontWeight: 700, fontSize: 13, fontFamily: "monospace" }}>{row.val}</div>
           </div>
         ))}
       </div>
-      <p style={{ color: "#94a3b8", fontSize: 12, textAlign: "center", marginTop: "1rem" }}>
+      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "1rem" }}>
         {hasExtrema ? `\u05E0\u05E7\u05D5\u05D3\u05D5\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05D1-x = \u00B1${Math.sqrt(disc).toFixed(2)}` : "\u05D0\u05D9\u05DF \u05E0\u05E7\u05D5\u05D3\u05D5\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF (\u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05D0\u05D9\u05E0\u05D4 \u05DE\u05EA\u05D0\u05E4\u05E1\u05EA)"}
       </p>
     </section>
@@ -911,9 +911,9 @@ function ParameterLab() {
   const hasExtremum = Math.abs(fp1) < 1;
 
   return (
-    <section style={{ border: "8px solid #334155", borderRadius: 40, padding: "2.5rem", background: "#020617", marginTop: "2rem" }}>
-      <h3 style={{ color: "#e2e8f0", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; מעבדת פרמטרים</h3>
-      <p style={{ color: "#94a3b8", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
+    <section style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; מעבדת פרמטרים</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
         f(x) = <span style={{ color: "#DC2626", fontFamily: "monospace", fontWeight: 700 }}>{aP}</span>x&sup3; + <span style={{ color: "#DC2626", fontFamily: "monospace", fontWeight: 700 }}>{bP}</span>x&sup2; &mdash; שנה a ו-b כדי לקיים את התנאים
       </p>
 
@@ -923,8 +923,8 @@ function ParameterLab() {
           { label: "a (x\u00B3)", val: aP, min: -15, max: 5, step: 1, set: setAP },
           { label: "b (x\u00B2)", val: bP, min: -5, max: 20, step: 1, set: setBP },
         ].map(sl => (
-          <div key={sl.label} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid #334155", padding: "1rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>
+          <div key={sl.label} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", padding: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
               <span>{sl.label}</span>
               <span style={{ color: "#DC2626", fontFamily: "monospace", fontWeight: 700 }}>{sl.val}</span>
             </div>
@@ -936,11 +936,11 @@ function ParameterLab() {
       {/* Constraint indicators */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: "2rem" }}>
         <div style={{ borderRadius: 12, border: `2px solid ${passesPoint ? "rgba(22,163,74,0.5)" : "rgba(220,38,38,0.3)"}`, background: passesPoint ? "rgba(22,163,74,0.1)" : "rgba(220,38,38,0.06)", padding: "10px 14px", textAlign: "center" }}>
-          <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 4 }}>f(1) = {f1.toFixed(1)}</div>
+          <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 4 }}>f(1) = {f1.toFixed(1)}</div>
           <div style={{ color: passesPoint ? "#4ade80" : "#f87171", fontWeight: 700, fontSize: 13 }}>{passesPoint ? "\u2705 \u05E2\u05D5\u05D1\u05E8 \u05D3\u05E8\u05DA (1,4)" : "\u274C \u05DC\u05D0 \u05E2\u05D5\u05D1\u05E8 \u05D3\u05E8\u05DA (1,4)"}</div>
         </div>
         <div style={{ borderRadius: 12, border: `2px solid ${hasExtremum ? "rgba(22,163,74,0.5)" : "rgba(220,38,38,0.3)"}`, background: hasExtremum ? "rgba(22,163,74,0.1)" : "rgba(220,38,38,0.06)", padding: "10px 14px", textAlign: "center" }}>
-          <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 4 }}>f&apos;(1) = {fp1.toFixed(1)}</div>
+          <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 4 }}>f&apos;(1) = {fp1.toFixed(1)}</div>
           <div style={{ color: hasExtremum ? "#4ade80" : "#f87171", fontWeight: 700, fontSize: 13 }}>{hasExtremum ? "\u2705 \u05E7\u05D9\u05E6\u05D5\u05DF \u05D1-x=1" : "\u274C \u05D0\u05D9\u05DF \u05E7\u05D9\u05E6\u05D5\u05DF \u05D1-x=1"}</div>
         </div>
       </div>
@@ -977,12 +977,12 @@ function ParameterLab() {
           { label: "\u05EA\u05E0\u05D0\u05D9\u05DD", val: passesPoint && hasExtremum ? "\u05DE\u05EA\u05E7\u05D9\u05D9\u05DE\u05D9\u05DD" : "\u05DC\u05D0 \u05DE\u05EA\u05E7\u05D9\u05D9\u05DE\u05D9\u05DD" },
         ].map(row => (
           <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(220,38,38,0.3)", padding: 14 }}>
-            <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 6 }}>{row.label}</div>
+            <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>{row.label}</div>
             <div style={{ color: "#f87171", fontWeight: 700, fontSize: 13, fontFamily: "monospace" }}>{row.val}</div>
           </div>
         ))}
       </div>
-      <p style={{ color: "#94a3b8", fontSize: 12, textAlign: "center", marginTop: "1rem" }}>
+      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "1rem" }}>
         מערכת: a + b = 4, &ensp; 3a + 2b = 0 &ensp;&mdash;&ensp; שנה את הסליידרים עד ששני התנאים מתקיימים
       </p>
     </section>
@@ -998,7 +998,7 @@ export default function PolynomialsPage() {
 
   return (
     <main
-      style={{ minHeight: "100vh", background: "#0a0f1e", backgroundImage: "radial-gradient(rgba(148,163,184,0.04) 1px, transparent 1px)", backgroundSize: "24px 24px", color: "#e2e8f0", ["--lvl-rgb" as string]: lvlRgb } as React.CSSProperties}
+      style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px", color: "#2D3436", ["--lvl-rgb" as string]: lvlRgb } as React.CSSProperties}
       dir="rtl"
     >
       <style>{`
@@ -1018,15 +1018,15 @@ export default function PolynomialsPage() {
       `}</style>
 
       {/* Header */}
-      <div style={{ borderBottom: "1px solid #334155", background: "#0a0f1e" }}>
+      <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
         <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#e2e8f0", margin: 0 }}>חקירת פולינומים עם AI</h1>
-            <p style={{ fontSize: 13, color: "#94a3b8", margin: "2px 0 0" }}>נגזרות, נקודות קיצון, מונוטוניות ואיך לשאול AI את השאלות הנכונות</p>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>חקירת פולינומים עם AI</h1>
+            <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>נגזרות, נקודות קיצון, מונוטוניות ואיך לשאול AI את השאלות הנכונות</p>
           </div>
           <Link
             href="/topic/calculus"
-            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(148,163,184,0.1)", border: "1px solid #334155", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#e2e8f0", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
+            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(148,163,184,0.1)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#2D3436", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.2)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.1)"; }}
           >
@@ -1043,7 +1043,7 @@ export default function PolynomialsPage() {
         <FormulaBar />
 
         {/* Level Selector */}
-        <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(15,23,42,0.8)", backdropFilter: "blur(8px)", border: "1px solid #334155" }}>
+        <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(15,23,42,0.8)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
           {TABS.map(tab => {
             const active = selectedLevel === tab.id;
             return (

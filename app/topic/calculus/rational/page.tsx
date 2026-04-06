@@ -116,16 +116,16 @@ function RationalLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
   const asymptoteLabel = k % 1 === 0 ? `x = ${k.toFixed(0)}` : `x = ${k.toFixed(1)}`;
 
   return (
-    <section style={{ border: "8px solid #334155", borderRadius: "40px", padding: "2.5rem", background: "#020617" }}>
-      <h3 style={{ color: "#e2e8f0", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת פונקציות רציונליות</h3>
-      <p style={{ color: "#94a3b8", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
+    <section style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת פונקציות רציונליות</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
         f(x) = 1 / (x − <span style={{ color: st.accentColor, fontFamily: "monospace", fontWeight: 700 }}>{k.toFixed(1)}</span>)
         {" "}— שנה את k וראה כיצד האסימפטוטה זזה
       </p>
 
       {/* Slider */}
-      <div style={{ background: "#0f172a", borderRadius: 16, border: "1px solid #334155", padding: "1.25rem", marginBottom: "2rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#e2e8f0", marginBottom: 4 }}>
+      <div style={{ background: "rgba(255,255,255,0.82)", borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", padding: "1.25rem", marginBottom: "2rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#2D3436", marginBottom: 4 }}>
           <span>מיקום האסימפטוטה <span style={{ color: st.accentColor, fontFamily: "monospace", fontWeight: 600 }}>k</span></span>
           <span style={{ color: st.accentColor, fontFamily: "monospace", fontWeight: 700 }}>{k.toFixed(1)}</span>
         </div>
@@ -136,7 +136,7 @@ function RationalLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
       </div>
 
       {/* SVG */}
-      <div style={{ borderRadius: 16, border: `1px solid ${st.glowBorder}`, background: "#0f172a", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
+      <div style={{ borderRadius: 16, border: `1px solid ${st.glowBorder}`, background: "rgba(255,255,255,0.82)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", maxWidth: 320 }} aria-hidden>
           {[...Array(5)].map((_, i) => {
             const gy = (H / 4) * i;
@@ -155,16 +155,16 @@ function RationalLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
 
       {/* Output tiles */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, textAlign: "center" }}>
-        <div style={{ borderRadius: 16, background: "#0f172a", border: "1px solid #334155", padding: 14 }}>
-          <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 6 }}>אסימפטוטה</div>
+        <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", border: "1px solid rgba(60,54,42,0.15)", padding: 14 }}>
+          <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>אסימפטוטה</div>
           <div style={{ color: "#f87171", fontWeight: 700, fontSize: 13 }}>{asymptoteLabel}</div>
         </div>
-        <div style={{ borderRadius: 16, background: "#0f172a", border: "1px solid #334155", padding: 14 }}>
-          <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 6 }}>תחום</div>
-          <div style={{ color: "#e2e8f0", fontWeight: 700, fontSize: 13 }}>{domain}</div>
+        <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", border: "1px solid rgba(60,54,42,0.15)", padding: 14 }}>
+          <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>תחום</div>
+          <div style={{ color: "#2D3436", fontWeight: 700, fontSize: 13 }}>{domain}</div>
         </div>
-        <div style={{ borderRadius: 16, background: "#0f172a", border: "1px solid #334155", padding: 14 }}>
-          <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 6 }}>שטח אדום</div>
+        <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", border: "1px solid rgba(60,54,42,0.15)", padding: 14 }}>
+          <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>שטח אדום</div>
           <div style={{ color: "#f87171", fontWeight: 700, fontSize: 13 }}>לא מוגדרת</div>
         </div>
       </div>

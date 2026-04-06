@@ -163,11 +163,11 @@ function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "
 function TutorStepBasic({ step, glowRgb = "22,163,74", borderRgb = "45,90,39" }: { step: PromptStep; glowRgb?: string; borderRgb?: string }) {
   return (
     <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid rgba(${glowRgb},0.45)`, marginBottom: 8, boxShadow: `0 0 14px rgba(${glowRgb},0.18)` }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(15,23,42,0.8)", borderBottom: `1px solid rgba(${glowRgb},0.25)` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid rgba(${glowRgb},0.25)` }}>
         <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
         <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
-      <div style={{ background: "rgba(15,23,42,0.5)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
           <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>&#9997;&#65039; הפרומפט המוכן</div>
           <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(${borderRgb},0.35)`, padding: 12, fontSize: 11, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word" }}>{step.prompt}</div>
@@ -195,7 +195,7 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
   };
 
   if (locked) return (
-    <div style={{ borderRadius: 12, border: `1px solid rgba(${borderRgb},0.3)`, background: "rgba(15,23,42,0.4)", padding: "14px 16px", marginBottom: 8, opacity: 0.4, userSelect: "none", display: "flex", alignItems: "center", gap: 10 }}>
+    <div style={{ borderRadius: 12, border: `1px solid rgba(${borderRgb},0.3)`, background: "rgba(255,255,255,0.6)", padding: "14px 16px", marginBottom: 8, opacity: 0.4, userSelect: "none", display: "flex", alignItems: "center", gap: 10 }}>
       <span style={{ fontSize: 16 }}>&#128274;</span>
       <div>
         <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
@@ -208,11 +208,11 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
 
   return (
     <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${passed ? "rgba(245,158,11,0.55)" : `rgba(${borderRgb},0.35)`}`, marginBottom: 8, boxShadow: passed ? "0 0 16px rgba(245,158,11,0.25)" : "none", transition: "border-color 0.3s, box-shadow 0.3s" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(15,23,42,0.8)", borderBottom: `1px solid ${passed ? "rgba(245,158,11,0.3)" : `rgba(${borderRgb},0.2)`}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid ${passed ? "rgba(245,158,11,0.3)" : `rgba(${borderRgb},0.2)`}` }}>
         {passed ? <CheckCircle size={14} color="#34d399" /> : <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
         <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
-      <div style={{ background: "rgba(15,23,42,0.5)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <textarea
           value={text} rows={3} dir="rtl" disabled={passed}
           onChange={(e) => { setText(e.target.value); setResult(null); }}
@@ -276,7 +276,7 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
   const passed = result?.score !== undefined && result.score >= 90 && !result.blocked;
 
   if (locked) return (
-    <div style={{ borderRadius: 12, border: "1px solid rgba(139,38,53,0.3)", background: "rgba(15,23,42,0.4)", padding: "12px 16px", opacity: 0.45, userSelect: "none", display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+    <div style={{ borderRadius: 12, border: "1px solid rgba(139,38,53,0.3)", background: "rgba(255,255,255,0.6)", padding: "12px 16px", opacity: 0.45, userSelect: "none", display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
       <span>&#128274;</span><span style={{ color: "#6B7280", fontSize: 12 }}>{step.phase} — {step.label}</span>
     </div>
   );
@@ -293,14 +293,14 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
 
   return (
     <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${passed ? "rgba(52,211,153,0.35)" : "rgba(220,38,38,0.35)"}`, marginBottom: 8, transition: "border-color 0.3s" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(15,23,42,0.8)", borderBottom: `1px solid ${passed ? "rgba(52,211,153,0.2)" : "rgba(220,38,38,0.2)"}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid ${passed ? "rgba(52,211,153,0.2)" : "rgba(220,38,38,0.2)"}` }}>
         {passed
           ? <CheckCircle size={14} color="#34d399" />
           : <span style={{ color: "#fca5a5", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
         <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
 
-      <div style={{ background: "rgba(15,23,42,0.5)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <textarea
           value={text} rows={3} dir="rtl"
           readOnly={passed}
@@ -422,13 +422,13 @@ function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
       {steps.map((s, i) => (
         <div key={i} style={{ marginBottom: 8 }}>
           {(!masterPassed || i >= unlockedCount) ? (
-            <div style={{ borderRadius: 14, border: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.6)", padding: "14px 16px", opacity: 0.5, pointerEvents: "none" as const, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ borderRadius: 14, border: "1px solid rgba(148,163,184,0.1)", background: "rgba(255,255,255,0.7)", padding: "14px 16px", opacity: 0.5, pointerEvents: "none" as const, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ color: "#6B7280", fontSize: 13, fontWeight: 600 }}>{ s.phase } — { s.label }</span>
               <span style={{ fontSize: 16 }}>&#128274;</span>
             </div>
           ) : (
             <div>
-              <div style={{ borderRadius: 14, border: "1px solid rgba(22,163,74,0.3)", background: "rgba(15,23,42,0.8)", padding: "14px 16px", marginBottom: 8 }}>
+              <div style={{ borderRadius: 14, border: "1px solid rgba(22,163,74,0.3)", background: "rgba(255,255,255,0.75)", padding: "14px 16px", marginBottom: 8 }}>
                 <div style={{ color: "#4ade80", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{ s.phase } — { s.label }</div>
                 <div style={{ color: "#2D3436", fontSize: 13, lineHeight: 1.6 }}>{ s.prompt }</div>
               </div>
@@ -527,7 +527,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       <div style={{ height: 1, background: "rgba(60,54,42,0.15)", marginBottom: "2rem" }} />
 
       {/* Diagram */}
-      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(15,23,42,0.8)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
 
       {/* Problem */}
       <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.03)", padding: "1.5rem", marginBottom: "2rem" }}>
@@ -553,7 +553,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       </div>
 
       {/* Prompt Ladder */}
-      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(15,23,42,0.6)", padding: "1.25rem", boxShadow: s.glowShadow }}>
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.7)", padding: "1.25rem", boxShadow: s.glowShadow }}>
         <div style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; מדריך הפרומפטים</div>
         {ex.id === "basic"    && <LadderBase   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium"   && <LadderMedium steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
@@ -739,7 +739,7 @@ function ParabolaLab() {
       </div>
 
       {/* SVG */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(22,163,74,0.35)", background: "rgba(15,23,42,0.8)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
+      <div style={{ borderRadius: 16, border: "1px solid rgba(22,163,74,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", maxWidth: 360 }} aria-hidden>
           {[...Array(5)].map((_, i) => {
             const gy = (H / 4) * i;
@@ -837,7 +837,7 @@ function CubicLab() {
       </div>
 
       {/* SVG */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(234,88,12,0.35)", background: "rgba(15,23,42,0.8)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
+      <div style={{ borderRadius: 16, border: "1px solid rgba(234,88,12,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", maxWidth: 360 }} aria-hidden>
           {[...Array(5)].map((_, i) => {
             const gy = (H / 4) * i;
@@ -953,7 +953,7 @@ function ParameterLab() {
       )}
 
       {/* SVG */}
-      <div style={{ borderRadius: 16, border: "1px solid rgba(220,38,38,0.35)", background: "rgba(15,23,42,0.8)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
+      <div style={{ borderRadius: 16, border: "1px solid rgba(220,38,38,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", maxWidth: 360 }} aria-hidden>
           {[...Array(5)].map((_, i) => {
             const gy = (H / 4) * i;
@@ -1043,7 +1043,7 @@ export default function PolynomialsPage() {
         <FormulaBar />
 
         {/* Level Selector */}
-        <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(15,23,42,0.8)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
+        <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
           {TABS.map(tab => {
             const active = selectedLevel === tab.id;
             return (

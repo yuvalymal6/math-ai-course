@@ -226,7 +226,7 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
               <span>ציון הפרומפט</span>
               <span style={{ fontWeight: 800 }}>{result.score}/100</span>
             </div>
-            <div style={{ height: 6, borderRadius: 3, background: "#1e293b", overflow: "hidden" }}>
+            <div style={{ height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${result.score}%`, borderRadius: 3, background: scoreBarColor, transition: "width 0.4s ease" }} />
             </div>
           </div>
@@ -315,7 +315,7 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
               <span>ציון</span>
               <span style={{ fontWeight: 800 }}>{result.score}/100</span>
             </div>
-            <div style={{ height: 5, borderRadius: 99, background: "#1e293b", overflow: "hidden" }}>
+            <div style={{ height: 5, borderRadius: 99, background: "#E5E7EB", overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${result.score}%`, background: result.score >= 90 ? "#16a34a" : result.score >= 55 ? "#d97706" : "#dc2626", borderRadius: 99, transition: "width 0.4s ease" }} />
             </div>
           </div>

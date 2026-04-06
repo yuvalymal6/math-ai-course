@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -10,28 +10,34 @@ import MarkComplete from "@/app/components/MarkComplete";
 import LabMessage from "@/app/components/LabMessage";
 import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
-// ─── Global CSS ───────────────────────────────────────────────────────────────
+// ─── KaTeX helpers ───────────────────────────────────────────────────────────
 
-const GLOBAL_CSS = `
-  textarea:focus, input[type="text"]:focus {
-    outline: 2px solid rgba(var(--lvl-rgb), 0.55);
-    outline-offset: 1px;
-    border-color: rgba(var(--lvl-rgb), 0.5) !important;
-  }
-  button:focus-visible {
-    outline: 2px solid rgba(var(--lvl-rgb), 0.55);
-    outline-offset: 2px;
-  }
-`;
+function InlineMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: false }); }, [children]);
+  return <span ref={ref} />;
+}
+
+function DisplayMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: true }); }, [children]);
+  return <span ref={ref} style={{ display: "block", textAlign: "center" }} />;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type PromptStep = {
   phase: string;
   label: string;
-  prompt?: string;
+  coaching: string;
+  prompt: string;
+  keywords: string[];
+  keywordHint: string;
   contextWords?: string[];
+  stationWords?: string[];
 };
 
 type ExerciseDef = {
@@ -41,184 +47,156 @@ type ExerciseDef = {
   diagram: React.ReactNode;
   pitfalls: { title: string; text: string }[];
   goldenPrompt: string;
+  advancedGateQuestion?: string;
   steps: PromptStep[];
-  subjectWords?: string[];
-  subjectHint?: string;
 };
 
 // ─── Station config ───────────────────────────────────────────────────────────
 
 const STATION = {
-  basic:    { stationName: "תחנה ראשונה", badge: "מתחיל",  badgeCls: "bg-green-600 text-white",  glowBorder: "rgba(22,163,74,0.35)",  glowShadow: "0 4px 16px rgba(22,163,74,0.12)",  glowRgb: "22,163,74",   accentColor: "#16A34A", borderHex: "#2D5A27", borderRgb: "45,90,39"   },
-  medium:   { stationName: "תחנה שנייה",  badge: "בינוני", badgeCls: "bg-orange-600 text-white", glowBorder: "rgba(234,88,12,0.35)",  glowShadow: "0 4px 16px rgba(234,88,12,0.12)",  glowRgb: "234,88,12",  accentColor: "#EA580C", borderHex: "#A34F26", borderRgb: "163,79,38"  },
-  advanced: { stationName: "תחנה שלישית", badge: "מתקדם",  badgeCls: "bg-red-700 text-white",    glowBorder: "rgba(220,38,38,0.35)",  glowShadow: "0 4px 16px rgba(220,38,38,0.12)",  glowRgb: "220,38,38",  accentColor: "#DC2626", borderHex: "#8B2635", borderRgb: "139,38,53"  },
+  basic:    { stationName: "\u05EA\u05D7\u05E0\u05D4 \u05E8\u05D0\u05E9\u05D5\u05E0\u05D4", badge: "\u05DE\u05EA\u05D7\u05D9\u05DC",  badgeCls: "bg-green-600 text-white",  accentCls: "text-green-400",   ladderBorder: "#16A34A", glowBorder: "rgba(22,163,74,0.35)",  glowShadow: "0 4px 16px rgba(22,163,74,0.12)",  glowRgb: "22,163,74",  accentColor: "#16A34A", borderHex: "#2D5A27", borderRgb: "45,90,39"   },
+  medium:   { stationName: "\u05EA\u05D7\u05E0\u05D4 \u05E9\u05E0\u05D9\u05D9\u05D4",  badge: "\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9",  badgeCls: "bg-orange-600 text-white", accentCls: "text-orange-400",  ladderBorder: "#EA580C", glowBorder: "rgba(234,88,12,0.35)",  glowShadow: "0 4px 16px rgba(234,88,12,0.12)",  glowRgb: "234,88,12", accentColor: "#EA580C", borderHex: "#A34F26", borderRgb: "163,79,38"  },
+  advanced: { stationName: "\u05EA\u05D7\u05E0\u05D4 \u05E9\u05DC\u05D9\u05E9\u05D9\u05EA", badge: "\u05DE\u05EA\u05E7\u05D3\u05DD",  badgeCls: "bg-red-700 text-white",    accentCls: "text-red-400",     ladderBorder: "#DC2626", glowBorder: "rgba(220,38,38,0.35)",  glowShadow: "0 4px 16px rgba(220,38,38,0.12)",  glowRgb: "220,38,38", accentColor: "#DC2626", borderHex: "#8B2635", borderRgb: "139,38,53" },
 } as const;
 
-// ─── Tabs ─────────────────────────────────────────────────────────────────────
-
 const TABS = [
-  { id: "basic"    as const, label: "בסיסי — גדר שלוש צלעות",   bg: "bg-green-50",  border: "border-green-600",  textColor: "text-green-700",  glowColor: "rgba(22,163,74,0.3)"   },
-  { id: "medium"   as const, label: "בינוני — חלון נורמן",       bg: "bg-orange-50", border: "border-orange-600", textColor: "text-orange-700", glowColor: "rgba(234,88,12,0.3)"   },
-  { id: "advanced" as const, label: "מתקדם — חוט לריבוע ועיגול", bg: "bg-red-50",    border: "border-red-700",    textColor: "text-red-700",    glowColor: "rgba(220,38,38,0.3)"   },
-] as const;
-
-// ─── Formulas ─────────────────────────────────────────────────────────────────
-
-const FORMULAS = [
-  { label: "שטח מלבן",        formula: "A(x) = x·y" },
-  { label: "אילוץ",           formula: "2x+y=L" },
-  { label: "היקף חצי עיגול", formula: "πr" },
-  { label: "קיצון",           formula: "A′(x) = 0" },
+  { id: "basic",    label: "\u05DE\u05EA\u05D7\u05D9\u05DC",  textColor: "text-green-400",   border: "border-green-600",   bg: "bg-green-600/10",   glowColor: "rgba(22,163,74,0.3)"   },
+  { id: "medium",   label: "\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9", textColor: "text-orange-400",  border: "border-orange-600",  bg: "bg-orange-600/10",  glowColor: "rgba(234,88,12,0.3)"   },
+  { id: "advanced", label: "\u05DE\u05EA\u05E7\u05D3\u05DD",  textColor: "text-red-400",     border: "border-red-700",     bg: "bg-red-700/10",     glowColor: "rgba(220,38,38,0.3)"   },
 ];
 
-// ─── FormulaBar ───────────────────────────────────────────────────────────────
+// ─── SVG diagrams (silent — no numbers, no answers) ─────────────────────────
 
-function FormulaBar({ accentColor, accentRgb }: { accentColor: string; accentRgb: string }) {
+function BasicSVG() {
   return (
-    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1rem 1.25rem", marginBottom: "1.5rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
-      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 10, textAlign: "center" }}>נוסחאות</div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem 1.5rem", justifyContent: "center" }}>
-        {FORMULAS.map((f, i) => (
-          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-            <span style={{ color: "#6B7280", fontSize: 10 }}>{f.label}</span>
-            <span style={{ color: accentColor, fontFamily: "monospace", fontWeight: 700, fontSize: 13 }}>{f.formula}</span>
-          </div>
-        ))}
-      </div>
-    </div>
+    <svg viewBox="0 0 280 170" className="w-full max-w-sm mx-auto" aria-hidden>
+      {/* Wall */}
+      <rect x="50" y="20" width="180" height="10" fill="#94a3b8" rx="3" />
+      <text x="140" y="16" textAnchor="middle" fill="#6B7280" fontSize="10">{"\u05E7\u05D9\u05E8"}</text>
+      {/* Rectangle */}
+      <rect x="50" y="30" width="180" height="100" fill="none" stroke="#16A34A" strokeWidth="2" rx="2" />
+      {/* Fence ticks — left */}
+      {[0,1,2,3,4,5].map(i => <line key={`l${i}`} x1={50} y1={40+i*16} x2={42} y2={40+i*16} stroke="#16A34A" strokeWidth="2" strokeLinecap="round" />)}
+      {/* Fence ticks — right */}
+      {[0,1,2,3,4,5].map(i => <line key={`r${i}`} x1={230} y1={40+i*16} x2={238} y2={40+i*16} stroke="#16A34A" strokeWidth="2" strokeLinecap="round" />)}
+      {/* Fence ticks — bottom */}
+      {[0,1,2,3,4,5,6,7].map(i => <line key={`b${i}`} x1={60+i*21} y1={130} x2={60+i*21} y2={138} stroke="#16A34A" strokeWidth="2" strokeLinecap="round" />)}
+      {/* Labels */}
+      <text x="35" y="82" textAnchor="middle" fill="#16A34A" fontSize="14" fontWeight="bold">x</text>
+      <text x="246" y="82" textAnchor="middle" fill="#16A34A" fontSize="14" fontWeight="bold">x</text>
+      <text x="140" y="82" textAnchor="middle" fill="#f59e0b" fontSize="14" fontWeight="bold">y</text>
+      <text x="140" y="158" textAnchor="middle" fill="#6B7280" fontSize="10">{"\u05D2\u05D3\u05E8 \u05DC\u05D9\u05D3 \u05E7\u05D9\u05E8 \u2014 \u05E9\u05DC\u05D5\u05E9 \u05E6\u05DC\u05E2\u05D5\u05EA"}</text>
+    </svg>
   );
 }
 
-// ─── Static SVG Diagrams ──────────────────────────────────────────────────────
-
-function FenceStaticDiagram() {
+function MediumSVG() {
+  const CX = 140, RECT_TOP = 80, H = 55, R = 45;
   return (
-    <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(22,163,74,0.2)", padding: 12 }}>
-      <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginBottom: 4 }}>הגדרת הבעיה — גדר שלוש צלעות</p>
-      <svg width="100%" viewBox="0 0 320 160" style={{ maxWidth: "100%" }}>
-        <rect x="55" y="22" width="210" height="9" fill="#475569" rx="3" />
-        <text x="160" y="18" textAnchor="middle" fill="#94a3b8" fontSize="11">קיר — לא נדרשת גדר</text>
-        <rect x="55" y="31" width="210" height="100" fill="#22c55e08" stroke="#22c55e" strokeWidth="2" rx="2" />
-        {[0,1,2,3,4,5,6].map(i => <line key={i} x1={55} y1={42+i*13} x2={47} y2={42+i*13} stroke="#22c55e" strokeWidth="2" strokeLinecap="round" />)}
-        {[0,1,2,3,4,5,6].map(i => <line key={i} x1={265} y1={42+i*13} x2={273} y2={42+i*13} stroke="#22c55e" strokeWidth="2" strokeLinecap="round" />)}
-        {[0,1,2,3,4,5,6,7,8].map(i => <line key={i} x1={65+i*21} y1={131} x2={65+i*21} y2={139} stroke="#22c55e" strokeWidth="2" strokeLinecap="round" />)}
-        <text x="33" y="86" textAnchor="middle" fill="#22c55e" fontSize="14" fontWeight="bold">x</text>
-        <text x="287" y="86" textAnchor="middle" fill="#22c55e" fontSize="14" fontWeight="bold">x</text>
-        <text x="160" y="86" textAnchor="middle" fill="#f97316" fontSize="14" fontWeight="bold">y</text>
-        <text x="160" y="153" textAnchor="middle" fill="#94a3b8" fontSize="11">L = 60 מ׳ (סך כל הגדר)</text>
-      </svg>
-    </div>
+    <svg viewBox="0 0 280 170" className="w-full max-w-sm mx-auto" aria-hidden>
+      {/* Semicircle */}
+      <path d={`M ${CX-R} ${RECT_TOP} A ${R} ${R} 0 0 1 ${CX+R} ${RECT_TOP}`} fill="none" stroke="#f59e0b" strokeWidth="2" />
+      {/* Rectangle */}
+      <rect x={CX-R} y={RECT_TOP} width={R*2} height={H} fill="none" stroke="#f59e0b" strokeWidth="2" />
+      {/* h dimension */}
+      <line x1={CX+R+10} y1={RECT_TOP} x2={CX+R+10} y2={RECT_TOP+H} stroke="#EA580C" strokeWidth="1.5" strokeDasharray="4,2" />
+      <line x1={CX+R+6} y1={RECT_TOP} x2={CX+R+14} y2={RECT_TOP} stroke="#EA580C" strokeWidth="1.5" />
+      <line x1={CX+R+6} y1={RECT_TOP+H} x2={CX+R+14} y2={RECT_TOP+H} stroke="#EA580C" strokeWidth="1.5" />
+      <text x={CX+R+22} y={RECT_TOP+H/2+4} fill="#EA580C" fontSize="12" fontWeight="bold">h</text>
+      {/* 2r dimension */}
+      <line x1={CX-R} y1={RECT_TOP+H+12} x2={CX+R} y2={RECT_TOP+H+12} stroke="#16A34A" strokeWidth="1.5" />
+      <line x1={CX-R} y1={RECT_TOP+H+7} x2={CX-R} y2={RECT_TOP+H+17} stroke="#16A34A" strokeWidth="1.5" />
+      <line x1={CX+R} y1={RECT_TOP+H+7} x2={CX+R} y2={RECT_TOP+H+17} stroke="#16A34A" strokeWidth="1.5" />
+      <text x={CX} y={RECT_TOP+H+26} textAnchor="middle" fill="#16A34A" fontSize="11">2r</text>
+      {/* radius line */}
+      <line x1={CX} y1={RECT_TOP} x2={CX+R} y2={RECT_TOP} stroke="#a78bfa" strokeWidth="1" strokeDasharray="4,3" />
+      <text x={CX+R/2} y={RECT_TOP-6} textAnchor="middle" fill="#a78bfa" fontSize="10">r</text>
+      {/* Title */}
+      <text x={CX} y={20} textAnchor="middle" fill="#6B7280" fontSize="10">{"\u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF \u2014 \u05DE\u05DC\u05D1\u05DF + \u05D7\u05E6\u05D9 \u05E2\u05D9\u05D2\u05D5\u05DC"}</text>
+    </svg>
   );
 }
 
-function NormanStaticDiagram() {
-  const CX = 160, RECT_TOP = 95, H = 65, R = 55;
+function AdvancedSVG() {
   return (
-    <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(234,88,12,0.2)", padding: 12 }}>
-      <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginBottom: 4 }}>חלון נורמן — מלבן + חצי עיגול</p>
-      <svg width="100%" viewBox="0 0 320 185" style={{ maxWidth: "100%" }}>
-        <path d={`M ${CX-R} ${RECT_TOP} A ${R} ${R} 0 0 1 ${CX+R} ${RECT_TOP}`} fill="#f59e0b10" stroke="#f59e0b" strokeWidth="2" />
-        <rect x={CX-R} y={RECT_TOP} width={R*2} height={H} fill="#f59e0b08" stroke="#f59e0b" strokeWidth="2" />
-        <line x1={CX+R+12} y1={RECT_TOP} x2={CX+R+12} y2={RECT_TOP+H} stroke="#f97316" strokeWidth="1.5" strokeDasharray="4,2" />
-        <line x1={CX+R+7} y1={RECT_TOP} x2={CX+R+17} y2={RECT_TOP} stroke="#f97316" strokeWidth="1.5" />
-        <line x1={CX+R+7} y1={RECT_TOP+H} x2={CX+R+17} y2={RECT_TOP+H} stroke="#f97316" strokeWidth="1.5" />
-        <text x={CX+R+26} y={RECT_TOP+H/2+4} fill="#f97316" fontSize="12" fontWeight="bold">h</text>
-        <line x1={CX-R} y1={RECT_TOP+H+14} x2={CX+R} y2={RECT_TOP+H+14} stroke="#22c55e" strokeWidth="1.5" />
-        <line x1={CX-R} y1={RECT_TOP+H+9} x2={CX-R} y2={RECT_TOP+H+19} stroke="#22c55e" strokeWidth="1.5" />
-        <line x1={CX+R} y1={RECT_TOP+H+9} x2={CX+R} y2={RECT_TOP+H+19} stroke="#22c55e" strokeWidth="1.5" />
-        <text x={CX} y={RECT_TOP+H+28} textAnchor="middle" fill="#22c55e" fontSize="11">2r</text>
-        <text x={160} y={22} textAnchor="middle" fill="#94a3b8" fontSize="11">היקף כולל = 12 מ׳</text>
-      </svg>
-    </div>
-  );
-}
-
-function WireStaticDiagram() {
-  return (
-    <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(220,38,38,0.2)", padding: 12 }}>
-      <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginBottom: 4 }}>חיתוך חוט — ריבוע ועיגול</p>
-      <svg width="100%" viewBox="0 0 320 165" style={{ maxWidth: "100%" }}>
-        <line x1="20" y1="32" x2="300" y2="32" stroke="#64748b" strokeWidth="5" strokeLinecap="round" />
-        <text x="160" y="20" textAnchor="middle" fill="#94a3b8" fontSize="11">חוט L = 100 ס״מ</text>
-        <line x1="175" y1="18" x2="175" y2="46" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" />
-        <text x="100" y="27" textAnchor="middle" fill="#3b82f6" fontSize="10">← x ס״מ →</text>
-        <text x="245" y="27" textAnchor="middle" fill="#f43f5e" fontSize="10">← 100−x →</text>
-        <line x1="90" y1="46" x2="75" y2="68" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="4,2" />
-        <rect x="35" y="70" width="80" height="80" fill="#3b82f633" stroke="#3b82f6" strokeWidth="2" rx="2" />
-        <text x="75" y="115" textAnchor="middle" fill="#3b82f6" fontSize="11" fontWeight="bold">ריבוע</text>
-        <text x="75" y="130" textAnchor="middle" fill="#3b82f6" fontSize="10">צלע = x/4</text>
-        <line x1="245" y1="46" x2="250" y2="68" stroke="#f43f5e" strokeWidth="1.5" strokeDasharray="4,2" />
-        <circle cx="255" cy="112" r="42" fill="#f43f5e15" stroke="#f43f5e" strokeWidth="2" />
-        <text x="255" y="110" textAnchor="middle" fill="#f43f5e" fontSize="11" fontWeight="bold">עיגול</text>
-        <text x="255" y="126" textAnchor="middle" fill="#f43f5e" fontSize="10">r = (100−x)/2π</text>
-      </svg>
-    </div>
+    <svg viewBox="0 0 300 150" className="w-full max-w-sm mx-auto" aria-hidden>
+      {/* Wire */}
+      <line x1="30" y1="30" x2="270" y2="30" stroke="#94a3b8" strokeWidth="4" strokeLinecap="round" />
+      <text x="150" y="18" textAnchor="middle" fill="#6B7280" fontSize="10">{"\u05D7\u05D5\u05D8"}</text>
+      {/* Cut mark */}
+      <line x1="160" y1="18" x2="160" y2="42" stroke="#DC2626" strokeWidth="2.5" strokeLinecap="round" />
+      {/* x label */}
+      <text x="95" y="46" textAnchor="middle" fill="#3b82f6" fontSize="9">x</text>
+      {/* L-x label */}
+      <text x="215" y="46" textAnchor="middle" fill="#DC2626" fontSize="9">{"\u05E9\u05D0\u05E8\u05D9\u05EA"}</text>
+      {/* Arrow to square */}
+      <line x1="85" y1="48" x2="70" y2="62" stroke="#3b82f6" strokeWidth="1" strokeDasharray="4,2" />
+      {/* Square outline */}
+      <rect x="30" y="65" width="65" height="65" fill="none" stroke="#3b82f6" strokeWidth="2" rx="2" />
+      <text x="62" y="102" textAnchor="middle" fill="#3b82f6" fontSize="11" fontWeight="bold">{"\u05E8\u05D9\u05D1\u05D5\u05E2"}</text>
+      {/* Arrow to circle */}
+      <line x1="220" y1="48" x2="225" y2="62" stroke="#DC2626" strokeWidth="1" strokeDasharray="4,2" />
+      {/* Circle outline */}
+      <circle cx="230" cy="100" r="35" fill="none" stroke="#DC2626" strokeWidth="2" />
+      <text x="230" y="104" textAnchor="middle" fill="#DC2626" fontSize="11" fontWeight="bold">{"\u05E2\u05D9\u05D2\u05D5\u05DC"}</text>
+    </svg>
   );
 }
 
 // ─── Prompt Coach Atoms ───────────────────────────────────────────────────────
 
-function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; label?: string }) {
+function CopyBtn({ text, label = "\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8" }: { text: string; label?: string }) {
   const [c, setC] = useState(false);
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setC(true); setTimeout(() => setC(false), 2000); }}
-      style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.25)", color: "#1A1A1A", fontWeight: 500, cursor: "pointer" }}
+      style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(148,163,184,0.25)", color: "#2D3436", fontWeight: 500, cursor: "pointer" }}
     >
-      {c ? <Check size={13} /> : <Copy size={13} />}{c ? "הועתק!" : label}
+      {c ? <Check size={13} /> : <Copy size={13} />}{c ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : label}
     </button>
   );
 }
 
-function GoldenPromptCard({ prompt, title = "פרומפט ראשי", glowRgb = "16,185,129", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
+function GoldenPromptCard({ prompt, title = "\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E8\u05D0\u05E9\u05D9", glowRgb = "22,163,74", borderRgb = "45,90,39" }: { prompt: string; title?: string; glowRgb?: string; borderRgb?: string }) {
   return (
     <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)` }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-        <span>✨</span>
-        <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
+        <span style={{ fontSize: 14 }}>&#10024;</span>
+        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
       </div>
-      <p style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
-      <CopyBtn text={prompt} label="העתק פרומפט מלא" />
+      <p style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
+      <CopyBtn text={prompt} label="\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05DC\u05D0" />
     </div>
   );
 }
 
-function TutorStepBasic({ step, glowRgb = "16,185,129", borderRgb = "45,90,39" }: { step: PromptStep; glowRgb?: string; borderRgb?: string }) {
-  const [done, setDone] = useState(false);
-  const prompt = step.prompt ?? "";
+function TutorStepBasic({ step, glowRgb = "22,163,74", borderRgb = "45,90,39" }: { step: PromptStep; glowRgb?: string; borderRgb?: string }) {
   return (
     <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid rgba(${glowRgb},0.45)`, marginBottom: 8, boxShadow: `0 0 14px rgba(${glowRgb},0.18)` }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid rgba(${glowRgb},0.25)` }}>
-        <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
-        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
-        {done && <CheckCircle size={14} color="#34d399" style={{ marginRight: "auto" }} />}
+        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
-      <div style={{ background: "rgba(255,255,255,0.4)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
-          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>הפרומפט המוכן ✍️</div>
-          <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.75)", border: `1px solid rgba(${borderRgb},0.35)`, padding: 12, fontSize: 11, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word" }}>{prompt}</div>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>&#9997;&#65039; {"\u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05D4\u05DE\u05D5\u05DB\u05DF"}</div>
+          <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(${borderRgb},0.35)`, padding: 12, fontSize: 11, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word" }}>{step.prompt}</div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <CopyBtn text={prompt} label="העתק פרומפט ממוקד" />
-          <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, color: done ? "#16a34a" : "#6B7280", fontWeight: done ? 600 : 400 }}>
-            <input type="checkbox" checked={done} onChange={e => setDone(e.target.checked)} style={{ accentColor: "#16a34a" }} />
-            סיימתי עם AI
-          </label>
-        </div>
+        <CopyBtn text={step.prompt} label="\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05DE\u05D5\u05E7\u05D3" />
       </div>
     </div>
   );
 }
 
 function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" }: { step: PromptStep; locked?: boolean; onPass?: () => void; borderRgb?: string }) {
-  const [text, setText] = useState("");
+  const [text, setText]     = useState("");
   const [result, setResult] = useState<ScoreResult | null>(null);
-
+  const [copied, setCopied] = useState(false);
   const passed = !!(result && !result.blocked && result.score >= 75);
 
   const validate = () => {
     if (text.trim().length < 20) {
-      setResult({ score: 0, blocked: false, hint: "הניסוח קצר מדי — כתוב לפחות 20 תווים." });
+      setResult({ score: 0, blocked: false, hint: "\u05D4\u05E0\u05D9\u05E1\u05D5\u05D7 \u05E7\u05E6\u05E8 \u05DE\u05D3\u05D9 \u2014 \u05DB\u05EA\u05D5\u05D1 \u05DC\u05E4\u05D7\u05D5\u05EA 20 \u05EA\u05D5\u05D5\u05D9\u05DD." });
       return;
     }
     const res = calculatePromptScore(text, step.contextWords ?? []);
@@ -227,8 +205,8 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
   };
 
   if (locked) return (
-    <div style={{ borderRadius: 12, border: `1px solid rgba(${borderRgb},0.3)`, background: "rgba(255,255,255,0.3)", padding: "14px 16px", marginBottom: 8, opacity: 0.4, userSelect: "none", display: "flex", alignItems: "center", gap: 10 }}>
-      <span style={{ fontSize: 16 }}>🔒</span>
+    <div style={{ borderRadius: 12, border: `1px solid rgba(${borderRgb},0.3)`, background: "rgba(255,255,255,0.6)", padding: "14px 16px", marginBottom: 8, opacity: 0.4, userSelect: "none", display: "flex", alignItems: "center", gap: 10 }}>
+      <span style={{ fontSize: 16 }}>&#128274;</span>
       <div>
         <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
         <span style={{ color: "#6B7280", fontSize: 11, marginRight: 8 }}>{step.label}</span>
@@ -236,30 +214,27 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
     </div>
   );
 
-  const scoreBarColor = !result ? "#9CA3AF"
-    : result.score >= 75 ? "#16a34a"
-    : result.score >= 50 ? "#d97706"
-    : "#dc2626";
+  const scoreBarColor = !result ? "#64748b" : result.score >= 75 ? "#16a34a" : result.score >= 50 ? "#d97706" : "#dc2626";
 
   return (
     <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${passed ? "rgba(245,158,11,0.55)" : `rgba(${borderRgb},0.35)`}`, marginBottom: 8, boxShadow: passed ? "0 0 16px rgba(245,158,11,0.25)" : "none", transition: "border-color 0.3s, box-shadow 0.3s" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid ${passed ? "rgba(245,158,11,0.3)" : `rgba(${borderRgb},0.2)`}` }}>
-        {passed ? <CheckCircle size={14} color="#34d399" /> : <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
-        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
+        {passed ? <CheckCircle size={14} color="#34d399" /> : <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
-      <div style={{ background: "rgba(255,255,255,0.4)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <textarea
           value={text} rows={3} dir="rtl" disabled={passed}
           onChange={(e) => { setText(e.target.value); setResult(null); }}
-          placeholder="נסח כאן את השאלה שלך ל-AI (בקש הכוונה, לא פתרון)..."
-          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: "rgba(255,255,255,0.75)", border: `1px solid ${passed ? "rgba(245,158,11,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+          placeholder="\u05E0\u05E1\u05D7 \u05DB\u05D0\u05DF \u05D0\u05EA \u05D4\u05E9\u05D0\u05DC\u05D4 \u05E9\u05DC\u05DA \u05DC-AI (\u05D1\u05E7\u05E9 \u05D4\u05DB\u05D5\u05D5\u05E0\u05D4, \u05DC\u05D0 \u05E4\u05EA\u05E8\u05D5\u05DF)..."
+          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: "rgba(255,255,255,0.05)", border: `1px solid ${passed ? "rgba(245,158,11,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
         />
 
         {result && (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#1A1A1A", marginBottom: 4, fontWeight: 600 }}>
-              <span>ציון הפרומפט</span>
-              <span style={{ color: "#1A1A1A", fontWeight: 800 }}>{result.score}/100</span>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", marginBottom: 4, fontWeight: 600 }}>
+              <span>{"\u05E6\u05D9\u05D5\u05DF \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8"}</span>
+              <span style={{ fontWeight: 800 }}>{result.score}/100</span>
             </div>
             <div style={{ height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${result.score}%`, borderRadius: 3, background: scoreBarColor, transition: "width 0.4s ease" }} />
@@ -268,42 +243,125 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
         )}
 
         {!result && (
-          <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.75)", border: `1px solid rgba(${borderRgb},0.4)`, color: "#1A1A1A", cursor: "pointer", fontWeight: 500 }}>
-            בדיקת AI מדומה 🤖
+          <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(${borderRgb},0.4)`, color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>
+            &#129302; {"\u05D1\u05D3\u05D9\u05E7\u05EA AI \u05DE\u05D3\u05D5\u05DE\u05D4"}
           </button>
         )}
 
         {result && result.blocked && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 12, background: "rgba(254,226,226,1)", border: "2px solid #dc2626", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6 }}>
-            ⚠️ {result.hint}
+            &#9888;&#65039; {result.hint}
           </motion.div>
         )}
 
         {result && !result.blocked && result.score < 75 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 12, background: "rgba(255,251,235,1)", border: "2px solid #d97706", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6 }}>
-            💡 {result.hint}
+            &#128161; {result.hint}
           </motion.div>
         )}
 
         {passed && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>
-            ✅ פרומפט מצוין! ציון: <strong style={{ color: "#14532d" }}>{result.score}/100</strong>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#15803d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>
+              &#9989; {"\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05E6\u05D5\u05D9\u05DF!"} {"\u05E6\u05D9\u05D5\u05DF:"} <strong style={{ color: "#14532d" }}>{result!.score}/100</strong>
+            </div>
+            <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>
+              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7 \u05DC-AI"}
+            </button>
           </motion.div>
         )}
 
         {result && !passed && (
-          <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#475569", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>נסה שוב</button>
+          <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#6B7280", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>{"\u05E0\u05E1\u05D4 \u05E9\u05D5\u05D1"}</button>
         )}
       </div>
     </div>
   );
 }
 
-// ─── Ladders ──────────────────────────────────────────────────────────────────
+function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep; locked?: boolean; onPass?: () => void }) {
+  const [text, setText]       = useState("");
+  const [result, setResult]   = useState<ScoreResult | null>(null);
+  const [copied, setCopied]   = useState(false);
+  const passed = result?.score !== undefined && result.score >= 90 && !result.blocked;
 
-function LadderBase({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
-  const steps = ex.steps;
-  const st = (typeof STATION !== "undefined" && STATION[ex.id as keyof typeof STATION]) || { borderRgb: "45,90,39", glowRgb: "22,163,74" };
+  if (locked) return (
+    <div style={{ borderRadius: 12, border: "1px solid rgba(139,38,53,0.3)", background: "rgba(255,255,255,0.6)", padding: "12px 16px", opacity: 0.45, userSelect: "none", display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+      <span>&#128274;</span><span style={{ color: "#6B7280", fontSize: 12 }}>{step.phase} — {step.label}</span>
+    </div>
+  );
+
+  const validate = () => {
+    if (text.trim().length < 20) {
+      setResult({ score: 0, blocked: false, hint: "\u05D4\u05E0\u05D9\u05E1\u05D5\u05D7 \u05E7\u05E6\u05E8 \u05DE\u05D3\u05D9 \u2014 \u05DB\u05EA\u05D5\u05D1 \u05DC\u05E4\u05D7\u05D5\u05EA 20 \u05EA\u05D5\u05D5\u05D9\u05DD." });
+      return;
+    }
+    const r = calculatePromptScore(text, step.contextWords ?? []);
+    setResult(r);
+    if (!r.blocked && r.score >= 90 && onPass) onPass();
+  };
+
+  return (
+    <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${passed ? "rgba(52,211,153,0.35)" : "rgba(220,38,38,0.35)"}`, marginBottom: 8, transition: "border-color 0.3s" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid ${passed ? "rgba(52,211,153,0.2)" : "rgba(220,38,38,0.2)"}` }}>
+        {passed
+          ? <CheckCircle size={14} color="#34d399" />
+          : <span style={{ color: "#DC2626", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
+      </div>
+
+      <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+        <textarea
+          value={text} rows={3} dir="rtl"
+          readOnly={passed}
+          onChange={(e) => { if (!passed) { setText(e.target.value); setResult(null); } }}
+          placeholder="\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E9\u05DC\u05DA \u05DC\u05E1\u05E2\u05D9\u05E3 \u05D6\u05D4..."
+          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: passed ? "rgba(220,252,231,0.3)" : "rgba(255,255,255,0.05)", border: `1px solid ${passed ? "rgba(52,211,153,0.25)" : "rgba(139,38,53,0.25)"}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+        />
+
+        {result && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", fontWeight: 600 }}>
+              <span>{"\u05E6\u05D9\u05D5\u05DF"}</span>
+              <span style={{ fontWeight: 800 }}>{result.score}/100</span>
+            </div>
+            <div style={{ height: 5, borderRadius: 99, background: "#E5E7EB", overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${result.score}%`, background: result.score >= 90 ? "#16a34a" : result.score >= 55 ? "#d97706" : "#dc2626", borderRadius: 99, transition: "width 0.4s ease" }} />
+            </div>
+          </div>
+        )}
+
+        {result && !passed && result.hint && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            style={{ borderRadius: 12, padding: 12, fontSize: 12, lineHeight: 1.6, color: "#1A1A1A", background: result.blocked ? "rgba(254,226,226,1)" : "rgba(255,251,235,1)", border: `2px solid ${result.blocked ? "#dc2626" : "#d97706"}` }}>
+            {result.blocked ? "\u26A0\uFE0F" : "\uD83D\uDCA1"} {result.hint}
+          </motion.div>
+        )}
+
+        {passed && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#15803d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>&#9989; {"\u05E0\u05D9\u05E1\u05D5\u05D7 \u05DE\u05E2\u05D5\u05DC\u05D4! \u05D4\u05E1\u05E2\u05D9\u05E3 \u05D4\u05D1\u05D0 \u05E0\u05E4\u05EA\u05D7."}</div>
+            <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>
+              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7 \u05E0\u05D9\u05E1\u05D5\u05D7"}
+            </button>
+          </motion.div>
+        )}
+
+        {!passed && (
+          <button onClick={validate}
+            style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(220,38,38,0.35)", color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>
+            &#129302; {"\u05D1\u05D3\u05D9\u05E7\u05EA AI \u05DE\u05D3\u05D5\u05DE\u05D4"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Ladders ─────────────────────────────────────────────────────────────────
+
+function LadderBase({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: PromptStep[]; goldenPrompt: string; glowRgb: string; borderRgb: string }) {
   const [completed, setCompleted] = useState<boolean[]>(Array(steps.length).fill(false));
   const unlocked = completed.filter(Boolean).length + 1;
   const markDone = (i: number) => {
@@ -313,23 +371,24 @@ function LadderBase({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentCol
   };
   return (
     <div>
+      <GoldenPromptCard prompt={goldenPrompt} glowRgb={glowRgb} borderRgb={borderRgb} />
       {steps.map((s, i) => (
         <div key={i} id={`basic-step-${i}`}>
           {i < unlocked ? (
             <>
-              <TutorStepBasic key={i} step={s} glowRgb={accentRgb} borderRgb={st.borderRgb} />
+              <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
               {!completed[i] ? (
-                <button onClick={() => markDone(i)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
-                  סיימתי סעיף זה ✓
+                <button onClick={() => markDone(i)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.1)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
+                  &#10003; {"\u05E1\u05D9\u05D9\u05DE\u05EA\u05D9 \u05E1\u05E2\u05D9\u05E3 \u05D6\u05D4"}
                 </button>
               ) : (
-                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>✅ הושלם</div>
+                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>&#9989; {"\u05D4\u05D5\u05E9\u05DC\u05DD"}</div>
               )}
             </>
           ) : (
             <div style={{ opacity: 0.35, pointerEvents: "none", position: "relative" }}>
-              <div style={{ position: "absolute", top: 8, right: 8, fontSize: 16, zIndex: 2 }}>🔒</div>
-              <TutorStepBasic key={i} step={s} glowRgb={accentRgb} borderRgb={st.borderRgb} />
+              <div style={{ position: "absolute", top: 8, right: 8, fontSize: 16, zIndex: 2 }}>&#128274;</div>
+              <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
             </div>
           )}
         </div>
@@ -338,54 +397,48 @@ function LadderBase({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentCol
   );
 }
 
-function LadderMedium({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
-  const st = STATION[ex.id as keyof typeof STATION];
-  const [passed, setPassed] = useState<boolean[]>(Array(ex.steps.length).fill(false));
+function LadderMedium({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: PromptStep[]; goldenPrompt: string; glowRgb: string; borderRgb: string }) {
+  const [passed, setPassed] = useState<boolean[]>(Array(steps.length).fill(false));
   return (
-    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
-      <div style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
-      <GoldenPromptCard prompt={ex.goldenPrompt} glowRgb={accentRgb} borderRgb={st.borderRgb} />
-      <div style={{ borderRadius: 12, background: "rgba(255,251,235,1)", border: "1px solid rgba(217,119,6,0.3)", padding: "10px 14px", marginBottom: 12, fontSize: 12, color: "#92400e" }}>
-        💡 כאן תרגל לנסח פרומפטים בעצמך לכל שלב
-      </div>
-      {ex.steps.map((s, i) => (
+    <div>
+      <GoldenPromptCard prompt={goldenPrompt} glowRgb={glowRgb} borderRgb={borderRgb} />
+      {steps.map((s, i) => (
         <TutorStepMedium
           key={i} step={s}
           locked={i > 0 && !passed[i - 1]}
           onPass={() => setPassed(prev => { const next = [...prev]; next[i] = true; return next; })}
-          borderRgb={st.borderRgb}
+          borderRgb={borderRgb}
         />
       ))}
     </div>
   );
 }
 
-function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
-  const steps = ex.steps;
+function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
   const [masterPassed, setMasterPassed] = useState(false);
   const [unlockedCount, setUnlockedCount] = useState(1);
   const allPassed = masterPassed && unlockedCount > steps.length;
 
   return (
     <div>
-      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
+      <MasterPromptGate
+        onPass={() => setMasterPassed(true)}
+        accentColor="#991b1b"
+        accentRgb="153,27,27"
+        requiredPhrase="\u05E1\u05E8\u05D5\u05E7 \u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D5\u05E2\u05E6\u05D5\u05E8"
+        subjectWords={["\u05E7\u05D9\u05E6\u05D5\u05DF", "\u05E9\u05D8\u05D7", "\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E8\u05D9\u05D1\u05D5\u05E2", "\u05E2\u05D9\u05D2\u05D5\u05DC", "\u05D7\u05D5\u05D8"]}
+      />
 
       {steps.map((s, i) => (
         <div key={i} style={{ marginBottom: 8 }}>
           {(!masterPassed || i >= unlockedCount) ? (
-            <div style={{ borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,255,255,0.7)", padding: "14px 16px", opacity: 0.5, pointerEvents: "none" as const, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ borderRadius: 14, border: "1px solid rgba(148,163,184,0.1)", background: "rgba(255,255,255,0.7)", padding: "14px 16px", opacity: 0.5, pointerEvents: "none" as const, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ color: "#6B7280", fontSize: 13, fontWeight: 600 }}>{ s.phase } — { s.label }</span>
-              <span style={{ fontSize: 16 }}>🔒</span>
+              <span style={{ fontSize: 16 }}>&#128274;</span>
             </div>
           ) : (
             <div>
-              <div style={{ borderRadius: 14, border: "1px solid rgba(22,163,74,0.3)", background: "rgba(255,255,255,0.9)", padding: "14px 16px", marginBottom: 8 }}>
-                <div style={{ color: "#15803d", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{ s.phase } — { s.label }</div>
-                <div style={{ color: "#334155", fontSize: 13, lineHeight: 1.6 }}>{ s.prompt }</div>
-              </div>
-              <button onClick={() => setUnlockedCount(v => Math.max(v, i + 2))} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
-                סיימתי סעיף זה ✓
-              </button>
+              <TutorStepAdvanced step={s} onPass={() => setUnlockedCount(v => Math.max(v, i + 2))} />
             </div>
           )}
         </div>
@@ -393,307 +446,13 @@ function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accen
 
       {allPassed && (
         <div style={{ borderRadius: 16, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: "1.25rem 1.5rem", marginTop: 16, textAlign: "center" }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }}>🏆</div>
-          <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>כל הכבוד — השלמת את הרמה המתקדמת!</div>
-          <div style={{ color: "#166534", fontSize: 13 }}>עברת בהצלחה את כל הסעיפים.</div>
+          <div style={{ fontSize: 28, marginBottom: 8 }}>&#127942;</div>
+          <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>{"\u05DB\u05DC \u05D4\u05DB\u05D1\u05D5\u05D3 \u2014 \u05D4\u05E9\u05DC\u05DE\u05EA \u05D0\u05EA \u05D4\u05E8\u05DE\u05D4 \u05D4\u05DE\u05EA\u05E7\u05D3\u05DE\u05EA!"}</div>
+          <div style={{ color: "#166534", fontSize: 13 }}>{"\u05E2\u05D1\u05E8\u05EA \u05D1\u05D4\u05E6\u05DC\u05D7\u05D4 \u05D0\u05EA \u05DB\u05DC \u05D4\u05E1\u05E2\u05D9\u05E4\u05D9\u05DD."}</div>
         </div>
       )}
     </div>
   );
-}
-
-// ─── Interactive Lab Components ───────────────────────────────────────────────
-
-function FenceViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
-  const [w, setW] = useState(15);
-  const st = STATION[levelId];
-  const L = 60 - 2 * w;
-  const A = w * L;
-  const atMax = w === 15;
-
-  const SW = 220, SH = 190, pad = 28;
-  const maxW = 25, maxL = 60 - 2 * 5;
-  const avW = SW - pad * 2, avH = SH - pad * 2;
-  const rW = (w / maxW) * avW, rH = (L / maxL) * avH;
-  const rX = pad + (avW - rW) / 2, rY = pad + (avH - rH) / 2;
-  const CP = 24, maxA = 15 * 30;
-  const pts: string[] = [];
-  for (let i = 0; i <= 80; i++) {
-    const wi = 5 + (i / 80) * 20;
-    const ai = wi * (60 - 2 * wi);
-    pts.push(`${CP + ((wi-5)/20)*(SW-CP*2)},${SH-CP-(ai/maxA)*(SH-CP*2)}`);
-  }
-  const dotX = CP + ((w-5)/20)*(SW-CP*2);
-  const dotY = SH - CP - (A/maxA)*(SH-CP*2);
-  const maxDotX = CP + (10/20)*(SW-CP*2);
-  const maxDotY = SH - CP - (450/maxA)*(SH-CP*2);
-
-  return (
-    <section style={{ borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", border: `1px solid ${st.glowBorder}`, boxShadow: st.glowShadow, marginBottom: "2rem", marginLeft: "auto", marginRight: "auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: "#2D3436", margin: 0 }}>גדר 60 מ׳ — מעבדה אינטראקטיבית</h2>
-        {atMax && <span style={{ color: "#16a34a", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מקסימום!</span>}
-      </div>
-      <div className="flex gap-3 justify-center flex-wrap">
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>חלקה מלבנית</p>
-          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <line x1={rX} y1={rY} x2={rX+rW} y2={rY} stroke="#94a3b8" strokeWidth={4} strokeLinecap="round" />
-            <text x={rX+rW/2} y={rY-5} fill="#94a3b8" fontSize={9} textAnchor="middle">קיר</text>
-            <motion.rect animate={{ x: rX, y: rY, width: rW, height: rH }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              fill={atMax ? "#10b98120" : "#22c55e10"} stroke={atMax ? "#10b981" : "#22c55e"} strokeWidth={atMax ? 2.5 : 1.5} rx={2} />
-            <motion.text animate={{ x: rX+rW/2, y: rY+rH+14 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              fill="#22c55e" fontSize={10} textAnchor="middle">x={w}מ׳</motion.text>
-            <motion.text animate={{ x: rX+rW+14, y: rY+rH/2+4 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              fill="#f97316" fontSize={10} textAnchor="middle">y={L}</motion.text>
-          </svg>
-        </div>
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>A(x) = x·(60−2x)</p>
-          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <polyline points={pts.join(" ")} fill="none" stroke="#22c55e" strokeWidth={2} opacity={0.8} />
-            <line x1={CP} y1={SH-CP} x2={SW-CP/2} y2={SH-CP} stroke="#334155" strokeWidth={1} />
-            <line x1={CP} y1={CP/2} x2={CP} y2={SH-CP} stroke="#334155" strokeWidth={1} />
-            <circle cx={maxDotX} cy={maxDotY} r={9} fill="#10b98130" />
-            <circle cx={maxDotX} cy={maxDotY} r={5} fill="#10b981" />
-            <text x={maxDotX+8} y={maxDotY-6} fill="#10b981" fontSize={9}>max</text>
-            <motion.line animate={{ x1: dotX, x2: dotX }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              y1={SH-CP} y2={CP/2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
-            <motion.circle animate={{ cx: dotX, cy: dotY }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 7 : 5} fill={atMax ? "#10b981" : "#f97316"} stroke="#0f172a" strokeWidth={2} />
-            <motion.text animate={{ x: dotX+8, y: Math.max(dotY-4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              fill={atMax ? "#10b981" : "#f97316"} fontSize={10}>A={A}</motion.text>
-            <text x={CP+2} y={SH-CP+12} fill="#334155" fontSize={8}>x=5</text>
-            <text x={SW-CP-12} y={SH-CP+12} fill="#334155" fontSize={8}>x=25</text>
-          </svg>
-        </div>
-      </div>
-      <div style={{ marginTop: "1.25rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
-          <span style={{ color: "#64748b" }}>רוחב <span style={{ fontFamily: "monospace", color: "#2D3436" }}>x</span></span>
-          <span style={{ fontFamily: "monospace", color: atMax ? "#16a34a" : "#2D3436", fontWeight: 700 }}>{w} מ׳</span>
-        </div>
-        <input type="range" min={5} max={25} step={1} value={w}
-          onChange={e => setW(parseInt(e.target.value))} className="w-full" style={{ accentColor: "#16a34a" }} />
-        <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center" }}>גרור לעבר x=15 כדי למצוא את המקסימום</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
-        <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#94a3b8", marginBottom: 4 }}>רוחב x</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{w} מ׳</p>
-        </div>
-        <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#94a3b8", marginBottom: 4 }}>אורך y</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{L} מ׳</p>
-        </div>
-        <div style={{ background: atMax ? "rgba(220,252,231,0.7)" : "rgba(255,255,255,0.75)", border: atMax ? "1px solid #86efac" : "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12, transition: "all 0.3s" }}>
-          <p style={{ color: atMax ? "#16a34a" : "#94a3b8", marginBottom: 4 }}>שטח A</p>
-          <p style={{ fontFamily: "monospace", color: atMax ? "#15803d" : "#1A1A1A", fontWeight: 700 }}>{A} מ²</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function NormanViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
-  const [r, setR] = useState(1.4);
-  const st = STATION[levelId];
-  const PI = Math.PI;
-  const h = Math.max(0, (12 - r*(2+PI))/2);
-  const A = 2*r*h + 0.5*PI*r*r;
-  const rOpt = 12/(4+PI);
-  const COEFF = 2 + PI/2;
-  const atMax = Math.abs(r - rOpt) < 0.06;
-
-  const SW = 220, SH = 190, scale = 55;
-  const rPx = Math.min(r*scale, 80), hPx = Math.min(h*scale, 100);
-  const cx = SW/2, rectTop = SH-20-hPx, rectBot = SH-20;
-
-  const CP = 24, maxAGraph = 12;
-  const normanPts: string[] = [];
-  for (let i = 0; i <= 80; i++) {
-    const ri = 0.3 + (i/80)*2.1;
-    const ai = Math.max(0, 12*ri - COEFF*ri*ri);
-    normanPts.push(`${CP+(i/80)*(SW-CP*2)},${SH-CP-(ai/maxAGraph)*(SH-CP*2)}`);
-  }
-  const dotXg = CP + ((r-0.3)/2.1)*(SW-CP*2);
-  const dotYg = SH-CP-(Math.max(0,A)/maxAGraph)*(SH-CP*2);
-  const maxDotXg = CP + ((rOpt-0.3)/2.1)*(SW-CP*2);
-  const maxAVal = 12*rOpt - COEFF*rOpt*rOpt;
-  const maxDotYg = SH-CP-(maxAVal/maxAGraph)*(SH-CP*2);
-
-  return (
-    <section style={{ borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", border: `1px solid ${st.glowBorder}`, boxShadow: st.glowShadow, marginBottom: "2rem", marginLeft: "auto", marginRight: "auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: "#2D3436", margin: 0 }}>חלון נורמן — מעבדה אינטראקטיבית</h2>
-        {atMax && <span style={{ color: "#ea580c", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מקסימום!</span>}
-      </div>
-      <div className="flex gap-3 justify-center flex-wrap">
-        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid #e2e8f0", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#64748b", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>צורת החלון</p>
-          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <motion.rect animate={{ x: cx-rPx, y: rectTop, width: rPx*2, height: hPx }}
-              transition={{ type: "spring", stiffness: 250, damping: 28 }}
-              fill={atMax ? "#10b98115" : "#f59e0b10"} stroke={atMax ? "#10b981" : "#f59e0b"} strokeWidth={atMax ? 2.5 : 1.5} />
-            <motion.path animate={{ d: `M ${cx-rPx} ${rectTop} A ${rPx} ${rPx} 0 0 1 ${cx+rPx} ${rectTop}` }}
-              transition={{ type: "spring", stiffness: 250, damping: 28 }}
-              fill={atMax ? "#10b98115" : "#f59e0b10"} stroke={atMax ? "#10b981" : "#f59e0b"} strokeWidth={atMax ? 2.5 : 1.5} />
-            <motion.text animate={{ x: cx, y: rectBot+14 }} transition={{ type: "spring", stiffness: 250, damping: 28 }}
-              textAnchor="middle" fill="#16a34a" fontSize={9}>2r={(2*r).toFixed(2)}מ׳</motion.text>
-            <motion.text animate={{ x: cx+rPx+18, y: rectTop+hPx/2 }} transition={{ type: "spring", stiffness: 250, damping: 28 }}
-              textAnchor="middle" fill="#ea580c" fontSize={9}>h={h.toFixed(2)}</motion.text>
-          </svg>
-        </div>
-        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid #e2e8f0", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#64748b", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>A(r) = 12r − (2+π/2)r²</p>
-          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <polyline points={normanPts.join(" ")} fill="none" stroke="#f59e0b" strokeWidth={2} opacity={0.8} />
-            <line x1={CP} y1={SH-CP} x2={SW-CP/2} y2={SH-CP} stroke="#cbd5e1" strokeWidth={1} />
-            <line x1={CP} y1={CP/2} x2={CP} y2={SH-CP} stroke="#cbd5e1" strokeWidth={1} />
-            <circle cx={maxDotXg} cy={maxDotYg} r={9} fill="#f59e0b30" />
-            <circle cx={maxDotXg} cy={maxDotYg} r={5} fill="#f59e0b" />
-            <text x={maxDotXg+8} y={maxDotYg-6} fill="#f59e0b" fontSize={9}>max</text>
-            <motion.line animate={{ x1: dotXg, x2: dotXg }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              y1={SH-CP} y2={CP/2} stroke="#a78bfa" strokeWidth={1} strokeDasharray="4,3" />
-            <motion.circle animate={{ cx: dotXg, cy: dotYg }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 7 : 5} fill={atMax ? "#f59e0b" : "#a78bfa"} stroke="#ffffff" strokeWidth={2} />
-            <motion.text animate={{ x: dotXg+8, y: Math.max(dotYg-4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              fill={atMax ? "#f59e0b" : "#7c3aed"} fontSize={10}>A={A.toFixed(2)}</motion.text>
-            <text x={CP+2} y={SH-CP+12} fill="#94a3b8" fontSize={8}>r=0.3</text>
-            <text x={SW-CP-14} y={SH-CP+12} fill="#94a3b8" fontSize={8}>r=2.4</text>
-          </svg>
-        </div>
-      </div>
-      <div style={{ marginTop: "1.25rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
-          <span style={{ color: "#64748b" }}>רדיוס <span style={{ fontFamily: "monospace", color: "#2D3436" }}>r</span></span>
-          <span style={{ fontFamily: "monospace", color: atMax ? "#ea580c" : "#2D3436", fontWeight: 700 }}>{r.toFixed(2)} מ׳</span>
-        </div>
-        <input type="range" min={0.3} max={2.4} step={0.05} value={r}
-          onChange={e => setR(parseFloat(e.target.value))} className="w-full" style={{ accentColor: "#ea580c" }} />
-        <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center" }}>גרור לעבר r ≈ 1.68 כדי למצוא את המקסימום</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
-        <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#94a3b8", marginBottom: 4 }}>רדיוס r</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{r.toFixed(2)} מ׳</p>
-        </div>
-        <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#94a3b8", marginBottom: 4 }}>גובה h</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{h.toFixed(2)} מ׳</p>
-        </div>
-        <div style={{ background: atMax ? "rgba(255,237,213,0.7)" : "rgba(255,255,255,0.75)", border: atMax ? "1px solid #fdba74" : "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12, transition: "all 0.3s" }}>
-          <p style={{ color: atMax ? "#ea580c" : "#94a3b8", marginBottom: 4 }}>שטח A</p>
-          <p style={{ fontFamily: "monospace", color: atMax ? "#c2410c" : "#1A1A1A", fontWeight: 700 }}>{A.toFixed(3)}</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function WireViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
-  const [x, setX] = useState(56);
-  const st = STATION[levelId];
-  const PI = Math.PI;
-  const side = x/4, radius = (100-x)/(2*PI);
-  const Asq = side*side, Aci = PI*radius*radius, Atotal = Asq+Aci;
-  const xMin = 400/(4+PI);
-  const atMin = Math.abs(x - xMin) < 1.5;
-
-  const SW = 220, SH = 160;
-  const sqPx = Math.min((x/4)*(55/25), 65);
-  const rPx = Math.min(radius*(42/(100/(2*PI))), 48);
-  const sqCX = 65, cirCX = 165, midY = SH/2+10;
-
-  const SW2 = 220, SH2 = 190, CP2 = 24, maxAGraph = 800;
-  const wirePts: string[] = [];
-  for (let i = 0; i <= 80; i++) {
-    const xi = 5 + (i/80)*90;
-    const ai = xi*xi/16 + (100-xi)*(100-xi)/(4*PI);
-    wirePts.push(`${CP2+(i/80)*(SW2-CP2*2)},${SH2-CP2-(ai/maxAGraph)*(SH2-CP2*2)}`);
-  }
-  const dotXw = CP2 + ((x-5)/90)*(SW2-CP2*2);
-  const dotYw = SH2-CP2-(Atotal/maxAGraph)*(SH2-CP2*2);
-  const minDotXw = CP2 + ((xMin-5)/90)*(SW2-CP2*2);
-  const minAw = xMin*xMin/16 + (100-xMin)*(100-xMin)/(4*PI);
-  const minDotYw = SH2-CP2-(minAw/maxAGraph)*(SH2-CP2*2);
-
-  return (
-    <section style={{ borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", border: `1px solid ${st.glowBorder}`, boxShadow: st.glowShadow, marginBottom: "2rem", marginLeft: "auto", marginRight: "auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: "#2D3436", margin: 0 }}>חוט 100 ס״מ — מעבדה אינטראקטיבית</h2>
-        {atMin && <span style={{ color: "#dc2626", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מינימום!</span>}
-      </div>
-      <div className="flex gap-3 justify-center flex-wrap">
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>ריבוע ועיגול</p>
-          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <text x={sqCX} y={14} textAnchor="middle" fill="#3b82f6" fontSize={9} fontWeight="bold">ריבוע ({x}ס״מ)</text>
-            <text x={cirCX} y={14} textAnchor="middle" fill="#f43f5e" fontSize={9} fontWeight="bold">עיגול ({100-x}ס״מ)</text>
-            <motion.rect animate={{ x: sqCX-sqPx/2, y: midY-sqPx/2, width: sqPx, height: sqPx }}
-              transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              fill="#3b82f633" stroke="#3b82f6" strokeWidth={2} />
-            <motion.text animate={{ x: sqCX, y: midY+sqPx/2+12 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              textAnchor="middle" fill="#3b82f6" fontSize={9}>צלע={side.toFixed(1)}</motion.text>
-            <motion.circle animate={{ cx: cirCX, cy: midY, r: rPx }}
-              transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              fill="#f43f5e33" stroke="#f43f5e" strokeWidth={2} />
-            <motion.text animate={{ x: cirCX, y: midY+rPx+14 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              textAnchor="middle" fill="#f43f5e" fontSize={9}>r={radius.toFixed(1)}</motion.text>
-          </svg>
-        </div>
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>A(x) = x²/16 + (100−x)²/4π</p>
-          <svg width={SW2} height={SH2} viewBox={`0 0 ${SW2} ${SH2}`}>
-            <polyline points={wirePts.join(" ")} fill="none" stroke="#f43f5e" strokeWidth={2} opacity={0.8} />
-            <line x1={CP2} y1={SH2-CP2} x2={SW2-CP2/2} y2={SH2-CP2} stroke="#334155" strokeWidth={1} />
-            <line x1={CP2} y1={CP2/2} x2={CP2} y2={SH2-CP2} stroke="#334155" strokeWidth={1} />
-            <circle cx={minDotXw} cy={minDotYw} r={9} fill="#10b98130" />
-            <circle cx={minDotXw} cy={minDotYw} r={5} fill="#10b981" />
-            <text x={minDotXw+8} y={minDotYw-6} fill="#10b981" fontSize={9}>min</text>
-            <motion.line animate={{ x1: dotXw, x2: dotXw }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              y1={SH2-CP2} y2={CP2/2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
-            <motion.circle animate={{ cx: dotXw, cy: dotYw }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMin ? 7 : 5} fill={atMin ? "#10b981" : "#f97316"} stroke="#0f172a" strokeWidth={2} />
-            <motion.text animate={{ x: dotXw+8, y: Math.max(dotYw-4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              fill={atMin ? "#10b981" : "#f97316"} fontSize={10}>A={Atotal.toFixed(0)}</motion.text>
-            <text x={CP2+2} y={SH2-CP2+12} fill="#334155" fontSize={8}>x=5</text>
-            <text x={SW2-CP2-14} y={SH2-CP2+12} fill="#334155" fontSize={8}>x=95</text>
-          </svg>
-        </div>
-      </div>
-      <div style={{ marginTop: "1.25rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
-          <span style={{ color: "#64748b" }}>חלק לריבוע <span style={{ fontFamily: "monospace", color: "#2D3436" }}>x</span></span>
-          <span style={{ fontFamily: "monospace", color: atMin ? "#dc2626" : "#2D3436", fontWeight: 700 }}>{x} ס״מ</span>
-        </div>
-        <input type="range" min={5} max={95} step={1} value={x}
-          onChange={e => setX(parseInt(e.target.value))} className="w-full" style={{ accentColor: "#dc2626" }} />
-        <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center" }}>גרור לעבר x ≈ 56 כדי למצוא את המינימום</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
-        <div style={{ background: "rgba(219,234,254,0.5)", border: "1px solid rgba(59,130,246,0.3)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#3b82f6", marginBottom: 4 }}>שטח ריבוע</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{Asq.toFixed(1)}</p>
-        </div>
-        <div style={{ background: "rgba(255,228,230,0.5)", border: "1px solid rgba(244,63,94,0.3)", borderRadius: 12, padding: 12 }}>
-          <p style={{ color: "#f43f5e", marginBottom: 4 }}>שטח עיגול</p>
-          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{Aci.toFixed(1)}</p>
-        </div>
-        <div style={{ background: atMin ? "rgba(220,252,231,0.7)" : "rgba(255,255,255,0.75)", border: atMin ? "1px solid #86efac" : "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12, transition: "all 0.3s" }}>
-          <p style={{ color: atMin ? "#16a34a" : "#94a3b8", marginBottom: 4 }}>סה״כ</p>
-          <p style={{ fontFamily: "monospace", color: atMin ? "#15803d" : "#1A1A1A", fontWeight: 700 }}>{Atotal.toFixed(1)}</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function GeometryLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
-  if (levelId === "medium")   return <NormanViz levelId={levelId} />;
-  if (levelId === "advanced") return <WireViz levelId={levelId} />;
-  return <FenceViz levelId={levelId} />;
 }
 
 // ─── Exercise Data ────────────────────────────────────────────────────────────
@@ -701,184 +460,611 @@ function GeometryLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
 const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    title: "חלקה מלבנית ליד קיר",
-    problem: "חקלאי מעוניין לגדר חלקה מלבנית הצמודה לקיר אבן, כך שנדרש גידור רק עבור שלוש צלעות. לרשותו 60 מטרים של גדר. מה צריכים להיות ממדי החלקה כדי ששטחה יהיה הגדול ביותר האפשרי?",
-    diagram: <FenceStaticDiagram />,
+    title: "\u05D2\u05D3\u05E8 \u05DC\u05D9\u05D3 \u05E7\u05D9\u05E8 \u2014 \u05DE\u05E7\u05E1\u05D5\u05DD \u05E9\u05D8\u05D7",
+    problem: "\u05D7\u05E7\u05DC\u05D0\u05D9 \u05DE\u05E2\u05D5\u05E0\u05D9\u05D9\u05DF \u05DC\u05D2\u05D3\u05D5\u05E8 \u05D7\u05DC\u05E7\u05D4 \u05DE\u05DC\u05D1\u05E0\u05D9\u05EA \u05D4\u05E6\u05DE\u05D5\u05D3\u05D4 \u05DC\u05E7\u05D9\u05E8 \u05D0\u05D1\u05DF, \u05DB\u05DA \u05E9\u05E0\u05D3\u05E8\u05E9 \u05D2\u05D9\u05D3\u05D5\u05E8 \u05E8\u05E7 \u05E2\u05D1\u05D5\u05E8 \u05E9\u05DC\u05D5\u05E9 \u05E6\u05DC\u05E2\u05D5\u05EA. \u05DC\u05E8\u05E9\u05D5\u05EA\u05D5 L \u05DE\u05D8\u05E8\u05D9\u05DD \u05E9\u05DC \u05D2\u05D3\u05E8.\n\n\u05D0. \u05D1\u05D8\u05D0 \u05D0\u05EA y \u05D1\u05E2\u05D6\u05E8\u05EA x \u05D5-L.\n\u05D1. \u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05E9\u05D8\u05D7 A(x).\n\u05D2. \u05DE\u05E6\u05D0 \u05D0\u05EA x \u05E9\u05DE\u05DE\u05E7\u05E1\u05DD \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7.\n\u05D3. \u05D0\u05DE\u05EA \u05E9\u05DE\u05D3\u05D5\u05D1\u05E8 \u05D1\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD \u05D1\u05D0\u05DE\u05E6\u05E2\u05D5\u05EA \u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4.",
+    diagram: <BasicSVG />,
     pitfalls: [
-      { title: "⚠️ שלוש צלעות בלבד", text: "הקיר פוטר את הצלע הרביעית — האילוץ הוא 2x + y = 60, לא 2x + 2y = 60." },
-      { title: "תחום ההגדרה",        text: "x ו-y חייבים להיות חיוביים. לכן 0 < x < 30." },
-      { title: "לאשר מקסימום",       text: "f″(x) = −4 < 0 מאשר שמדובר במקסימום ולא מינימום." },
+      { title: "\u26A0\uFE0F \u05E9\u05DC\u05D5\u05E9 \u05E6\u05DC\u05E2\u05D5\u05EA \u05D1\u05DC\u05D1\u05D3", text: "\u05D4\u05E7\u05D9\u05E8 \u05DE\u05D7\u05DC\u05D9\u05E3 \u05D0\u05EA \u05D4\u05E6\u05DC\u05E2 \u05D4\u05E8\u05D1\u05D9\u05E2\u05D9\u05EA \u2014 \u05D4\u05D0\u05D9\u05DC\u05D5\u05E5 \u05DB\u05D5\u05DC\u05DC \u05E8\u05E7 3 \u05E6\u05DC\u05E2\u05D5\u05EA \u05E9\u05DC \u05D2\u05D3\u05E8, \u05DC\u05D0 4. \u05EA\u05DC\u05DE\u05D9\u05D3\u05D9\u05DD \u05E8\u05D1\u05D9\u05DD \u05DB\u05D5\u05EA\u05D1\u05D9\u05DD \u05D0\u05D9\u05DC\u05D5\u05E5 \u05DC\u05D0\u05E8\u05D1\u05E2 \u05E6\u05DC\u05E2\u05D5\u05EA \u05D1\u05DE\u05E7\u05D5\u05DD \u05DC\u05E9\u05DC\u05D5\u05E9." },
+      { title: "\u26A0\uFE0F \u05DC\u05D0\u05E9\u05E8 \u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD", text: "\u05DE\u05E6\u05D9\u05D0\u05EA \u05E0\u05E7\u05D5\u05D3\u05D4 \u05E7\u05E8\u05D9\u05D8\u05D9\u05EA \u05D4\u05D9\u05D0 \u05D7\u05E6\u05D9 \u05DE\u05D4\u05E2\u05D1\u05D5\u05D3\u05D4. \u05D7\u05D5\u05D1\u05D4 \u05DC\u05D1\u05D3\u05D5\u05E7 \u05E2\u05DD \u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4 \u05D0\u05D5 \u05D8\u05D1\u05DC\u05EA \u05E1\u05D9\u05DE\u05E0\u05D9\u05DD \u05E9\u05D6\u05D4 \u05D0\u05DB\u05DF \u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD." },
     ],
-    goldenPrompt: `\nאני תלמיד בכיתה י"א ורוצה לפתור יחד בעיית קיצון גיאומטרית:\nחקלאי גודר חלקה מלבנית צמודה לקיר אבן עם 60 מ׳ גדר (3 צלעות בלבד).\nפעל כמנטור — אל תתן פתרון מוכן. תנחה אותי שלב אחרי שלב:\n1. שאל אותי איזה משתנה לבחור ולמה.\n2. עזור לי לכתוב את האילוץ ופונקציית המטרה.\n3. תן לי לגזור ולמצוא קיצון לבד — התערב רק אם טעיתי.\nכל שלב: שאל "מוכן להמשיך?" לפני שתתקדם.`,
+    goldenPrompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05D1\u05DB\u05D9\u05EA\u05D4 \u05D9\u05D0\u05F3 \u05D5\u05E8\u05D5\u05E6\u05D4 \u05DC\u05E4\u05EA\u05D5\u05E8 \u05D9\u05D7\u05D3 \u05D1\u05E2\u05D9\u05D9\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05EA:\n\u05D7\u05E7\u05DC\u05D0\u05D9 \u05D2\u05D5\u05D3\u05E8 \u05D7\u05DC\u05E7\u05D4 \u05DE\u05DC\u05D1\u05E0\u05D9\u05EA \u05E6\u05DE\u05D5\u05D3\u05D4 \u05DC\u05E7\u05D9\u05E8 \u05D0\u05D1\u05DF \u05E2\u05DD L \u05DE\u05D8\u05E8\u05D9\u05DD \u05E9\u05DC \u05D2\u05D3\u05E8 (3 \u05E6\u05DC\u05E2\u05D5\u05EA). \u05DE\u05E7\u05E1\u05DD \u05E9\u05D8\u05D7.\n\u05E4\u05E2\u05DC \u05DB\u05DE\u05E0\u05D8\u05D5\u05E8 \u2014 \u05D0\u05DC \u05EA\u05D9\u05EA\u05DF \u05E4\u05EA\u05E8\u05D5\u05DF \u05DE\u05D5\u05DB\u05DF. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05E9\u05DC\u05D1 \u05D0\u05D7\u05E8\u05D9 \u05E9\u05DC\u05D1:\n1. \u05E9\u05D0\u05DC \u05D0\u05D5\u05EA\u05D9 \u05D0\u05D9\u05D6\u05D4 \u05DE\u05E9\u05EA\u05E0\u05D4 \u05DC\u05D1\u05D7\u05D5\u05E8 \u05D5\u05DC\u05DE\u05D4.\n2. \u05E2\u05D6\u05D5\u05E8 \u05DC\u05D9 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05D0\u05D9\u05DC\u05D5\u05E5 \u05D5\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05DE\u05D8\u05E8\u05D4.\n3. \u05EA\u05DF \u05DC\u05D9 \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DC\u05DE\u05E6\u05D5\u05D0 \u05E7\u05D9\u05E6\u05D5\u05DF \u05DC\u05D1\u05D3 \u2014 \u05D4\u05EA\u05E2\u05E8\u05D1 \u05E8\u05E7 \u05D0\u05DD \u05D8\u05E2\u05D9\u05EA\u05D9.\n\u05DB\u05DC \u05E9\u05DC\u05D1: \u05E9\u05D0\u05DC \u201C\u05DE\u05D5\u05DB\u05DF \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA?\u201D \u05DC\u05E4\u05E0\u05D9 \u05E9\u05EA\u05EA\u05E7\u05D3\u05DD.",
     steps: [
-      { phase: "שלב 1", label: "הגדר משתנה ותחום",  prompt: "\n\nאני פותר בעיית קיצון: חלקה מלבנית ליד קיר עם 60 מ׳ גדר (3 צלעות). מהו המשתנה הנכון x, ומהו תחום ההגדרה שלו? שאל אותי ואל תמשיך לפני שאענה." },
-      { phase: "שלב 2", label: "כתוב אילוץ ובטא y", prompt: "\n\nשני צלעות ברוחב x ואחת באורך y, סה״כ 60 מ׳. תנחה אותי לכתוב את האילוץ ולבודד y. שאל אם אני יודע כמה צלעות יש." },
-      { phase: "שלב 3", label: "פונקציית מטרה",      prompt: "\n\nרוחב x, אורך y = 60−2x. הנחה אותי לכתוב f(x) = שטח ולפרוס. אל תיתן את התשובה — שאל אותי." },
-      { phase: "שלב 4", label: "גזור ומצא קיצון",    prompt: "\n\nf(x) = 60x − 2x². הסבר לי כיצד לגזור פולינום ולמצוא קיצון. תן לי לנסות לבד ותאמת." },
+      { phase: "\u05E9\u05DC\u05D1 \u05D0\u2032", label: "\u05D4\u05D2\u05D3\u05E8 \u05DE\u05E9\u05EA\u05E0\u05D4 \u05D5\u05EA\u05D7\u05D5\u05DD",  coaching: "", prompt: "\u05D0\u05E0\u05D9 \u05E4\u05D5\u05EA\u05E8 \u05D1\u05E2\u05D9\u05D9\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF: \u05D7\u05DC\u05E7\u05D4 \u05DE\u05DC\u05D1\u05E0\u05D9\u05EA \u05DC\u05D9\u05D3 \u05E7\u05D9\u05E8 \u05E2\u05DD L \u05DE\u05D8\u05E8\u05D9\u05DD \u05E9\u05DC \u05D2\u05D3\u05E8 (3 \u05E6\u05DC\u05E2\u05D5\u05EA). \u05DE\u05D4\u05D5 \u05D4\u05DE\u05E9\u05EA\u05E0\u05D4 \u05D4\u05E0\u05DB\u05D5\u05DF x, \u05D5\u05DE\u05D4\u05D5 \u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4 \u05E9\u05DC\u05D5? \u05E9\u05D0\u05DC \u05D0\u05D5\u05EA\u05D9 \u05D5\u05D0\u05DC \u05EA\u05DE\u05E9\u05D9\u05DA \u05DC\u05E4\u05E0\u05D9 \u05E9\u05D0\u05E2\u05E0\u05D4.", keywords: [], keywordHint: "", contextWords: ["\u05DE\u05E9\u05EA\u05E0\u05D4", "\u05EA\u05D7\u05D5\u05DD", "\u05D2\u05D3\u05E8", "\u05E7\u05D9\u05E8", "\u05E6\u05DC\u05E2\u05D5\u05EA", "x"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D1\u2032", label: "\u05DB\u05EA\u05D5\u05D1 \u05D0\u05D9\u05DC\u05D5\u05E5 \u05D5\u05D1\u05D8\u05D0 y", coaching: "", prompt: "\u05E9\u05E0\u05D9 \u05E6\u05DC\u05E2\u05D5\u05EA \u05D1\u05E8\u05D5\u05D7\u05D1 x \u05D5\u05D0\u05D7\u05EA \u05D1\u05D0\u05D5\u05E8\u05DA y, \u05E1\u05D4\u05F4\u05DB L \u05DE\u05D8\u05E8\u05D9\u05DD. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05D0\u05D9\u05DC\u05D5\u05E5 \u05D5\u05DC\u05D1\u05D5\u05D3\u05D3 y. \u05E9\u05D0\u05DC \u05D0\u05DD \u05D0\u05E0\u05D9 \u05D9\u05D5\u05D3\u05E2 \u05DB\u05DE\u05D4 \u05E6\u05DC\u05E2\u05D5\u05EA \u05D9\u05E9.", keywords: [], keywordHint: "", contextWords: ["\u05D0\u05D9\u05DC\u05D5\u05E5", "y", "\u05D1\u05D5\u05D3\u05D3", "\u05E6\u05DC\u05E2\u05D5\u05EA", "\u05D2\u05D3\u05E8", "L"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D2\u2032", label: "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05DE\u05D8\u05E8\u05D4",      coaching: "", prompt: "\u05E8\u05D5\u05D7\u05D1 x, \u05D0\u05D5\u05E8\u05DA y \u05EA\u05DC\u05D5\u05D9 \u05D1-L \u05D5-x. \u05D4\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05DB\u05EA\u05D5\u05D1 A(x) = \u05E9\u05D8\u05D7 \u05D5\u05DC\u05E4\u05E8\u05D5\u05E1. \u05D0\u05DC \u05EA\u05D9\u05EA\u05DF \u05D0\u05EA \u05D4\u05EA\u05E9\u05D5\u05D1\u05D4 \u2014 \u05E9\u05D0\u05DC \u05D0\u05D5\u05EA\u05D9.", keywords: [], keywordHint: "", contextWords: ["\u05E9\u05D8\u05D7", "A(x)", "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4", "\u05D4\u05E6\u05D1", "\u05DE\u05D8\u05E8\u05D4", "\u05E4\u05E8\u05D5\u05E1"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D3\u2032", label: "\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DE\u05E6\u05D0 \u05E7\u05D9\u05E6\u05D5\u05DF",    coaching: "", prompt: "\u05D9\u05E9 \u05DC\u05D9 \u05D0\u05EA A(x) \u05DB\u05E4\u05D5\u05DC\u05D9\u05E0\u05D5\u05DD \u05DE\u05D3\u05E8\u05D2\u05D4 2. \u05D4\u05E1\u05D1\u05E8 \u05DC\u05D9 \u05DB\u05D9\u05E6\u05D3 \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DC\u05DE\u05E6\u05D5\u05D0 \u05E7\u05D9\u05E6\u05D5\u05DF. \u05EA\u05DF \u05DC\u05D9 \u05DC\u05E0\u05E1\u05D5\u05EA \u05DC\u05D1\u05D3 \u05D5\u05EA\u05D0\u05DE\u05EA.", keywords: [], keywordHint: "", contextWords: ["\u05D2\u05D6\u05D5\u05E8", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E7\u05D9\u05E6\u05D5\u05DF", "\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD", "\u05D0\u05E4\u05E1", "A'(x)"] },
     ],
   },
   {
     id: "medium",
-    title: "חלון נורמן — מקסום שטח",
-    problem: "חלון נורמן מורכב ממלבן שעליו חצי עיגול עם אותו רוחב. היקף החלון הכולל הוא 12 מטר. מצא את ממדי המלבן (רוחב 2r ואורך h) כדי למקסם את שטח החלון.",
-    diagram: <NormanStaticDiagram />,
+    title: "\u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF \u2014 \u05DE\u05E7\u05E1\u05D5\u05DD \u05E9\u05D8\u05D7",
+    problem: "\u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF \u05DE\u05D5\u05E8\u05DB\u05D1 \u05DE\u05DE\u05DC\u05D1\u05DF \u05E9\u05E2\u05DC\u05D9\u05D5 \u05D7\u05E6\u05D9 \u05E2\u05D9\u05D2\u05D5\u05DC \u05E2\u05DD \u05D0\u05D5\u05EA\u05D5 \u05E8\u05D5\u05D7\u05D1. \u05D4\u05D9\u05E7\u05E3 \u05D4\u05DB\u05D5\u05DC\u05DC \u05E9\u05DC \u05D4\u05D7\u05DC\u05D5\u05DF \u05D4\u05D5\u05D0 P \u05DE\u05D8\u05E8. \u05DE\u05E6\u05D0 \u05D0\u05EA \u05DE\u05DE\u05D3\u05D9 \u05D4\u05DE\u05DC\u05D1\u05DF (\u05E8\u05D5\u05D7\u05D1 2r \u05D5\u05D2\u05D5\u05D1\u05D4 h) \u05DB\u05D3\u05D9 \u05DC\u05DE\u05E7\u05E1\u05DD \u05D0\u05EA \u05E9\u05D8\u05D7 \u05D4\u05D7\u05DC\u05D5\u05DF.\n\n\u05D0. \u05D1\u05D8\u05D0 \u05D0\u05EA \u05D0\u05D9\u05DC\u05D5\u05E5 \u05D4\u05D4\u05D9\u05E7\u05E3 \u05D1\u05E2\u05D6\u05E8\u05EA r \u05D5-h.\n\u05D1. \u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05E9\u05D8\u05D7 A(r) \u05D1\u05DE\u05E9\u05EA\u05E0\u05D4 \u05D0\u05D7\u05D3.\n\u05D2. \u05DE\u05E6\u05D0 \u05D0\u05EA r \u05E9\u05DE\u05DE\u05E7\u05E1\u05DD \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7.\n\u05D3. \u05D7\u05E9\u05D1 \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9.",
+    diagram: <MediumSVG />,
     pitfalls: [
-      { title: "⚠️ היקף החצי-עיגול", text: "היקף החצי-עיגול הוא πr (לא 2πr). אל תכפיל ב-2." },
-      { title: "השטח הכולל",          text: "שטח = שטח מלבן + שטח חצי-עיגול = 2rh + ½πr²." },
-      { title: "תחום ההגדרה",         text: "r > 0 וגם h > 0 — בדוק שהאילוץ נותן h חיובי." },
+      { title: "\u26A0\uFE0F \u05D4\u05D9\u05E7\u05E3 \u05D4\u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC", text: "\u05D4\u05D9\u05E7\u05E3 \u05D4\u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC \u05D4\u05D5\u05D0 \u03C0r (\u05DC\u05D0 2\u03C0r). \u05D0\u05DC \u05EA\u05DB\u05E4\u05D9\u05DC \u05D1-2 \u2014 \u05D6\u05D4 \u05D7\u05E6\u05D9 \u05E2\u05D9\u05D2\u05D5\u05DC, \u05DC\u05D0 \u05E2\u05D9\u05D2\u05D5\u05DC \u05E9\u05DC\u05DD." },
+      { title: "\u26A0\uFE0F \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC", text: "\u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC \u05E9\u05DC \u05D4\u05D7\u05DC\u05D5\u05DF \u05DB\u05D5\u05DC\u05DC \u05D2\u05DD \u05DE\u05DC\u05D1\u05DF \u05D5\u05D2\u05DD \u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC. \u05EA\u05DC\u05DE\u05D9\u05D3\u05D9\u05DD \u05E8\u05D1\u05D9\u05DD \u05E9\u05D5\u05DB\u05D7\u05D9\u05DD \u05D0\u05EA \u05D7\u05E6\u05D9 \u05D4\u05E2\u05D9\u05D2\u05D5\u05DC." },
     ],
-    goldenPrompt: `\nאני תלמיד בכיתה י"א ורוצה לפתור בעיית קיצון על חלון נורמן:\nמלבן + חצי-עיגול, היקף כולל = 12 מ׳. מקסם שטח.\nנחה אותי:\n1. כיצד לכתוב את אילוץ ההיקף (זהה לי את חצי ההיקף של העיגול).\n2. כיצד לכתוב את השטח הכולל.\n3. כיצד להצביע על r המקסימלי.\nשאל "מוכן?" אחרי כל שלב.`,
+    goldenPrompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05D1\u05DB\u05D9\u05EA\u05D4 \u05D9\u05D0\u2032 \u05D5\u05E8\u05D5\u05E6\u05D4 \u05DC\u05E4\u05EA\u05D5\u05E8 \u05D1\u05E2\u05D9\u05D9\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05E2\u05DC \u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF:\n\u05DE\u05DC\u05D1\u05DF + \u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC, \u05D4\u05D9\u05E7\u05E3 \u05DB\u05D5\u05DC\u05DC = P \u05DE\u05D8\u05E8. \u05DE\u05E7\u05E1\u05DD \u05E9\u05D8\u05D7.\n\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9:\n1. \u05DB\u05D9\u05E6\u05D3 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D0\u05D9\u05DC\u05D5\u05E5 \u05D4\u05D4\u05D9\u05E7\u05E3 (\u05D6\u05D4\u05D4 \u05DC\u05D9 \u05D0\u05EA \u05D7\u05E6\u05D9 \u05D4\u05D4\u05D9\u05E7\u05E3 \u05E9\u05DC \u05D4\u05E2\u05D9\u05D2\u05D5\u05DC).\n2. \u05DB\u05D9\u05E6\u05D3 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC.\n3. \u05DB\u05D9\u05E6\u05D3 \u05DC\u05D4\u05E6\u05D1\u05D9\u05E2 \u05E2\u05DC r \u05D4\u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9.\n\u05E9\u05D0\u05DC \u201C\u05DE\u05D5\u05DB\u05DF?\u201D \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1.",
     steps: [
-      { phase: "שלב 1", label: "משתנה ואילוץ היקף", contextWords: ["היקף", "r", "h", "חצי-עיגול", "אילוץ", "בודד", "פי", "π"] },
-      { phase: "שלב 2", label: "פונקציית שטח",       contextWords: ["שטח", "r", "h", "הצב", "פשט", "פונקציה", "מלבן"] },
-      { phase: "שלב 3", label: "גזור ומצא קיצון",    contextWords: ["גזור", "נגזרת", "קיצון", "מקסימום", "r", "אפס"] },
-      { phase: "שלב 4", label: "ממדי החלון",          contextWords: ["חשב", "h", "r", "שטח", "מקסימלי", "הצב"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D0\u2032", label: "\u05DE\u05E9\u05EA\u05E0\u05D4 \u05D5\u05D0\u05D9\u05DC\u05D5\u05E5 \u05D4\u05D9\u05E7\u05E3", coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["\u05D4\u05D9\u05E7\u05E3", "r", "h", "\u05D7\u05E6\u05D9-\u05E2\u05D9\u05D2\u05D5\u05DC", "\u05D0\u05D9\u05DC\u05D5\u05E5", "\u05D1\u05D5\u05D3\u05D3", "\u03C0"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D1\u2032", label: "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05E9\u05D8\u05D7",       coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["\u05E9\u05D8\u05D7", "r", "h", "\u05D4\u05E6\u05D1", "\u05E4\u05E9\u05D8", "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4", "\u05DE\u05DC\u05D1\u05DF"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D2\u2032", label: "\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DE\u05E6\u05D0 \u05E7\u05D9\u05E6\u05D5\u05DF",    coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["\u05D2\u05D6\u05D5\u05E8", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E7\u05D9\u05E6\u05D5\u05DF", "\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD", "r", "\u05D0\u05E4\u05E1"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D3\u2032", label: "\u05DE\u05DE\u05D3\u05D9 \u05D4\u05D7\u05DC\u05D5\u05DF",          coaching: "", prompt: "", keywords: [], keywordHint: "", contextWords: ["\u05D7\u05E9\u05D1", "h", "r", "\u05E9\u05D8\u05D7", "\u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9", "\u05D4\u05E6\u05D1"] },
     ],
   },
   {
     id: "advanced",
-    title: "מינימום שטח כולל — חוט באורך L",
-    problem: "חוט באורך L = 100 ס״מ נחתך לשני חלקים. מהחלק הראשון כופלים ריבוע ומהשני עיגול. כיצד לחתוך את החוט כדי שהשטח הכולל (ריבוע + עיגול) יהיה מינימלי?",
-    diagram: <WireStaticDiagram />,
+    title: "\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD \u05E9\u05D8\u05D7 \u05DB\u05D5\u05DC\u05DC \u2014 \u05D7\u05D5\u05D8 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E2\u05D9\u05D2\u05D5\u05DC",
+    problem: "\u05D7\u05D5\u05D8 \u05D1\u05D0\u05D5\u05E8\u05DA L \u05E0\u05D7\u05EA\u05DA \u05DC\u05E9\u05E0\u05D9 \u05D7\u05DC\u05E7\u05D9\u05DD. \u05DE\u05D4\u05D7\u05DC\u05E7 \u05D4\u05E8\u05D0\u05E9\u05D5\u05DF \u05DB\u05D5\u05E4\u05DC\u05D9\u05DD \u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05DE\u05D4\u05E9\u05E0\u05D9 \u05E2\u05D9\u05D2\u05D5\u05DC. \u05DB\u05D9\u05E6\u05D3 \u05DC\u05D7\u05EA\u05D5\u05DA \u05D0\u05EA \u05D4\u05D7\u05D5\u05D8 \u05DB\u05D3\u05D9 \u05E9\u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC (\u05E8\u05D9\u05D1\u05D5\u05E2 + \u05E2\u05D9\u05D2\u05D5\u05DC) \u05D9\u05D4\u05D9\u05D4 \u05DE\u05D9\u05E0\u05D9\u05DE\u05DC\u05D9?\n\n\u05D0. \u05D1\u05D8\u05D0 \u05D0\u05EA \u05E6\u05DC\u05E2 a \u05D5\u05E8\u05D3\u05D9\u05D5\u05E1 r \u05D1\u05E2\u05D6\u05E8\u05EA x \u05D5-L.\n\u05D1. \u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC.\n\u05D2. \u05DE\u05E6\u05D0 \u05D0\u05EA x \u05E9\u05DE\u05DE\u05D6\u05E2\u05E8 \u05D0\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC.",
+    diagram: <AdvancedSVG />,
     pitfalls: [
-      { title: "⚠️ היקף ריבוע", text: "היקף ריבוע = 4a, לכן צלע a = x/4. אל תבלבל היקף עם צלע." },
-      { title: "היקף עיגול",    text: "היקף עיגול = 2πr → r = (L−x)/(2π). שטח = πr²." },
-      { title: "נקודת קצה",    text: "בדוק גם x=0 וגם x=L (קצוות התחום) — ייתכן שהמינימום שם!" },
+      { title: "\u26A0\uFE0F \u05D4\u05D9\u05E7\u05E3 \u05E8\u05D9\u05D1\u05D5\u05E2 \u2260 \u05E6\u05DC\u05E2", text: "\u05D4\u05D9\u05E7\u05E3 \u05E8\u05D9\u05D1\u05D5\u05E2 = 4a, \u05DC\u05DB\u05DF \u05E6\u05DC\u05E2 a = \u05D7\u05DC\u05E7 \u05D4\u05D7\u05D5\u05D8 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D7\u05DC\u05E7\u05D9 4. \u05D0\u05DC \u05EA\u05D1\u05DC\u05D1\u05DC \u05D4\u05D9\u05E7\u05E3 \u05E2\u05DD \u05E6\u05DC\u05E2." },
+      { title: "\u26A0\uFE0F \u05D1\u05D3\u05E7\u05D5 \u05D2\u05DD \u05E7\u05E6\u05D5\u05D5\u05EA \u05D4\u05EA\u05D7\u05D5\u05DD", text: "\u05D4\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD \u05D9\u05DB\u05D5\u05DC \u05DC\u05D4\u05D9\u05D5\u05EA \u05D1\u05E7\u05E6\u05D5\u05D5\u05EA \u05D4\u05EA\u05D7\u05D5\u05DD (x=0 \u05D0\u05D5 x=L). \u05D1\u05D3\u05E7\u05D5 \u05D0\u05EA \u05D4\u05E2\u05E8\u05DA \u05D1\u05E0\u05E7\u05D5\u05D3\u05D5\u05EA \u05D4\u05E7\u05E6\u05D4 \u05D5\u05D4\u05E9\u05D5\u05D5\u05D5 \u05DC\u05E0\u05E7\u05D5\u05D3\u05D4 \u05D4\u05E7\u05E8\u05D9\u05D8\u05D9\u05EA!" },
     ],
-    goldenPrompt: "\n\n",
-    subjectWords: ["חוט", "ריבוע", "עיגול", "שטח", "מינימום", "קיצון", "גזור", "היקף", "x"],
-    subjectHint:  "חוט / ריבוע / עיגול / שטח מינימלי",
+    goldenPrompt: "",
+    advancedGateQuestion: "\u05DC\u05E4\u05E0\u05D9 \u05E9\u05DE\u05EA\u05D7\u05D9\u05DC\u05D9\u05DD \u2014 \u05DB\u05EA\u05D5\u05D1 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E9\u05DC\u05DD \u05E9\u05DE\u05E1\u05D1\u05D9\u05E8 \u05DC-AI \u05D0\u05D9\u05DA \u05DC\u05E0\u05D4\u05DC \u05D1\u05E2\u05D9\u05D9\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05E2\u05DC \u05D7\u05D5\u05D8 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E2\u05D9\u05D2\u05D5\u05DC. \u05DB\u05DC\u05D5\u05DC: \u05D4\u05D2\u05D3\u05E8\u05EA \u05EA\u05E4\u05E7\u05D9\u05D3, \u05D0\u05D9\u05E1\u05D5\u05E8 \u05E4\u05EA\u05E8\u05D5\u05DF, \u05D1\u05E7\u05E9\u05EA \u05D4\u05E0\u05D7\u05D9\u05D4, \u05D4\u05E0\u05D5\u05E9\u05D0 \u05D4\u05DE\u05EA\u05DE\u05D8\u05D9, \u05D5\u05D3\u05E8\u05D9\u05E9\u05EA \u05D4\u05DE\u05EA\u05E0\u05D4 \u05D1\u05D9\u05DF \u05E1\u05E2\u05D9\u05E4\u05D9\u05DD.",
     steps: [
-      { phase: "שלב 1", label: "הגדר משתנים",             contextWords: ["x", "צלע", "רדיוס", "ריבוע", "עיגול", "היקף"] },
-      { phase: "שלב 2", label: "פונקציית שטח כולל",        contextWords: ["שטח", "x", "ריבוע", "עיגול", "פונקציה", "כתוב"] },
-      { phase: "שלב 3", label: "גזור ומצא קיצון",          contextWords: ["גזור", "נגזרת", "קיצון", "מינימום", "x", "אפס"] },
-      { phase: "שלב 4", label: "אמת מינימום ובדוק קצוות", contextWords: ["קצוות", "מינימום", "בדוק", "f", "x", "השווה"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D0\u2032", label: "\u05D4\u05D2\u05D3\u05E8 \u05DE\u05E9\u05EA\u05E0\u05D9\u05DD",             coaching: "", prompt: "\u05D7\u05D5\u05D8 \u05D1\u05D0\u05D5\u05E8\u05DA L \u05E0\u05D7\u05EA\u05DA \u05DC\u05E9\u05E0\u05D9 \u05D7\u05DC\u05E7\u05D9\u05DD. \u05D7\u05DC\u05E7 \u05D0\u05D7\u05D3 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2, \u05D4\u05E9\u05E0\u05D9 \u05DC\u05E2\u05D9\u05D2\u05D5\u05DC. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05D4\u05D2\u05D3\u05D9\u05E8 \u05D0\u05EA \u05E6\u05DC\u05E2 \u05D4\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E8\u05D3\u05D9\u05D5\u05E1 \u05D4\u05E2\u05D9\u05D2\u05D5\u05DC \u05D1\u05E2\u05D6\u05E8\u05EA x. \u05D0\u05DC \u05EA\u05D9\u05EA\u05DF \u05EA\u05E9\u05D5\u05D1\u05D5\u05EA.", keywords: [], keywordHint: "", contextWords: ["x", "\u05E6\u05DC\u05E2", "\u05E8\u05D3\u05D9\u05D5\u05E1", "\u05E8\u05D9\u05D1\u05D5\u05E2", "\u05E2\u05D9\u05D2\u05D5\u05DC", "\u05D4\u05D9\u05E7\u05E3"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D1\u2032", label: "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05E9\u05D8\u05D7 \u05DB\u05D5\u05DC\u05DC",        coaching: "", prompt: "\u05E9\u05D8\u05D7 \u05E8\u05D9\u05D1\u05D5\u05E2 + \u05E9\u05D8\u05D7 \u05E2\u05D9\u05D2\u05D5\u05DC. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05E9\u05D8\u05D7 \u05D4\u05DB\u05D5\u05DC\u05DC \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x. \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.", keywords: [], keywordHint: "", contextWords: ["\u05E9\u05D8\u05D7", "x", "\u05E8\u05D9\u05D1\u05D5\u05E2", "\u05E2\u05D9\u05D2\u05D5\u05DC", "\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4", "\u05DB\u05EA\u05D5\u05D1"] },
+      { phase: "\u05E9\u05DC\u05D1 \u05D2\u2032", label: "\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DE\u05E6\u05D0 \u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD",          coaching: "", prompt: "\u05D9\u05E9 \u05DC\u05D9 \u05D0\u05EA A(x). \u05D4\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05E0\u05E7\u05D5\u05D3\u05EA \u05D4\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD. \u05D1\u05D3\u05D5\u05E7 \u05D2\u05DD \u05E7\u05E6\u05D5\u05D5\u05EA \u05D4\u05EA\u05D7\u05D5\u05DD. \u05D0\u05DC \u05EA\u05D2\u05DC\u05D4 \u05EA\u05E9\u05D5\u05D1\u05D5\u05EA.", keywords: [], keywordHint: "", contextWords: ["\u05D2\u05D6\u05D5\u05E8", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E7\u05D9\u05E6\u05D5\u05DF", "\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD", "x", "\u05E7\u05E6\u05D5\u05D5\u05EA"] },
     ],
   },
 ];
+
+// ─── ExerciseCard ─────────────────────────────────────────────────────────────
+
+function ExerciseCard({ ex }: { ex: ExerciseDef }) {
+  const s = STATION[ex.id];
+  const [copiedProblem, setCopiedProblem] = useState(false);
+  function handleCopyProblem() {
+    navigator.clipboard.writeText(ex.problem.split(/\n+[אבגדהוזחט]\./)[0].trim());
+    setCopiedProblem(true);
+    setTimeout(() => setCopiedProblem(false), 2000);
+  }
+  return (
+    <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
+
+      {/* Title */}
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: "2rem" }}>
+        <span className={`text-sm font-black px-4 py-1.5 rounded-full shrink-0 ${s.badgeCls}`}>{s.badge}</span>
+        <h2 className={`text-xl font-extrabold uppercase tracking-widest ${s.accentCls}`} style={{ margin: 0 }}>{s.stationName}</h2>
+      </div>
+      <div style={{ height: 1, background: "rgba(60,54,42,0.15)", marginBottom: "2rem" }} />
+
+      {/* Diagram */}
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
+
+      {/* Problem */}
+      <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", marginBottom: "2rem" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>&#128221; {"\u05D4\u05E9\u05D0\u05DC\u05D4"}</div>
+          <button onClick={handleCopyProblem} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.15)" : "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.2)", color: copiedProblem ? "#15803d" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
+            {copiedProblem ? <Check size={11} /> : <Copy size={11} />}
+            {copiedProblem ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7"}
+          </button>
+        </div>
+        <pre style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
+      </div>
+
+      {/* Pitfalls */}
+      <div style={{ marginBottom: "2rem" }}>
+        <div style={{ color: "#DC2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>{"\u26A0\uFE0F"} {"\u05E9\u05D2\u05D9\u05D0\u05D5\u05EA \u05E0\u05E4\u05D5\u05E6\u05D5\u05EA"}</div>
+        {ex.pitfalls.map((p, i) => (
+          <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.25)", background: "rgba(220,38,38,0.05)", padding: "0.85rem 1rem", marginBottom: 8 }}>
+            <div style={{ color: "#DC2626", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>{p.title}</div>
+            {p.text && <div style={{ color: "#2D3436", fontSize: 13.5, lineHeight: 1.65 }}>{p.text}</div>}
+          </div>
+        ))}
+      </div>
+
+      {/* Prompt Ladder */}
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.7)", padding: "1.25rem", boxShadow: s.glowShadow }}>
+        <div style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; {"\u05DE\u05D3\u05E8\u05D9\u05DA \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8\u05D9\u05DD"}</div>
+        {ex.id === "basic"    && <LadderBase   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
+        {ex.id === "medium"   && <LadderMedium steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
+      </div>
+
+      {/* Advanced — outside bordered container */}
+      {ex.id === "advanced" && <LadderAdvanced steps={ex.steps} />}
+
+    </section>
+  );
+}
+
+// ─── Formula Bar ─────────────────────────────────────────────────────────────
+
+function FormulaBar() {
+  const [activeTab, setActiveTab] = useState<"cond" | "second" | "constraint" | null>(null);
+
+  const tabs = [
+    { id: "cond" as const,       label: "\u05EA\u05E0\u05D0\u05D9 \u05E7\u05D9\u05E6\u05D5\u05DF",    tex: "f'(x)=0",            color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "second" as const,     label: "\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4",  tex: "f''(x) \\gtrless 0",  color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
+    { id: "constraint" as const, label: "\u05D0\u05D9\u05DC\u05D5\u05E5 \u05D5\u05D4\u05E6\u05D1\u05D4",  tex: "g(x,y)=c",            color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
+  ];
+
+  return (
+    <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: "1.25rem" }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>{"\u05E0\u05D5\u05E1\u05D7\u05D0\u05D5\u05EA"}</div>
+
+      <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
+        {tabs.map(t => {
+          const isActive = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(isActive ? null : t.id)}
+              style={{
+                flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
+                border: `1.5px solid ${isActive ? t.borderColor : "rgba(60,54,42,0.15)"}`,
+                background: isActive ? `${t.color}15` : "rgba(255,255,255,0.02)",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
+              <span style={{ color: isActive ? t.color : "#6B7280" }}><InlineMath>{t.tex}</InlineMath></span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Expanded: Extremum condition */}
+      {activeTab === "cond" && (
+        <motion.div key="cond" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(22,163,74,0.25)", background: "rgba(22,163,74,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"f'(x_0) = 0 \\;\\Rightarrow\\; \\text{candidate for extremum}"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>{"\u05D4\u05E1\u05D1\u05E8:"}</strong> {"\u05E0\u05E7\u05D5\u05D3\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05DE\u05EA\u05E7\u05D1\u05DC\u05EA \u05DB\u05D0\u05E9\u05E8 \u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05DE\u05EA\u05D0\u05E4\u05E1\u05EA."}
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>{"\u05E4\u05EA\u05E8\u05D5 "}<InlineMath>{"f'(x)=0"}</InlineMath>.</li>
+                  <li>{"\u05D0\u05DE\u05EA\u05D5 \u05E2\u05DD \u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4 \u05D0\u05D5 \u05D8\u05D1\u05DC\u05EA \u05E1\u05D9\u05DE\u05E0\u05D9\u05DD."}</li>
+                </ol>
+              </div>
+              <div style={{ marginTop: 10, color: "#16a34a", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; {"\u05D3\u05D5\u05D2\u05DE\u05D4: "}<InlineMath>{"A(x) = 60x - 2x^2"}</InlineMath> {"\u2192 "}<InlineMath>{"A'(x)=60-4x=0"}</InlineMath> {"\u2192 "}<InlineMath>{"x=15"}</InlineMath>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Expanded: Second derivative */}
+      {activeTab === "second" && (
+        <motion.div key="second" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(234,88,12,0.25)", background: "rgba(234,88,12,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"f''(x_0)>0 \\Rightarrow \\min, \\quad f''(x_0)<0 \\Rightarrow \\max"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>{"\u05D4\u05E1\u05D1\u05E8:"}</strong> {"\u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05D4\u05E9\u05E0\u05D9\u05D9\u05D4 \u05E7\u05D5\u05D1\u05E2\u05EA \u05D0\u05EA \u05E1\u05D5\u05D2 \u05D4\u05E7\u05D9\u05E6\u05D5\u05DF:"}
+                <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li><InlineMath>{"f''(x_0) > 0"}</InlineMath> {"\u2192 \u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD (\u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E7\u05DE\u05D5\u05E8\u05D4 \u05DC\u05DE\u05E2\u05DC\u05D4)"}</li>
+                  <li><InlineMath>{"f''(x_0) < 0"}</InlineMath> {"\u2192 \u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD (\u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E7\u05DE\u05D5\u05E8\u05D4 \u05DC\u05DE\u05D8\u05D4)"}</li>
+                </ul>
+              </div>
+              <div style={{ marginTop: 10, color: "#EA580C", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; {"\u05D0\u05DD "}<InlineMath>{"f''(x_0)=0"}</InlineMath> {"\u2014 \u05D4\u05E9\u05EA\u05DE\u05E9\u05D5 \u05D1\u05D8\u05D1\u05DC\u05EA \u05E1\u05D9\u05DE\u05E0\u05D9\u05DD."}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Expanded: Constraint + substitution */}
+      {activeTab === "constraint" && (
+        <motion.div key="constraint" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(220,38,38,0.25)", background: "rgba(220,38,38,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"g(x,y) = c \\;\\Rightarrow\\; y = h(x) \\;\\Rightarrow\\; \\text{substitute into } f"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>{"\u05D4\u05E1\u05D1\u05E8:"}</strong> {"\u05D1\u05D1\u05E2\u05D9\u05D5\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05D9\u05E9 \u05E9\u05E0\u05D9 \u05E9\u05DC\u05D1\u05D9\u05DD:"}
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>{"\u05D1\u05D8\u05D0\u05D5 \u05DE\u05E9\u05EA\u05E0\u05D4 \u05D0\u05D7\u05D3 \u05DE\u05D4\u05D0\u05D9\u05DC\u05D5\u05E5 (\u05DC\u05DE\u05E9\u05DC: "}<InlineMath>{"y = L - 2x"}</InlineMath>{")."}</li>
+                  <li>{"\u05D4\u05E6\u05D9\u05D1\u05D5 \u05DC\u05EA\u05D5\u05DA \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D9\u05EA \u05D4\u05DE\u05D8\u05E8\u05D4 \u2014 \u05D5\u05E7\u05D9\u05D1\u05DC\u05EA\u05DD \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05D1\u05DE\u05E9\u05EA\u05E0\u05D4 \u05D0\u05D7\u05D3."}</li>
+                </ol>
+              </div>
+              <div style={{ marginTop: 10, color: "#DC2626", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; {"\u05D3\u05D5\u05D2\u05DE\u05D4: "}<InlineMath>{"2x+y=L"}</InlineMath> {"\u2192 "}<InlineMath>{"A = x \\cdot (L-2x)"}</InlineMath>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+// ─── FenceLab (basic) ─────────────────────────────────────────────────────────
+
+function FenceLab() {
+  const [w, setW] = useState(10);
+  const L = 60;
+  const y = L - 2 * w;
+  const A = w * y;
+  const atMax = w === 15;
+
+  const SW = 260, SH = 180, pad = 30;
+  const maxW = 25, maxY = 50;
+  const avW = SW - pad * 2, avH = SH - pad * 2;
+  const rW = (w / maxW) * avW, rH = (y / maxY) * avH;
+  const rX = pad + (avW - rW) / 2, rY = pad + (avH - rH) / 2;
+
+  const CP = 28, maxA = 450;
+  const pts: string[] = [];
+  for (let i = 0; i <= 80; i++) {
+    const wi = 5 + (i / 80) * 20;
+    const ai = wi * (L - 2 * wi);
+    pts.push(`${CP + ((wi - 5) / 20) * (SW - CP * 2)},${SH - CP - (ai / maxA) * (SH - CP * 2)}`);
+  }
+  const dotX = CP + ((w - 5) / 20) * (SW - CP * 2);
+  const dotY = SH - CP - (A / maxA) * (SH - CP * 2);
+
+  return (
+    <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; {"\u05DE\u05E2\u05D1\u05D3\u05EA \u05D2\u05D3\u05E8 \u05DC\u05D9\u05D3 \u05E7\u05D9\u05E8"}</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
+        {"\u05E9\u05D8\u05D7 \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x"}
+      </p>
+
+      <div className="flex gap-3 justify-center flex-wrap">
+        {/* Shape SVG */}
+        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05D7\u05DC\u05E7\u05D4 \u05DE\u05DC\u05D1\u05E0\u05D9\u05EA"}</p>
+          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
+            <line x1={rX} y1={rY} x2={rX + rW} y2={rY} stroke="#94a3b8" strokeWidth={4} strokeLinecap="round" />
+            <text x={rX + rW / 2} y={rY - 5} fill="#6B7280" fontSize={9} textAnchor="middle">{"\u05E7\u05D9\u05E8"}</text>
+            <motion.rect animate={{ x: rX, y: rY, width: rW, height: rH }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              fill={atMax ? "#10b98120" : "#22c55e10"} stroke={atMax ? "#10b981" : "#22c55e"} strokeWidth={atMax ? 2.5 : 1.5} rx={2} />
+            <motion.text animate={{ x: rX + rW / 2, y: rY + rH + 14 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              fill="#22c55e" fontSize={10} textAnchor="middle">x={w}</motion.text>
+            <motion.text animate={{ x: rX + rW + 14, y: rY + rH / 2 + 4 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              fill="#f97316" fontSize={10} textAnchor="middle">y={y}</motion.text>
+          </svg>
+        </div>
+        {/* Graph SVG */}
+        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x"}</p>
+          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
+            <polyline points={pts.join(" ")} fill="none" stroke="#22c55e" strokeWidth={2} opacity={0.8} />
+            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#94a3b8" strokeWidth={1} />
+            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="#94a3b8" strokeWidth={1} />
+            {/* Max dot */}
+            {(() => { const mx = CP + (10/20)*(SW-CP*2), my = SH - CP - (450/maxA)*(SH-CP*2); return <><circle cx={mx} cy={my} r={9} fill="#10b98130" /><circle cx={mx} cy={my} r={5} fill="#10b981" /><text x={mx+8} y={my-6} fill="#10b981" fontSize={9}>max</text></>; })()}
+            <motion.line animate={{ x1: dotX, x2: dotX }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              y1={SH - CP} y2={CP / 2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
+            <motion.circle animate={{ cx: dotX, cy: dotY }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              r={atMax ? 7 : 5} fill={atMax ? "#10b981" : "#f97316"} stroke="#ffffff" strokeWidth={2} />
+            <motion.text animate={{ x: dotX + 8, y: Math.max(dotY - 4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              fill={atMax ? "#10b981" : "#f97316"} fontSize={10}>A={A}</motion.text>
+            <text x={CP + 2} y={SH - CP + 12} fill="#6B7280" fontSize={8}>x=5</text>
+            <text x={SW - CP - 12} y={SH - CP + 12} fill="#6B7280" fontSize={8}>x=25</text>
+          </svg>
+        </div>
+      </div>
+
+      {/* Slider */}
+      <div style={{ marginTop: "1.25rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
+          <span style={{ color: "#6B7280" }}>{"\u05E8\u05D5\u05D7\u05D1 "}<span style={{ fontFamily: "monospace", color: "#2D3436" }}>x</span></span>
+          <span style={{ fontFamily: "monospace", color: atMax ? "#16a34a" : "#2D3436", fontWeight: 700 }}>{w} {"\u05DE\u2032"}</span>
+        </div>
+        <input type="range" min={5} max={25} step={1} value={w}
+          onChange={e => setW(parseInt(e.target.value))} className="w-full" style={{ accentColor: "#16a34a" }} />
+        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>{"\u05D2\u05E8\u05D5\u05E8 \u05D0\u05EA \u05D4\u05E1\u05DC\u05D9\u05D9\u05D3\u05E8 \u05DB\u05D3\u05D9 \u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05D4\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD"}</p>
+      </div>
+
+      {/* Tiles */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
+        <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12 }}>
+          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"\u05E8\u05D5\u05D7\u05D1 x"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{w} {"\u05DE\u2032"}</p>
+        </div>
+        <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12 }}>
+          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"\u05D0\u05D5\u05E8\u05DA y"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{y} {"\u05DE\u2032"}</p>
+        </div>
+        <div style={{ background: atMax ? "rgba(220,252,231,0.7)" : "rgba(255,255,255,0.75)", border: atMax ? "1px solid #86efac" : "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12, transition: "all 0.3s" }}>
+          <p style={{ color: atMax ? "#16a34a" : "#6B7280", marginBottom: 4 }}>{"\u05E9\u05D8\u05D7 A"}</p>
+          <p style={{ fontFamily: "monospace", color: atMax ? "#15803d" : "#1A1A1A", fontWeight: 700 }}>{A} {"\u05DE\u2032\u00B2"}</p>
+        </div>
+      </div>
+      {atMax && <p style={{ color: "#16a34a", fontSize: 13, fontWeight: 700, textAlign: "center", marginTop: "0.75rem" }}>{"\u05E9\u05D8\u05D7 \u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9!"}</p>}
+    </section>
+  );
+}
+
+// ─── NormanLab (medium) ───────────────────────────────────────────────────────
+
+function NormanLab() {
+  const [r, setR] = useState(1.4);
+  const PI = Math.PI;
+  const P = 12;
+  const h = Math.max(0, (P - r * (2 + PI)) / 2);
+  const A = 2 * r * h + 0.5 * PI * r * r;
+  const rOpt = P / (4 + PI);
+  const atMax = Math.abs(r - rOpt) < 0.06;
+
+  const SW = 260, SH = 180, scale = 50;
+  const rPx = Math.min(r * scale, 80), hPx = Math.min(h * scale, 100);
+  const cx = SW / 2, rectTop = SH - 20 - hPx, rectBot = SH - 20;
+
+  const COEFF = 2 + PI / 2;
+  const CP = 28, maxAGraph = 12;
+  const normanPts: string[] = [];
+  for (let i = 0; i <= 80; i++) {
+    const ri = 0.3 + (i / 80) * 2.1;
+    const ai = Math.max(0, P * ri - COEFF * ri * ri);
+    normanPts.push(`${CP + (i / 80) * (SW - CP * 2)},${SH - CP - (ai / maxAGraph) * (SH - CP * 2)}`);
+  }
+  const dotXg = CP + ((r - 0.3) / 2.1) * (SW - CP * 2);
+  const dotYg = SH - CP - (Math.max(0, A) / maxAGraph) * (SH - CP * 2);
+  const maxDotXg = CP + ((rOpt - 0.3) / 2.1) * (SW - CP * 2);
+  const maxAVal = P * rOpt - COEFF * rOpt * rOpt;
+  const maxDotYg = SH - CP - (maxAVal / maxAGraph) * (SH - CP * 2);
+
+  return (
+    <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; {"\u05DE\u05E2\u05D1\u05D3\u05EA \u05D7\u05DC\u05D5\u05DF \u05E0\u05D5\u05E8\u05DE\u05DF"}</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
+        {"\u05E9\u05D8\u05D7 \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC r"}
+      </p>
+
+      <div className="flex gap-3 justify-center flex-wrap">
+        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E6\u05D5\u05E8\u05EA \u05D4\u05D7\u05DC\u05D5\u05DF"}</p>
+          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
+            <motion.rect animate={{ x: cx - rPx, y: rectTop, width: rPx * 2, height: hPx }}
+              transition={{ type: "spring", stiffness: 250, damping: 28 }}
+              fill={atMax ? "#10b98115" : "#f59e0b10"} stroke={atMax ? "#10b981" : "#f59e0b"} strokeWidth={atMax ? 2.5 : 1.5} />
+            <motion.path animate={{ d: `M ${cx - rPx} ${rectTop} A ${rPx} ${rPx} 0 0 1 ${cx + rPx} ${rectTop}` }}
+              transition={{ type: "spring", stiffness: 250, damping: 28 }}
+              fill={atMax ? "#10b98115" : "#f59e0b10"} stroke={atMax ? "#10b981" : "#f59e0b"} strokeWidth={atMax ? 2.5 : 1.5} />
+            <motion.text animate={{ x: cx, y: rectBot + 14 }} transition={{ type: "spring", stiffness: 250, damping: 28 }}
+              textAnchor="middle" fill="#16a34a" fontSize={9}>2r={(2 * r).toFixed(2)}</motion.text>
+            <motion.text animate={{ x: cx + rPx + 18, y: rectTop + hPx / 2 }} transition={{ type: "spring", stiffness: 250, damping: 28 }}
+              textAnchor="middle" fill="#ea580c" fontSize={9}>h={h.toFixed(2)}</motion.text>
+          </svg>
+        </div>
+        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC r"}</p>
+          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
+            <polyline points={normanPts.join(" ")} fill="none" stroke="#f59e0b" strokeWidth={2} opacity={0.8} />
+            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#94a3b8" strokeWidth={1} />
+            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="#94a3b8" strokeWidth={1} />
+            <circle cx={maxDotXg} cy={maxDotYg} r={9} fill="#f59e0b30" />
+            <circle cx={maxDotXg} cy={maxDotYg} r={5} fill="#f59e0b" />
+            <text x={maxDotXg + 8} y={maxDotYg - 6} fill="#f59e0b" fontSize={9}>max</text>
+            <motion.line animate={{ x1: dotXg, x2: dotXg }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              y1={SH - CP} y2={CP / 2} stroke="#a78bfa" strokeWidth={1} strokeDasharray="4,3" />
+            <motion.circle animate={{ cx: dotXg, cy: dotYg }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              r={atMax ? 7 : 5} fill={atMax ? "#f59e0b" : "#a78bfa"} stroke="#ffffff" strokeWidth={2} />
+            <motion.text animate={{ x: dotXg + 8, y: Math.max(dotYg - 4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              fill={atMax ? "#f59e0b" : "#7c3aed"} fontSize={10}>A={A.toFixed(2)}</motion.text>
+            <text x={CP + 2} y={SH - CP + 12} fill="#6B7280" fontSize={8}>r=0.3</text>
+            <text x={SW - CP - 14} y={SH - CP + 12} fill="#6B7280" fontSize={8}>r=2.4</text>
+          </svg>
+        </div>
+      </div>
+
+      <div style={{ marginTop: "1.25rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
+          <span style={{ color: "#6B7280" }}>{"\u05E8\u05D3\u05D9\u05D5\u05E1 "}<span style={{ fontFamily: "monospace", color: "#2D3436" }}>r</span></span>
+          <span style={{ fontFamily: "monospace", color: atMax ? "#ea580c" : "#2D3436", fontWeight: 700 }}>{r.toFixed(2)} {"\u05DE\u2032"}</span>
+        </div>
+        <input type="range" min={0.3} max={2.4} step={0.05} value={r}
+          onChange={e => setR(parseFloat(e.target.value))} className="w-full" style={{ accentColor: "#ea580c" }} />
+        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>{"\u05D2\u05E8\u05D5\u05E8 \u05D0\u05EA \u05D4\u05E1\u05DC\u05D9\u05D9\u05D3\u05E8 \u05DB\u05D3\u05D9 \u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05D4\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD"}</p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
+        <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12 }}>
+          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"\u05E8\u05D3\u05D9\u05D5\u05E1 r"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{r.toFixed(2)} {"\u05DE\u2032"}</p>
+        </div>
+        <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12 }}>
+          <p style={{ color: "#6B7280", marginBottom: 4 }}>{"\u05D2\u05D5\u05D1\u05D4 h"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{h.toFixed(2)} {"\u05DE\u2032"}</p>
+        </div>
+        <div style={{ background: atMax ? "rgba(255,237,213,0.7)" : "rgba(255,255,255,0.75)", border: atMax ? "1px solid #fdba74" : "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12, transition: "all 0.3s" }}>
+          <p style={{ color: atMax ? "#ea580c" : "#6B7280", marginBottom: 4 }}>{"\u05E9\u05D8\u05D7 A"}</p>
+          <p style={{ fontFamily: "monospace", color: atMax ? "#c2410c" : "#1A1A1A", fontWeight: 700 }}>{A.toFixed(3)}</p>
+        </div>
+      </div>
+      {atMax && <p style={{ color: "#ea580c", fontSize: 13, fontWeight: 700, textAlign: "center", marginTop: "0.75rem" }}>{"\u05E9\u05D8\u05D7 \u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9!"}</p>}
+    </section>
+  );
+}
+
+// ─── WireLab (advanced) ──────────────────────────────────────────────────────
+
+function WireLab() {
+  const [x, setX] = useState(50);
+  const PI = Math.PI;
+  const Ltot = 100;
+  const side = x / 4, radius = (Ltot - x) / (2 * PI);
+  const Asq = side * side, Aci = PI * radius * radius, Atotal = Asq + Aci;
+  const xMin = 400 / (4 + PI);
+  const atMin = Math.abs(x - xMin) < 1.5;
+
+  const SW = 260, SH = 160;
+  const sqPx = Math.min((x / 4) * (55 / 25), 65);
+  const rPx = Math.min(radius * (42 / (Ltot / (2 * PI))), 48);
+  const sqCX = 70, cirCX = 190, midY = SH / 2 + 10;
+
+  const SW2 = 260, SH2 = 180, CP2 = 28, maxAGraph = 800;
+  const wirePts: string[] = [];
+  for (let i = 0; i <= 80; i++) {
+    const xi = 5 + (i / 80) * 90;
+    const ai = xi * xi / 16 + (Ltot - xi) * (Ltot - xi) / (4 * PI);
+    wirePts.push(`${CP2 + (i / 80) * (SW2 - CP2 * 2)},${SH2 - CP2 - (ai / maxAGraph) * (SH2 - CP2 * 2)}`);
+  }
+  const dotXw = CP2 + ((x - 5) / 90) * (SW2 - CP2 * 2);
+  const dotYw = SH2 - CP2 - (Atotal / maxAGraph) * (SH2 - CP2 * 2);
+  const minDotXw = CP2 + ((xMin - 5) / 90) * (SW2 - CP2 * 2);
+  const minAw = xMin * xMin / 16 + (Ltot - xMin) * (Ltot - xMin) / (4 * PI);
+  const minDotYw = SH2 - CP2 - (minAw / maxAGraph) * (SH2 - CP2 * 2);
+
+  return (
+    <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; {"\u05DE\u05E2\u05D1\u05D3\u05EA \u05D7\u05D5\u05D8 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E2\u05D9\u05D2\u05D5\u05DC"}</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
+        {"\u05E9\u05D8\u05D7 \u05DB\u05D5\u05DC\u05DC \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x"}
+      </p>
+
+      <div className="flex gap-3 justify-center flex-wrap">
+        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E8\u05D9\u05D1\u05D5\u05E2 \u05D5\u05E2\u05D9\u05D2\u05D5\u05DC"}</p>
+          <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
+            <text x={sqCX} y={14} textAnchor="middle" fill="#3b82f6" fontSize={9} fontWeight="bold">{"\u05E8\u05D9\u05D1\u05D5\u05E2"}</text>
+            <text x={cirCX} y={14} textAnchor="middle" fill="#DC2626" fontSize={9} fontWeight="bold">{"\u05E2\u05D9\u05D2\u05D5\u05DC"}</text>
+            <motion.rect animate={{ x: sqCX - sqPx / 2, y: midY - sqPx / 2, width: sqPx, height: sqPx }}
+              transition={{ type: "spring", stiffness: 280, damping: 28 }}
+              fill="#3b82f633" stroke="#3b82f6" strokeWidth={2} />
+            <motion.text animate={{ x: sqCX, y: midY + sqPx / 2 + 12 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
+              textAnchor="middle" fill="#3b82f6" fontSize={9}>{"\u05E6\u05DC\u05E2"}={side.toFixed(1)}</motion.text>
+            <motion.circle animate={{ cx: cirCX, cy: midY, r: rPx }}
+              transition={{ type: "spring", stiffness: 280, damping: 28 }}
+              fill="#DC262633" stroke="#DC2626" strokeWidth={2} />
+            <motion.text animate={{ x: cirCX, y: midY + rPx + 14 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
+              textAnchor="middle" fill="#DC2626" fontSize={9}>r={radius.toFixed(1)}</motion.text>
+          </svg>
+        </div>
+        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05DB\u05D5\u05DC\u05DC \u05DB\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E9\u05DC x"}</p>
+          <svg width={SW2} height={SH2} viewBox={`0 0 ${SW2} ${SH2}`}>
+            <polyline points={wirePts.join(" ")} fill="none" stroke="#DC2626" strokeWidth={2} opacity={0.8} />
+            <line x1={CP2} y1={SH2 - CP2} x2={SW2 - CP2 / 2} y2={SH2 - CP2} stroke="#94a3b8" strokeWidth={1} />
+            <line x1={CP2} y1={CP2 / 2} x2={CP2} y2={SH2 - CP2} stroke="#94a3b8" strokeWidth={1} />
+            <circle cx={minDotXw} cy={minDotYw} r={9} fill="#10b98130" />
+            <circle cx={minDotXw} cy={minDotYw} r={5} fill="#10b981" />
+            <text x={minDotXw + 8} y={minDotYw - 6} fill="#10b981" fontSize={9}>min</text>
+            <motion.line animate={{ x1: dotXw, x2: dotXw }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              y1={SH2 - CP2} y2={CP2 / 2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
+            <motion.circle animate={{ cx: dotXw, cy: dotYw }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              r={atMin ? 7 : 5} fill={atMin ? "#10b981" : "#f97316"} stroke="#ffffff" strokeWidth={2} />
+            <motion.text animate={{ x: dotXw + 8, y: Math.max(dotYw - 4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              fill={atMin ? "#10b981" : "#f97316"} fontSize={10}>A={Atotal.toFixed(0)}</motion.text>
+            <text x={CP2 + 2} y={SH2 - CP2 + 12} fill="#6B7280" fontSize={8}>x=5</text>
+            <text x={SW2 - CP2 - 14} y={SH2 - CP2 + 12} fill="#6B7280" fontSize={8}>x=95</text>
+          </svg>
+        </div>
+      </div>
+
+      <div style={{ marginTop: "1.25rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
+          <span style={{ color: "#6B7280" }}>{"\u05D7\u05DC\u05E7 \u05DC\u05E8\u05D9\u05D1\u05D5\u05E2 "}<span style={{ fontFamily: "monospace", color: "#2D3436" }}>x</span></span>
+          <span style={{ fontFamily: "monospace", color: atMin ? "#dc2626" : "#2D3436", fontWeight: 700 }}>{x} {"\u05E1\u05F4\u05DE"}</span>
+        </div>
+        <input type="range" min={5} max={95} step={1} value={x}
+          onChange={e => setX(parseInt(e.target.value))} className="w-full" style={{ accentColor: "#dc2626" }} />
+        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>{"\u05D2\u05E8\u05D5\u05E8 \u05D0\u05EA \u05D4\u05E1\u05DC\u05D9\u05D9\u05D3\u05E8 \u05DB\u05D3\u05D9 \u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05D4\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD"}</p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
+        <div style={{ background: "rgba(219,234,254,0.5)", border: "1px solid rgba(59,130,246,0.3)", borderRadius: 12, padding: 12 }}>
+          <p style={{ color: "#3b82f6", marginBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05E8\u05D9\u05D1\u05D5\u05E2"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{Asq.toFixed(1)}</p>
+        </div>
+        <div style={{ background: "rgba(254,226,226,0.5)", border: "1px solid rgba(220,38,38,0.3)", borderRadius: 12, padding: 12 }}>
+          <p style={{ color: "#DC2626", marginBottom: 4 }}>{"\u05E9\u05D8\u05D7 \u05E2\u05D9\u05D2\u05D5\u05DC"}</p>
+          <p style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: 700 }}>{Aci.toFixed(1)}</p>
+        </div>
+        <div style={{ background: atMin ? "rgba(220,252,231,0.7)" : "rgba(255,255,255,0.75)", border: atMin ? "1px solid #86efac" : "1px solid rgba(60,54,42,0.15)", borderRadius: 12, padding: 12, transition: "all 0.3s" }}>
+          <p style={{ color: atMin ? "#16a34a" : "#6B7280", marginBottom: 4 }}>{"\u05E1\u05D4\u05F4\u05DB"}</p>
+          <p style={{ fontFamily: "monospace", color: atMin ? "#15803d" : "#1A1A1A", fontWeight: 700 }}>{Atotal.toFixed(1)}</p>
+        </div>
+      </div>
+      {atMin && <p style={{ color: "#16a34a", fontSize: 13, fontWeight: 700, textAlign: "center", marginTop: "0.75rem" }}>{"\u05E9\u05D8\u05D7 \u05DE\u05D9\u05E0\u05D9\u05DE\u05DC\u05D9!"}</p>}
+    </section>
+  );
+}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function KitzunGeometryPage() {
   const [selectedLevel, setSelectedLevel] = useState<"basic" | "medium" | "advanced">("basic");
   const ex = exercises.find(e => e.id === selectedLevel)!;
-  const lvlRgb = selectedLevel === "basic" ? "45,90,39" : selectedLevel === "medium" ? "163,79,38" : "139,38,53";
-  const st = STATION[selectedLevel];
-
-  const [copiedProblem, setCopiedProblem] = useState(false);
-  function handleCopyProblem() {
-    navigator.clipboard.writeText(ex.problem.split(/\n+סעיף/)[0].trim());
-    setCopiedProblem(true);
-    setTimeout(() => setCopiedProblem(false), 2000);
-  }
+  const lvlRgb = selectedLevel === "basic" ? "22,163,74" : selectedLevel === "medium" ? "234,88,12" : "220,38,38";
 
   return (
     <main
+      style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px", color: "#2D3436", ["--lvl-rgb" as string]: lvlRgb } as React.CSSProperties}
       dir="rtl"
-      style={{
-        minHeight: "100vh",
-        background: "#F3EFE0",
-        backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)",
-        backgroundSize: "24px 24px",
-        color: "#2D3436",
-        ["--lvl-rgb" as string]: lvlRgb,
-      }}
     >
-      <style>{GLOBAL_CSS}</style>
+      <style>{`
+        textarea, input[type="text"], input[type="password"] { outline: none !important; }
+        textarea:focus, input[type="text"]:focus {
+          outline: none !important;
+          border-color: rgba(var(--lvl-rgb), 0.65) !important;
+          box-shadow: 0 0 0 3px rgba(var(--lvl-rgb), 0.12) !important;
+        }
+        input[type="range"] { outline: none !important; }
+        input[type="range"]:focus { outline: none !important; }
+        button:focus, button:focus-visible {
+          outline: none !important;
+          box-shadow: 0 0 0 2px rgba(var(--lvl-rgb), 0.35) !important;
+        }
+        button:focus:not(:focus-visible) { box-shadow: none !important; }
+      `}</style>
 
       {/* Header */}
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
         <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>בעיות קיצון — גיאומטריה מישורית עם AI</h1>
-            <p style={{ color: "#64748b", fontSize: 13, margin: "3px 0 0" }}>אילוצי היקף ושטח — תרגם ציור לפונקציה</p>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>{"\u05D1\u05E2\u05D9\u05D5\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u2014 \u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05D4 \u05DE\u05D9\u05E9\u05D5\u05E8\u05D9\u05EA \u05E2\u05DD AI"}</h1>
+            <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>{"\u05D0\u05D9\u05DC\u05D5\u05E6\u05D9 \u05D4\u05D9\u05E7\u05E3 \u05D5\u05E9\u05D8\u05D7 \u2014 \u05EA\u05E8\u05D2\u05DD \u05E6\u05D9\u05D5\u05E8 \u05DC\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4"}</p>
           </div>
           <Link
             href="/topic/kitzun"
-            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#4A4A4A", border: "1px solid #333", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#FFFFFF", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#2D2D2D"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#4A4A4A"; }}
+            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(148,163,184,0.1)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#2D3436", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.2)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.1)"; }}
           >
-            <span style={{ fontSize: 16 }}>←</span>
-            חזרה
+            <span style={{ fontSize: 16 }}>{"\u2190"}</span>
+            {"\u05D7\u05D6\u05E8\u05D4"}
           </Link>
         </div>
       </div>
 
       <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
 
-        {/* Tab selector */}
-        <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
+        <SubtopicProgress subtopicId="kitzun/geometry" />
+
+        <FormulaBar />
+
+        {/* Level Selector */}
+        <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
           {TABS.map(tab => {
             const active = selectedLevel === tab.id;
             return (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedLevel(tab.id)}
+              <button key={tab.id} onClick={() => setSelectedLevel(tab.id as typeof selectedLevel)}
                 className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-semibold transition-all duration-200 ${active ? `${tab.bg} border ${tab.border} ${tab.textColor}` : "text-stone-500 hover:text-stone-800"}`}
-                style={active ? { boxShadow: `0 0 14px ${tab.glowColor}` } : undefined}
-              >
+                style={active ? { boxShadow: `0 0 14px ${tab.glowColor}` } : undefined}>
                 {tab.label}
               </button>
             );
           })}
         </div>
 
-        {/* Active exercise island */}
-        <section style={{ border: `1px solid ${st.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)", marginBottom: "2rem" }}>
+        {/* Active card */}
+        <motion.div key={selectedLevel} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
+          <ExerciseCard ex={ex} />
+        </motion.div>
 
-          {/* Station badge + title */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1.5rem" }}>
-            <span className={`text-xs font-bold px-3 py-1 rounded-full ${st.badgeCls}`}>{st.badge}</span>
-            <span style={{ fontSize: 20, fontWeight: 800, color: "#1A1A1A" }}>{ex.title}</span>
-          </div>
-
-          {/* FormulaBar */}
-          <FormulaBar accentColor={st.accentColor} accentRgb={st.glowRgb} />
-
-          {/* Diagram */}
-          <div style={{ borderRadius: 16, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: 12, marginBottom: "1.5rem" }}>
-            {ex.diagram}
-          </div>
-
-          {/* Problem statement */}
-          <div style={{ borderRadius: 16, border: `1px solid rgba(${st.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>📝 השאלה</div>
-              <button
-                onClick={handleCopyProblem}
-                style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.1)" : "rgba(107,114,128,0.08)", border: "1px solid rgba(107,114,128,0.2)", color: copiedProblem ? "#15803d" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}
-              >
-                {copiedProblem ? <Check size={11} /> : <Copy size={11} />}
-                {copiedProblem ? "הועתק!" : "העתק"}
-              </button>
-            </div>
-            <pre style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
-          </div>
-
-          {/* Pitfalls */}
-          <div style={{ marginBottom: "1.5rem" }}>
-            <div style={{ color: "#DC2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>⚠️ שגיאות נפוצות</div>
-            {ex.pitfalls.map((p, i) => (
-              <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.2)", background: "rgba(220,38,38,0.05)", padding: "0.85rem 1rem", marginBottom: 8 }}>
-                <div style={{ color: "#DC2626", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>{p.title}</div>
-                {p.text && <div style={{ color: "#2D3436", fontSize: 13.5, lineHeight: 1.65 }}>{p.text}</div>}
-              </div>
-            ))}
-          </div>
-
-          {/* Ladder */}
-          {selectedLevel === "basic"    && <LadderBase     ex={ex} accentColor={st.accentColor} accentRgb={st.glowRgb} />}
-          {selectedLevel === "medium"   && <LadderMedium   ex={ex} accentColor={st.accentColor} accentRgb={st.glowRgb} />}
-          {selectedLevel === "advanced" && <LadderAdvanced ex={ex} accentColor={st.accentColor} accentRgb={st.glowRgb} />}
-        </section>
-
-        {/* Lab */}
-        <GeometryLab levelId={selectedLevel} />
+        {/* Lab per level */}
+        {selectedLevel === "basic" && <FenceLab />}
+        {selectedLevel === "medium" && <NormanLab />}
+        {selectedLevel === "advanced" && <WireLab />}
 
         {/* Mark as complete */}
         <div style={{ marginTop: "1.5rem" }}>
-          <MarkComplete subtopicId="/kitzun/geometry" level={selectedLevel} />
+          <MarkComplete subtopicId="kitzun/geometry" level={selectedLevel} />
         </div>
 
       </div>

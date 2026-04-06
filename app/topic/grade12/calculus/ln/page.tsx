@@ -51,15 +51,15 @@ type ExerciseDef = {
 // ─── Station config ───────────────────────────────────────────────────────────
 
 const STATION = {
-  basic:    { stationName: "\u05EA\u05D7\u05E0\u05D4 \u05E8\u05D0\u05E9\u05D5\u05E0\u05D4", badge: "\u05DE\u05EA\u05D7\u05D9\u05DC", badgeCls: "bg-green-600 text-white",  accentCls: "text-green-700",  glowBorder: "rgba(22,163,74,0.35)",  glowShadow: "0 4px 16px rgba(22,163,74,0.12)",  glowRgb: "22,163,74",  accentColor: "#16A34A", borderRgb: "45,90,39"   },
-  medium:   { stationName: "\u05EA\u05D7\u05E0\u05D4 \u05E9\u05E0\u05D9\u05D9\u05D4",  badge: "\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9", badgeCls: "bg-orange-600 text-white", accentCls: "text-orange-700", glowBorder: "rgba(234,88,12,0.35)",  glowShadow: "0 4px 16px rgba(234,88,12,0.12)",  glowRgb: "234,88,12", accentColor: "#EA580C", borderRgb: "163,79,38"  },
-  advanced: { stationName: "\u05EA\u05D7\u05E0\u05D4 \u05E9\u05DC\u05D9\u05E9\u05D9\u05EA", badge: "\u05DE\u05EA\u05E7\u05D3\u05DD", badgeCls: "bg-red-700 text-white",    accentCls: "text-red-700",    glowBorder: "rgba(220,38,38,0.35)",  glowShadow: "0 4px 16px rgba(220,38,38,0.12)",  glowRgb: "220,38,38", accentColor: "#DC2626", borderRgb: "139,38,53" },
+  basic:    { stationName: "תחנה ראשונה", badge: "מתחיל", badgeCls: "bg-green-600 text-white",  accentCls: "text-green-700",  glowBorder: "rgba(22,163,74,0.35)",  glowShadow: "0 4px 16px rgba(22,163,74,0.12)",  glowRgb: "22,163,74",  accentColor: "#16A34A", borderRgb: "45,90,39"   },
+  medium:   { stationName: "תחנה שנייה",  badge: "בינוני", badgeCls: "bg-orange-600 text-white", accentCls: "text-orange-700", glowBorder: "rgba(234,88,12,0.35)",  glowShadow: "0 4px 16px rgba(234,88,12,0.12)",  glowRgb: "234,88,12", accentColor: "#EA580C", borderRgb: "163,79,38"  },
+  advanced: { stationName: "תחנה שלישית", badge: "מתקדם", badgeCls: "bg-red-700 text-white",    accentCls: "text-red-700",    glowBorder: "rgba(220,38,38,0.35)",  glowShadow: "0 4px 16px rgba(220,38,38,0.12)",  glowRgb: "220,38,38", accentColor: "#DC2626", borderRgb: "139,38,53" },
 } as const;
 
 const TABS = [
-  { id: "basic" as const,    label: "\u05DE\u05EA\u05D7\u05D9\u05DC",  textColor: "text-green-700",   border: "border-green-600",   bg: "bg-green-600/10",   glowColor: "rgba(22,163,74,0.3)"   },
-  { id: "medium" as const,   label: "\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9", textColor: "text-orange-700",  border: "border-orange-600",  bg: "bg-orange-600/10",  glowColor: "rgba(234,88,12,0.3)"   },
-  { id: "advanced" as const, label: "\u05DE\u05EA\u05E7\u05D3\u05DD",  textColor: "text-red-700",     border: "border-red-700",     bg: "bg-red-700/10",     glowColor: "rgba(220,38,38,0.3)"   },
+  { id: "basic" as const,    label: "מתחיל",  textColor: "text-green-700",   border: "border-green-600",   bg: "bg-green-600/10",   glowColor: "rgba(22,163,74,0.3)"   },
+  { id: "medium" as const,   label: "בינוני", textColor: "text-orange-700",  border: "border-orange-600",  bg: "bg-orange-600/10",  glowColor: "rgba(234,88,12,0.3)"   },
+  { id: "advanced" as const, label: "מתקדם",  textColor: "text-red-700",     border: "border-red-700",     bg: "bg-red-700/10",     glowColor: "rgba(220,38,38,0.3)"   },
 ];
 
 // ─── Silent SVG Diagrams ─────────────────────────────────────────────────────
@@ -147,14 +147,14 @@ function LnCurveAdvanced() {
 
 // ─── Prompt Coach Atoms ───────────────────────────────────────────────────────
 
-function CopyBtn({ text, label = "\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8", accentRgb = "22,163,74" }: { text: string; label?: string; accentRgb?: string }) {
+function CopyBtn({ text, label = "העתק פרומפט", accentRgb = "22,163,74" }: { text: string; label?: string; accentRgb?: string }) {
   const [c, setC] = useState(false);
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setC(true); setTimeout(() => setC(false), 2000); }}
       style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10, cursor: "pointer", background: "rgba(255,255,255,0.8)", border: `1.5px solid rgba(${accentRgb},0.4)`, color: `rgb(${accentRgb})`, fontSize: 12, fontWeight: 600, transition: "all 0.2s" }}
     >
-      {c ? <Check size={13} /> : <Copy size={13} />}{c ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : label}
+      {c ? <Check size={13} /> : <Copy size={13} />}{c ? "הועתק!" : label}
     </button>
   );
 }
@@ -164,10 +164,10 @@ function GoldenPromptCard({ prompt, glowRgb = "22,163,74", borderRgb = "45,90,39
     <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)` }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span style={{ fontSize: 14 }}>&#10024;</span>
-        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E8\u05D0\u05E9\u05D9</span>
+        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>פרומפט ראשי</span>
       </div>
       <p style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
-      <CopyBtn text={prompt} label="\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05DC\u05D0" accentRgb={glowRgb} />
+      <CopyBtn text={prompt} label="העתק פרומפט מלא" accentRgb={glowRgb} />
     </div>
   );
 }
@@ -181,10 +181,10 @@ function TutorStepBasic({ step, glowRgb = "22,163,74", borderRgb = "45,90,39" }:
       </div>
       <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
-          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>&#9997;&#65039; \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05D4\u05DE\u05D5\u05DB\u05DF</div>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>&#9997;&#65039; הפרומפט המוכן</div>
           <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.85)", border: `1px solid rgba(${borderRgb},0.35)`, padding: 12, fontSize: 11, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word" }}>{step.prompt}</div>
         </div>
-        <CopyBtn text={step.prompt} label="\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05DE\u05D5\u05E7\u05D3" accentRgb={glowRgb} />
+        <CopyBtn text={step.prompt} label="העתק פרומפט ממוקד" accentRgb={glowRgb} />
       </div>
     </div>
   );
@@ -196,7 +196,7 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
   const [copied, setCopied] = useState(false);
   const passed = !!(result && !result.blocked && result.score >= 75);
   const validate = () => {
-    if (text.trim().length < 20) { setResult({ score: 0, blocked: false, hint: "\u05D4\u05E0\u05D9\u05E1\u05D5\u05D7 \u05E7\u05E6\u05E8 \u05DE\u05D3\u05D9 -- \u05DB\u05EA\u05D5\u05D1 \u05DC\u05E4\u05D7\u05D5\u05EA 20 \u05EA\u05D5\u05D5\u05D9\u05DD." }); return; }
+    if (text.trim().length < 20) { setResult({ score: 0, blocked: false, hint: "הניסוח קצר מדי -- כתוב לפחות 20 תווים." }); return; }
     const res = calculatePromptScore(text, step.contextWords ?? []);
     setResult(res);
     if (!res.blocked && res.score >= 75) onPass?.();
@@ -216,24 +216,24 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
       </div>
       <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <textarea value={text} rows={3} dir="rtl" disabled={passed} onChange={(e) => { setText(e.target.value); setResult(null); }}
-          placeholder="\u05E0\u05E1\u05D7 \u05DB\u05D0\u05DF \u05D0\u05EA \u05D4\u05E9\u05D0\u05DC\u05D4 \u05E9\u05DC\u05DA \u05DC-AI (\u05D1\u05E7\u05E9 \u05D4\u05DB\u05D5\u05D5\u05E0\u05D4, \u05DC\u05D0 \u05E4\u05EA\u05E8\u05D5\u05DF)..."
+          placeholder="נסח כאן את השאלה שלך ל-AI (בקש הכוונה, לא פתרון)..."
           style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: "rgba(255,255,255,0.85)", border: `1px solid ${passed ? "rgba(22,163,74,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
         {result && (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", marginBottom: 4, fontWeight: 600 }}><span>\u05E6\u05D9\u05D5\u05DF \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8</span><span style={{ fontWeight: 800 }}>{result.score}/100</span></div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", marginBottom: 4, fontWeight: 600 }}><span>ציון הפרומפט</span><span style={{ fontWeight: 800 }}>{result.score}/100</span></div>
             <div style={{ height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}><div style={{ height: "100%", width: `${result.score}%`, borderRadius: 3, background: scoreBarColor, transition: "width 0.4s ease" }} /></div>
           </div>
         )}
-        {!result && <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.8)", border: `1px solid rgba(${borderRgb},0.4)`, color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>&#129302; \u05D1\u05D3\u05D9\u05E7\u05EA AI \u05DE\u05D3\u05D5\u05DE\u05D4</button>}
+        {!result && <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.8)", border: `1px solid rgba(${borderRgb},0.4)`, color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>&#129302; בדיקת AI מדומה</button>}
         {result && result.blocked && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 12, background: "rgba(254,226,226,1)", border: "2px solid #dc2626", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6 }}>&#9888;&#65039; {result.hint}</motion.div>}
         {result && !result.blocked && result.score < 75 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 12, background: "rgba(255,251,235,1)", border: "2px solid #d97706", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6 }}>&#128161; {result.hint}</motion.div>}
         {passed && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#14532d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>&#9989; \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05E6\u05D5\u05D9\u05DF! \u05E6\u05D9\u05D5\u05DF: <strong>{result!.score}/100</strong></div>
-            <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>{copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7 \u05DC-AI"}</button>
+            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#14532d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>&#9989; פרומפט מצוין! ציון: <strong>{result!.score}/100</strong></div>
+            <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>{copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "הועתק!" : "העתק ל-AI"}</button>
           </motion.div>
         )}
-        {result && !passed && <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#6B7280", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>\u05E0\u05E1\u05D4 \u05E9\u05D5\u05D1</button>}
+        {result && !passed && <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#6B7280", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>נסה שוב</button>}
       </div>
     </div>
   );
@@ -250,7 +250,7 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
     </div>
   );
   const validate = () => {
-    if (text.trim().length < 20) { setResult({ score: 0, blocked: false, hint: "\u05D4\u05E0\u05D9\u05E1\u05D5\u05D7 \u05E7\u05E6\u05E8 \u05DE\u05D3\u05D9 -- \u05DB\u05EA\u05D5\u05D1 \u05DC\u05E4\u05D7\u05D5\u05EA 20 \u05EA\u05D5\u05D5\u05D9\u05DD." }); return; }
+    if (text.trim().length < 20) { setResult({ score: 0, blocked: false, hint: "הניסוח קצר מדי -- כתוב לפחות 20 תווים." }); return; }
     const r = calculatePromptScore(text, step.contextWords ?? []);
     setResult(r);
     if (!r.blocked && r.score >= 90 && onPass) onPass();
@@ -263,26 +263,26 @@ function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep;
       </div>
       <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <textarea value={text} rows={3} dir="rtl" readOnly={passed} onChange={(e) => { if (!passed) { setText(e.target.value); setResult(null); } }}
-          placeholder="\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E9\u05DC\u05DA \u05DC\u05E1\u05E2\u05D9\u05E3 \u05D6\u05D4..."
+          placeholder="כתוב את הפרומפט שלך לסעיף זה..."
           style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: passed ? "rgba(220,252,231,0.3)" : "rgba(255,255,255,0.85)", border: `1px solid ${passed ? "rgba(22,163,74,0.25)" : "rgba(139,38,53,0.25)"}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
         {result && (
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", fontWeight: 600 }}><span>\u05E6\u05D9\u05D5\u05DF</span><span style={{ fontWeight: 800 }}>{result.score}/100</span></div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", fontWeight: 600 }}><span>ציון</span><span style={{ fontWeight: 800 }}>{result.score}/100</span></div>
             <div style={{ height: 5, borderRadius: 99, background: "#E5E7EB", overflow: "hidden" }}><div style={{ height: "100%", width: `${result.score}%`, background: result.score >= 90 ? "#16a34a" : result.score >= 55 ? "#d97706" : "#dc2626", borderRadius: 99, transition: "width 0.4s ease" }} /></div>
           </div>
         )}
         {result && !passed && result.hint && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 12, padding: 12, fontSize: 12, lineHeight: 1.6, color: "#1A1A1A", background: result.blocked ? "rgba(254,226,226,1)" : "rgba(255,251,235,1)", border: `2px solid ${result.blocked ? "#dc2626" : "#d97706"}` }}>
-            {result.blocked ? "\u26A0\uFE0F" : "\uD83D\uDCA1"} {result.hint}
+            {result.blocked ? "⚠️" : "💡"} {result.hint}
           </motion.div>
         )}
         {passed && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#14532d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>&#9989; \u05E0\u05D9\u05E1\u05D5\u05D7 \u05DE\u05E2\u05D5\u05DC\u05D4! \u05D4\u05E1\u05E2\u05D9\u05E3 \u05D4\u05D1\u05D0 \u05E0\u05E4\u05EA\u05D7.</div>
-            <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>{copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7 \u05E0\u05D9\u05E1\u05D5\u05D7"}</button>
+            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#14532d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>&#9989; ניסוח מעולה! הסעיף הבא נפתח.</div>
+            <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>{copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "הועתק!" : "העתק ניסוח"}</button>
           </motion.div>
         )}
-        {!passed && <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(220,38,38,0.35)", color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>&#129302; \u05D1\u05D3\u05D9\u05E7\u05EA AI \u05DE\u05D3\u05D5\u05DE\u05D4</button>}
+        {!passed && <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(220,38,38,0.35)", color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>&#129302; בדיקת AI מדומה</button>}
       </div>
     </div>
   );
@@ -307,9 +307,9 @@ function LadderBase({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: Prompt
             <>
               <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
               {!completed[i] ? (
-                <button onClick={() => markDone(i)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>&#10003; \u05E1\u05D9\u05D9\u05DE\u05EA\u05D9 \u05E1\u05E2\u05D9\u05E3 \u05D6\u05D4</button>
+                <button onClick={() => markDone(i)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>&#10003; סיימתי סעיף זה</button>
               ) : (
-                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>&#9989; \u05D4\u05D5\u05E9\u05DC\u05DD</div>
+                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>&#9989; הושלם</div>
               )}
             </>
           ) : (
@@ -342,8 +342,8 @@ function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
   const unlockedIdx = masterPassed ? (passed.findIndex(p => !p) === -1 ? steps.length : passed.findIndex(p => !p)) : -1;
   return (
     <div>
-      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="\u05E1\u05E8\u05D5\u05E7 \u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D5\u05E2\u05E6\u05D5\u05E8"
-        subjectWords={["\u05DC\u05D5\u05D2\u05E8\u05D9\u05EA\u05DD", "ln", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05EA\u05D7\u05D5\u05DD", "\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4", "\u05E9\u05E8\u05E9\u05E8\u05EA", "\u05E4\u05E8\u05DE\u05D8\u05E8"]} />
+      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור"
+        subjectWords={["לוגריתם", "ln", "נגזרת", "תחום", "אסימפטוטה", "שרשרת", "פרמטר"]} />
       {steps.map((s, i) => (
         <TutorStepAdvanced key={i} step={s} locked={!masterPassed || i > unlockedIdx} onPass={() => setPassed(prev => { const next = [...prev]; next[i] = true; return next; })} />
       ))}
@@ -366,15 +366,15 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
       <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.6)", padding: "1.5rem", marginBottom: "2rem" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>&#128221; \u05D4\u05E9\u05D0\u05DC\u05D4</div>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>&#128221; השאלה</div>
           <button onClick={() => { navigator.clipboard.writeText(ex.problem); setCopiedProblem(true); setTimeout(() => setCopiedProblem(false), 2000); }} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.15)" : "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.2)", color: copiedProblem ? "#16a34a" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
-            {copiedProblem ? <Check size={11} /> : <Copy size={11} />}{copiedProblem ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7"}
+            {copiedProblem ? <Check size={11} /> : <Copy size={11} />}{copiedProblem ? "הועתק!" : "העתק"}
           </button>
         </div>
         <pre style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
       </div>
       <div style={{ marginBottom: "2rem" }}>
-        <div style={{ color: "#dc2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>&#9888;&#65039; \u05E9\u05D2\u05D9\u05D0\u05D5\u05EA \u05E0\u05E4\u05D5\u05E6\u05D5\u05EA</div>
+        <div style={{ color: "#dc2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>&#9888;&#65039; שגיאות נפוצות</div>
         {ex.pitfalls.map((p, i) => (
           <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.25)", background: "rgba(254,226,226,0.25)", padding: "0.85rem 1rem", marginBottom: 8 }}>
             <div style={{ color: "#b91c1c", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>{p.title}</div>
@@ -383,7 +383,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
         ))}
       </div>
       <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.7)", padding: "1.25rem", boxShadow: s.glowShadow }}>
-        <div style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; \u05DE\u05D3\u05E8\u05D9\u05DA \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8\u05D9\u05DD</div>
+        <div style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; מדריך הפרומפטים</div>
         {ex.id === "basic" && <LadderBase steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium" && <LadderMedium steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
       </div>
@@ -397,14 +397,14 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 function FormulaBar() {
   const [activeTab, setActiveTab] = useState<"deriv" | "chain" | "props" | "integral" | null>(null);
   const tabs = [
-    { id: "deriv" as const, label: "\u05E0\u05D2\u05D6\u05E8\u05EA ln", tex: "(\\ln x)' = \\frac{1}{x}", color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
-    { id: "chain" as const, label: "\u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA", tex: "(\\ln u)' = \\frac{u'}{u}", color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
-    { id: "props" as const, label: "\u05EA\u05DB\u05D5\u05E0\u05D5\u05EA", tex: "\\ln(ab) = \\ln a + \\ln b", color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
-    { id: "integral" as const, label: "\u05D0\u05D9\u05E0\u05D8\u05D2\u05E8\u05DC", tex: "\\int \\frac{1}{x}dx = \\ln|x|+C", color: "#7c3aed", borderColor: "rgba(124,58,237,0.35)" },
+    { id: "deriv" as const, label: "נגזרת ln", tex: "(\\ln x)' = \\frac{1}{x}", color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "chain" as const, label: "כלל שרשרת", tex: "(\\ln u)' = \\frac{u'}{u}", color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
+    { id: "props" as const, label: "תכונות", tex: "\\ln(ab) = \\ln a + \\ln b", color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
+    { id: "integral" as const, label: "אינטגרל", tex: "\\int \\frac{1}{x}dx = \\ln|x|+C", color: "#7c3aed", borderColor: "rgba(124,58,237,0.35)" },
   ];
   return (
     <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: "1.25rem" }}>
-      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>\u05E0\u05D5\u05E1\u05D7\u05D0\u05D5\u05EA</div>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
       <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
         {tabs.map(t => {
           const isActive = activeTab === t.id;
@@ -423,11 +423,11 @@ function FormulaBar() {
             <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}><DisplayMath>{"(\\ln x)' = \\frac{1}{x}, \\quad x > 0"}</DisplayMath></div>
             <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>\u05D4\u05E1\u05D1\u05E8:</strong> \u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05DC \u05DC\u05D5\u05D2\u05E8\u05D9\u05EA\u05DD \u05D8\u05D1\u05E2\u05D9 \u05D4\u05D9\u05D0 \u05D4\u05D4\u05D5\u05E4\u05DB\u05D9 \u05E9\u05DC x.
+                <strong>הסבר:</strong> הנגזרת של לוגריתם טבעי היא ההופכי של x.
                 <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
-                  <li>\u05DE\u05D5\u05D2\u05D3\u05E8\u05EA \u05E8\u05E7 \u05E2\u05D1\u05D5\u05E8 <InlineMath>{"x > 0"}</InlineMath>.</li>
-                  <li>\u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05EA\u05DE\u05D9\u05D3 \u05D7\u05D9\u05D5\u05D1\u05D9\u05EA \u05D1\u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4.</li>
-                  <li>\u05DB\u05E9-<InlineMath>{"x \\to 0^+"}</InlineMath> \u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05D5\u05D0\u05E4\u05EA \u05DC\u05D0\u05D9\u05E0\u05E1\u05D5\u05E3.</li>
+                  <li>מוגדרת רק עבור <InlineMath>{"x > 0"}</InlineMath>.</li>
+                  <li>הנגזרת תמיד חיובית בתחום ההגדרה.</li>
+                  <li>כש-<InlineMath>{"x \\to 0^+"}</InlineMath> הנגזרת שואפת לאינסוף.</li>
                 </ol>
               </div>
             </div>
@@ -440,14 +440,14 @@ function FormulaBar() {
             <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}><DisplayMath>{"(\\ln u)' = \\frac{u'}{u}"}</DisplayMath></div>
             <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>\u05D4\u05E1\u05D1\u05E8:</strong> \u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA \u05DC\u05DC\u05D5\u05D2\u05E8\u05D9\u05EA\u05DD:
+                <strong>הסבר:</strong> כלל שרשרת ללוגריתם:
                 <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
-                  <li>\u05D2\u05D6\u05E8\u05D5 \u05D0\u05EA \u05D4\u05D1\u05D9\u05D8\u05D5\u05D9 \u05D4\u05E4\u05E0\u05D9\u05DE\u05D9 <InlineMath>{"u(x)"}</InlineMath>.</li>
-                  <li>\u05D7\u05DC\u05E7\u05D5 \u05D0\u05EA \u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05D1\u05D1\u05D9\u05D8\u05D5\u05D9 \u05D4\u05E4\u05E0\u05D9\u05DE\u05D9.</li>
-                  <li>\u05D4\u05EA\u05D5\u05E6\u05D0\u05D4: <InlineMath>{"\\frac{u'}{u}"}</InlineMath> \u2014 \u05E0\u05D2\u05D6\u05E8\u05EA \u05D4\u05E4\u05E0\u05D9\u05DE\u05D9 \u05D7\u05DC\u05E7\u05D9 \u05D4\u05E4\u05E0\u05D9\u05DE\u05D9.</li>
+                  <li>גזרו את הביטוי הפנימי <InlineMath>{"u(x)"}</InlineMath>.</li>
+                  <li>חלקו את הנגזרת בביטוי הפנימי.</li>
+                  <li>התוצאה: <InlineMath>{"\\frac{u'}{u}"}</InlineMath> — נגזרת הפנימי חלקי הפנימי.</li>
                 </ol>
               </div>
-              <div style={{ marginTop: 10, color: "#c2410c", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>&#128161; \u05D8\u05D9\u05E4: \u05D0\u05DC \u05EA\u05E9\u05DB\u05D7\u05D5 \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D0\u05EA <InlineMath>{"u'"}</InlineMath> \u2014 \u05D6\u05D5 \u05D4\u05D8\u05E2\u05D5\u05EA \u05D4\u05E0\u05E4\u05D5\u05E6\u05D4 \u05D1\u05D9\u05D5\u05EA\u05E8!</div>
+              <div style={{ marginTop: 10, color: "#c2410c", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>&#128161; טיפ: אל תשכחו לגזור את <InlineMath>{"u'"}</InlineMath> — זו הטעות הנפוצה ביותר!</div>
             </div>
           </div>
         </motion.div>
@@ -458,11 +458,11 @@ function FormulaBar() {
             <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}><DisplayMath>{"\\ln(ab) = \\ln a + \\ln b \\quad \\ln\\frac{a}{b} = \\ln a - \\ln b \\quad \\ln a^n = n\\ln a"}</DisplayMath></div>
             <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>\u05D4\u05E1\u05D1\u05E8:</strong> \u05EA\u05DB\u05D5\u05E0\u05D5\u05EA \u05D1\u05E1\u05D9\u05E1\u05D9\u05D5\u05EA \u05E9\u05DC \u05DC\u05D5\u05D2\u05E8\u05D9\u05EA\u05DD:
+                <strong>הסבר:</strong> תכונות בסיסיות של לוגריתם:
                 <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
-                  <li><InlineMath>{"\\ln 1 = 0"}</InlineMath> \u2014 \u05DB\u05D9 <InlineMath>{"e^0 = 1"}</InlineMath>.</li>
-                  <li><InlineMath>{"\\ln e = 1"}</InlineMath> \u2014 \u05DB\u05D9 <InlineMath>{"e^1 = e"}</InlineMath>.</li>
-                  <li><InlineMath>{"e^{\\ln x} = x"}</InlineMath> \u2014 \u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D5\u05EA \u05D4\u05D5\u05E4\u05DB\u05D9\u05D5\u05EA.</li>
+                  <li><InlineMath>{"\\ln 1 = 0"}</InlineMath> — כי <InlineMath>{"e^0 = 1"}</InlineMath>.</li>
+                  <li><InlineMath>{"\\ln e = 1"}</InlineMath> — כי <InlineMath>{"e^1 = e"}</InlineMath>.</li>
+                  <li><InlineMath>{"e^{\\ln x} = x"}</InlineMath> — פונקציות הופכיות.</li>
                 </ol>
               </div>
             </div>
@@ -475,13 +475,13 @@ function FormulaBar() {
             <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}><DisplayMath>{"\\int \\frac{1}{x}dx = \\ln|x| + C"}</DisplayMath></div>
             <div style={{ borderRadius: 10, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>\u05D4\u05E1\u05D1\u05E8:</strong> \u05D4\u05D0\u05D9\u05E0\u05D8\u05D2\u05E8\u05DC \u05E9\u05DC 1/x:
+                <strong>הסבר:</strong> האינטגרל של 1/x:
                 <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
-                  <li>\u05E9\u05D9\u05DE\u05D5 \u05DC\u05D1: \u05E2\u05E8\u05DA \u05DE\u05D5\u05D7\u05DC\u05D8 <InlineMath>{"|x|"}</InlineMath> \u05DB\u05D9 \u05D4\u05DC\u05D5\u05D2\u05E8\u05D9\u05EA\u05DD \u05DE\u05D5\u05D2\u05D3\u05E8 \u05E8\u05E7 \u05DC\u05D7\u05D9\u05D5\u05D1\u05D9\u05D9\u05DD.</li>
-                  <li>\u05D0\u05DC \u05EA\u05E9\u05DB\u05D7\u05D5 +C \u05D1\u05D0\u05D9\u05E0\u05D8\u05D2\u05E8\u05DC \u05DC\u05D0 \u05DE\u05E1\u05D5\u05D9\u05DD!</li>
+                  <li>שימו לב: ערך מוחלט <InlineMath>{"|x|"}</InlineMath> כי הלוגריתם מוגדר רק לחיוביים.</li>
+                  <li>אל תשכחו +C באינטגרל לא מסוים!</li>
                 </ol>
               </div>
-              <div style={{ marginTop: 10, color: "#7c3aed", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>&#128161; \u05D1\u05D1\u05D2\u05E8\u05D5\u05EA: \u05E9\u05DB\u05D7\u05EA +C \u05E2\u05D5\u05DC\u05D4 \u05E0\u05E7\u05D5\u05D3\u05D5\u05EA!</div>
+              <div style={{ marginTop: 10, color: "#7c3aed", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>&#128161; בבגרות: שכחת +C עולה נקודות!</div>
             </div>
           </div>
         </motion.div>
@@ -521,8 +521,8 @@ function LnLab() {
   return (
     <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
-        <h3 style={{ fontSize: 22, fontWeight: 800, color: "#2D3436", margin: 0 }}>&#128300; \u05DE\u05E2\u05D1\u05D3\u05EA ln(ax + b)</h3>
-        {changed && <span style={{ color: "#22c55e", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />\u05DE\u05E9\u05EA\u05E0\u05D4!</span>}
+        <h3 style={{ fontSize: 22, fontWeight: 800, color: "#2D3436", margin: 0 }}>&#128300; מעבדת ln(ax + b)</h3>
+        {changed && <span style={{ color: "#22c55e", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />משתנה!</span>}
       </div>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-sm mx-auto mb-4" aria-hidden>
@@ -551,24 +551,24 @@ function LnLab() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, textAlign: "center", fontSize: 12, marginBottom: 16 }}>
         <div style={{ borderRadius: 12, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: "10px 8px" }}>
-          <div style={{ color: "#64748b", marginBottom: 4 }}>\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4</div>
+          <div style={{ color: "#64748b", marginBottom: 4 }}>אסימפטוטה</div>
           <div style={{ fontWeight: 700, color: "#f59e0b", fontSize: 11 }}>x = {asymptote.toFixed(2)}</div>
         </div>
         <div style={{ borderRadius: 12, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: "10px 8px" }}>
-          <div style={{ color: "#64748b", marginBottom: 4 }}>\u05D7\u05D9\u05EA\u05D5\u05DA x</div>
-          <div style={{ fontWeight: 700, color: "#a78bfa", fontSize: 11 }}>{xIntercept !== null ? `x = ${xIntercept.toFixed(2)}` : "\u2014"}</div>
+          <div style={{ color: "#64748b", marginBottom: 4 }}>חיתוך x</div>
+          <div style={{ fontWeight: 700, color: "#a78bfa", fontSize: 11 }}>{xIntercept !== null ? `x = ${xIntercept.toFixed(2)}` : "—"}</div>
         </div>
         <div style={{ borderRadius: 12, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: "10px 8px" }}>
-          <div style={{ color: "#64748b", marginBottom: 4 }}>\u05EA\u05D7\u05D5\u05DD</div>
+          <div style={{ color: "#64748b", marginBottom: 4 }}>תחום</div>
           <div style={{ fontWeight: 700, color: "#22c55e", fontSize: 11 }}>x &gt; {asymptote.toFixed(2)}</div>
         </div>
       </div>
 
       <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12, fontSize: 12, color: "#64748b" }}>
-        <span style={{ color: "#f59e0b", fontWeight: 600 }}>\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4</span> = \u2212b/a &nbsp;|&nbsp; <span style={{ color: "#a78bfa", fontWeight: 600 }}>\u05D7\u05D9\u05EA\u05D5\u05DA x</span>: ax+b=1 &rarr; x=(1\u2212b)/a
+        <span style={{ color: "#f59e0b", fontWeight: 600 }}>אסימפטוטה</span> = −b/a &nbsp;|&nbsp; <span style={{ color: "#a78bfa", fontWeight: 600 }}>חיתוך x</span>: ax+b=1 &rarr; x=(1−b)/a
       </div>
 
-      <LabMessage text="\u05E9\u05E0\u05D4 \u05D0\u05EA \u05D4\u05E1\u05DC\u05D9\u05D9\u05D3\u05E8\u05D9\u05DD \u05DB\u05D3\u05D9 \u05DC\u05E8\u05D0\u05D5\u05EA \u05D0\u05D9\u05DA \u05D4\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4 \u05D6\u05D6\u05D4!" type="success" visible={changed} />
+      <LabMessage text="שנה את הסליידרים כדי לראות איך האסימפטוטה זזה!" type="success" visible={changed} />
     </section>
   );
 }
@@ -578,55 +578,55 @@ function LnLab() {
 const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    title: "\u05EA\u05D7\u05D5\u05DD \u05D4\u05D2\u05D3\u05E8\u05D4 \u05D5\u05E0\u05D2\u05D6\u05E8\u05EA",
-    problem: "\u05E0\u05EA\u05D5\u05E0\u05D4 \u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 f(x) = ln(2x \u2212 6).\n\n\u05D0. \u05DE\u05E6\u05D0 \u05D0\u05EA \u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4 \u05E9\u05DC f.\n\u05D1. \u05DE\u05E6\u05D0 \u05D0\u05EA f\u2032(x) \u05D1\u05E2\u05D6\u05E8\u05EA \u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA.\n\u05D2. \u05D7\u05E9\u05D1 \u05D0\u05EA f\u2032(4) \u05D5\u05E4\u05E8\u05E9 \u05D0\u05EA \u05D4\u05DE\u05E9\u05DE\u05E2\u05D5\u05EA \u05D4\u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05EA.",
+    title: "תחום הגדרה ונגזרת",
+    problem: "נתונה הפונקציה f(x) = ln(2x − 6).\n\nא. מצא את תחום ההגדרה של f.\nב. מצא את f′(x) בעזרת כלל שרשרת.\nג. חשב את f′(4) ופרש את המשמעות הגיאומטרית.",
     diagram: <LnCurveBasic />,
     pitfalls: [
-      { title: "\u05E9\u05D5\u05DB\u05D7\u05D9\u05DD \u05E9\u05D4\u05D1\u05D9\u05D8\u05D5\u05D9 \u05D1\u05EA\u05D5\u05DA ln \u05D7\u05D9\u05D9\u05D1 \u05DC\u05D4\u05D9\u05D5\u05EA \u05D7\u05D9\u05D5\u05D1\u05D9 \u05DE\u05DE\u05E9", text: "\u05D4\u05D3\u05E8\u05D9\u05E9\u05D4: 2x \u2212 6 > 0, \u05DC\u05D0 \u2265 0. \u05DC\u05D5\u05D2\u05E8\u05D9\u05EA\u05DD \u05E9\u05DC \u05D0\u05E4\u05E1 \u05DC\u05D0 \u05DE\u05D5\u05D2\u05D3\u05E8." },
-      { title: "\u05E9\u05D5\u05DB\u05D7\u05D9\u05DD \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D0\u05EA \u05D4\u05D1\u05D9\u05D8\u05D5\u05D9 \u05D4\u05E4\u05E0\u05D9\u05DE\u05D9 \u05D1\u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA", text: "(ln u)\u2032 = u\u2032/u. \u05E6\u05E8\u05D9\u05DA \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D2\u05DD \u05D0\u05EA \u05D4\u05D1\u05D9\u05D8\u05D5\u05D9 \u05D4\u05E4\u05E0\u05D9\u05DE\u05D9 (2x\u22126)\u2032 \u05D5\u05DC\u05D4\u05DB\u05E4\u05D9\u05DC \u05D1\u05DE\u05D5\u05E0\u05D4." },
-      { title: "\u05DE\u05D1\u05DC\u05D1\u05DC\u05D9\u05DD \u05D1\u05D9\u05DF \u05E2\u05E8\u05DA \u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05DC\u05DE\u05E9\u05DE\u05E2\u05D5\u05EA \u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05EA", text: "f\u2032(4) \u05D4\u05D5\u05D0 \u05E9\u05D9\u05E4\u05D5\u05E2 \u05D4\u05DE\u05E9\u05D9\u05E7 \u05D1\u05E0\u05E7\u05D5\u05D3\u05D4, \u05DC\u05D0 \u05E2\u05E8\u05DA \u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4. \u05D0\u05DC \u05EA\u05D1\u05DC\u05D1\u05DC\u05D5 \u05D1\u05D9\u05DF f(4) \u05DC-f\u2032(4)." },
+      { title: "שוכחים שהביטוי בתוך ln חייב להיות חיובי ממש", text: "הדרישה: 2x − 6 > 0, לא ≥ 0. לוגריתם של אפס לא מוגדר." },
+      { title: "שוכחים לגזור את הביטוי הפנימי בכלל שרשרת", text: "(ln u)′ = u′/u. צריך לגזור גם את הביטוי הפנימי (2x−6)′ ולהכפיל במונה." },
+      { title: "מבלבלים בין ערך הנגזרת למשמעות גיאומטרית", text: "f′(4) הוא שיפוע המשיק בנקודה, לא ערך הפונקציה. אל תבלבלו בין f(4) ל-f′(4)." },
     ],
-    goldenPrompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. \u05E0\u05EA\u05D5\u05E0\u05D4 f(x) = ln(2x \u2212 6).\n\u05D0\u05E0\u05D9 \u05E6\u05E8\u05D9\u05DA:\n1. \u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4\n2. \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D1\u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA\n3. \u05DC\u05D4\u05E6\u05D9\u05D1 \u05D5\u05DC\u05E4\u05E8\u05E9 \u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05EA\n\n\u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9 \u2014 \u05E9\u05D0\u05DC \u05D0\u05D5\u05EA\u05D9 \u05E9\u05D0\u05DC\u05D5\u05EA \u05DE\u05DB\u05D5\u05D5\u05E0\u05D5\u05EA.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.",
+    goldenPrompt: "אני תלמיד כיתה יב’. נתונה f(x) = ln(2x − 6).\nאני צריך:\n1. למצוא את תחום ההגדרה\n2. לגזור בכלל שרשרת\n3. להציב ולפרש גיאומטרית\n\nאל תפתור עבורי — שאל אותי שאלות מכוונות.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.",
     steps: [
-      { phase: "\u05D0", label: "\u05E9\u05DC\u05D1 \u05D0\u2019 \u2014 \u05EA\u05D7\u05D5\u05DD \u05D4\u05D2\u05D3\u05E8\u05D4", coaching: "\u05E4\u05EA\u05D5\u05E8 \u05D0\u05D9-\u05E9\u05D5\u05D5\u05D9\u05D5\u05DF 2x\u22126>0", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. \u05E0\u05EA\u05D5\u05E0\u05D4 f(x) = ln(2x \u2212 6). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9: \u05DE\u05D4 \u05D4\u05D3\u05E8\u05D9\u05E9\u05D4 \u05DC\u05EA\u05D7\u05D5\u05DD \u05D4\u05D2\u05D3\u05E8\u05D4 \u05E9\u05DC ln? \u05D0\u05D9\u05D6\u05D4 \u05D0\u05D9-\u05E9\u05D5\u05D5\u05D9\u05D5\u05DF \u05E6\u05E8\u05D9\u05DA \u05DC\u05E4\u05EA\u05D5\u05E8? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05EA\u05D7\u05D5\u05DD", "ln", "\u05D0\u05D9-\u05E9\u05D5\u05D5\u05D9\u05D5\u05DF"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05E9\u05DE\u05D3\u05D5\u05D1\u05E8 \u05D1\u05EA\u05D7\u05D5\u05DD \u05D4\u05D2\u05D3\u05E8\u05D4", contextWords: ["\u05EA\u05D7\u05D5\u05DD", "ln", "\u05D0\u05D9-\u05E9\u05D5\u05D5\u05D9\u05D5\u05DF", "\u05D7\u05D9\u05D5\u05D1\u05D9", "\u05DC\u05D5\u05D2\u05E8\u05D9\u05EA\u05DD", "\u05DE\u05D5\u05D2\u05D3\u05E8"] },
-      { phase: "\u05D1", label: "\u05E9\u05DC\u05D1 \u05D1\u2019 \u2014 \u05E0\u05D2\u05D6\u05E8\u05EA \u05D1\u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA", coaching: "\u05D2\u05D6\u05D5\u05E8 \u05D1\u05D9\u05D8\u05D5\u05D9 \u05E4\u05E0\u05D9\u05DE\u05D9 \u05D5\u05D7\u05DC\u05E7", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. f(x) = ln(2x \u2212 6). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05D7\u05E9\u05D1 \u05D0\u05EA f\u2032(x) \u05D1\u05E2\u05D6\u05E8\u05EA \u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA. \u05DE\u05D4 \u05D4\u05D1\u05D9\u05D8\u05D5\u05D9 \u05D4\u05E4\u05E0\u05D9\u05DE\u05D9? \u05DE\u05D4 \u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05DC\u05D5? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E9\u05E8\u05E9\u05E8\u05EA", "\u05E4\u05E0\u05D9\u05DE\u05D9"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05E9\u05DE\u05D3\u05D5\u05D1\u05E8 \u05D1\u05E0\u05D2\u05D6\u05E8\u05EA \u05D5\u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA", contextWords: ["\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E9\u05E8\u05E9\u05E8\u05EA", "\u05E4\u05E0\u05D9\u05DE\u05D9", "ln", "u\u2032", "\u05D1\u05D9\u05D8\u05D5\u05D9"] },
-      { phase: "\u05D2", label: "\u05E9\u05DC\u05D1 \u05D2\u2019 \u2014 \u05E2\u05E8\u05DA \u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05D1\u05E0\u05E7\u05D5\u05D3\u05D4", coaching: "\u05D4\u05E6\u05D1 \u05D5\u05E4\u05E8\u05E9 \u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05EA", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. \u05DE\u05E6\u05D0\u05EA\u05D9 \u05D0\u05EA f\u2032(x) \u05E9\u05DC f(x) = ln(2x \u2212 6). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05D4\u05E6\u05D9\u05D1 x=4 \u05D1\u05E0\u05D2\u05D6\u05E8\u05EA. \u05DE\u05D4 \u05D4\u05DE\u05E9\u05DE\u05E2\u05D5\u05EA \u05D4\u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05EA \u05E9\u05DC \u05D4\u05E2\u05E8\u05DA \u05D4\u05D6\u05D4? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05D4\u05E6\u05D1", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E9\u05D9\u05E4\u05D5\u05E2"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05E9\u05E6\u05E8\u05D9\u05DA \u05DC\u05D4\u05E6\u05D9\u05D1 \u05D5\u05DC\u05E4\u05E8\u05E9", contextWords: ["\u05D4\u05E6\u05D1", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E9\u05D9\u05E4\u05D5\u05E2", "\u05DE\u05E9\u05D9\u05E7", "\u05D2\u05D9\u05D0\u05D5\u05DE\u05D8\u05E8\u05D9\u05EA", "\u05E0\u05E7\u05D5\u05D3\u05D4"] },
+      { phase: "א", label: "שלב א’ — תחום הגדרה", coaching: "פתור אי-שוויון 2x−6>0", prompt: "אני תלמיד כיתה יב’. נתונה f(x) = ln(2x − 6). תנחה אותי: מה הדרישה לתחום הגדרה של ln? איזה אי-שוויון צריך לפתור? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["תחום", "ln", "אי-שוויון"], keywordHint: "ציין שמדובר בתחום הגדרה", contextWords: ["תחום", "ln", "אי-שוויון", "חיובי", "לוגריתם", "מוגדר"] },
+      { phase: "ב", label: "שלב ב’ — נגזרת בכלל שרשרת", coaching: "גזור ביטוי פנימי וחלק", prompt: "אני תלמיד כיתה יב’. f(x) = ln(2x − 6). תנחה אותי לחשב את f′(x) בעזרת כלל שרשרת. מה הביטוי הפנימי? מה הנגזרת שלו? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["נגזרת", "שרשרת", "פנימי"], keywordHint: "ציין שמדובר בנגזרת וכלל שרשרת", contextWords: ["נגזרת", "שרשרת", "פנימי", "ln", "u′", "ביטוי"] },
+      { phase: "ג", label: "שלב ג’ — ערך הנגזרת בנקודה", coaching: "הצב ופרש גיאומטרית", prompt: "אני תלמיד כיתה יב’. מצאתי את f′(x) של f(x) = ln(2x − 6). תנחה אותי להציב x=4 בנגזרת. מה המשמעות הגיאומטרית של הערך הזה? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["הצב", "נגזרת", "שיפוע"], keywordHint: "ציין שצריך להציב ולפרש", contextWords: ["הצב", "נגזרת", "שיפוע", "משיק", "גיאומטרית", "נקודה"] },
     ],
   },
   {
     id: "medium",
-    title: "\u05E7\u05D9\u05E6\u05D5\u05DF \u05D5\u05DE\u05D5\u05E0\u05D5\u05D8\u05D5\u05E0\u05D9\u05D5\u05EA",
-    problem: "\u05E0\u05EA\u05D5\u05E0\u05D4 \u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 f(x) = x\u00B2 \u2212 8ln(x).\n\n\u05D0. \u05DE\u05E6\u05D0 \u05D0\u05EA \u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4 \u05D5\u05D4\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4 \u05D4\u05D0\u05E0\u05DB\u05D9\u05EA.\n\u05D1. \u05D7\u05E9\u05D1 \u05D0\u05EA f\u2032(x) \u05D5\u05DE\u05E6\u05D0 \u05E0\u05E7\u05D5\u05D3\u05D5\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF.\n\u05D2. \u05E7\u05D1\u05E2 \u05EA\u05D7\u05D5\u05DE\u05D9 \u05E2\u05DC\u05D9\u05D9\u05D4 \u05D5\u05D9\u05E8\u05D9\u05D3\u05D4.\n\u05D3. \u05E1\u05D5\u05D5\u05D2 \u05D0\u05EA \u05E0\u05E7\u05D5\u05D3\u05EA \u05D4\u05E7\u05D9\u05E6\u05D5\u05DF \u05D1\u05D0\u05DE\u05E6\u05E2\u05D5\u05EA f\u2032\u2032(x).",
+    title: "קיצון ומונוטוניות",
+    problem: "נתונה הפונקציה f(x) = x² − 8ln(x).\n\nא. מצא את תחום ההגדרה והאסימפטוטה האנכית.\nב. חשב את f′(x) ומצא נקודות קיצון.\nג. קבע תחומי עלייה וירידה.\nד. סווג את נקודת הקיצון באמצעות f′′(x).",
     diagram: <LnCurveMedium />,
     pitfalls: [
-      { title: "\u05E9\u05D5\u05DB\u05D7\u05D9\u05DD \u05E9\u05D4\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05DC ln(x) \u05D4\u05D9\u05D0 1/x \u05D5\u05DC\u05D0 1", text: "\u05E0\u05D2\u05D6\u05E8\u05EA (x\u00B2)\u2032 = 2x \u05D5\u05E0\u05D2\u05D6\u05E8\u05EA (ln x)\u2032 = 1/x. \u05D0\u05DC \u05EA\u05D1\u05DC\u05D1\u05DC\u05D5 \u05D1\u05D9\u05E0\u05D9\u05D4\u05DD!" },
-      { title: "\u05DC\u05D0 \u05DC\u05D7\u05DC\u05E7 \u05D1-x \u05DC\u05E4\u05E0\u05D9 \u05E9\u05D1\u05D5\u05D3\u05E7\u05D9\u05DD \u05EA\u05D7\u05D5\u05DD", text: "\u05DB\u05E9\u05E4\u05D5\u05EA\u05E8\u05D9\u05DD f\u2032(x)=0 \u05D5\u05DE\u05DB\u05E4\u05D9\u05DC\u05D9\u05DD, \u05D7\u05D9\u05D9\u05D1\u05D9\u05DD \u05DC\u05D5\u05D5\u05D3\u05D0 \u05E9\u05D4\u05E4\u05EA\u05E8\u05D5\u05DF \u05D1\u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4. \u05DB\u05D0\u05DF x>0." },
-      { title: "\u05DE\u05D1\u05DC\u05D1\u05DC\u05D9\u05DD \u05D1\u05D9\u05DF \u05E1\u05D9\u05D5\u05D5\u05D2 \u05D1\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4 \u05DC\u05E1\u05D9\u05D5\u05D5\u05D2 \u05D1\u05D8\u05D1\u05DC\u05EA \u05E1\u05D9\u05DE\u05E0\u05D9\u05DD", text: "f\u2032\u2032(x) > 0 \u2192 \u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD. f\u2032\u2032(x) < 0 \u2192 \u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD. \u05D0\u05DC \u05EA\u05D7\u05DC\u05D9\u05E4\u05D5 \u05D0\u05EA \u05D4\u05E9\u05D9\u05D8\u05D5\u05EA!" },
+      { title: "שוכחים שהנגזרת של ln(x) היא 1/x ולא 1", text: "נגזרת (x²)′ = 2x ונגזרת (ln x)′ = 1/x. אל תבלבלו ביניהם!" },
+      { title: "לא לחלק ב-x לפני שבודקים תחום", text: "כשפותרים f′(x)=0 ומכפילים, חייבים לוודא שהפתרון בתחום ההגדרה. כאן x>0." },
+      { title: "מבלבלים בין סיווג בנגזרת שנייה לסיווג בטבלת סימנים", text: "f′′(x) > 0 → מינימום. f′′(x) < 0 → מקסימום. אל תחליפו את השיטות!" },
     ],
-    goldenPrompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. \u05E0\u05EA\u05D5\u05E0\u05D4 f(x) = x\u00B2 \u2212 8ln(x).\n\u05D0\u05E0\u05D9 \u05E6\u05E8\u05D9\u05DA:\n1. \u05DC\u05DE\u05E6\u05D5\u05D0 \u05EA\u05D7\u05D5\u05DD \u05D4\u05D2\u05D3\u05E8\u05D4 \u05D5\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4\n2. \u05DC\u05D2\u05D6\u05D5\u05E8 \u05D5\u05DC\u05DE\u05E6\u05D5\u05D0 \u05E0\u05E7\u05D5\u05D3\u05D5\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF\n3. \u05DC\u05E7\u05D1\u05D5\u05E2 \u05EA\u05D7\u05D5\u05DE\u05D9 \u05E2\u05DC\u05D9\u05D9\u05D4/\u05D9\u05E8\u05D9\u05D3\u05D4\n4. \u05DC\u05E1\u05D5\u05D5\u05D2 \u05D1\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4\n\n\u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9 \u2014 \u05E9\u05D0\u05DC \u05D0\u05D5\u05EA\u05D9 \u05E9\u05D0\u05DC\u05D5\u05EA \u05DE\u05DB\u05D5\u05D5\u05E0\u05D5\u05EA.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.",
+    goldenPrompt: "אני תלמיד כיתה יב’. נתונה f(x) = x² − 8ln(x).\nאני צריך:\n1. למצוא תחום הגדרה ואסימפטוטה\n2. לגזור ולמצוא נקודות קיצון\n3. לקבוע תחומי עלייה/ירידה\n4. לסווג בנגזרת שנייה\n\nאל תפתור עבורי — שאל אותי שאלות מכוונות.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.",
     steps: [
-      { phase: "\u05D0", label: "\u05E9\u05DC\u05D1 \u05D0\u2019 \u2014 \u05EA\u05D7\u05D5\u05DD \u05D5\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4", coaching: "\u05DE\u05E6\u05D0 \u05D0\u05D9\u05E4\u05D4 ln(x) \u05DE\u05D5\u05D2\u05D3\u05E8", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. f(x) = x\u00B2 \u2212 8ln(x). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9: \u05DE\u05D4 \u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4 \u05E9\u05DC ln(x)? \u05D4\u05D0\u05DD \u05D9\u05E9 \u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4 \u05D0\u05E0\u05DB\u05D9\u05EA? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05EA\u05D7\u05D5\u05DD", "ln", "\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05EA\u05D7\u05D5\u05DD \u05D5\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4", contextWords: ["\u05EA\u05D7\u05D5\u05DD", "ln", "\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4", "\u05D0\u05E0\u05DB\u05D9\u05EA", "\u05DE\u05D5\u05D2\u05D3\u05E8", "x"] },
-      { phase: "\u05D1", label: "\u05E9\u05DC\u05D1 \u05D1\u2019 \u2014 \u05E0\u05D2\u05D6\u05E8\u05EA \u05D5\u05E0\u05E7\u05D5\u05D3\u05D5\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF", coaching: "\u05D2\u05D6\u05D5\u05E8 \u05DB\u05DC \u05D0\u05D9\u05D1\u05E8 \u05D1\u05E0\u05E4\u05E8\u05D3 \u05D5\u05D4\u05E9\u05D5\u05D5\u05D4 \u05DC-0", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. f(x) = x\u00B2 \u2212 8ln(x). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05D7\u05E9\u05D1 \u05D0\u05EA f\u2032(x). \u05D0\u05D9\u05DA \u05D2\u05D5\u05D6\u05E8\u05D9\u05DD \u05DB\u05DC \u05D0\u05D9\u05D1\u05E8? \u05D0\u05D9\u05DA \u05DE\u05D5\u05E6\u05D0\u05D9\u05DD \u05D0\u05D9\u05E4\u05D4 f\u2032(x)=0? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E7\u05D9\u05E6\u05D5\u05DF", "f\u2032"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05E0\u05D2\u05D6\u05E8\u05EA \u05D5\u05E7\u05D9\u05E6\u05D5\u05DF", contextWords: ["\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E7\u05D9\u05E6\u05D5\u05DF", "f\u2032", "\u05D0\u05D9\u05D1\u05E8", "\u05D2\u05D6\u05D5\u05E8", "\u05D4\u05E9\u05D5\u05D5\u05D4"] },
-      { phase: "\u05D2", label: "\u05E9\u05DC\u05D1 \u05D2\u2019 \u2014 \u05EA\u05D7\u05D5\u05DE\u05D9 \u05E2\u05DC\u05D9\u05D9\u05D4 \u05D5\u05D9\u05E8\u05D9\u05D3\u05D4", coaching: "\u05D1\u05D3\u05D5\u05E7 \u05E1\u05D9\u05DE\u05DF f\u2032 \u05D1\u05EA\u05D7\u05D5\u05DE\u05D9\u05DD", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. \u05DE\u05E6\u05D0\u05EA\u05D9 \u05D0\u05EA \u05E0\u05E7\u05D5\u05D3\u05EA \u05D4\u05E7\u05D9\u05E6\u05D5\u05DF \u05E9\u05DC f(x) = x\u00B2 \u2212 8ln(x). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9: \u05D0\u05D9\u05DA \u05E7\u05D5\u05D1\u05E2\u05D9\u05DD \u05D0\u05D9\u05E4\u05D4 \u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E2\u05D5\u05DC\u05D4/\u05D9\u05D5\u05E8\u05D3\u05EA? \u05D0\u05D9\u05DA \u05D1\u05D5\u05D3\u05E7\u05D9\u05DD \u05E1\u05D9\u05DE\u05DF f\u2032? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05E2\u05DC\u05D9\u05D9\u05D4", "\u05D9\u05E8\u05D9\u05D3\u05D4", "\u05E1\u05D9\u05DE\u05DF"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05EA\u05D7\u05D5\u05DE\u05D9 \u05DE\u05D5\u05E0\u05D5\u05D8\u05D5\u05E0\u05D9\u05D5\u05EA", contextWords: ["\u05E2\u05DC\u05D9\u05D9\u05D4", "\u05D9\u05E8\u05D9\u05D3\u05D4", "\u05E1\u05D9\u05DE\u05DF", "\u05DE\u05D5\u05E0\u05D5\u05D8\u05D5\u05E0\u05D9\u05D5\u05EA", "f\u2032", "\u05EA\u05D7\u05D5\u05DD"] },
-      { phase: "\u05D3", label: "\u05E9\u05DC\u05D1 \u05D3\u2019 \u2014 \u05E1\u05D9\u05D5\u05D5\u05D2 \u05D4\u05E7\u05D9\u05E6\u05D5\u05DF", coaching: "\u05D7\u05E9\u05D1 f\u2032\u2032 \u05D5\u05E7\u05D1\u05E2", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. \u05DE\u05E6\u05D0\u05EA\u05D9 \u05E0\u05E7\u05D5\u05D3\u05EA \u05E7\u05D9\u05E6\u05D5\u05DF \u05E9\u05DC f(x) = x\u00B2 \u2212 8ln(x). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9: \u05D0\u05D9\u05DA \u05DE\u05E1\u05D5\u05D5\u05D2\u05D9\u05DD \u05D0\u05DD \u05D6\u05D4 \u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD \u05D0\u05D5 \u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD? \u05D0\u05D9\u05DA \u05DE\u05E9\u05EA\u05DE\u05E9\u05D9\u05DD \u05D1-f\u2032\u2032(x) \u05DC\u05E1\u05D9\u05D5\u05D5\u05D2? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05E1\u05D9\u05D5\u05D5\u05D2", "f\u2032\u2032", "\u05E7\u05D9\u05E6\u05D5\u05DF"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05E1\u05D9\u05D5\u05D5\u05D2 \u05D1\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4", contextWords: ["\u05E1\u05D9\u05D5\u05D5\u05D2", "f\u2032\u2032", "\u05E0\u05D2\u05D6\u05E8\u05EA \u05E9\u05E0\u05D9\u05D9\u05D4", "\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD", "\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD", "\u05E7\u05D9\u05E6\u05D5\u05DF"] },
+      { phase: "א", label: "שלב א’ — תחום ואסימפטוטה", coaching: "מצא איפה ln(x) מוגדר", prompt: "אני תלמיד כיתה יב’. f(x) = x² − 8ln(x). תנחה אותי: מה תחום ההגדרה של ln(x)? האם יש אסימפטוטה אנכית? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["תחום", "ln", "אסימפטוטה"], keywordHint: "ציין תחום ואסימפטוטה", contextWords: ["תחום", "ln", "אסימפטוטה", "אנכית", "מוגדר", "x"] },
+      { phase: "ב", label: "שלב ב’ — נגזרת ונקודות קיצון", coaching: "גזור כל איבר בנפרד והשווה ל-0", prompt: "אני תלמיד כיתה יב’. f(x) = x² − 8ln(x). תנחה אותי לחשב את f′(x). איך גוזרים כל איבר? איך מוצאים איפה f′(x)=0? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["נגזרת", "קיצון", "f′"], keywordHint: "ציין נגזרת וקיצון", contextWords: ["נגזרת", "קיצון", "f′", "איבר", "גזור", "השווה"] },
+      { phase: "ג", label: "שלב ג’ — תחומי עלייה וירידה", coaching: "בדוק סימן f′ בתחומים", prompt: "אני תלמיד כיתה יב’. מצאתי את נקודת הקיצון של f(x) = x² − 8ln(x). תנחה אותי: איך קובעים איפה הפונקציה עולה/יורדת? איך בודקים סימן f′? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["עלייה", "ירידה", "סימן"], keywordHint: "ציין תחומי מונוטוניות", contextWords: ["עלייה", "ירידה", "סימן", "מונוטוניות", "f′", "תחום"] },
+      { phase: "ד", label: "שלב ד’ — סיווג הקיצון", coaching: "חשב f′′ וקבע", prompt: "אני תלמיד כיתה יב’. מצאתי נקודת קיצון של f(x) = x² − 8ln(x). תנחה אותי: איך מסווגים אם זה מקסימום או מינימום? איך משתמשים ב-f′′(x) לסיווג? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["סיווג", "f′′", "קיצון"], keywordHint: "ציין סיווג בנגזרת שנייה", contextWords: ["סיווג", "f′′", "נגזרת שנייה", "מקסימום", "מינימום", "קיצון"] },
     ],
   },
   {
     id: "advanced",
-    title: "\u05D7\u05E7\u05D9\u05E8\u05EA \u05E4\u05E8\u05DE\u05D8\u05E8",
-    problem: "\u05E0\u05EA\u05D5\u05E0\u05D4 \u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 f(x) = ln(ax \u2212 4).\n\u05D9\u05D3\u05D5\u05E2 \u05E9\u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E2\u05D5\u05D1\u05E8\u05EA \u05D1\u05E0\u05E7\u05D5\u05D3\u05D4 (3, 0).\n\n\u05D0. \u05DE\u05E6\u05D0 \u05D0\u05EA \u05E2\u05E8\u05DA \u05D4\u05E4\u05E8\u05DE\u05D8\u05E8 a.\n\u05D1. \u05DE\u05E6\u05D0 \u05D0\u05EA \u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4 \u05D5\u05D4\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4.\n\u05D2. \u05D7\u05E9\u05D1 \u05D0\u05EA f\u2032(x) \u05D5\u05DE\u05E6\u05D0 \u05D0\u05EA \u05E9\u05D9\u05E4\u05D5\u05E2 \u05D4\u05DE\u05E9\u05D9\u05E7 \u05D1\u05E0\u05E7\u05D5\u05D3\u05D4 (3, 0).\n\u05D3. \u05E8\u05E9\u05D5\u05DD \u05D0\u05EA \u05DE\u05E9\u05D5\u05D5\u05D0\u05EA \u05D4\u05DE\u05E9\u05D9\u05E7 \u05D1\u05E0\u05E7\u05D5\u05D3\u05D4 \u05D6\u05D5.",
+    title: "חקירת פרמטר",
+    problem: "נתונה הפונקציה f(x) = ln(ax − 4).\nידוע שהפונקציה עוברת בנקודה (3, 0).\n\nא. מצא את ערך הפרמטר a.\nב. מצא את תחום ההגדרה והאסימפטוטה.\nג. חשב את f′(x) ומצא את שיפוע המשיק בנקודה (3, 0).\nד. רשום את משוואת המשיק בנקודה זו.",
     diagram: <LnCurveAdvanced />,
     pitfalls: [
-      { title: "\u05E9\u05D5\u05DB\u05D7\u05D9\u05DD \u05E9 ln(1) = 0 \u05D4\u05D5\u05D0 \u05D4\u05DE\u05E4\u05EA\u05D7 \u05DC\u05DE\u05E6\u05D9\u05D0\u05EA a", text: "\u05D0\u05DD \u05D4\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D4 \u05E2\u05D5\u05D1\u05E8\u05EA \u05D1-(3,0) \u05D0\u05D6 f(3)=0 \u05DB\u05DC\u05D5\u05DE\u05E8 ln(3a\u22124)=0, \u05DB\u05DC\u05D5\u05DE\u05E8 3a\u22124=1." },
-      { title: "\u05DC\u05D0 \u05D1\u05D5\u05D3\u05E7\u05D9\u05DD \u05EA\u05D7\u05D5\u05DD \u05D0\u05D7\u05E8\u05D9 \u05DE\u05E6\u05D9\u05D0\u05EA a", text: "\u05D0\u05D7\u05E8\u05D9 \u05E9\u05DE\u05D5\u05E6\u05D0\u05D9\u05DD a, \u05D7\u05D9\u05D9\u05D1\u05D9\u05DD \u05DC\u05D5\u05D5\u05D3\u05D0 \u05E9\u05D4\u05EA\u05D7\u05D5\u05DD \u05D4\u05D5\u05D2\u05D3\u05E8 \u05DB-ax\u22124>0 \u05D5\u05DC\u05D1\u05D3\u05D5\u05E7 \u05E9\u05D4\u05E0\u05E7\u05D5\u05D3\u05D4 \u05D1\u05EA\u05D7\u05D5\u05DD." },
-      { title: "\u05DE\u05D1\u05DC\u05D1\u05DC\u05D9\u05DD \u05D1\u05D9\u05DF \u05E9\u05D9\u05E4\u05D5\u05E2 \u05DC\u05DE\u05E9\u05D5\u05D5\u05D0\u05EA \u05DE\u05E9\u05D9\u05E7", text: "\u05E9\u05D9\u05E4\u05D5\u05E2 = f\u2032(3). \u05DE\u05E9\u05D5\u05D5\u05D0\u05EA \u05DE\u05E9\u05D9\u05E7: y \u2212 f(3) = f\u2032(3)(x \u2212 3). \u05D0\u05DC \u05EA\u05E9\u05DB\u05D7\u05D5 \u05E9-f(3)=0 \u05D1\u05DE\u05E7\u05E8\u05D4 \u05D4\u05D6\u05D4." },
+      { title: "שוכחים ש ln(1) = 0 הוא המפתח למציאת a", text: "אם הפונקציה עוברת ב-(3,0) אז f(3)=0 כלומר ln(3a−4)=0, כלומר 3a−4=1." },
+      { title: "לא בודקים תחום אחרי מציאת a", text: "אחרי שמוצאים a, חייבים לוודא שהתחום הוגדר כ-ax−4>0 ולבדוק שהנקודה בתחום." },
+      { title: "מבלבלים בין שיפוע למשוואת משיק", text: "שיפוע = f′(3). משוואת משיק: y − f(3) = f′(3)(x − 3). אל תשכחו ש-f(3)=0 במקרה הזה." },
     ],
     goldenPrompt: "",
     steps: [
-      { phase: "\u05D0", label: "\u05E9\u05DC\u05D1 \u05D0\u2019 \u2014 \u05DE\u05E6\u05D0 \u05D0\u05EA a", coaching: "\u05D4\u05E9\u05EA\u05DE\u05E9 \u05D1-f(3)=0 \u05D5-ln(1)=0", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. f(x) = ln(ax \u2212 4) \u05E2\u05D5\u05D1\u05E8\u05EA \u05D1-(3,0). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9: \u05D0\u05DD f(3)=0, \u05DE\u05D4 \u05D6\u05D4 \u05D0\u05D5\u05DE\u05E8 \u05E2\u05DC \u05D4\u05D1\u05D9\u05D8\u05D5\u05D9 \u05E9\u05D1\u05EA\u05D5\u05DA ln? \u05D0\u05D9\u05DA \u05DE\u05D5\u05E6\u05D0\u05D9\u05DD a? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05E4\u05E8\u05DE\u05D8\u05E8", "\u05D4\u05E6\u05D1\u05D4", "ln"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05E9\u05E6\u05E8\u05D9\u05DA \u05DC\u05DE\u05E6\u05D5\u05D0 \u05D0\u05EA \u05D4\u05E4\u05E8\u05DE\u05D8\u05E8", contextWords: ["\u05E4\u05E8\u05DE\u05D8\u05E8", "\u05D4\u05E6\u05D1\u05D4", "ln", "\u05E0\u05E7\u05D5\u05D3\u05D4", "a", "\u05DE\u05E9\u05D5\u05D5\u05D0\u05D4"] },
-      { phase: "\u05D1", label: "\u05E9\u05DC\u05D1 \u05D1\u2019 \u2014 \u05EA\u05D7\u05D5\u05DD \u05D5\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4", coaching: "\u05D1\u05D3\u05D5\u05E7 ax\u22124>0 \u05E2\u05DD \u05D4-a \u05E9\u05DE\u05E6\u05D0\u05EA", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. \u05DE\u05E6\u05D0\u05EA\u05D9 \u05D0\u05EA a \u05E2\u05D1\u05D5\u05E8 f(x) = ln(ax \u2212 4). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9: \u05DE\u05D4 \u05EA\u05D7\u05D5\u05DD \u05D4\u05D4\u05D2\u05D3\u05E8\u05D4 \u05E2\u05DD a \u05E9\u05DE\u05E6\u05D0\u05EA\u05D9? \u05D0\u05D9\u05E4\u05D4 \u05D4\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05EA\u05D7\u05D5\u05DD", "\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4", "a"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05EA\u05D7\u05D5\u05DD \u05D5\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4", contextWords: ["\u05EA\u05D7\u05D5\u05DD", "\u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D4", "\u05D0\u05E0\u05DB\u05D9\u05EA", "a", "\u05D4\u05D2\u05D3\u05E8\u05D4", "\u05E4\u05E8\u05DE\u05D8\u05E8"] },
-      { phase: "\u05D2", label: "\u05E9\u05DC\u05D1 \u05D2\u2019 \u2014 \u05E9\u05D9\u05E4\u05D5\u05E2 \u05D4\u05DE\u05E9\u05D9\u05E7", coaching: "\u05D2\u05D6\u05D5\u05E8 \u05D1\u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA \u05D5\u05D4\u05E6\u05D1", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. f(x) = ln(ax \u2212 4) \u05E2\u05DD a \u05E9\u05DE\u05E6\u05D0\u05EA\u05D9. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05D7\u05E9\u05D1 f\u2032(x) \u05D1\u05DB\u05DC\u05DC \u05E9\u05E8\u05E9\u05E8\u05EA \u05D5\u05DC\u05D4\u05E6\u05D9\u05D1 x=3 \u05DC\u05DE\u05E6\u05D9\u05D0\u05EA \u05D4\u05E9\u05D9\u05E4\u05D5\u05E2. \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05E9\u05D9\u05E4\u05D5\u05E2", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E9\u05E8\u05E9\u05E8\u05EA"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05E9\u05D9\u05E4\u05D5\u05E2 \u05D5\u05E0\u05D2\u05D6\u05E8\u05EA", contextWords: ["\u05E9\u05D9\u05E4\u05D5\u05E2", "\u05E0\u05D2\u05D6\u05E8\u05EA", "\u05E9\u05E8\u05E9\u05E8\u05EA", "\u05D4\u05E6\u05D1", "f\u2032", "\u05DE\u05E9\u05D9\u05E7"] },
-      { phase: "\u05D3", label: "\u05E9\u05DC\u05D1 \u05D3\u2019 \u2014 \u05DE\u05E9\u05D5\u05D5\u05D0\u05EA \u05D4\u05DE\u05E9\u05D9\u05E7", coaching: "\u05D4\u05E9\u05EA\u05DE\u05E9 \u05D1-y\u2212y\u2080=m(x\u2212x\u2080)", prompt: "\u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u2019. \u05D9\u05D3\u05D5\u05E2 f(3)=0 \u05D5\u05D4\u05E9\u05D9\u05E4\u05D5\u05E2 f\u2032(3). \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u05DC\u05E8\u05E9\u05D5\u05DD \u05D0\u05EA \u05DE\u05E9\u05D5\u05D5\u05D0\u05EA \u05D4\u05DE\u05E9\u05D9\u05E7 \u05D1\u05E0\u05E7\u05D5\u05D3\u05D4 (3,0). \u05D0\u05D9\u05D6\u05D5 \u05E0\u05D5\u05E1\u05D7\u05D4 \u05DE\u05EA\u05D0\u05D9\u05DE\u05D4? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3. \u05EA\u05E2\u05E6\u05D5\u05E8 \u05D0\u05D7\u05E8\u05D9 \u05DB\u05DC \u05E9\u05DC\u05D1 \u05D5\u05EA\u05D7\u05DB\u05D4 \u05E9\u05D0\u05D2\u05D9\u05D3 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.", keywords: ["\u05DE\u05E9\u05D9\u05E7", "\u05DE\u05E9\u05D5\u05D5\u05D0\u05D4", "\u05E0\u05E7\u05D5\u05D3\u05D4"], keywordHint: "\u05E6\u05D9\u05D9\u05DF \u05DE\u05E9\u05D5\u05D5\u05D0\u05EA \u05D4\u05DE\u05E9\u05D9\u05E7", contextWords: ["\u05DE\u05E9\u05D9\u05E7", "\u05DE\u05E9\u05D5\u05D5\u05D0\u05D4", "\u05E0\u05E7\u05D5\u05D3\u05D4", "\u05E9\u05D9\u05E4\u05D5\u05E2", "y", "\u05E0\u05D5\u05E1\u05D7\u05D4"] },
+      { phase: "א", label: "שלב א’ — מצא את a", coaching: "השתמש ב-f(3)=0 ו-ln(1)=0", prompt: "אני תלמיד כיתה יב’. f(x) = ln(ax − 4) עוברת ב-(3,0). תנחה אותי: אם f(3)=0, מה זה אומר על הביטוי שבתוך ln? איך מוצאים a? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["פרמטר", "הצבה", "ln"], keywordHint: "ציין שצריך למצוא את הפרמטר", contextWords: ["פרמטר", "הצבה", "ln", "נקודה", "a", "משוואה"] },
+      { phase: "ב", label: "שלב ב’ — תחום ואסימפטוטה", coaching: "בדוק ax−4>0 עם ה-a שמצאת", prompt: "אני תלמיד כיתה יב’. מצאתי את a עבור f(x) = ln(ax − 4). תנחה אותי: מה תחום ההגדרה עם a שמצאתי? איפה האסימפטוטה? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["תחום", "אסימפטוטה", "a"], keywordHint: "ציין תחום ואסימפטוטה", contextWords: ["תחום", "אסימפטוטה", "אנכית", "a", "הגדרה", "פרמטר"] },
+      { phase: "ג", label: "שלב ג’ — שיפוע המשיק", coaching: "גזור בכלל שרשרת והצב", prompt: "אני תלמיד כיתה יב’. f(x) = ln(ax − 4) עם a שמצאתי. תנחה אותי לחשב f′(x) בכלל שרשרת ולהציב x=3 למציאת השיפוע. אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["שיפוע", "נגזרת", "שרשרת"], keywordHint: "ציין שיפוע ונגזרת", contextWords: ["שיפוע", "נגזרת", "שרשרת", "הצב", "f′", "משיק"] },
+      { phase: "ד", label: "שלב ד’ — משוואת המשיק", coaching: "השתמש ב-y−y₀=m(x−x₀)", prompt: "אני תלמיד כיתה יב’. ידוע f(3)=0 והשיפוע f′(3). תנחה אותי לרשום את משוואת המשיק בנקודה (3,0). איזו נוסחה מתאימה? אל תפתור עבורי.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.", keywords: ["משיק", "משוואה", "נקודה"], keywordHint: "ציין משוואת המשיק", contextWords: ["משיק", "משוואה", "נקודה", "שיפוע", "y", "נוסחה"] },
     ],
   },
 ];
@@ -655,14 +655,14 @@ export default function LnPage() {
       <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
         <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>\u05E4\u05D5\u05E0\u05E7\u05E6\u05D9\u05D5\u05EA \u05DC\u05D5\u05D2\u05E8\u05D9\u05EA\u05DE\u05D9\u05D5\u05EA ln x \u05E2\u05DD AI</h1>
-            <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>\u05EA\u05D7\u05D5\u05DD \u05D4\u05D2\u05D3\u05E8\u05D4 \u2022 \u05E0\u05D2\u05D6\u05E8\u05EA \u2022 \u05D7\u05E7\u05D9\u05E8\u05D4 \u2022 \u05D0\u05E1\u05D9\u05DE\u05E4\u05D8\u05D5\u05D8\u05D5\u05EA</p>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>פונקציות לוגריתמיות ln x עם AI</h1>
+            <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>תחום הגדרה • נגזרת • חקירה • אסימפטוטות</p>
           </div>
           <Link href="/topic/grade12/calculus"
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(148,163,184,0.1)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#2D3436", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.2)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.1)"; }}>
-            <span style={{ fontSize: 16 }}>{"\u2190"}</span>\u05D7\u05D6\u05E8\u05D4
+            <span style={{ fontSize: 16 }}>{"←"}</span>חזרה
           </Link>
         </div>
       </div>

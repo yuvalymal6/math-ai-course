@@ -39,7 +39,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-ser
 </head>
 <body>
 <h1>מפת ניווט — מתמטיקה + AI</h1>
-<p class="sub">39 נתיבים | לחצו על כל קופסה לפרטים</p>
+<p class="sub">38 נתיבים | לחצו על כל קופסה לפרטים</p>
 <div class="filters">
   <button data-f="sys" class="active" onclick="toggle('sys')">מערכת</button>
   <button data-f="g10" class="active" onclick="toggle('g10')">כיתה י</button>
@@ -63,7 +63,6 @@ home:{t:"דשבורד ראשי",r:"/",d:"דף הבית. כרטיסיות נוש�
 login:{t:"כניסה",r:"/login",d:"דף כניסה עם email וסיסמה.",i:["/ (logout)"],o:["/","/onboarding"]},
 onboarding:{t:"בחירת כיתה",r:"/onboarding",d:"בחירת כיתה י/יא/יב בפעם הראשונה.",i:["/ (שנה כיתה)","/login"],o:["/"]},
 wizard:{t:"אשף נושא",r:"/wizard",d:"בחירת כיתה ונושא — מנווט ישירות לדף.",i:["/"],o:["כל דפי הנושאים"]},
-auth:{t:"כניסה (legacy)",r:"/auth",d:"דף כניסה ישן. אין קישורים ישירים.",i:["אין"],o:["/"]},
 g10_par:{t:"חקירת פרבולה",r:"/topic/grade10/algebra-parabola",d:"משוואות ריבועיות, גרף אינטראקטיבי. 3 רמות.",i:["/"],o:["/"]},
 g10_an:{t:"Hub אנליטית",r:"/topic/grade10/analytic",d:"יסודות + בעיות גיאומטריות.",i:["/"],o:["basics","problems"]},
 g10_bas:{t:"יסודות",r:"/topic/grade10/analytic/basics",d:"מרחק, אמצע, שיפוע. 3 רמות.",i:["analytic","/"],o:["analytic"]},
@@ -113,7 +112,7 @@ g12_it:{t:"אינטגרלים",r:"/topic/grade12/calculus/integral",d:"אינט�
 // ── Tree definitions per group ──
 // Each tree: { root, children: [ {id, children?} ] }
 const TREES = {
-sys: {root:"home", children:[{id:"login"},{id:"onboarding"},{id:"wizard"},{id:"auth"}]},
+sys: {root:"home", children:[{id:"login"},{id:"onboarding"},{id:"wizard"}]},
 g10: {root:"home", children:[
   {id:"g10_par"},
   {id:"g10_an", children:[{id:"g10_bas"},{id:"g10_pro"}]},

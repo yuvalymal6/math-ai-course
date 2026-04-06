@@ -77,7 +77,7 @@ function BasicSVG() {
             <circle cx={x} cy={cy} r={isLast ? r + 2 : r} fill={isLast ? "#fef3c7" : "white"} stroke={isLast ? "#f59e0b" : "#a78bfa"} strokeWidth={isLast ? 2.5 : isFirst ? 2 : 1.5} />
             {(isFirst || isLast) && (
               <text x={x} y={cy + (isLast ? r + 2 : r) + 13} fill="#b45309" fontSize={10} textAnchor="middle" fontWeight="bold">
-                {isFirst ? "a\u2081" : "a\u2099"}
+                {isFirst ? "a₁" : "aₙ"}
               </text>
             )}
           </g>
@@ -89,7 +89,7 @@ function BasicSVG() {
 
 function MediumSVG() {
   const W = 260, cx = 40, cy = 38, gap = (W - 2 * cx) / 3;
-  const circles = ["a\u2081", "a\u2082", "a\u2083", "a\u2084"];
+  const circles = ["a₁", "a₂", "a₃", "a₄"];
   return (
     <svg viewBox={`0 0 ${W} 76`} className="w-full max-w-xs mx-auto" aria-hidden>
       <line x1={cx} y1={cy} x2={W - cx} y2={cy} stroke="#CBD5E0" strokeWidth={1.2} />
@@ -121,56 +121,56 @@ function AdvancedSVG() {
   const countB = 8, gapB = (W - 2 * padX) / (countB - 1);
   return (
     <svg viewBox={`0 0 ${W} 138`} className="w-full max-w-sm mx-auto" aria-hidden>
-      <text x={padX} y={18} fill="#991b1b" fontSize={9} fontWeight="bold">A \u2014 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA</text>
+      <text x={padX} y={18} fill="#991b1b" fontSize={9} fontWeight="bold">A — הנדסית</text>
       <line x1={padX} y1={cy1} x2={W - padX} y2={cy1} stroke="#CBD5E0" strokeWidth={1.2} />
       {Array.from({ length: countA }, (_, i) => {
         const x = padX + i * gapA, r = 5 + i * 1.4;
         return (
           <g key={i}>
             <circle cx={x} cy={cy1} r={r} fill="white" stroke="#a78bfa" strokeWidth={1.5} />
-            {i === 0 && <text x={x} y={cy1 + r + 14} fill="#64748b" fontSize={8} textAnchor="middle">a\u2081</text>}
+            {i === 0 && <text x={x} y={cy1 + r + 14} fill="#64748b" fontSize={8} textAnchor="middle">a₁</text>}
           </g>
         );
       })}
-      <text x={padX} y={cy2 - 16} fill="#1e40af" fontSize={9} fontWeight="bold">B \u2014 \u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA</text>
+      <text x={padX} y={cy2 - 16} fill="#1e40af" fontSize={9} fontWeight="bold">B — חשבונית</text>
       <line x1={padX} y1={cy2} x2={W - padX} y2={cy2} stroke="#CBD5E0" strokeWidth={1.2} />
       {Array.from({ length: countB }, (_, i) => {
         const x = padX + i * gapB;
         return (
           <g key={i}>
             <circle cx={x} cy={cy2} r={6} fill="white" stroke="#93c5fd" strokeWidth={1.5} />
-            {i === 0 && <text x={x} y={cy2 + 20} fill="#64748b" fontSize={8} textAnchor="middle">b\u2081</text>}
+            {i === 0 && <text x={x} y={cy2 + 20} fill="#64748b" fontSize={8} textAnchor="middle">b₁</text>}
           </g>
         );
       })}
-      <text x={W / 2} y={136} fill="#94a3b8" fontSize={8} textAnchor="middle">\u05E9\u05EA\u05D9 \u05E1\u05D3\u05E8\u05D5\u05EA \u2014 A \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA, B \u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA</text>
+      <text x={W / 2} y={136} fill="#94a3b8" fontSize={8} textAnchor="middle">שתי סדרות — A הנדסית, B חשבונית</text>
     </svg>
   );
 }
 
 // ─── Prompt Coach Atoms ──────────────────────────────────────────────────────
 
-function CopyBtn({ text, label = "\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8" }: { text: string; label?: string }) {
+function CopyBtn({ text, label = "העתק פרומפט" }: { text: string; label?: string }) {
   const [c, setC] = useState(false);
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setC(true); setTimeout(() => setC(false), 2000); }}
       style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(60,54,42,0.25)", color: "#1A1A1A", fontWeight: 500, cursor: "pointer" }}
     >
-      {c ? <Check size={13} /> : <Copy size={13} />}{c ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : label}
+      {c ? <Check size={13} /> : <Copy size={13} />}{c ? "הועתק!" : label}
     </button>
   );
 }
 
-function GoldenPromptCard({ prompt, title = "\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E8\u05D0\u05E9\u05D9", borderRgb = "45,90,39" }: { prompt: string; title?: string; borderRgb?: string }) {
+function GoldenPromptCard({ prompt, title = "פרומפט ראשי", borderRgb = "45,90,39" }: { prompt: string; title?: string; borderRgb?: string }) {
   return (
     <div style={{ borderRadius: 20, background: "rgba(255,255,255,0.92)", padding: "1.5rem 1.75rem", marginBottom: 20, border: `2px solid rgba(${borderRgb},0.6)`, boxShadow: `0 0 20px rgba(${borderRgb},0.22), 0 0 40px rgba(${borderRgb},0.08), 0 4px 12px rgba(${borderRgb},0.1)` }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, paddingBottom: 10, borderBottom: `1px solid rgba(${borderRgb},0.2)` }}>
-        <span>\u2728</span>
+        <span>✨</span>
         <span style={{ color: `rgb(${borderRgb})`, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em" }}>{title}</span>
       </div>
       <p style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.75, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
-      <CopyBtn text={prompt} label="\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05DC\u05D0" />
+      <CopyBtn text={prompt} label="העתק פרומפט מלא" />
     </div>
   );
 }
@@ -184,10 +184,10 @@ function TutorStepBasic({ step, glowRgb = "45,90,39", borderRgb = "45,90,39" }: 
       </div>
       <div style={{ background: "rgba(255,255,255,0.45)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
-          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>\u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05D4\u05DE\u05D5\u05DB\u05DF \u270D\uFE0F</div>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>הפרומפט המוכן ✍️</div>
           <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.85)", border: `2px solid rgba(${borderRgb},0.4)`, padding: 12, fontSize: 11, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word" }}>{step.prompt}</div>
         </div>
-        <CopyBtn text={step.prompt} label="\u05D4\u05E2\u05EA\u05E7 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05DE\u05D5\u05E7\u05D3" />
+        <CopyBtn text={step.prompt} label="העתק פרומפט ממוקד" />
       </div>
     </div>
   );
@@ -203,8 +203,8 @@ function TutorStepMedium({ step, borderRgb = "146,64,14", locked = false, onPass
 
   if (locked) return (
     <div style={{ borderRadius: 12, border: `2px solid rgba(${borderRgb},0.2)`, background: "rgba(255,255,255,0.3)", padding: "12px 16px", opacity: 0.4, userSelect: "none", display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-      <span>\uD83D\uDD12</span>
-      <span style={{ color: "#6B7280", fontSize: 12 }}>{step.phase} \u2014 {step.label}</span>
+      <span>🔒</span>
+      <span style={{ color: "#6B7280", fontSize: 12 }}>{step.phase} — {step.label}</span>
     </div>
   );
 
@@ -226,14 +226,14 @@ function TutorStepMedium({ step, borderRgb = "146,64,14", locked = false, onPass
         <textarea
           value={text} rows={3} dir="rtl" disabled={passed}
           onChange={(e) => { setText(e.target.value); setResult(null); }}
-          placeholder="\u05E0\u05E1\u05D7 \u05DB\u05D0\u05DF \u05D0\u05EA \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E9\u05DC\u05DA \u05DC-AI (\u05D1\u05E7\u05E9 \u05D4\u05DB\u05D5\u05D5\u05E0\u05D4, \u05DC\u05D0 \u05E4\u05EA\u05E8\u05D5\u05DF)..."
+          placeholder="נסח כאן את הפרומפט שלך ל-AI (בקש הכוונה, לא פתרון)..."
           style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: "rgba(255,255,255,0.75)", border: `1px solid ${passed ? "rgba(245,158,11,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
         />
 
         {result && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#1A1A1A", marginBottom: 4, fontWeight: 600 }}>
-              <span>\u05E6\u05D9\u05D5\u05DF \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8</span>
+              <span>ציון הפרומפט</span>
               <span style={{ color: "#1A1A1A", fontWeight: 800 }}>{result.score}/100</span>
             </div>
             <div style={{ height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}>
@@ -244,38 +244,38 @@ function TutorStepMedium({ step, borderRgb = "146,64,14", locked = false, onPass
 
         {!result && (
           <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.75)", border: `1px solid rgba(${borderRgb},0.4)`, color: "#1A1A1A", cursor: "pointer", fontWeight: 500 }}>
-            \uD83E\uDD16 \u05D1\u05D3\u05D9\u05E7\u05EA AI \u05DE\u05D3\u05D5\u05DE\u05D4
+            🤖 בדיקת AI מדומה
           </button>
         )}
 
         {result && result.blocked && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             style={{ borderRadius: 12, background: "rgba(254,226,226,1)", border: "2px solid #dc2626", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6 }}>
-            \u26A0\uFE0F {result.hint}
+            ⚠️ {result.hint}
           </motion.div>
         )}
 
         {result && !result.blocked && result.score < 75 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             style={{ borderRadius: 12, background: "rgba(255,251,235,1)", border: "2px solid #d97706", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6 }}>
-            \uD83D\uDCA1 {result.hint}
+            💡 {result.hint}
           </motion.div>
         )}
 
         {passed && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>
-              \u2705 \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05DE\u05E6\u05D5\u05D9\u05DF! \u05E6\u05D9\u05D5\u05DF: <strong style={{ color: "#14532d" }}>{result.score}/100</strong>
+              ✅ פרומפט מצוין! ציון: <strong style={{ color: "#14532d" }}>{result.score}/100</strong>
             </div>
             <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
               style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#14532d", cursor: "pointer", fontWeight: 500 }}>
-              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7 \u05DC-AI"}
+              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "הועתק!" : "העתק ל-AI"}
             </button>
           </motion.div>
         )}
 
         {result && !passed && (
-          <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#475569", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>\u05E0\u05E1\u05D4 \u05E9\u05D5\u05D1</button>
+          <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#475569", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>נסה שוב</button>
         )}
       </div>
     </div>
@@ -288,7 +288,7 @@ function TutorStepAdvanced({ step, unlocked, onValidated, borderRgb = "153,27,27
   const [copied, setCopied] = useState(false);
   if (!unlocked) return (
     <div style={{ borderRadius: 12, border: `2px solid rgba(${borderRgb},0.25)`, background: "rgba(255,255,255,0.3)", padding: "12px 16px", opacity: 0.45, userSelect: "none", display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-      <span>\uD83D\uDD12</span><span style={{ color: "#6B7280", fontSize: 12 }}>{step.phase} \u2014 {step.label}</span>
+      <span>🔒</span><span style={{ color: "#6B7280", fontSize: 12 }}>{step.phase} — {step.label}</span>
     </div>
   );
   const passed = fb === "pass";
@@ -307,22 +307,22 @@ function TutorStepAdvanced({ step, unlocked, onValidated, borderRgb = "153,27,27
         <textarea
           value={text} rows={3} dir="rtl" readOnly={passed}
           onChange={(e) => { if (!passed) { setText(e.target.value); setFb("idle"); } }}
-          placeholder="\u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E9\u05DC\u05DA \u05DC\u05E1\u05E2\u05D9\u05E3 \u05D6\u05D4..."
+          placeholder="כתוב את הפרומפט שלך לסעיף זה..."
           style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: passed ? "rgba(6,78,59,0.1)" : "rgba(255,255,255,0.85)", border: passed ? "1px solid rgba(52,211,153,0.25)" : `2px solid rgba(${borderRgb},0.35)`, color: passed ? "#065f46" : "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
         />
-        {fb === "idle" && <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.75)", border: `2px solid rgba(${borderRgb},0.5)`, color: "#2D3436", cursor: "pointer" }}>\uD83E\uDD16 \u05D1\u05D3\u05D9\u05E7\u05EA AI \u05DE\u05D3\u05D5\u05DE\u05D4</button>}
-        {fb === "short" && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 10, background: "rgba(127,29,29,0.08)", border: "1px solid rgba(239,68,68,0.3)", padding: "8px 12px", color: "#DC2626", fontSize: 12 }}>\u26A0\uFE0F \u05D4\u05E0\u05D9\u05E1\u05D5\u05D7 \u05E7\u05E6\u05E8 \u05DE\u05D3\u05D9 \u2014 \u05DB\u05EA\u05D5\u05D1 \u05D9\u05D5\u05EA\u05E8 \u05E4\u05E8\u05D8\u05D9\u05DD.</motion.div>}
-        {fb === "nokw" && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 10, background: "rgba(120,53,15,0.08)", border: "1px solid rgba(245,158,11,0.3)", padding: "8px 12px", color: "#92400E", fontSize: 12 }}>\uD83D\uDCA1 \u05DB\u05DE\u05E2\u05D8! \u05D7\u05E1\u05E8\u05D9\u05DD \u2014 {step.keywordHint}.</motion.div>}
+        {fb === "idle" && <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.75)", border: `2px solid rgba(${borderRgb},0.5)`, color: "#2D3436", cursor: "pointer" }}>🤖 בדיקת AI מדומה</button>}
+        {fb === "short" && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 10, background: "rgba(127,29,29,0.08)", border: "1px solid rgba(239,68,68,0.3)", padding: "8px 12px", color: "#DC2626", fontSize: 12 }}>⚠️ הניסוח קצר מדי — כתוב יותר פרטים.</motion.div>}
+        {fb === "nokw" && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 10, background: "rgba(120,53,15,0.08)", border: "1px solid rgba(245,158,11,0.3)", padding: "8px 12px", color: "#92400E", fontSize: 12 }}>💡 כמעט! חסרים — {step.keywordHint}.</motion.div>}
         {fb === "pass" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ borderRadius: 10, background: "rgba(6,78,59,0.08)", border: "1px solid rgba(52,211,153,0.3)", padding: "8px 12px", color: "#065f46", fontSize: 12 }}>\u2705 \u05DE\u05E2\u05D5\u05DC\u05D4! \u05D4\u05E9\u05DC\u05D1 \u05D4\u05D1\u05D0 \u05E0\u05E4\u05EA\u05D7.</div>
+            <div style={{ borderRadius: 10, background: "rgba(6,78,59,0.08)", border: "1px solid rgba(52,211,153,0.3)", padding: "8px 12px", color: "#065f46", fontSize: 12 }}>✅ מעולה! השלב הבא נפתח.</div>
             <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
               style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "1px solid rgba(52,211,153,0.3)", color: "#065f46", cursor: "pointer" }}>
-              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7 \u05D0\u05EA \u05D4\u05E0\u05D9\u05E1\u05D5\u05D7 \u05E9\u05DC\u05DA"}
+              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "הועתק!" : "העתק את הניסוח שלך"}
             </button>
           </motion.div>
         )}
-        {(fb === "short" || fb === "nokw") && <button onClick={() => setFb("idle")} style={{ fontSize: 12, color: "#475569", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>\u05E0\u05E1\u05D4 \u05E9\u05D5\u05D1</button>}
+        {(fb === "short" || fb === "nokw") && <button onClick={() => setFb("idle")} style={{ fontSize: 12, color: "#475569", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>נסה שוב</button>}
       </div>
     </div>
   );
@@ -340,7 +340,7 @@ function LadderBase({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: Prompt
   };
   return (
     <div>
-      <GoldenPromptCard prompt={goldenPrompt} title="\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8 \u05E8\u05D0\u05E9\u05D9" borderRgb={borderRgb} />
+      <GoldenPromptCard prompt={goldenPrompt} title="פרומפט ראשי" borderRgb={borderRgb} />
       {steps.map((s, i) => (
         <div key={i} id={`basic-step-${i}`}>
           {i < unlocked ? (
@@ -348,15 +348,15 @@ function LadderBase({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: Prompt
               <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
               {!completed[i] ? (
                 <button onClick={() => markDone(i)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
-                  \u05E1\u05D9\u05D9\u05DE\u05EA\u05D9 \u05E1\u05E2\u05D9\u05E3 \u05D6\u05D4 \u2713
+                  סיימתי סעיף זה ✓
                 </button>
               ) : (
-                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>\u2705 \u05D4\u05D5\u05E9\u05DC\u05DD</div>
+                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>✅ הושלם</div>
               )}
             </>
           ) : (
             <div style={{ opacity: 0.35, pointerEvents: "none", position: "relative" }}>
-              <div style={{ position: "absolute", top: 8, right: 8, fontSize: 16, zIndex: 2 }}>\uD83D\uDD12</div>
+              <div style={{ position: "absolute", top: 8, right: 8, fontSize: 16, zIndex: 2 }}>🔒</div>
               <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
             </div>
           )}
@@ -391,8 +391,8 @@ function LadderAdvanced({ steps, borderRgb }: { steps: PromptStep[]; borderRgb: 
         onPass={() => setMasterPassed(true)}
         accentColor="#991b1b"
         accentRgb="153,27,27"
-        requiredPhrase="\u05E1\u05E8\u05D5\u05E7 \u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D5\u05E2\u05E6\u05D5\u05E8"
-        subjectWords={["\u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA", "\u05E1\u05D3\u05E8\u05D4 \u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA", "\u05DE\u05E0\u05D4", "\u05D4\u05E4\u05E8\u05E9", "\u05E1\u05DB\u05D5\u05DD", "\u05D0\u05D9\u05D1\u05E8 \u05DB\u05DC\u05DC\u05D9"]}
+        requiredPhrase="סרוק נתונים ועצור"
+        subjectWords={["סדרה הנדסית", "סדרה חשבונית", "מנה", "הפרש", "סכום", "איבר כללי"]}
       />
 
       {steps.map((s, i) => (
@@ -404,9 +404,9 @@ function LadderAdvanced({ steps, borderRgb }: { steps: PromptStep[]; borderRgb: 
       {allPassed && (
         <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
           style={{ borderRadius: 16, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: "1.25rem 1.5rem", marginTop: 16, textAlign: "center" }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }}>\uD83C\uDFC6</div>
-          <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>\u05DB\u05DC \u05D4\u05DB\u05D1\u05D5\u05D3 \u2014 \u05D4\u05E9\u05DC\u05DE\u05EA \u05D0\u05EA \u05D4\u05E8\u05DE\u05D4 \u05D4\u05DE\u05EA\u05E7\u05D3\u05DE\u05EA!</div>
-          <div style={{ color: "#166534", fontSize: 13 }}>\u05E2\u05D1\u05E8\u05EA \u05D1\u05D4\u05E6\u05DC\u05D7\u05D4 \u05D0\u05EA \u05D0\u05E8\u05D1\u05E2\u05EA \u05D4\u05E1\u05E2\u05D9\u05E4\u05D9\u05DD. \u05D0\u05EA\u05D4 \u05DE\u05D5\u05DB\u05DF \u05DC\u05D1\u05D7\u05D9\u05E0\u05EA \u05D4\u05D1\u05D2\u05E8\u05D5\u05EA.</div>
+          <div style={{ fontSize: 28, marginBottom: 8 }}>🏆</div>
+          <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>כל הכבוד — השלמת את הרמה המתקדמת!</div>
+          <div style={{ color: "#166534", fontSize: 13 }}>עברת בהצלחה את ארבעת הסעיפים. אתה מוכן לבחינת הבגרות.</div>
         </motion.div>
       )}
     </div>
@@ -418,138 +418,138 @@ function LadderAdvanced({ steps, borderRgb }: { steps: PromptStep[]; borderRgb: 
 const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    problem: "\u05E0\u05EA\u05D5\u05E0\u05D4 \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA \u05E9\u05D1\u05D4 a\u2081 = 3 \u05D5-a\u2086 = 96.\n\n\u05DE\u05E6\u05D0:\n\u05D0. \u05D0\u05EA \u05DE\u05E0\u05EA \u05D4\u05E1\u05D3\u05E8\u05D4 (q)\n\u05D1. \u05DB\u05EA\u05D5\u05D1 \u05D0\u05EA \u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05DB\u05DC\u05DC\u05D9 a\u2099\n\u05D2. \u05D7\u05E9\u05D1 \u05D0\u05EA S\u2086 (\u05E1\u05DB\u05D5\u05DD 6 \u05D4\u05D0\u05D9\u05D1\u05E8\u05D9\u05DD \u05D4\u05E8\u05D0\u05E9\u05D5\u05E0\u05D9\u05DD)",
+    problem: "נתונה סדרה הנדסית שבה a₁ = 3 ו-a₆ = 96.\n\nמצא:\nא. את מנת הסדרה (q)\nב. כתוב את האיבר הכללי aₙ\nג. חשב את S₆ (סכום 6 האיברים הראשונים)",
     diagram: <BasicSVG />,
     pitfalls: [
-      { title: "\u26A0\uFE0F \u05D7\u05D9\u05DC\u05D5\u05E5 \u05D4\u05DE\u05E0\u05D4 (q) \u05DE\u05D4\u05E0\u05D5\u05E1\u05D7\u05D4", text: "\u05DB\u05E9\u05DE\u05D1\u05D5\u05D3\u05D3\u05D9\u05DD \u05D0\u05EA q \u05DE\u05EA\u05D5\u05DA a\u2099 = a\u2081\u00B7q\u207F\u207B\u00B9, \u05D4\u05E4\u05E2\u05D5\u05DC\u05D4 \u05D4\u05D4\u05E4\u05D5\u05DB\u05D4 \u05DC\u05D7\u05D6\u05E7\u05D4 \u05D4\u05D9\u05D0 \u05E9\u05D5\u05E8\u05E9, \u05DC\u05D0 \u05D7\u05D9\u05DC\u05D5\u05E7 \u05E4\u05E9\u05D5\u05D8." },
-      { title: "\uD83D\uDD0D \u05D4\u05DE\u05E2\u05E8\u05D9\u05DA \u05D1\u05E0\u05D5\u05E1\u05D7\u05EA \u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05DB\u05DC\u05DC\u05D9", text: "\u05D4\u05D7\u05D6\u05E7\u05D4 \u05E2\u05DC \u05D4\u05DE\u05E0\u05D4 q \u05DE\u05D9\u05D9\u05E6\u05D2\u05EA \u05D0\u05EA \u05DE\u05E1\u05E4\u05E8 \u05D4\u201C\u05E7\u05E4\u05D9\u05E6\u05D5\u05EA\u201D \u05DE\u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05E8\u05D0\u05E9\u05D5\u05DF. \u05DC\u05DB\u05DF, \u05E2\u05D1\u05D5\u05E8 \u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4-n, \u05EA\u05DE\u05D9\u05D3 \u05D9\u05D4\u05D9\u05D5 n\u22121 \u05E7\u05E4\u05D9\u05E6\u05D5\u05EA." },
+      { title: "⚠️ חילוץ המנה (q) מהנוסחה", text: "כשמבודדים את q מתוך aₙ = a₁·qⁿ⁻¹, הפעולה ההפוכה לחזקה היא שורש, לא חילוק פשוט." },
+      { title: "🔍 המעריך בנוסחת האיבר הכללי", text: "החזקה על המנה q מייצגת את מספר ה“קפיצות” מהאיבר הראשון. לכן, עבור האיבר ה-n, תמיד יהיו n−1 קפיצות." },
     ],
-    goldenPrompt: "\u05D4\u05D9\u05D9, \u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05D1\u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u05F3, \u05DC\u05D5\u05DE\u05D3 \u05E2\u05DB\u05E9\u05D9\u05D5 \u05E1\u05D3\u05E8\u05D5\u05EA \u05D4\u05E0\u05D3\u05E1\u05D9\u05D5\u05EA.\n\u05E6\u05D9\u05E8\u05E4\u05EA\u05D9 \u05DC\u05DA \u05EA\u05E8\u05D2\u05D9\u05DC \u05E2\u05DC \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA \u2014 \u05DE\u05E0\u05D4 \u05D5\u05D0\u05D9\u05D1\u05E8 \u05DB\u05DC\u05DC\u05D9.\n\u05D0\u05E0\u05D9 \u05E8\u05D5\u05E6\u05D4 \u05E9\u05EA\u05E9\u05DE\u05E9 \u05DB\u05DE\u05D5\u05E8\u05D4 \u05E4\u05E8\u05D8\u05D9 \u05D5\u05DE\u05DB\u05D5\u05D5\u05DF. \u05D4\u05E0\u05D4 \u05D4\u05E4\u05E8\u05D5\u05D8\u05D5\u05E7\u05D5\u05DC \u05E9\u05DC\u05E0\u05D5:\n\n1\uFE0F\u20E3 \u05E1\u05E8\u05D9\u05E7\u05D4:\n\u05E7\u05D5\u05D3\u05DD \u05DB\u05DC, \u05EA\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D5\u05EA\u05DB\u05EA\u05D5\u05D1 \u05DC\u05D9 \u05E8\u05E7:\n\u201C\u05D6\u05D9\u05D4\u05D9\u05EA\u05D9 \u05D0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD. \u05DE\u05D7\u05DB\u05D4 \u05DC\u05D4\u05D5\u05E8\u05D0\u05D5\u05EA \u05DC\u05E9\u05DC\u05D1 \u05D0\u05F3.\u201D\n(\u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05DB\u05DC\u05D5\u05DD \u05D5\u05D0\u05DC \u05EA\u05E1\u05D1\u05D9\u05E8 \u05DB\u05DC\u05D5\u05DD \u05D1\u05E9\u05DC\u05D1 \u05D4\u05D6\u05D4!)\n\n2\uFE0F\u20E3 \u05EA\u05E4\u05E7\u05D9\u05D3:\n\u05D0\u05EA\u05D4 \u05D4\u05DE\u05D5\u05E8\u05D4 \u05E9\u05DC\u05D9. \u05D6\u05D4 \u05D0\u05D5\u05DE\u05E8 \u05E9\u05D0\u05EA\u05D4 \u05DC\u05D0 \u05E4\u05D5\u05EA\u05E8 \u05D1\u05DE\u05E7\u05D5\u05DE\u05D9.\n\n3\uFE0F\u20E3 \u05E9\u05D9\u05D8\u05EA \u05E2\u05D1\u05D5\u05D3\u05D4:\n\u05D0\u05E0\u05D9 \u05D0\u05E9\u05DC\u05D7 \u05DC\u05DA \u05DB\u05DC \u05E4\u05E2\u05DD \u05E9\u05DC\u05D1 (\u05D0\u05F3, \u05D1\u05F3 \u05D0\u05D5 \u05D2\u05F3).\n\u05D1\u05EA\u05D2\u05D5\u05D1\u05D4, \u05D0\u05EA\u05D4 \u05E9\u05D5\u05D0\u05DC \u05D0\u05D5\u05EA\u05D9 \u05E8\u05E7 \u05E9\u05D0\u05DC\u05D4 \u05D0\u05D7\u05EA \u05DE\u05DB\u05D5\u05D5\u05E0\u05EA \u05E2\u05DC \u05D4\u05E0\u05D5\u05E1\u05D7\u05D4 \u05D0\u05D5 \u05D4\u05E9\u05DC\u05D1 \u05D4\u05D1\u05D0.\n\u05D7\u05DB\u05D4 \u05DC\u05D9 \u05D1\u05D9\u05DF \u05E9\u05DC\u05D1 \u05DC\u05E9\u05DC\u05D1 \u05D5\u05D0\u05DC \u05EA\u05DE\u05E9\u05D9\u05DA \u05DC\u05E4\u05E0\u05D9 \u05E9\u05D0\u05E0\u05D9 \u05E9\u05D5\u05DC\u05D7.",
+    goldenPrompt: "היי, אני תלמיד בכיתה יב׳, לומד עכשיו סדרות הנדסיות.\nצירפתי לך תרגיל על סדרה הנדסית — מנה ואיבר כללי.\nאני רוצה שתשמש כמורה פרטי ומכוון. הנה הפרוטוקול שלנו:\n\n1️⃣ סריקה:\nקודם כל, תסרוק את הנתונים ותכתוב לי רק:\n“זיהיתי את הנתונים. מחכה להוראות לשלב א׳.”\n(אל תפתור כלום ואל תסביר כלום בשלב הזה!)\n\n2️⃣ תפקיד:\nאתה המורה שלי. זה אומר שאתה לא פותר במקומי.\n\n3️⃣ שיטת עבודה:\nאני אשלח לך כל פעם שלב (א׳, ב׳ או ג׳).\nבתגובה, אתה שואל אותי רק שאלה אחת מכוונת על הנוסחה או השלב הבא.\nחכה לי בין שלב לשלב ואל תמשיך לפני שאני שולח.",
     steps: [
       {
-        phase: "\uD83D\uDD0D \u05E1\u05E2\u05D9\u05E3 \u05D0\u05F3",
-        label: "\u05DE\u05E6\u05D9\u05D0\u05EA \u05D4\u05DE\u05E0\u05D4 q",
-        prompt: "\u05E0\u05EA\u05D5\u05E0\u05D4 \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA \u05E2\u05DD a\u2081=3 \u05D5-a\u2086=96. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u2014 \u05D0\u05D9\u05DA \u05DE\u05D5\u05E6\u05D0\u05D9\u05DD \u05D0\u05EA q? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.",
+        phase: "🔍 סעיף א׳",
+        label: "מציאת המנה q",
+        prompt: "נתונה סדרה הנדסית עם a₁=3 ו-a₆=96. תנחה אותי — איך מוצאים את q? אל תפתור עבורי.",
       },
       {
-        phase: "\uD83E\uDDED \u05E1\u05E2\u05D9\u05E3 \u05D1\u05F3",
-        label: "\u05DB\u05EA\u05D9\u05D1\u05EA \u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05DB\u05DC\u05DC\u05D9 a\u2099",
-        prompt: "\u05E0\u05EA\u05D5\u05E0\u05D4 \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA \u05E2\u05DD a\u2081=3. \u05DE\u05E6\u05D0\u05EA\u05D9 \u05D0\u05EA q. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u2014 \u05D0\u05D9\u05DA \u05DB\u05D5\u05EA\u05D1\u05D9\u05DD \u05D0\u05EA \u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05DB\u05DC\u05DC\u05D9 \u05E9\u05DC \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA? \u05D0\u05DC \u05EA\u05D9\u05EA\u05DF \u05EA\u05E9\u05D5\u05D1\u05D4 \u05E1\u05D5\u05E4\u05D9\u05EA.",
+        phase: "🧭 סעיף ב׳",
+        label: "כתיבת האיבר הכללי aₙ",
+        prompt: "נתונה סדרה הנדסית עם a₁=3. מצאתי את q. תנחה אותי — איך כותבים את האיבר הכללי של סדרה הנדסית? אל תיתן תשובה סופית.",
       },
       {
-        phase: "\uD83D\uDD22 \u05E1\u05E2\u05D9\u05E3 \u05D2\u05F3",
-        label: "\u05D7\u05D9\u05E9\u05D5\u05D1 S\u2086",
-        prompt: "\u05E0\u05EA\u05D5\u05E0\u05D4 \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA \u05E2\u05DD a\u2081=3 \u05D5-q \u05E9\u05DE\u05E6\u05D0\u05EA\u05D9. \u05EA\u05E0\u05D7\u05D4 \u05D0\u05D5\u05EA\u05D9 \u2014 \u05D0\u05D9\u05DA \u05DE\u05E9\u05EA\u05DE\u05E9\u05D9\u05DD \u05D1\u05E0\u05D5\u05E1\u05D7\u05EA \u05D4\u05E1\u05DB\u05D5\u05DD \u05DB\u05D3\u05D9 \u05DC\u05D7\u05E9\u05D1 \u05D0\u05EA S\u2086? \u05D0\u05DC \u05EA\u05E4\u05EA\u05D5\u05E8 \u05E2\u05D1\u05D5\u05E8\u05D9.",
+        phase: "🔢 סעיף ג׳",
+        label: "חישוב S₆",
+        prompt: "נתונה סדרה הנדסית עם a₁=3 ו-q שמצאתי. תנחה אותי — איך משתמשים בנוסחת הסכום כדי לחשב את S₆? אל תפתור עבורי.",
       },
     ],
   },
   {
     id: "medium",
-    problem: "\u05D1\u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA \u05D9\u05D3\u05D5\u05E2 \u05DB\u05D9:\na\u2081 + a\u2082 = 12\na\u2082 + a\u2083 = 24\n\n\u05DE\u05E6\u05D0:\n\u05D0. \u05D1\u05E0\u05D4 \u05DE\u05E2\u05E8\u05DB\u05EA \u05DE\u05E9\u05D5\u05D5\u05D0\u05D5\u05EA \u05DE\u05E9\u05E0\u05D9 \u05D4\u05E1\u05DB\u05D5\u05DE\u05D9\u05DD\n\u05D1. \u05DE\u05E6\u05D0 \u05D0\u05EA a\u2081 \u05D5-q\n\u05D2. \u05D4\u05D5\u05DB\u05D7 \u05E9\u05D4\u05E1\u05D3\u05E8\u05D4 \u05E2\u05D5\u05DC\u05D4 \u05DE\u05D5\u05E0\u05D5\u05D8\u05D5\u05E0\u05D9\u05EA",
+    problem: "בסדרה הנדסית ידוע כי:\na₁ + a₂ = 12\na₂ + a₃ = 24\n\nמצא:\nא. בנה מערכת משוואות משני הסכומים\nב. מצא את a₁ ו-q\nג. הוכח שהסדרה עולה מונוטונית",
     diagram: <MediumSVG />,
     pitfalls: [
-      { title: "\uD83D\uDCA1 \u05D6\u05D9\u05D4\u05D5\u05D9 \u05D4\u05D9\u05D7\u05E1 \u05D1\u05D9\u05DF \u05D4\u05E1\u05DB\u05D5\u05DE\u05D9\u05DD", text: "\u05DB\u05E9\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05E9\u05E0\u05D9 \u05E1\u05DB\u05D5\u05DE\u05D9\u05DD \u05E8\u05E6\u05D5\u05E4\u05D9\u05DD \u05E9\u05DC \u05D6\u05D5\u05D2\u05D5\u05EA \u05D0\u05D9\u05D1\u05E8\u05D9\u05DD, \u05D7\u05E9\u05D1\u05D5: \u05DE\u05D4 \u05D4\u05E4\u05E2\u05D5\u05DC\u05D4 \u05E9\u05DE\u05E2\u05D1\u05D9\u05E8\u05D4 \u05DE\u05E1\u05DB\u05D5\u05DD \u05D0\u05D7\u05D3 \u05DC\u05E9\u05E0\u05D9? \u05D4\u05E7\u05E9\u05E8 \u05D4\u05D6\u05D4 \u05D4\u05D5\u05D0 \u05D4\u05DE\u05E0\u05D4." },
-      { title: "\u26A0\uFE0F \u05D4\u05D5\u05DB\u05D7\u05EA \u05E1\u05D3\u05E8\u05D4 \u05E2\u05D5\u05DC\u05D4", text: "\u05DB\u05D3\u05D9 \u05DC\u05D4\u05D5\u05DB\u05D9\u05D7 \u05E9\u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA \u05E2\u05D5\u05DC\u05D4, \u05D1\u05D3\u05E7\u05D5 \u05E9\u05E0\u05D9 \u05EA\u05E0\u05D0\u05D9\u05DD: \u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05E8\u05D0\u05E9\u05D5\u05DF \u05D7\u05D9\u05D5\u05D1\u05D9, \u05D5\u05D4\u05DE\u05E0\u05D4 \u05D2\u05D3\u05D5\u05DC\u05D4 \u05DE-1." },
+      { title: "💡 זיהוי היחס בין הסכומים", text: "כשנתונים שני סכומים רצופים של זוגות איברים, חשבו: מה הפעולה שמעבירה מסכום אחד לשני? הקשר הזה הוא המנה." },
+      { title: "⚠️ הוכחת סדרה עולה", text: "כדי להוכיח שסדרה הנדסית עולה, בדקו שני תנאים: האיבר הראשון חיובי, והמנה גדולה מ-1." },
     ],
-    goldenPrompt: "\u05D4\u05D9\u05D9, \u05D0\u05E0\u05D9 \u05EA\u05DC\u05DE\u05D9\u05D3 \u05D1\u05DB\u05D9\u05EA\u05D4 \u05D9\u05D1\u05F3, \u05DC\u05D5\u05DE\u05D3 \u05E1\u05D3\u05E8\u05D5\u05EA \u05D4\u05E0\u05D3\u05E1\u05D9\u05D5\u05EA.\n\u05E0\u05EA\u05D5\u05DF: a\u2081+a\u2082=12 \u05D5-a\u2082+a\u2083=24.\n\u05D0\u05E0\u05D9 \u05E8\u05D5\u05E6\u05D4 \u05E9\u05EA\u05DB\u05D5\u05D5\u05DF \u05D0\u05D5\u05EA\u05D9 \u05E9\u05DC\u05D1 \u05D0\u05D7\u05E8\u05D9 \u05E9\u05DC\u05D1 \u2014 \u05E8\u05E7 \u05E9\u05D0\u05DC\u05D4 \u05D0\u05D7\u05EA \u05D1\u05DB\u05DC \u05E4\u05E2\u05DD.\n\u05EA\u05D7\u05DC \u05D1\u05D4\u05D1\u05E0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD, \u05D5\u05D0\u05D6 \u05E0\u05DE\u05E6\u05D0 \u05D0\u05EA q \u05D5-a\u2081.\n\u05D7\u05E9\u05D5\u05D1: \u05DC\u05D0\u05D7\u05E8 \u05E9\u05E1\u05D9\u05D9\u05DE\u05EA \u05DC\u05D4\u05D3\u05E8\u05D9\u05DA \u05D0\u05D5\u05EA\u05D9 \u05E2\u05DC \u05DB\u05DC \u05E9\u05DC\u05D1, \u05E2\u05E6\u05D5\u05E8 \u05D5\u05D4\u05DE\u05EA\u05DF \u05DC\u05E9\u05D0\u05DC\u05D4 \u05D4\u05D1\u05D0\u05D4 \u05E9\u05DC\u05D9. \u05D0\u05DC \u05EA\u05E2\u05D1\u05D5\u05E8 \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA \u05DC\u05E1\u05E2\u05D9\u05E3 \u05D4\u05D1\u05D0.\n\u05E1\u05E8\u05D5\u05E7 \u05D0\u05EA \u05D4\u05EA\u05DE\u05D5\u05E0\u05D4/\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05D1\u05DC\u05D1\u05D3.\n\u05D0\u05DC \u05EA\u05DE\u05D4\u05E8, \u05EA\u05E1\u05D1\u05D9\u05E8 \u05DC\u05D9 \u05E2\u05DC \u05DB\u05DC \u05E9\u05DC\u05D1. \u05D1\u05E1\u05D9\u05D5\u05DD \u05D4\u05E1\u05E8\u05D9\u05E7\u05D4, \u05EA\u05D2\u05D9\u05D1 \u05D0\u05DA \u05D5\u05E8\u05E7: \u201C\u05D0\u05E0\u05D9 \u05DE\u05D5\u05DB\u05DF \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA.\u201D",
+    goldenPrompt: "היי, אני תלמיד בכיתה יב׳, לומד סדרות הנדסיות.\nנתון: a₁+a₂=12 ו-a₂+a₃=24.\nאני רוצה שתכוון אותי שלב אחרי שלב — רק שאלה אחת בכל פעם.\nתחל בהבנת הנתונים, ואז נמצא את q ו-a₁.\nחשוב: לאחר שסיימת להדריך אותי על כל שלב, עצור והמתן לשאלה הבאה שלי. אל תעבור אוטומטית לסעיף הבא.\nסרוק את התמונה/נתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה, תגיב אך ורק: “אני מוכן להמשיך.”",
     steps: [
       {
-        phase: "\uD83D\uDD0D \u05E1\u05E2\u05D9\u05E3 \u05D0\u05F3",
-        label: "\u05D1\u05E0\u05D9\u05D9\u05EA \u05DE\u05E2\u05E8\u05DB\u05EA \u05DE\u05E9\u05D5\u05D5\u05D0\u05D5\u05EA",
+        phase: "🔍 סעיף א׳",
+        label: "בניית מערכת משוואות",
         prompt: "",
         contextWords: [
-          "\u05DE\u05E9\u05D5\u05D5\u05D0\u05D4", "\u05DE\u05E2\u05E8\u05DB\u05EA", "\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD",
-          "\u05DC\u05D7\u05DC\u05E7", "\u05D7\u05DC\u05D5\u05E7\u05D4", "\u05D7\u05D9\u05DC\u05D5\u05E7", "\u05D9\u05D7\u05E1", "\u05E9\u05D1\u05E8",
-          "\u05DC\u05D4\u05E6\u05D9\u05D1", "\u05D4\u05E6\u05D1\u05D4",
-          "\u05DC\u05E6\u05DE\u05E6\u05DD", "\u05E6\u05DE\u05E6\u05D5\u05DD", "\u05DC\u05D1\u05D8\u05DC",
-          "a1", "q", "\u05DE\u05E0\u05D4", "\u05E8\u05D0\u05E9\u05D5\u05DF", "\u05D0\u05D9\u05D1\u05E8",
-          "\u05D2\u05D5\u05E8\u05DD", "\u05DE\u05E9\u05D5\u05EA\u05E3", "\u05D1\u05D9\u05D3\u05D5\u05D3", "\u05DC\u05D1\u05D5\u05D3\u05D3",
-          "\u05E0\u05E2\u05DC\u05DE", "\u05E4\u05D9\u05E8\u05D5\u05E7",
+          "משוואה", "מערכת", "נתונים",
+          "לחלק", "חלוקה", "חילוק", "יחס", "שבר",
+          "להציב", "הצבה",
+          "לצמצם", "צמצום", "לבטל",
+          "a1", "q", "מנה", "ראשון", "איבר",
+          "גורם", "משותף", "בידוד", "לבודד",
+          "נעלמ", "פירוק",
         ],
       },
       {
-        phase: "\uD83E\uDDED \u05E1\u05E2\u05D9\u05E3 \u05D1\u05F3",
-        label: "\u05DE\u05E6\u05D0 \u05D0\u05EA a\u2081 \u05D5-q",
+        phase: "🧭 סעיף ב׳",
+        label: "מצא את a₁ ו-q",
         prompt: "",
         contextWords: [
-          "\u05E0\u05E2\u05DC\u05DE", "\u05DE\u05E9\u05D5\u05D5\u05D0\u05D4",
-          "\u05DC\u05D4\u05E6\u05D9\u05D1", "\u05D4\u05E6\u05D1\u05D4",
-          "a1", "q", "\u05DE\u05E0\u05D4", "\u05D0\u05D9\u05D1\u05E8",
-          "\u05DC\u05D7\u05E9\u05D1", "\u05D7\u05D9\u05E9\u05D5\u05D1",
+          "נעלמ", "משוואה",
+          "להציב", "הצבה",
+          "a1", "q", "מנה", "איבר",
+          "לחשב", "חישוב",
         ],
       },
       {
-        phase: "\uD83D\uDD22 \u05E1\u05E2\u05D9\u05E3 \u05D2\u05F3",
-        label: "\u05D4\u05D5\u05DB\u05D7 \u05E9\u05D4\u05E1\u05D3\u05E8\u05D4 \u05E2\u05D5\u05DC\u05D4 \u05DE\u05D5\u05E0\u05D5\u05D8\u05D5\u05E0\u05D9\u05EA",
+        phase: "🔢 סעיף ג׳",
+        label: "הוכח שהסדרה עולה מונוטונית",
         prompt: "",
         contextWords: [
-          "\u05E2\u05D5\u05DC", "\u05D2\u05D3\u05DC", "\u05E6\u05D5\u05DE\u05D7",
-          "\u05D7\u05D9\u05D5\u05D1\u05D9", "\u05D7\u05D9\u05D5\u05D1\u05D9\u05EA",
-          "q", "\u05DE\u05E0\u05D4", "\u05D2\u05D3\u05D5\u05DC", "\u05D9\u05D5\u05EA\u05E8 \u05DE",
-          "\u05D4\u05D5\u05DB\u05D7", "\u05DC\u05D4\u05D5\u05DB\u05D9\u05D7", "\u05D4\u05D5\u05DB\u05D7\u05D4",
-          "\u05DE\u05D2\u05DE\u05D4", "\u05E2\u05E8\u05DA", "\u05EA\u05E0\u05D0\u05D9",
-          "\u05E1\u05D9\u05D1\u05D4", "\u05DC\u05DE\u05D4", "\u05DE\u05D3\u05D5\u05E2",
+          "עול", "גדל", "צומח",
+          "חיובי", "חיובית",
+          "q", "מנה", "גדול", "יותר מ",
+          "הוכח", "להוכיח", "הוכחה",
+          "מגמה", "ערך", "תנאי",
+          "סיבה", "למה", "מדוע",
         ],
       },
     ],
   },
   {
     id: "advanced",
-    problem: "\u05E0\u05EA\u05D5\u05E0\u05D4 \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA A \u05E9\u05D1\u05D4 \u05D4\u05DE\u05E0\u05D4 \u05D4\u05D9\u05D0 q \u05D5\u05D9\u05E9 \u05D1\u05D4 10 \u05D0\u05D9\u05D1\u05E8\u05D9\u05DD.\n\u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05E9\u05D9\u05E9\u05D9 \u05D1\u05E1\u05D3\u05E8\u05D4 \u05D2\u05D3\u05D5\u05DC \u05E4\u05D9 81 \u05DE\u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05E9\u05E0\u05D9.\n\u05E1\u05DB\u05D5\u05DD \u05E9\u05E0\u05D9 \u05D4\u05D0\u05D9\u05D1\u05E8\u05D9\u05DD \u05D4\u05D0\u05DE\u05E6\u05E2\u05D9\u05D9\u05DD \u05D1\u05E1\u05D3\u05E8\u05D4 A \u05D4\u05D5\u05D0 1,296, \u05D5\u05DB\u05DC \u05D0\u05D9\u05D1\u05E8\u05D9\u05D4 \u05D7\u05D9\u05D5\u05D1\u05D9\u05D9\u05DD.\n\n\u05E0\u05EA\u05D5\u05E0\u05D4 \u05E1\u05D3\u05E8\u05D4 \u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA B. \u05E1\u05DB\u05D5\u05DD \u05E1\u05D3\u05E8\u05D4 A \u05D2\u05D3\u05D5\u05DC \u05E4\u05D9 11 \u05DE\u05E1\u05DB\u05D5\u05DD \u05E1\u05D3\u05E8\u05D4 B.\n\u05D1\u05E1\u05D3\u05E8\u05D4 B \u05D9\u05E9 32 \u05D0\u05D9\u05D1\u05E8\u05D9\u05DD, \u05D5\u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05E9\u05E0\u05D9 \u05D1\u05D4 \u05D2\u05D3\u05D5\u05DC \u05E4\u05D9 16 \u05DE\u05D4\u05E4\u05E8\u05E9 \u05D4\u05E1\u05D3\u05E8\u05D4 (d).\n\n\u05DE\u05E6\u05D0:\n\u05D0. \u05D0\u05EA \u05E9\u05E0\u05D9 \u05D4\u05E2\u05E8\u05DB\u05D9\u05DD \u05D4\u05D0\u05E4\u05E9\u05E8\u05D9\u05D9\u05DD \u05E9\u05DC q (\u05D5\u05D0\u05D9\u05D6\u05D4 \u05E0\u05E4\u05E1\u05DC \u05D5\u05DE\u05D3\u05D5\u05E2)\n\u05D1. \u05D0\u05EA \u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05E8\u05D0\u05E9\u05D5\u05DF (a\u2081) \u05E9\u05DC \u05E1\u05D3\u05E8\u05D4 A\n\u05D2. \u05D0\u05EA \u05E1\u05DB\u05D5\u05DD \u05E1\u05D3\u05E8\u05D4 B\n\u05D3. \u05D0\u05EA \u05D4\u05E4\u05E8\u05E9 \u05D4\u05E1\u05D3\u05E8\u05D4 (d) \u05E9\u05DC \u05E1\u05D3\u05E8\u05D4 B",
+    problem: "נתונה סדרה הנדסית A שבה המנה היא q ויש בה 10 איברים.\nהאיבר השישי בסדרה גדול פי 81 מהאיבר השני.\nסכום שני האיברים האמצעיים בסדרה A הוא 1,296, וכל איבריה חיוביים.\n\nנתונה סדרה חשבונית B. סכום סדרה A גדול פי 11 מסכום סדרה B.\nבסדרה B יש 32 איברים, והאיבר השני בה גדול פי 16 מהפרש הסדרה (d).\n\nמצא:\nא. את שני הערכים האפשריים של q (ואיזה נפסל ומדוע)\nב. את האיבר הראשון (a₁) של סדרה A\nג. את סכום סדרה B\nד. את הפרש הסדרה (d) של סדרה B",
     diagram: <AdvancedSVG />,
     pitfalls: [
-      { title: "\uD83D\uDCA1 \u05E9\u05E0\u05D9 \u05E2\u05E8\u05DB\u05D9 q \u2014 \u05DE\u05D9 \u05E0\u05E4\u05E1\u05DC?", text: "\u05D4\u05E0\u05EA\u05D5\u05DF \u05E7\u05D5\u05D1\u05E2 \u05E9\u05DB\u05DC \u05D0\u05D9\u05D1\u05E8\u05D9 \u05D4\u05E1\u05D3\u05E8\u05D4 \u05D7\u05D9\u05D5\u05D1\u05D9\u05D9\u05DD \u2014 \u05D4\u05E9\u05EA\u05DE\u05E9\u05D5 \u05D1\u05D6\u05D4 \u05DB\u05D3\u05D9 \u05DC\u05E4\u05E1\u05D5\u05DC \u05D0\u05EA \u05D0\u05D7\u05EA \u05D4\u05EA\u05E9\u05D5\u05D1\u05D5\u05EA." },
-      { title: "\u26A0\uFE0F \u05DE\u05D9\u05D4\u05DD \u05D4\u05D0\u05D9\u05D1\u05E8\u05D9\u05DD \u05D4\u05D0\u05DE\u05E6\u05E2\u05D9\u05D9\u05DD \u05D1\u05E1\u05D3\u05E8\u05D4 \u05E9\u05DC 10 \u05D0\u05D9\u05D1\u05E8\u05D9\u05DD?", text: "\u05D1\u05E1\u05D3\u05E8\u05D4 \u05E9\u05DC 10 \u05D0\u05D9\u05D1\u05E8\u05D9\u05DD \u05D0\u05D9\u05DF \u05D0\u05D9\u05D1\u05E8 \u05D0\u05DE\u05E6\u05E2\u05D9 \u05D9\u05D7\u05D9\u05D3. \u05DE\u05D9\u05D4\u05DD \u05E9\u05E0\u05D9 \u05D4\u05D0\u05D9\u05D1\u05E8\u05D9\u05DD \u05D4\u05D0\u05DE\u05E6\u05E2\u05D9\u05D9\u05DD?" },
+      { title: "💡 שני ערכי q — מי נפסל?", text: "הנתון קובע שכל איברי הסדרה חיוביים — השתמשו בזה כדי לפסול את אחת התשובות." },
+      { title: "⚠️ מיהם האיברים האמצעיים בסדרה של 10 איברים?", text: "בסדרה של 10 איברים אין איבר אמצעי יחיד. מיהם שני האיברים האמצעיים?" },
     ],
     goldenPrompt: "",
     steps: [
       {
-        phase: "\u2694\uFE0F \u05E1\u05E2\u05D9\u05E3 \u05D0\u05F3",
-        label: "\u05DE\u05E6\u05D0 \u05D0\u05EA q (\u05E9\u05E0\u05D9 \u05E2\u05E8\u05DB\u05D9\u05DD, \u05D5\u05D4\u05E1\u05D1\u05E8 \u05DE\u05D9 \u05E0\u05E4\u05E1\u05DC)",
+        phase: "⚔️ סעיף א׳",
+        label: "מצא את q (שני ערכים, והסבר מי נפסל)",
         prompt: "",
         contextWords: [
-          "\u05DE\u05E0\u05D4", "q", "\u05D9\u05D7\u05E1", "\u05D7\u05DC\u05D5\u05E7\u05D4",
-          "a6", "a2", "\u05E9\u05D5\u05E8\u05E9", "\u05D7\u05D6\u05E7\u05D4", "\u05E8\u05D1\u05D9\u05E2\u05D9",
-          "\u05DE\u05E9\u05D5\u05D5\u05D0\u05D4",
-          "\u05D7\u05D9\u05D5\u05D1\u05D9\u05D9\u05DD", "\u05D7\u05D9\u05D5\u05D1\u05D9", "\u05E4\u05E1\u05D9\u05DC", "\u05E9\u05DC\u05D9\u05DC\u05D9",
+          "מנה", "q", "יחס", "חלוקה",
+          "a6", "a2", "שורש", "חזקה", "רביעי",
+          "משוואה",
+          "חיוביים", "חיובי", "פסיל", "שלילי",
         ],
-        keywords: ["\u05DE\u05E0\u05D4"],
-        keywordHint: "\u05D4\u05D6\u05DB\u05E8 \u05D0\u05EA \u05D4\u05DE\u05D5\u05E0\u05D7 \u201C\u05DE\u05E0\u05D4\u201D",
+        keywords: ["מנה"],
+        keywordHint: "הזכר את המונח “מנה”",
       },
       {
-        phase: "\u2694\uFE0F \u05E1\u05E2\u05D9\u05E3 \u05D1\u05F3",
-        label: "\u05DE\u05E6\u05D0 \u05D0\u05EA a\u2081 \u05E9\u05DC \u05E1\u05D3\u05E8\u05D4 A",
+        phase: "⚔️ סעיף ב׳",
+        label: "מצא את a₁ של סדרה A",
         prompt: "",
         contextWords: [
-          "a1", "a5", "a6", "\u05D0\u05DE\u05E6\u05E2\u05D9\u05D9\u05DD", "\u05D0\u05DE\u05E6\u05E2\u05D9",
-          "\u05D7\u05DE\u05D9\u05E9\u05D9", "\u05E9\u05D9\u05E9\u05D9", "\u05E1\u05DB\u05D5\u05DD",
-          "\u05D4\u05E6\u05D1\u05D4", "\u05E0\u05D5\u05E1\u05D7\u05D4", "\u05DC\u05D1\u05D5\u05D3\u05D3", "\u05DC\u05D7\u05E9\u05D1",
+          "a1", "a5", "a6", "אמצעיים", "אמצעי",
+          "חמישי", "שישי", "סכום",
+          "הצבה", "נוסחה", "לבודד", "לחשב",
         ],
-        keywords: ["\u05D0\u05DE\u05E6\u05E2\u05D9"],
-        keywordHint: "\u05D4\u05D6\u05DB\u05E8 \u05D0\u05EA \u05D4\u05DE\u05D5\u05E0\u05D7 \u201C\u05D0\u05DE\u05E6\u05E2\u05D9\u201D",
+        keywords: ["אמצעי"],
+        keywordHint: "הזכר את המונח “אמצעי”",
       },
       {
-        phase: "\u2694\uFE0F \u05E1\u05E2\u05D9\u05E3 \u05D2\u05F3",
-        label: "\u05DE\u05E6\u05D0 \u05D0\u05EA \u05E1\u05DB\u05D5\u05DD \u05E1\u05D3\u05E8\u05D4 B",
+        phase: "⚔️ סעיף ג׳",
+        label: "מצא את סכום סדרה B",
         prompt: "",
         contextWords: [
-          "\u05E1\u05DB\u05D5\u05DD", "Sn", "SA", "\u05D2\u05D3\u05D5\u05DC \u05E4\u05D9",
-          "\u05DC\u05D7\u05DC\u05E7", "\u05D7\u05DC\u05D5\u05E7\u05D4", "\u05D9\u05D7\u05E1", "\u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA",
+          "סכום", "Sn", "SA", "גדול פי",
+          "לחלק", "חלוקה", "יחס", "חשבונית",
         ],
-        keywords: ["\u05E1\u05DB\u05D5\u05DD"],
-        keywordHint: "\u05D4\u05D6\u05DB\u05E8 \u05D0\u05EA \u05D4\u05DE\u05D5\u05E0\u05D7 \u201C\u05E1\u05DB\u05D5\u05DD\u201D",
+        keywords: ["סכום"],
+        keywordHint: "הזכר את המונח “סכום”",
       },
       {
-        phase: "\u2694\uFE0F \u05E1\u05E2\u05D9\u05E3 \u05D3\u05F3",
-        label: "\u05DE\u05E6\u05D0 \u05D0\u05EA d \u05E9\u05DC \u05E1\u05D3\u05E8\u05D4 B",
+        phase: "⚔️ סעיף ד׳",
+        label: "מצא את d של סדרה B",
         prompt: "",
         contextWords: [
-          "\u05D4\u05E4\u05E8\u05E9", "d", "b2",
-          "\u05DE\u05E9\u05D5\u05D5\u05D0\u05D4", "b1", "\u05E4\u05EA\u05E8\u05D5\u05DF",
-          "\u05DC\u05D4\u05E6\u05D9\u05D1", "\u05DC\u05E4\u05EA\u05D5\u05E8",
+          "הפרש", "d", "b2",
+          "משוואה", "b1", "פתרון",
+          "להציב", "לפתור",
         ],
-        keywords: ["\u05D4\u05E4\u05E8\u05E9"],
-        keywordHint: "\u05D4\u05D6\u05DB\u05E8 \u05D0\u05EA \u05D4\u05DE\u05D5\u05E0\u05D7 \u201C\u05D4\u05E4\u05E8\u05E9\u201D",
+        keywords: ["הפרש"],
+        keywordHint: "הזכר את המונח “הפרש”",
       },
     ],
   },
@@ -561,7 +561,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   const s = STATION[ex.id];
   const [copiedProblem, setCopiedProblem] = useState(false);
   function handleCopyProblem() {
-    navigator.clipboard.writeText(ex.problem.split(/\n+\u05E1\u05E2\u05D9\u05E3/)[0].trim());
+    navigator.clipboard.writeText(ex.problem.split(/\n+סעיף/)[0].trim());
     setCopiedProblem(true);
     setTimeout(() => setCopiedProblem(false), 2000);
   }
@@ -573,28 +573,28 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
         <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", alignItems: "flex-start", justifyContent: "space-between", borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.4)`, background: "rgba(255,255,255,0.88)", padding: "1rem 1.5rem", marginBottom: "2rem" }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "1.75rem", alignItems: "center" }}>
             <div style={{ textAlign: "center" }}>
-              <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>\u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05DB\u05DC\u05DC\u05D9</div>
-              <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>a\u2099 = a\u2081 \u00B7 q\u207F\u207B\u00B9</div>
+              <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>האיבר הכללי</div>
+              <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>aₙ = a₁ · qⁿ⁻¹</div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>\u05E1\u05DB\u05D5\u05DD n \u05D0\u05D9\u05D1\u05E8\u05D9\u05DD</div>
-              <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>S\u2099 = a\u2081(q\u207F-1)/(q-1)</div>
+              <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>סכום n איברים</div>
+              <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>Sₙ = a₁(qⁿ-1)/(q-1)</div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>\u05E1\u05DB\u05D5\u05DD \u05D0\u05D9\u05E0\u05E1\u05D5\u05E4\u05D9</div>
-              <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>S\u221E = a\u2081/(1\u2212q)</div>
+              <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>סכום אינסופי</div>
+              <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>S∞ = a₁/(1−q)</div>
             </div>
           </div>
         </div>
       ) : (
         <div style={{ borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.4)`, background: "rgba(255,255,255,0.88)", padding: "1rem 1.5rem", marginBottom: "2rem" }}>
-          <div style={{ color: "#991b1b", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>\u05DE\u05EA\u05E7\u05D3\u05DD \u2014 \u05E0\u05D5\u05E1\u05D7\u05D0\u05D5\u05EA: \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA A + \u05E1\u05D3\u05E8\u05D4 \u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA B</div>
+          <div style={{ color: "#991b1b", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>מתקדם — נוסחאות: סדרה הנדסית A + סדרה חשבונית B</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem" }}>
             <div>
-              <div style={{ color: "#6B7280", fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, fontWeight: 700 }}>\u05D4\u05E0\u05D3\u05E1\u05D9\u05EA A</div>
+              <div style={{ color: "#6B7280", fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, fontWeight: 700 }}>הנדסית A</div>
               {[
-                { label: "\u05D0\u05D9\u05D1\u05E8 \u05DB\u05DC\u05DC\u05D9", f: "a\u2099 = a\u2081 \u00B7 q\u207F\u207B\u00B9" },
-                { label: "\u05E1\u05DB\u05D5\u05DD", f: "S\u2099 = a\u2081(q\u207F-1)/(q-1)" },
+                { label: "איבר כללי", f: "aₙ = a₁ · qⁿ⁻¹" },
+                { label: "סכום", f: "Sₙ = a₁(qⁿ-1)/(q-1)" },
               ].map(r => (
                 <div key={r.label} style={{ display: "flex", gap: 8, alignItems: "baseline", marginBottom: 4 }}>
                   <span style={{ color: "#6B7280", fontSize: 10 }}>{r.label}:</span>
@@ -604,10 +604,10 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
             </div>
             <div style={{ width: 1, background: "rgba(153,27,27,0.15)", alignSelf: "stretch" }} />
             <div>
-              <div style={{ color: "#6B7280", fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, fontWeight: 700 }}>\u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA B</div>
+              <div style={{ color: "#6B7280", fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, fontWeight: 700 }}>חשבונית B</div>
               {[
-                { label: "\u05D0\u05D9\u05D1\u05E8 \u05DB\u05DC\u05DC\u05D9", f: "b\u2099 = b\u2081 + (n\u22121)d" },
-                { label: "\u05E1\u05DB\u05D5\u05DD", f: "S\u2099 = (n/2)(2b\u2081 + (n\u22121)d)" },
+                { label: "איבר כללי", f: "bₙ = b₁ + (n−1)d" },
+                { label: "סכום", f: "Sₙ = (n/2)(2b₁ + (n−1)d)" },
               ].map(r => (
                 <div key={r.label} style={{ display: "flex", gap: 8, alignItems: "baseline", marginBottom: 4 }}>
                   <span style={{ color: "#6B7280", fontSize: 10 }}>{r.label}:</span>
@@ -632,10 +632,10 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
       {/* Problem */}
       <div style={{ borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.5)`, background: "rgba(255,255,255,0.88)", padding: "1.5rem", marginBottom: "2rem" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>\uD83D\uDCDD \u05D4\u05E9\u05D0\u05DC\u05D4</div>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>📝 השאלה</div>
           <button onClick={handleCopyProblem} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.1)" : "rgba(107,114,128,0.08)", border: "1px solid rgba(107,114,128,0.2)", color: copiedProblem ? "#15803d" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
             {copiedProblem ? <Check size={11} /> : <Copy size={11} />}
-            {copiedProblem ? "\u05D4\u05D5\u05E2\u05EA\u05E7!" : "\u05D4\u05E2\u05EA\u05E7"}
+            {copiedProblem ? "הועתק!" : "העתק"}
           </button>
         </div>
         <pre style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
@@ -643,7 +643,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
       {/* Pitfalls */}
       <div style={{ marginBottom: "2rem" }}>
-        <div style={{ color: "#DC2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>\u26A0\uFE0F \u05E9\u05D2\u05D9\u05D0\u05D5\u05EA \u05E0\u05E4\u05D5\u05E6\u05D5\u05EA</div>
+        <div style={{ color: "#DC2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>⚠️ שגיאות נפוצות</div>
         {ex.pitfalls.map((p, i) => (
           <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.2)", background: "rgba(220,38,38,0.05)", padding: "0.85rem 1rem", marginBottom: 8 }}>
             <div style={{ color: "#DC2626", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>{p.title}</div>
@@ -654,7 +654,7 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
 
       {/* Prompt Ladder */}
       <div style={{ borderRadius: 16, border: `2px solid rgba(${s.borderRgb},0.45)`, background: "rgba(255,255,255,0.88)", padding: "1.25rem", boxShadow: s.glowShadow }}>
-        <div style={{ color: `rgb(${s.borderRgb})`, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>\uD83E\uDDE0 \u05DE\u05D3\u05E8\u05D9\u05DA \u05D4\u05E4\u05E8\u05D5\u05DE\u05E4\u05D8\u05D9\u05DD</div>
+        <div style={{ color: `rgb(${s.borderRgb})`, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>🧠 מדריך הפרומפטים</div>
         {ex.id === "basic" && <LadderBase steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
         {ex.id === "medium" && <LadderMedium steps={ex.steps} goldenPrompt={ex.goldenPrompt} borderRgb={s.borderRgb} />}
       </div>
@@ -671,14 +671,14 @@ function FormulaBar() {
   const [activeTab, setActiveTab] = useState<"general" | "sum" | "infinite" | null>(null);
 
   const tabs = [
-    { id: "general" as const, label: "\u05D0\u05D9\u05D1\u05E8 \u05DB\u05DC\u05DC\u05D9", tex: "a_n = a_1 \\cdot q^{n-1}", color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
-    { id: "sum" as const, label: "\u05E1\u05DB\u05D5\u05DD n \u05D0\u05D9\u05D1\u05E8\u05D9\u05DD", tex: "S_n = \\frac{a_1(q^n - 1)}{q - 1}", color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
-    { id: "infinite" as const, label: "\u05E1\u05DB\u05D5\u05DD \u05D0\u05D9\u05E0\u05E1\u05D5\u05E4\u05D9", tex: "S_\\infty = \\frac{a_1}{1-q}", color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
+    { id: "general" as const, label: "איבר כללי", tex: "a_n = a_1 \\cdot q^{n-1}", color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "sum" as const, label: "סכום n איברים", tex: "S_n = \\frac{a_1(q^n - 1)}{q - 1}", color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
+    { id: "infinite" as const, label: "סכום אינסופי", tex: "S_\\infty = \\frac{a_1}{1-q}", color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
   ];
 
   return (
     <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: "1.25rem" }}>
-      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>\u05E0\u05D5\u05E1\u05D7\u05D0\u05D5\u05EA</div>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
 
       <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
         {tabs.map(t => {
@@ -709,10 +709,10 @@ function FormulaBar() {
             </div>
             <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>\u05D4\u05E1\u05D1\u05E8:</strong> \u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05DB\u05DC\u05DC\u05D9 \u05E9\u05DC \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA \u05DE\u05EA\u05E7\u05D1\u05DC \u05E2\u05DC \u05D9\u05D3\u05D9 \u05D4\u05DB\u05E4\u05DC\u05EA \u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05E8\u05D0\u05E9\u05D5\u05DF \u05D1\u05DE\u05E0\u05D4 q, \u05E9\u05D5\u05D1 \u05D5\u05E9\u05D5\u05D1. \u05D4\u05DE\u05E2\u05E8\u05D9\u05DA n\u22121 \u05DE\u05D9\u05D9\u05E6\u05D2 \u05D0\u05EA \u05DE\u05E1\u05E4\u05E8 \u05D4\u201C\u05E7\u05E4\u05D9\u05E6\u05D5\u05EA\u201D \u05DE\u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05E8\u05D0\u05E9\u05D5\u05DF.
+                <strong>הסבר:</strong> האיבר הכללי של סדרה הנדסית מתקבל על ידי הכפלת האיבר הראשון במנה q, שוב ושוב. המעריך n−1 מייצג את מספר ה“קפיצות” מהאיבר הראשון.
               </div>
               <div style={{ marginTop: 10, color: "#16a34a", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
-                \uD83D\uDCA1 \u05D3\u05D5\u05D2\u05DE\u05D4: <InlineMath>{"a_1 = 3,\\; q = 2 \\Rightarrow a_5 = 3 \\cdot 2^4 = 48"}</InlineMath>
+                💡 דוגמה: <InlineMath>{"a_1 = 3,\\; q = 2 \\Rightarrow a_5 = 3 \\cdot 2^4 = 48"}</InlineMath>
               </div>
             </div>
           </div>
@@ -727,10 +727,10 @@ function FormulaBar() {
             </div>
             <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>\u05D4\u05E1\u05D1\u05E8:</strong> \u05E0\u05D5\u05E1\u05D7\u05EA \u05D4\u05E1\u05DB\u05D5\u05DD \u05DE\u05D0\u05E4\u05E9\u05E8\u05EA \u05DC\u05D7\u05E9\u05D1 \u05D0\u05EA \u05E1\u05DB\u05D5\u05DD n \u05D4\u05D0\u05D9\u05D1\u05E8\u05D9\u05DD \u05D4\u05E8\u05D0\u05E9\u05D5\u05E0\u05D9\u05DD \u05D1\u05DE\u05DB\u05D4 \u05D0\u05D7\u05EA. \u05D4\u05E0\u05D5\u05E1\u05D7\u05D4 \u05EA\u05E7\u05E4\u05D4 \u05E8\u05E7 \u05DB\u05E9 q \u2260 1.
+                <strong>הסבר:</strong> נוסחת הסכום מאפשרת לחשב את סכום n האיברים הראשונים במכה אחת. הנוסחה תקפה רק כש q ≠ 1.
               </div>
               <div style={{ marginTop: 10, color: "#EA580C", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
-                \uD83D\uDCA1 \u05D3\u05D5\u05D2\u05DE\u05D4: <InlineMath>{"a_1 = 2,\\; q = 3,\\; n = 4 \\Rightarrow S_4 = \\frac{2(81-1)}{2} = 80"}</InlineMath>
+                💡 דוגמה: <InlineMath>{"a_1 = 2,\\; q = 3,\\; n = 4 \\Rightarrow S_4 = \\frac{2(81-1)}{2} = 80"}</InlineMath>
               </div>
             </div>
           </div>
@@ -745,10 +745,10 @@ function FormulaBar() {
             </div>
             <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px" }}>
               <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>\u05D4\u05E1\u05D1\u05E8:</strong> \u05DB\u05D0\u05E9\u05E8 \u05D4\u05E2\u05E8\u05DA \u05D4\u05DE\u05D5\u05D7\u05DC\u05D8 \u05E9\u05DC \u05D4\u05DE\u05E0\u05D4 \u05E7\u05D8\u05DF \u05DE-1, \u05D4\u05E1\u05D3\u05E8\u05D4 \u05DE\u05EA\u05DB\u05E0\u05E1\u05EA \u05DC\u05E1\u05DB\u05D5\u05DD \u05E1\u05D5\u05E4\u05D9. \u05D6\u05D4\u05D5 \u05EA\u05E0\u05D0\u05D9 \u05D4\u05D4\u05EA\u05DB\u05E0\u05E1\u05D5\u05EA \u2014 |q| &lt; 1.
+                <strong>הסבר:</strong> כאשר הערך המוחלט של המנה קטן מ-1, הסדרה מתכנסת לסכום סופי. זהו תנאי ההתכנסות — |q| &lt; 1.
               </div>
               <div style={{ marginTop: 10, color: "#DC2626", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
-                \uD83D\uDCA1 \u05D3\u05D5\u05D2\u05DE\u05D4: <InlineMath>{"a_1 = 6,\\; q = \\frac{1}{2} \\Rightarrow S_\\infty = \\frac{6}{1 - 0.5} = 12"}</InlineMath>
+                💡 דוגמה: <InlineMath>{"a_1 = 6,\\; q = \\frac{1}{2} \\Rightarrow S_\\infty = \\frac{6}{1 - 0.5} = 12"}</InlineMath>
               </div>
             </div>
           </div>
@@ -776,14 +776,14 @@ function GeoSeriesLab() {
 
   return (
     <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>\uD83D\uDD2C \u05DE\u05E2\u05D1\u05D3\u05EA \u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>\u05E9\u05E0\u05D4 \u05D0\u05EA a\u2081, q \u05D5-n \u2014 \u05E8\u05D0\u05D4 \u05D0\u05EA \u05D4\u05D0\u05D9\u05D1\u05E8\u05D9\u05DD \u05D5\u05D4\u05E1\u05DB\u05D5\u05DD \u05DE\u05EA\u05E2\u05D3\u05DB\u05E0\u05D9\u05DD \u05D1\u05DC\u05D9\u05D9\u05D1</p>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>🔬 מעבדת סדרה הנדסית</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את a₁, q ו-n — ראה את האיברים והסכום מתעדכנים בלייב</p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: "2rem", background: "rgba(255,255,255,0.88)", borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", padding: "1.25rem" }}>
         {[
-          { title: "\u05D0\u05D9\u05D1\u05E8 \u05E8\u05D0\u05E9\u05D5\u05DF", varSym: "a\u2081", val: a1, set: setA1, min: -10, max: 10 },
-          { title: "\u05DE\u05E0\u05D4", varSym: "q", val: q, set: setQ, min: -5, max: 5 },
-          { title: "\u05DE\u05E1\u05E4\u05E8 \u05D0\u05D9\u05D1\u05E8\u05D9\u05DD", varSym: "n", val: n, set: setN, min: 1, max: 12 },
+          { title: "איבר ראשון", varSym: "a₁", val: a1, set: setA1, min: -10, max: 10 },
+          { title: "מנה", varSym: "q", val: q, set: setQ, min: -5, max: 5 },
+          { title: "מספר איברים", varSym: "n", val: n, set: setN, min: 1, max: 12 },
         ].map((row) => (
           <div key={row.varSym}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
@@ -813,7 +813,7 @@ function GeoSeriesLab() {
                 />
                 {i < 3 && (
                   <text x={x + barW / 2} y={H / 2 + (isPos ? 14 : -6)} fill="#64748b" fontSize={8} textAnchor="middle">
-                    {i === 0 ? "a\u2081" : i === 1 ? "a\u2082" : "a\u2083"}
+                    {i === 0 ? "a₁" : i === 1 ? "a₂" : "a₃"}
                   </text>
                 )}
               </g>
@@ -825,9 +825,9 @@ function GeoSeriesLab() {
       {/* Summary tiles */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, textAlign: "center", marginBottom: 12 }}>
         {[
-          { label: "a\u2099", val: an, sub: "\u05D4\u05D0\u05D9\u05D1\u05E8 \u05D4\u05D0\u05D7\u05E8\u05D5\u05DF" },
-          { label: "S\u2099", val: Sn, sub: "\u05E1\u05DB\u05D5\u05DD \u05D4\u05E1\u05D3\u05E8\u05D4" },
-          { label: "q", val: q, sub: "\u05DE\u05E0\u05EA \u05D4\u05E1\u05D3\u05E8\u05D4" },
+          { label: "aₙ", val: an, sub: "האיבר האחרון" },
+          { label: "Sₙ", val: Sn, sub: "סכום הסדרה" },
+          { label: "q", val: q, sub: "מנת הסדרה" },
         ].map(row => (
           <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.88)", border: "1px solid rgba(22,163,74,0.3)", padding: 14 }}>
             <div style={{ color: "#2D5A27", fontFamily: "monospace", fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{row.label}</div>
@@ -837,7 +837,7 @@ function GeoSeriesLab() {
         ))}
       </div>
       <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "0.5rem" }}>
-        {isConverging ? "\uD83D\uDFE2 \u05E1\u05D3\u05E8\u05D4 \u05DE\u05EA\u05DB\u05E0\u05E1\u05EA!" : "\uD83D\uDD34 \u05E1\u05D3\u05E8\u05D4 \u05DE\u05EA\u05E4\u05E6\u05DC\u05EA"}
+        {isConverging ? "🟢 סדרה מתכנסת!" : "🔴 סדרה מתפצלת"}
       </p>
     </section>
   );
@@ -857,12 +857,12 @@ function SumPairsLab() {
 
   return (
     <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>\uD83D\uDD2C \u05DE\u05E2\u05D1\u05D3\u05EA \u05E1\u05DB\u05D5\u05DE\u05D9\u05DD \u05E8\u05E6\u05D5\u05E4\u05D9\u05DD</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>\u05E9\u05E0\u05D4 \u05D0\u05EA a\u2081 \u05D5-q \u2014 \u05E8\u05D0\u05D4 \u05D0\u05EA \u05D4\u05E7\u05E9\u05E8 \u05D1\u05D9\u05DF \u05D4\u05E1\u05DB\u05D5\u05DE\u05D9\u05DD</p>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>🔬 מעבדת סכומים רצופים</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את a₁ ו-q — ראה את הקשר בין הסכומים</p>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: "2rem" }}>
         {[
-          { label: "a\u2081", val: a1, min: -10, max: 10, set: setA1 },
+          { label: "a₁", val: a1, min: -10, max: 10, set: setA1 },
           { label: "q", val: q, min: -5, max: 5, set: setQ },
         ].map(sl => (
           <div key={sl.label} style={{ background: "rgba(255,255,255,0.88)", borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", padding: "1rem" }}>
@@ -878,9 +878,9 @@ function SumPairsLab() {
       {/* Summary tiles */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, textAlign: "center", marginBottom: 12 }}>
         {[
-          { label: "a\u2081+a\u2082", val: sum1, sub: "\u05E1\u05DB\u05D5\u05DD \u05E8\u05D0\u05E9\u05D5\u05DF" },
-          { label: "a\u2082+a\u2083", val: sum2, sub: "\u05E1\u05DB\u05D5\u05DD \u05E9\u05E0\u05D9" },
-          { label: "\u05D9\u05D7\u05E1", val: ratio, sub: "(a\u2082+a\u2083)/(a\u2081+a\u2082)" },
+          { label: "a₁+a₂", val: sum1, sub: "סכום ראשון" },
+          { label: "a₂+a₃", val: sum2, sub: "סכום שני" },
+          { label: "יחס", val: ratio, sub: "(a₂+a₃)/(a₁+a₂)" },
         ].map(row => (
           <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.88)", border: "1px solid rgba(234,88,12,0.3)", padding: 14 }}>
             <div style={{ color: "#92400E", fontFamily: "monospace", fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{row.label}</div>
@@ -890,7 +890,7 @@ function SumPairsLab() {
         ))}
       </div>
       <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "0.5rem" }}>
-        \u05E9\u05D9\u05DE\u05D5 \u05DC\u05D1: \u05D4\u05D9\u05D7\u05E1 \u05D1\u05D9\u05DF \u05D4\u05E1\u05DB\u05D5\u05DE\u05D9\u05DD \u05E9\u05D5\u05D5\u05D4 \u05EA\u05DE\u05D9\u05D3 \u05DC-q!
+        שימו לב: היחס בין הסכומים שווה תמיד ל-q!
       </p>
     </section>
   );
@@ -922,13 +922,13 @@ function DualSeriesLab() {
 
   return (
     <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>\uD83D\uDD2C \u05DE\u05E2\u05D1\u05D3\u05EA \u05E9\u05EA\u05D9 \u05E1\u05D3\u05E8\u05D5\u05EA</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>\u05E9\u05E0\u05D4 \u05D0\u05EA q (\u05D4\u05E0\u05D3\u05E1\u05D9\u05EA) \u05D5-d (\u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA) \u2014 \u05D4\u05E9\u05D5\u05D5\u05D4 \u05D1\u05D9\u05DF \u05D4\u05E1\u05D3\u05E8\u05D5\u05EA</p>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>🔬 מעבדת שתי סדרות</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>שנה את q (הנדסית) ו-d (חשבונית) — השווה בין הסדרות</p>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: "2rem" }}>
         {[
-          { label: "q (\u05D4\u05E0\u05D3\u05E1\u05D9\u05EA A)", val: qA, min: -4, max: 5, set: setQA },
-          { label: "d (\u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA B)", val: dB, min: -10, max: 20, set: setDB },
+          { label: "q (הנדסית A)", val: qA, min: -4, max: 5, set: setQA },
+          { label: "d (חשבונית B)", val: dB, min: -10, max: 20, set: setDB },
         ].map(sl => (
           <div key={sl.label} style={{ background: "rgba(255,255,255,0.88)", borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", padding: "1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
@@ -943,7 +943,7 @@ function DualSeriesLab() {
       {/* Side-by-side bar charts */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: "1.5rem" }}>
         <div style={{ borderRadius: 16, border: "1px solid rgba(153,27,27,0.3)", background: "rgba(255,255,255,0.75)", padding: "1rem", textAlign: "center" }}>
-          <div style={{ color: "#991b1b", fontSize: 10, fontWeight: 700, marginBottom: 8 }}>A \u2014 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA</div>
+          <div style={{ color: "#991b1b", fontSize: 10, fontWeight: 700, marginBottom: 8 }}>A — הנדסית</div>
           <svg viewBox={`0 0 ${W / 2} ${H}`} style={{ width: "100%", maxWidth: 180 }} aria-hidden>
             <line x1={5} y1={H - 10} x2={W / 2 - 5} y2={H - 10} stroke="#94a3b8" strokeWidth={0.8} />
             {termsA.slice(0, 8).map((t, i) => {
@@ -953,7 +953,7 @@ function DualSeriesLab() {
           </svg>
         </div>
         <div style={{ borderRadius: 16, border: "1px solid rgba(30,64,175,0.3)", background: "rgba(255,255,255,0.75)", padding: "1rem", textAlign: "center" }}>
-          <div style={{ color: "#1e40af", fontSize: 10, fontWeight: 700, marginBottom: 8 }}>B \u2014 \u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA</div>
+          <div style={{ color: "#1e40af", fontSize: 10, fontWeight: 700, marginBottom: 8 }}>B — חשבונית</div>
           <svg viewBox={`0 0 ${W / 2} ${H}`} style={{ width: "100%", maxWidth: 180 }} aria-hidden>
             <line x1={5} y1={H - 10} x2={W / 2 - 5} y2={H - 10} stroke="#94a3b8" strokeWidth={0.8} />
             {termsB.slice(0, 8).map((t, i) => {
@@ -967,9 +967,9 @@ function DualSeriesLab() {
       {/* Summary tiles */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, textAlign: "center", marginBottom: 12 }}>
         {[
-          { label: "S_A", val: SA > 999999 ? ">999K" : SA, sub: "\u05E1\u05DB\u05D5\u05DD \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA" },
-          { label: "S_B", val: SB, sub: "\u05E1\u05DB\u05D5\u05DD \u05D7\u05E9\u05D1\u05D5\u05E0\u05D9\u05EA" },
-          { label: "\u05DE\u05E9\u05D5\u05EA\u05E4\u05D9\u05DD", val: commonCount, sub: "\u05D0\u05D9\u05D1\u05E8\u05D9\u05DD \u05D6\u05D4\u05D9\u05DD" },
+          { label: "S_A", val: SA > 999999 ? ">999K" : SA, sub: "סכום הנדסית" },
+          { label: "S_B", val: SB, sub: "סכום חשבונית" },
+          { label: "משותפים", val: commonCount, sub: "איברים זהים" },
         ].map(row => (
           <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.88)", border: "1px solid rgba(153,27,27,0.3)", padding: 14 }}>
             <div style={{ color: "#991b1b", fontFamily: "monospace", fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{row.label}</div>
@@ -979,7 +979,7 @@ function DualSeriesLab() {
         ))}
       </div>
       <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "0.5rem" }}>
-        \u05E9\u05E0\u05D4 \u05D0\u05EA \u05D4\u05E4\u05E8\u05DE\u05D8\u05E8\u05D9\u05DD \u05DB\u05D3\u05D9 \u05DC\u05E8\u05D0\u05D5\u05EA \u05DE\u05EA\u05D9 \u05D4\u05E1\u05D3\u05E8\u05D5\u05EA \u05E0\u05E4\u05D2\u05E9\u05D5\u05EA
+        שנה את הפרמטרים כדי לראות מתי הסדרות נפגשות
       </p>
     </section>
   );
@@ -1008,10 +1008,10 @@ export default function SeriesGeometricPage() {
             style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(255,255,255,0.7)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#2D3436", textDecoration: "none", transition: "background 0.15s" }}
           >
             <span style={{ fontSize: 16 }}>&larr;</span>
-            \u05D7\u05D6\u05E8\u05D4 \u05DC\u05E1\u05D3\u05E8\u05D5\u05EA
+            חזרה לסדרות
           </Link>
-          <h1 style={{ fontSize: "1.9rem", fontWeight: "bold", marginTop: "0.75rem", color: "#1A1A1A" }}>\u05E1\u05D3\u05E8\u05D4 \u05D4\u05E0\u05D3\u05E1\u05D9\u05EA \u2014 \u05E2\u05DD AI</h1>
-          <p style={{ color: "#6B7280", fontSize: 14, marginTop: 4 }}>\u05DE\u05E0\u05D4, \u05D0\u05D9\u05D1\u05E8 \u05DB\u05DC\u05DC\u05D9, \u05E1\u05DB\u05D5\u05DD \u05D5\u05E1\u05DB\u05D5\u05DD \u05D0\u05D9\u05E0\u05E1\u05D5\u05E4\u05D9 \u2014 \u05D5\u05D0\u05D9\u05DA \u05DC\u05E9\u05D0\u05D5\u05DC AI \u05D0\u05EA \u05D4\u05E9\u05D0\u05DC\u05D5\u05EA \u05D4\u05E0\u05DB\u05D5\u05E0\u05D5\u05EA</p>
+          <h1 style={{ fontSize: "1.9rem", fontWeight: "bold", marginTop: "0.75rem", color: "#1A1A1A" }}>סדרה הנדסית — עם AI</h1>
+          <p style={{ color: "#6B7280", fontSize: 14, marginTop: 4 }}>מנה, איבר כללי, סכום וסכום אינסופי — ואיך לשאול AI את השאלות הנכונות</p>
         </div>
 
         {/* SubtopicProgress */}
@@ -1050,7 +1050,7 @@ export default function SeriesGeometricPage() {
         {/* Footer back link */}
         <div style={{ textAlign: "center", marginTop: "2.5rem", paddingBottom: "2rem" }}>
           <Link href="/topic/grade12/series" style={{ color: "#6B7280", fontSize: 13, textDecoration: "underline" }}>
-            &larr; \u05D7\u05D6\u05E8\u05D4 \u05DC\u05E1\u05D3\u05E8\u05D5\u05EA
+            &larr; חזרה לסדרות
           </Link>
         </div>
 

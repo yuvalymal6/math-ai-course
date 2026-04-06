@@ -687,7 +687,7 @@ export default function GrowthAndDecayPage() {
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>גדילה ודעיכה עם AI</h1>
             <p style={{ color: "#64748b", fontSize: 13, margin: "3px 0 0" }}>מודלים מעריכיים, חצי חיים וריבית דריבית</p>
           </div>
-          <Link href="/topic/grade12"
+          <Link href="/"
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#4A4A4A", border: "1px solid #333", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#FFFFFF", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#2D2D2D"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#4A4A4A"; }}>

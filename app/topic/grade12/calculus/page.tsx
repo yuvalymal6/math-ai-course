@@ -3,27 +3,12 @@
 import Link from "next/link";
 import {
   Brain, ChevronRight,
-  FunctionSquare, TrendingUp, LogIn, Sigma,
+  TrendingUp, LogIn, Sigma,
 } from "lucide-react";
 
 // ─── Sub-topic definitions ────────────────────────────────────────────────────
 
 const SUBTOPICS = [
-  {
-    id: "polynomials",
-    href: "/topic/grade12/calculus-polynomial",
-    icon: FunctionSquare,
-    title: "פולינומים ונגזרות",
-    subtitle: "חקירה • קיצון • פרמטרים",
-    description: "חקירת פונקציות פולינום: מציאת נקודות קיצון, סיווגן בנגזרת השנייה, חקירה מלאה וסקיצה גרפית, ובידוד פרמטרים עלומים.",
-    chips: ["f′(x)=0", "f″ סיווג", "חקירה מלאה"],
-    ready: true,
-    glowAnim: true,
-    iconBg: "bg-indigo-500/10", iconBorder: "border-indigo-500/30", iconText: "text-indigo-400",
-    hoverBorder: "hover:border-indigo-500/60",
-    badgeBg: "bg-indigo-500/10 border-indigo-500/30", badgeText: "text-indigo-400",
-    chevronHover: "group-hover:text-indigo-400",
-  },
   {
     id: "exponential",
     href: "/topic/grade12/calculus/exponential",

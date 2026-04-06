@@ -39,7 +39,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-ser
 </head>
 <body>
 <h1>מפת ניווט — מתמטיקה + AI</h1>
-<p class="sub">46 נתיבים | לחצו על כל קופסה לפרטים</p>
+<p class="sub">39 נתיבים | לחצו על כל קופסה לפרטים</p>
 <div class="filters">
   <button data-f="sys" class="active" onclick="toggle('sys')">מערכת</button>
   <button data-f="g10" class="active" onclick="toggle('g10')">כיתה י</button>
@@ -62,56 +62,49 @@ const D={
 home:{t:"דשבורד ראשי",r:"/",d:"דף הבית. כרטיסיות נושאים לפי כיתה, התקדמות, כפתורי המשך ואקראי.",i:["/login","/onboarding","/wizard","כל דפי הנושאים"],o:["/onboarding","כל נושאי הכיתה"]},
 login:{t:"כניסה",r:"/login",d:"דף כניסה עם email וסיסמה.",i:["/ (logout)"],o:["/","/onboarding"]},
 onboarding:{t:"בחירת כיתה",r:"/onboarding",d:"בחירת כיתה י/יא/יב בפעם הראשונה.",i:["/ (שנה כיתה)","/login"],o:["/"]},
-wizard:{t:"אשף נושא",r:"/wizard",d:"בחירת כיתה ונושא — מנווט ישירות לדף.",i:["/topic/grade10","/topic/grade11","/topic/grade12"],o:["grade10","grade11","grade12"]},
+wizard:{t:"אשף נושא",r:"/wizard",d:"בחירת כיתה ונושא — מנווט ישירות לדף.",i:["/"],o:["כל דפי הנושאים"]},
 auth:{t:"כניסה (legacy)",r:"/auth",d:"דף כניסה ישן. אין קישורים ישירים.",i:["אין"],o:["/"]},
-g10:{t:"מרכז כיתה י",r:"/topic/grade10",d:"5 כרטיסיות: פרבולה, אנליטית, גיאומטריה, טריגו, סטטיסטיקה.",i:["/","/wizard"],o:["algebra-parabola","analytic","geometry","trig","statistics"]},
-g10_par:{t:"חקירת פרבולה",r:"/topic/grade10/algebra-parabola",d:"משוואות ריבועיות, גרף אינטראקטיבי. 3 רמות.",i:["grade10","/"],o:["/"]},
-g10_an:{t:"Hub אנליטית",r:"/topic/grade10/analytic",d:"יסודות + בעיות גיאומטריות.",i:["grade10","/"],o:["basics","problems"]},
+g10_par:{t:"חקירת פרבולה",r:"/topic/grade10/algebra-parabola",d:"משוואות ריבועיות, גרף אינטראקטיבי. 3 רמות.",i:["/"],o:["/"]},
+g10_an:{t:"Hub אנליטית",r:"/topic/grade10/analytic",d:"יסודות + בעיות גיאומטריות.",i:["/"],o:["basics","problems"]},
 g10_bas:{t:"יסודות",r:"/topic/grade10/analytic/basics",d:"מרחק, אמצע, שיפוע. 3 רמות.",i:["analytic","/"],o:["analytic"]},
 g10_pro:{t:"בעיות גיאומטריות",r:"/topic/grade10/analytic/problems",d:"הוכחות מרובעים, מעוין, מקבילית. 3 רמות.",i:["analytic","/"],o:["analytic"]},
-g10_geo:{t:"Hub גיאומטריה",r:"/topic/grade10/geometry",d:"מקבילית ומלבן, מעוין וריבוע.",i:["grade10","/"],o:["parallelogram","rhombus"]},
+g10_geo:{t:"Hub גיאומטריה",r:"/topic/grade10/geometry",d:"מקבילית ומלבן, מעוין וריבוע.",i:["/"],o:["parallelogram","rhombus"]},
 g10_pl:{t:"מקבילית ומלבן",r:"/topic/grade10/geo-parallelogram",d:"תכונות, אלכסונים, חפיפה. 3 רמות.",i:["geometry","/"],o:["geometry"]},
 g10_rh:{t:"מעוין וריבוע",r:"/topic/grade10/geo-rhombus",d:"אלכסונים, זוויות, הוכחות. 3 רמות.",i:["geometry","/"],o:["geometry"]},
-g10_tr:{t:"Hub טריגונומטריה",r:"/topic/grade10/trig",d:"יחסים טריגונומטריים + יישומים.",i:["grade10","/"],o:["trig-basics","trig-apps"]},
+g10_tr:{t:"Hub טריגונומטריה",r:"/topic/grade10/trig",d:"יחסים טריגונומטריים + יישומים.",i:["/"],o:["trig-basics","trig-apps"]},
 g10_tb:{t:"sin/cos/tan",r:"/topic/grade10/trig-basics",d:"יסודות הטריגו במשולש ישר-זווית. 3 רמות.",i:["trig","/"],o:["trig"]},
 g10_ta:{t:"יישומים",r:"/topic/grade10/trig-applications",d:"בעיות גובה ומרחק. 3 רמות.",i:["trig","/"],o:["trig"]},
-g10_st:{t:"Hub סטטיסטיקה",r:"/topic/grade10/statistics",d:"מדדי מרכז + פיזור.",i:["grade10","/"],o:["central","dispersion"]},
+g10_st:{t:"Hub סטטיסטיקה",r:"/topic/grade10/statistics",d:"מדדי מרכז + פיזור.",i:["/"],o:["central","dispersion"]},
 g10_ce:{t:"מדדי מרכז",r:"/topic/grade10/statistics/central",d:"ממוצע, חציון, שכיח. 3 רמות.",i:["statistics","/"],o:["statistics"]},
 g10_di:{t:"מדדי פיזור",r:"/topic/grade10/statistics/dispersion",d:"סטיית תקן, שינוי לינארי. 3 רמות.",i:["statistics","/"],o:["statistics"]},
-g11:{t:"מרכז כיתה יא",r:"/topic/grade11",d:"5 כרטיסיות: חדו\"א, אנליטית, קיצון, הסתברות, סטטיסטיקה.",i:["/","/wizard"],o:["calculus","analytic","kitzun","probability","statistics"]},
-g11_ca:{t:"Hub חדו\"א",r:"/topic/calculus",d:"פולינומים, רציונליות, שורש.",i:["grade11","/"],o:["polynomials","rational","root"]},
+g11_ca:{t:"Hub חדו\"א",r:"/topic/calculus",d:"פולינומים, רציונליות, שורש.",i:["/"],o:["polynomials","rational","root"]},
 g11_po:{t:"פולינומים",r:"/topic/calculus/polynomials",d:"מונוטוניות, קיצוניים, f'(x). 3 רמות.",i:["calculus","/"],o:["calculus"]},
 g11_ra:{t:"רציונליות",r:"/topic/calculus/rational",d:"אסימפטוטות, חורים, סקיצה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
 g11_ro:{t:"שורש",r:"/topic/calculus/root",d:"תחום, נגזרת, חקירה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
-g11_an:{t:"Hub אנליטית",r:"/topic/analytic",d:"קו ישר, מעגל, משיק.",i:["grade11","/"],o:["line","circle","tangent"]},
+g11_an:{t:"Hub אנליטית",r:"/topic/analytic",d:"קו ישר, מעגל, משיק.",i:["/"],o:["line","circle","tangent"]},
 g11_li:{t:"קו ישר",r:"/topic/analytic/line",d:"שיפוע, משוואה, ניצב, מקביל. 3 רמות.",i:["analytic","/"],o:["analytic"]},
 g11_ci:{t:"מעגל",r:"/topic/analytic/circle",d:"משוואה, מרכז, רדיוס. 3 רמות.",i:["analytic","/"],o:["analytic"]},
 g11_tg:{t:"משיק",r:"/topic/analytic/tangent",d:"ניצבות רדיוס-משיק. 3 רמות.",i:["analytic","/"],o:["analytic"]},
-g11_ki:{t:"Hub קיצון",r:"/topic/kitzun",d:"גיאומטריה + פונקציות + 2 תרגילים נוספים.",i:["grade11","/"],o:["geometry","functions"]},
+g11_ki:{t:"Hub קיצון",r:"/topic/kitzun",d:"גיאומטריה + פונקציות + 2 תרגילים נוספים.",i:["/"],o:["geometry","functions"]},
 g11_kg:{t:"קיצון — גיאומטריה",r:"/topic/kitzun/geometry",d:"גידור, חלון נורמן. 3 רמות.",i:["kitzun","/"],o:["kitzun"]},
 g11_kf:{t:"קיצון — פונקציות",r:"/topic/kitzun/functions",d:"מלבן מתחת לפרבולה. 3 רמות.",i:["kitzun","/"],o:["kitzun"]},
 g11_k2:{t:"חלון נורמן",r:"/topic/kitzun-2",d:"קיצון בינוני — מינימום היקף.",i:["kitzun-3"],o:["kitzun","kitzun-3"]},
 g11_k3:{t:"מלבן ופרבולה",r:"/topic/kitzun-3",d:"קיצון מתקדם — מקסום שטח.",i:["kitzun-2"],o:["kitzun-2"]},
-g11_pr:{t:"Hub הסתברות",r:"/topic/probability",d:"עץ + טבלה דו-ממדית.",i:["grade11","/"],o:["tree","table"]},
+g11_pr:{t:"Hub הסתברות",r:"/topic/probability",d:"עץ + טבלה דו-ממדית.",i:["/"],o:["tree","table"]},
 g11_pt:{t:"עץ הסתברות",r:"/topic/probability/tree",d:"שליפה, הסתברות מותנית. 3 רמות.",i:["probability","/"],o:["probability"]},
 g11_pb:{t:"טבלה דו-ממדית",r:"/topic/probability/table",d:"בייס, הסתברות מותנית. 3 רמות.",i:["probability","/"],o:["probability"]},
-g11_st:{t:"Hub סטטיסטיקה",r:"/topic/statistics",d:"מדדי מרכז + פיזור.",i:["grade11","/"],o:["central","dispersion"]},
+g11_st:{t:"Hub סטטיסטיקה",r:"/topic/statistics",d:"מדדי מרכז + פיזור.",i:["/"],o:["central","dispersion"]},
 g11_sc:{t:"מדדי מרכז יא",r:"/topic/statistics/central",d:"ממוצע, חציון, outlier. 3 רמות.",i:["statistics","/"],o:["statistics"]},
 g11_sd:{t:"מדדי פיזור יא",r:"/topic/statistics/dispersion",d:"סטיית תקן, שינוי לינארי. 3 רמות.",i:["statistics","/"],o:["statistics"]},
-g12:{t:"מרכז כיתה יב",r:"/topic/grade12",d:"4 כרטיסיות: סדרות, מרחב, גדילה/דעיכה, חדו\"א.",i:["/","/wizard"],o:["series","space","growth-decay","calculus"]},
-g12_se:{t:"Hub סדרות",r:"/topic/grade12/series",d:"חשבונית, הנדסית, כלל נסיגה.",i:["grade12","/"],o:["arithmetic","geometric","recursion"]},
+g12_se:{t:"Hub סדרות",r:"/topic/grade12/series",d:"חשבונית, הנדסית, כלל נסיגה.",i:["/"],o:["arithmetic","geometric","recursion"]},
 g12_ar:{t:"חשבונית",r:"/topic/grade12/series-arithmetic",d:"הפרש d, איבר כללי, Sn. 3 רמות.",i:["series","/"],o:["series"]},
 g12_ge:{t:"הנדסית",r:"/topic/grade12/series-geometric",d:"מנה q, סכום, ריבית דריבית. 3 רמות.",i:["series","/"],o:["series"]},
 g12_re:{t:"כלל נסיגה",r:"/topic/grade12/series/recursion",d:"זיהוי סדרה מנוסחת נסיגה.",i:["/ בלבד"],o:["series"]},
-g12_sp:{t:"Hub מרחב",r:"/topic/grade12/space-geometry",d:"תיבה, פירמידה.",i:["grade12","/"],o:["box","pyramid"]},
+g12_sp:{t:"Hub מרחב",r:"/topic/grade12/space-geometry",d:"תיבה, פירמידה.",i:["/"],o:["box","pyramid"]},
 g12_bx:{t:"תיבה",r:"/topic/grade12/space-geometry/box",d:"נפח, שטח, אלכסון מרחבי. 3 רמות.",i:["space","/"],o:["space"]},
 g12_py:{t:"פירמידה",r:"/topic/grade12/space-geometry/pyramid",d:"גובה, נפח, אפותמה. 3 רמות.",i:["space","/"],o:["space"]},
-g12_gr:{t:"גדילה ודעיכה",r:"/topic/grade12/growth-decay",d:"N(t)=N0*a^t. 3 רמות.",i:["grade12","/"],o:["/"]},
-g12_cl:{t:"Hub חדו\"א יב",r:"/topic/grade12/calculus",d:"פולינומים, e^x, ln, אינטגרלים.",i:["grade12","/"],o:["calculus-poly","exponential","ln","integral"]},
-g12_cp:{t:"Hub פולינומים יב",r:"/topic/grade12/calculus-polynomial",d:"חקירה, חקירה מלאה, פרמטרים.",i:["calculus","/"],o:["investigation","full","parameters"]},
-g12_in:{t:"חקירת קיצון",r:"/.../investigation",d:"f'(x)=0, נגזרת שנייה. 3 רמות.",i:["calculus-poly","/"],o:["calculus-poly"]},
-g12_fu:{t:"חקירה מלאה",r:"/.../full-investigation",d:"פיתול, קעירות, סקיצה. 3 רמות.",i:["calculus-poly","/"],o:["calculus-poly"]},
-g12_pm:{t:"פרמטרים",r:"/.../parameters",d:"בידוד פרמטרים מתנאי קיצון. 3 רמות.",i:["calculus-poly","/"],o:["calculus-poly"]},
+g12_gr:{t:"גדילה ודעיכה",r:"/topic/grade12/growth-decay",d:"N(t)=N0*a^t. 3 רמות.",i:["/"],o:["/"]},
+g12_cl:{t:"Hub חדו\"א יב",r:"/topic/grade12/calculus",d:"e^x, ln, אינטגרלים.",i:["/"],o:["exponential","ln","integral"]},
 g12_ex:{t:"e^x",r:"/topic/grade12/calculus/exponential",d:"(e^x)'=e^x, חקירה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
 g12_ln:{t:"ln(x)",r:"/topic/grade12/calculus/ln",d:"נגזרת ln, תחום, חקירה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
 g12_it:{t:"אינטגרלים",r:"/topic/grade12/calculus/integral",d:"אינטגרל, שטח, נפח סיבוב. 3 רמות.",i:["calculus","/"],o:["calculus"]}
@@ -121,25 +114,25 @@ g12_it:{t:"אינטגרלים",r:"/topic/grade12/calculus/integral",d:"אינט�
 // Each tree: { root, children: [ {id, children?} ] }
 const TREES = {
 sys: {root:"home", children:[{id:"login"},{id:"onboarding"},{id:"wizard"},{id:"auth"}]},
-g10: {root:"g10", children:[
+g10: {root:"home", children:[
   {id:"g10_par"},
   {id:"g10_an", children:[{id:"g10_bas"},{id:"g10_pro"}]},
   {id:"g10_geo", children:[{id:"g10_pl"},{id:"g10_rh"}]},
   {id:"g10_tr", children:[{id:"g10_tb"},{id:"g10_ta"}]},
   {id:"g10_st", children:[{id:"g10_ce"},{id:"g10_di"}]}
 ]},
-g11: {root:"g11", children:[
+g11: {root:"home", children:[
   {id:"g11_ca", children:[{id:"g11_po"},{id:"g11_ra"},{id:"g11_ro"}]},
   {id:"g11_an", children:[{id:"g11_li"},{id:"g11_ci"},{id:"g11_tg"}]},
   {id:"g11_ki", children:[{id:"g11_kg"},{id:"g11_kf"},{id:"g11_k2"},{id:"g11_k3"}]},
   {id:"g11_pr", children:[{id:"g11_pt"},{id:"g11_pb"}]},
   {id:"g11_st", children:[{id:"g11_sc"},{id:"g11_sd"}]}
 ]},
-g12: {root:"g12", children:[
+g12: {root:"home", children:[
   {id:"g12_se", children:[{id:"g12_ar"},{id:"g12_ge"},{id:"g12_re"}]},
   {id:"g12_sp", children:[{id:"g12_bx"},{id:"g12_py"}]},
   {id:"g12_gr"},
-  {id:"g12_cl", children:[{id:"g12_cp", children:[{id:"g12_in"},{id:"g12_fu"},{id:"g12_pm"}]},{id:"g12_ex"},{id:"g12_ln"},{id:"g12_it"}]}
+  {id:"g12_cl", children:[{id:"g12_ex"},{id:"g12_ln"},{id:"g12_it"}]}
 ]}
 };
 

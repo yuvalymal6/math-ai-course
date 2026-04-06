@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -10,6 +10,8 @@ import MarkComplete from "@/app/components/MarkComplete";
 import LabMessage from "@/app/components/LabMessage";
 import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
 // ─── Global CSS ───────────────────────────────────────────────────────────────
 
@@ -24,6 +26,20 @@ const GLOBAL_CSS = `
     outline-offset: 2px;
   }
 `;
+
+// ─── KaTeX helpers ───────────────────────────────────────────────────────────
+
+function InlineMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: false }); }, [children]);
+  return <span ref={ref} />;
+}
+
+function DisplayMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: true }); }, [children]);
+  return <span ref={ref} style={{ display: "block", textAlign: "center" }} />;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -62,29 +78,131 @@ const TABS = [
   { id: "advanced" as const, label: "מתקדם — בעיית כדים",   bg: "bg-red-50",    border: "border-red-700",    textColor: "text-red-700",    glowColor: "rgba(220,38,38,0.3)"   },
 ] as const;
 
-// ─── Formulas ─────────────────────────────────────────────────────────────────
-
-const FORMULAS = [
-  { label: "כפל הסתברויות", formula: "P(A∩B) = P(A)·P(B|A)" },
-  { label: "הסתברות כוללת", formula: "P(B) = Σ P(B|Aᵢ)·P(Aᵢ)" },
-  { label: "בייס",           formula: "P(Aᵢ|B) = P(B|Aᵢ)·P(Aᵢ)÷P(B)" },
-  { label: "מותנה",          formula: "P(B|A) = P(A∩B)÷P(A)" },
-];
 
 // ─── FormulaBar ───────────────────────────────────────────────────────────────
 
-function FormulaBar({ accentColor, accentRgb }: { accentColor: string; accentRgb: string }) {
+function FormulaBar() {
+  const [activeTab, setActiveTab] = useState<"mult" | "total" | "bayes" | "cond" | null>(null);
+
+  const tabs = [
+    { id: "mult" as const,  label: "כפל הסתברויות", tex: "P(A \\cap B)",         color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "total" as const, label: "הסתברות כוללת", tex: "P(B) = \\Sigma",       color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
+    { id: "bayes" as const, label: "משפט בייס",     tex: "P(A_i | B)",           color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
+    { id: "cond" as const,  label: "הסתברות מותנית", tex: "P(B | A)",            color: "#7C3AED", borderColor: "rgba(124,58,237,0.35)" },
+  ];
+
   return (
-    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1rem 1.25rem", marginBottom: "1.5rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
-      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 10, textAlign: "center" }}>נוסחאות</div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem 1.5rem", justifyContent: "center" }}>
-        {FORMULAS.map((f, i) => (
-          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-            <span style={{ color: "#6B7280", fontSize: 10 }}>{f.label}</span>
-            <span style={{ color: accentColor, fontFamily: "monospace", fontWeight: 700, fontSize: 12 }}>{f.formula}</span>
-          </div>
-        ))}
+    <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: "1.25rem" }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
+
+      <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
+        {tabs.map(t => {
+          const isActive = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(isActive ? null : t.id)}
+              style={{
+                flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
+                border: `1.5px solid ${isActive ? t.borderColor : "rgba(60,54,42,0.15)"}`,
+                background: isActive ? `${t.color}15` : "rgba(255,255,255,0.02)",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
+              <span style={{ color: isActive ? t.color : "#6B7280" }}><InlineMath>{t.tex}</InlineMath></span>
+            </button>
+          );
+        })}
       </div>
+
+      {activeTab === "mult" && (
+        <motion.div key="mult" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(22,163,74,0.25)", background: "rgba(22,163,74,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"P(A \\cap B) = P(A) \\cdot P(B|A)"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> הסתברות לשני אירועים ביחד = מכפלת ההסתברויות לאורך ענף בעץ.
+                <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>עם החזרה — האירועים בלתי תלויים: <InlineMath>{"P(B|A)=P(B)"}</InlineMath></li>
+                  <li>ללא החזרה — ההסתברויות משתנות בין שליפה לשליפה.</li>
+                </ul>
+              </div>
+              <div style={{ marginTop: 10, color: "#16a34a", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; דוגמה: כד עם 5 אדומים מתוך 8 → <InlineMath>{"P(\\text{AA}) = \\frac{5}{8} \\cdot \\frac{5}{8}"}</InlineMath>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "total" && (
+        <motion.div key="total" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(234,88,12,0.25)", background: "rgba(234,88,12,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"P(B) = \\sum_i P(B|A_i) \\cdot P(A_i)"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> ההסתברות הכוללת = סכום כל הדרכים להגיע לאירוע דרך כל הענפים.
+                <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>סכום כל העלים שבהם האירוע מתקיים.</li>
+                  <li>נקרא גם: נוסחת ההסתברות השלמה.</li>
+                </ul>
+              </div>
+              <div style={{ marginTop: 10, color: "#EA580C", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; דוגמה: <InlineMath>{"P(\\text{red}) = P(\\text{red}|\\text{A}) \\cdot P(\\text{A}) + P(\\text{red}|\\text{B}) \\cdot P(\\text{B})"}</InlineMath>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "bayes" && (
+        <motion.div key="bayes" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(220,38,38,0.25)", background: "rgba(220,38,38,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"P(A_i|B) = \\frac{P(B|A_i) \\cdot P(A_i)}{P(B)}"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> משפט בייס הופך כיוון — מ-"מה הסיכוי לתוצאה בהינתן מקור" ל-"מה הסיכוי למקור בהינתן תוצאה".
+                <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>המונה: ענף ספציפי (מכפלה לאורך הדרך).</li>
+                  <li>המכנה: הסתברות כוללת (סכום כל הענפים).</li>
+                </ul>
+              </div>
+              <div style={{ marginTop: 10, color: "#DC2626", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; שאלה אופיינית: &quot;בהינתן שיצא אדום — מאיזה כד שלפנו?&quot;
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "cond" && (
+        <motion.div key="cond" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(124,58,237,0.25)", background: "rgba(124,58,237,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"P(B|A) = \\frac{P(A \\cap B)}{P(A)}"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> הסתברות מותנית = ההסתברות ל-B כאשר ידוע ש-A קרה.
+                <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>הקו | נקרא &quot;בהינתן ש...&quot;</li>
+                  <li>מצמצמים את מרחב המדגם לאירוע A בלבד.</li>
+                </ul>
+              </div>
+              <div style={{ marginTop: 10, color: "#7C3AED", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; דוגמה: &quot;מה הסיכוי לירוק, בהינתן שהראשון צהוב?&quot;
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -449,10 +567,10 @@ function TreeLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
 
       <div className="flex gap-4 justify-center flex-wrap items-start">
         {/* Animated tree */}
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>עץ — עובי ענף = הסתברות</p>
+        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>עץ — עובי ענף = הסתברות</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <circle cx={rx} cy={ry} r={7} fill="#00d4ff" />
+            <circle cx={rx} cy={ry} r={7} fill={st.accentColor} />
             <motion.line animate={{ strokeWidth: w1a }} transition={{ type: "spring", stiffness: 260, damping: 28 }}
               x1={rx} y1={ry + 7} x2={ax} y2={ay - 7} stroke="#22c55e" />
             <motion.line animate={{ strokeWidth: w1b }} transition={{ type: "spring", stiffness: 260, damping: 28 }}
@@ -481,8 +599,8 @@ function TreeLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
         </div>
 
         {/* Bar chart */}
-        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
-          <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>הסתברות כל תוצאה</p>
+        <div style={{ borderRadius: 12, background: "#ffffff", border: "1px solid rgba(60,54,42,0.15)", overflow: "hidden" }}>
+          <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>הסתברות כל תוצאה</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             {outcomes.map((o, i) => {
               const bw = 38, gap = 14, startX = 20;
@@ -506,7 +624,7 @@ function TreeLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
                 </g>
               );
             })}
-            <line x1={15} y1={SH - 38} x2={SW - 10} y2={SH - 38} stroke="#334155" strokeWidth={1} />
+            <line x1={15} y1={SH - 38} x2={SW - 10} y2={SH - 38} stroke="rgba(60,54,42,0.2)" strokeWidth={1} />
           </svg>
         </div>
       </div>
@@ -520,7 +638,7 @@ function TreeLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
         </div>
         <input type="range" min={0.05} max={0.95} step={0.005} value={p}
           onChange={e => setP(parseFloat(e.target.value))} className="w-full" style={{ accentColor: "#22c55e" }} />
-        <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center" }}>גרור ל-P = 5/8 = 0.625 כדי להתאים לבעיה הבסיסית</p>
+        <p style={{ fontSize: 11, color: "#6B7280", textAlign: "center" }}>גרור ל-P = 5/8 = 0.625 כדי להתאים לבעיה הבסיסית</p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
@@ -566,15 +684,15 @@ const exercises: ExerciseDef[] = [
       },
       {
         phase: "שלב 2", label: "P(שני כחולים)",
-        prompt: "\n\nהסיכוי לכחול = 3/8. הנחה אותי לחשב P(שני כחולים ברצף) תוך הסבר מתי מכפילים הסתברויות. שאל לפני שתמשיך.",
+        prompt: "\n\nכד עם 5 אדומים ו-3 כחולים, שליפה עם החזרה. כבר חישבתי את P(כחול). הנחה אותי לחשב P(שני כחולים ברצף) תוך הסבר מתי מכפילים הסתברויות. שאל לפני שתמשיך.",
       },
       {
         phase: "שלב 3", label: "הסתברות משלימה",
-        prompt: "\n\nP(שני כחולים) = 9/64. הנחה אותי להשתמש בהסתברות משלימה כדי למצוא P(לפחות אדום אחד). הסבר את הנוסחה.",
+        prompt: "\n\nכד עם 5 אדומים ו-3 כחולים, שליפה עם החזרה. כבר חישבתי את P(שני כחולים). הנחה אותי להשתמש בהסתברות משלימה כדי למצוא P(לפחות אדום אחד). הסבר את הנוסחה.",
       },
       {
         phase: "שלב 4", label: "אמת בעץ",
-        prompt: "\n\nP(ככ)=9/64, P(אא)=25/64. הנחה אותי לאמת את התשובה על ידי חיבור כל 4 ענפי העץ. שאל אם יודע מה ערכי P(אכ) ו-P(כא).",
+        prompt: "\n\nכד עם 5 אדומים ו-3 כחולים, שליפה עם החזרה. חישבתי את P(שני כחולים) ואת P(לפחות אדום אחד). הנחה אותי לאמת את התשובה על ידי חיבור כל 4 ענפי העץ. שאל אם יודע מה ערכי כל הענפים.",
       },
     ],
   },
@@ -692,6 +810,9 @@ export default function ProbabilityTreePage() {
 
       <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
 
+        {/* Progress */}
+        <SubtopicProgress subtopicId="probability/tree" />
+
         {/* Tab selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
           {TABS.map(tab => {
@@ -719,7 +840,7 @@ export default function ProbabilityTreePage() {
           </div>
 
           {/* FormulaBar */}
-          <FormulaBar accentColor={st.accentColor} accentRgb={st.glowRgb} />
+          <FormulaBar />
 
           {/* Diagram */}
           <div style={{ borderRadius: 16, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: 12, marginBottom: "1.5rem" }}>

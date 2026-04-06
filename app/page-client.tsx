@@ -219,6 +219,40 @@ const TOPICS_12 = [
   },
 ];
 
+// ─── 3-unit topics (coming soon) ──────────────────────────────────────────────
+
+const TOPICS_3U_10 = [
+  { id: "3u-10-stats", title: "סטטיסטיקה", subtitle: "ממוצע, חציון, סטיית תקן", icon: BarChart2, color: { bg: "bg-rose-950/40", border: "border-rose-800/50", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300" } },
+  { id: "3u-10-prob", title: "הסתברות", subtitle: "אירועים, חיתוך ואיחוד", icon: PieChart, color: { bg: "bg-purple-950/40", border: "border-purple-800/50", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300" } },
+  { id: "3u-10-geo", title: "גיאומטריה", subtitle: "משולשים, מרובעים ומעגלים", icon: Triangle, color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300" } },
+  { id: "3u-10-graphs", title: "גרפים", subtitle: "פונקציות לינאריות וריבועיות", icon: LineChart, color: { bg: "bg-blue-950/40", border: "border-blue-800/50", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300" } },
+  { id: "3u-10-word", title: "בעיות מילוליות", subtitle: "תרגום מילולי למתמטי", icon: Pencil, color: { bg: "bg-amber-950/40", border: "border-amber-800/50", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300" } },
+];
+
+const TOPICS_3U_11 = [
+  { id: "3u-11-growth", title: "גדילה ודעיכה", subtitle: "מודלים מעריכיים", icon: LineChart, color: { bg: "bg-rose-950/40", border: "border-rose-800/50", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300" } },
+  { id: "3u-11-prob", title: "הסתברות", subtitle: "הסתברות מותנית ובייס", icon: PieChart, color: { bg: "bg-purple-950/40", border: "border-purple-800/50", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300" } },
+  { id: "3u-11-geo", title: "גיאומטריה", subtitle: "חפיפה ודמיון", icon: Triangle, color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300" } },
+  { id: "3u-11-trig", title: "טריגונומטריה", subtitle: "משפט הסינוסים והקוסינוסים", icon: Compass, color: { bg: "bg-amber-950/40", border: "border-amber-800/50", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300" } },
+  { id: "3u-11-stats", title: "סטטיסטיקה", subtitle: "התפלגות נורמלית", icon: BarChart2, color: { bg: "bg-blue-950/40", border: "border-blue-800/50", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300" } },
+  { id: "3u-11-linear", title: "אלגברה לינארית", subtitle: "מערכת משוואות ומטריצות", icon: Calculator, color: { bg: "bg-indigo-950/40", border: "border-indigo-800/50", accent: "text-indigo-400", icon: "bg-indigo-900/60 text-indigo-300" } },
+];
+
+const TOPICS_3U_12 = [
+  { id: "3u-12-lp", title: "תכנון לינארי", subtitle: "אילוצים, תחום אפשרי ופתרון אופטימלי", icon: Maximize2, color: { bg: "bg-amber-950/40", border: "border-amber-800/50", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300" } },
+  { id: "3u-12-analytic", title: "גיאומטריה אנליטית", subtitle: "ישר, מעגל ומשיק", icon: Circle, color: { bg: "bg-orange-950/40", border: "border-orange-800/50", accent: "text-orange-400", icon: "bg-orange-900/60 text-orange-300" } },
+  { id: "3u-12-stats", title: "סטטיסטיקה", subtitle: "התפלגות נורמלית וז-סקור", icon: BarChart2, color: { bg: "bg-rose-950/40", border: "border-rose-800/50", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300" } },
+  { id: "3u-12-parabola", title: "פרבולה", subtitle: "קודקוד, מוקד ודירקטריסה", icon: TrendingUp, color: { bg: "bg-blue-950/40", border: "border-blue-800/50", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300" } },
+  { id: "3u-12-spatial", title: "ראייה מרחבית", subtitle: "חתכים, היטלים ופריסות", icon: Box, color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300" } },
+  { id: "3u-12-solids", title: "גופים במרחב", subtitle: "נפח ושטח פנים של גופים", icon: Box, color: { bg: "bg-indigo-950/40", border: "border-indigo-800/50", accent: "text-indigo-400", icon: "bg-indigo-900/60 text-indigo-300" } },
+];
+
+const TOPICS_3U: Record<string, typeof TOPICS_3U_10> = {
+  "10": TOPICS_3U_10,
+  "11": TOPICS_3U_11,
+  "12": TOPICS_3U_12,
+};
+
 const GRADE_TOPICS: Record<string, typeof TOPICS> = {
   "10": TOPICS_10,
   "11": TOPICS_11,
@@ -512,17 +546,19 @@ function ShareButton() {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function Dashboard({ initialGrade, initialUsername }: { initialGrade: string; initialUsername: string }) {
+export default function Dashboard({ initialGrade, initialUsername, initialUnits }: { initialGrade: string; initialUsername: string; initialUnits: string }) {
   const { openChat } = useChat();
 
-  // Sync server-side grade to localStorage for cross-page instant access
+  // Sync server-side values to localStorage for cross-page instant access
   useEffect(() => {
     if (initialGrade) localStorage.setItem("math-grade", initialGrade);
     if (initialUsername) localStorage.setItem("math-username", initialUsername);
-  }, [initialGrade, initialUsername]);
+    if (initialUnits) localStorage.setItem("math-units", initialUnits);
+  }, [initialGrade, initialUsername, initialUnits]);
 
   const gradeTopics = GRADE_TOPICS[initialGrade] || TOPICS;
   const gradeLabel = GRADE_LABELS[initialGrade] || 'כיתה י"א';
+  const comingSoonTopics = initialUnits === "3" ? (TOPICS_3U[initialGrade] || []) : [];
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -539,7 +575,7 @@ export default function Dashboard({ initialGrade, initialUsername }: { initialGr
             <Brain size={18} className="text-[#00d4ff]" />
             <span className="font-bold text-white text-sm">מתמטיקה + AI</span>
             <span className="text-slate-600 mx-1 hidden sm:inline">|</span>
-            <span className="text-[#00d4ff]/60 text-xs font-medium hidden sm:inline">{gradeLabel} • 4 יח&quot;ל</span>
+            <span className="text-[#00d4ff]/60 text-xs font-medium hidden sm:inline">{gradeLabel} • {initialUnits} יח&quot;ל</span>
           </div>
           <div className="flex items-center gap-2">
             <ShareButton />
@@ -598,6 +634,27 @@ export default function Dashboard({ initialGrade, initialUsername }: { initialGr
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {gradeTopics.map(t => <TopicCard key={t.id} topic={t} />)}
+
+            {/* 3-unit coming soon cards */}
+            {comingSoonTopics.map(t => {
+              const Icon = t.icon;
+              return (
+                <div key={t.id} className={`rounded-2xl border ${t.color.border} ${t.color.bg} p-4 sm:p-5 opacity-50 cursor-not-allowed select-none`}>
+                  <div className="flex items-start gap-3">
+                    <div className={`w-10 h-10 rounded-xl ${t.color.icon} flex items-center justify-center shrink-0`}>
+                      <Icon size={18} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <h3 className={`font-bold text-base ${t.color.accent}`}>{t.title}</h3>
+                        <span className="text-[10px] text-slate-500 border border-slate-700 rounded px-2 py-0.5">בקרוב</span>
+                      </div>
+                      <p className="text-slate-500 text-xs leading-relaxed">{t.subtitle}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 

@@ -10,10 +10,11 @@ const UNITS = [
     label: "3 יחידות",
     description: "אלגברה, גיאומטריה, סטטיסטיקה והסתברות",
     color: "from-emerald-500/20 to-teal-500/20",
-    border: "border-emerald-500/30",
+    border: "border-emerald-500/30 hover:border-emerald-400/60",
+    glow: "hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]",
     accent: "text-emerald-400",
     iconBg: "bg-emerald-900/50",
-    ready: false,
+    ready: true,
   },
   {
     id: "4",
@@ -40,23 +41,23 @@ const UNITS = [
 
 export default function UnitsPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
 
-  const selectUnits = async () => {
-    setLoading(true);
+  const selectUnits = async (unitId: string) => {
+    setLoading(unitId);
     try {
       const res = await fetch("/api/auth/units", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ units: 4 }),
+        body: JSON.stringify({ units: Number(unitId) }),
       });
       if (res.ok) {
-        try { localStorage.setItem("math-units", "4"); } catch {}
+        try { localStorage.setItem("math-units", unitId); } catch {}
         router.push("/");
         router.refresh();
       }
     } catch {
-      setLoading(false);
+      setLoading(null);
     }
   };
 
@@ -103,8 +104,8 @@ export default function UnitsPage() {
               return (
                 <button
                   key={u.id}
-                  onClick={selectUnits}
-                  disabled={loading}
+                  onClick={() => selectUnits(u.id)}
+                  disabled={loading !== null}
                   className={`group relative overflow-hidden rounded-2xl border p-5 sm:p-6 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 bg-gradient-to-br ${u.color} ${u.border} ${u.glow} text-right disabled:opacity-50 disabled:hover:scale-100 w-full`}
                 >
                   <div className={`w-12 h-12 rounded-xl ${u.iconBg} flex items-center justify-center mb-4`}>
@@ -119,7 +120,7 @@ export default function UnitsPage() {
                     <ChevronLeft size={14} />
                   </div>
 
-                  {loading && (
+                  {loading === u.id && (
                     <div className="absolute inset-0 bg-[#0a0f1e]/60 flex items-center justify-center rounded-2xl">
                       <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     </div>

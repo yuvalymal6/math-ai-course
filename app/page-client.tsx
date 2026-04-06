@@ -253,6 +253,39 @@ const TOPICS_3U: Record<string, typeof TOPICS_3U_10> = {
   "12": TOPICS_3U_12,
 };
 
+// ─── 5-unit topics (coming soon) ──────────────────────────────────────────────
+
+const TOPICS_5U_10 = [
+  { id: "5u-10-analytic", title: "גיאומטריה אנליטית", subtitle: "ישר, מעגל, אליפסה והיפרבולה", icon: Circle, color: { bg: "bg-orange-950/40", border: "border-orange-800/50", accent: "text-orange-400", icon: "bg-orange-900/60 text-orange-300" } },
+  { id: "5u-10-geo", title: "גיאומטריה", subtitle: "הוכחות, חפיפה ודמיון", icon: Triangle, color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300" } },
+  { id: "5u-10-preanalysis", title: "קדם אנליזה", subtitle: "גבולות, רציפות והתכנסות", icon: TrendingUp, color: { bg: "bg-blue-950/40", border: "border-blue-800/50", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300" } },
+  { id: "5u-10-trigfunc", title: "פונקציות טריגונומטריות", subtitle: "sin, cos, tan כפונקציות מעגליות", icon: Compass, color: { bg: "bg-amber-950/40", border: "border-amber-800/50", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300" } },
+  { id: "5u-10-trigplane", title: "טריגונומטריה במישור", subtitle: "משפט הסינוסים, קוסינוסים ושטחים", icon: Triangle, color: { bg: "bg-purple-950/40", border: "border-purple-800/50", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300" } },
+];
+
+const TOPICS_5U_11 = [
+  { id: "5u-11-calculus", title: 'חדו"א ואינטגרל', subtitle: "נגזרות, חקירה, אינטגרלים ושטחים", icon: TrendingUp, color: { bg: "bg-blue-950/40", border: "border-blue-800/50", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300" } },
+  { id: "5u-11-series", title: "סדרות", subtitle: "חשבוניות, הנדסיות וכלל נסיגה", icon: Sigma, color: { bg: "bg-amber-950/40", border: "border-amber-800/50", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300" } },
+  { id: "5u-11-prob", title: "הסתברות", subtitle: "הסתברות מותנית, בייס ותמורות", icon: PieChart, color: { bg: "bg-purple-950/40", border: "border-purple-800/50", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300" } },
+  { id: "5u-11-geotrig", title: "גיאומטריה וטריגו", subtitle: "גיאומטריה מרחבית וטריגונומטריה", icon: Triangle, color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300" } },
+  { id: "5u-11-vectors", title: "וקטורים ומרוכבים", subtitle: "חשבון וקטורי ומספרים מרוכבים", icon: Share2, color: { bg: "bg-rose-950/40", border: "border-rose-800/50", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300" } },
+  { id: "5u-11-advanalytic", title: "גיאומטריה אנליטית מתקדמת", subtitle: "חרוטים, מקומות גיאומטריים", icon: Circle, color: { bg: "bg-indigo-950/40", border: "border-indigo-800/50", accent: "text-indigo-400", icon: "bg-indigo-900/60 text-indigo-300" } },
+];
+
+const TOPICS_5U_12 = [
+  { id: "5u-12-analytic", title: "גיאומטריה אנליטית", subtitle: "ישר, מעגל, משיק ואליפסה", icon: Circle, color: { bg: "bg-orange-950/40", border: "border-orange-800/50", accent: "text-orange-400", icon: "bg-orange-900/60 text-orange-300" } },
+  { id: "5u-12-vectors", title: "וקטורים במרחב", subtitle: "מכפלה סקלרית, וקטורית ומישורים", icon: Share2, color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300" } },
+  { id: "5u-12-complex", title: "מספרים מרוכבים", subtitle: "צורה קרטזית, טריגונומטרית ודה-מואבר", icon: Calculator, color: { bg: "bg-purple-950/40", border: "border-purple-800/50", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300" } },
+  { id: "5u-12-explog", title: "פונקציות מעריכיות ולוגריתמיות", subtitle: "eˣ, ln x, חקירה ויישומים", icon: TrendingUp, color: { bg: "bg-blue-950/40", border: "border-blue-800/50", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300" } },
+  { id: "5u-12-growth", title: "גדילה ודעיכה", subtitle: "מודלים מעריכיים, ריבית וחצי חיים", icon: LineChart, color: { bg: "bg-rose-950/40", border: "border-rose-800/50", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300" } },
+];
+
+const TOPICS_5U: Record<string, typeof TOPICS_5U_10> = {
+  "10": TOPICS_5U_10,
+  "11": TOPICS_5U_11,
+  "12": TOPICS_5U_12,
+};
+
 const GRADE_TOPICS: Record<string, typeof TOPICS> = {
   "10": TOPICS_10,
   "11": TOPICS_11,
@@ -558,7 +591,9 @@ export default function Dashboard({ initialGrade, initialUsername, initialUnits 
 
   const gradeTopics = GRADE_TOPICS[initialGrade] || TOPICS;
   const gradeLabel = GRADE_LABELS[initialGrade] || 'כיתה י"א';
-  const comingSoonTopics = initialUnits === "3" ? (TOPICS_3U[initialGrade] || []) : [];
+  const comingSoonTopics = initialUnits === "3" ? (TOPICS_3U[initialGrade] || [])
+    : initialUnits === "5" ? (TOPICS_5U[initialGrade] || [])
+    : [];
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -633,28 +668,29 @@ export default function Dashboard({ initialGrade, initialUsername, initialUnits 
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {gradeTopics.map(t => <TopicCard key={t.id} topic={t} />)}
-
-            {/* 3-unit coming soon cards */}
-            {comingSoonTopics.map(t => {
-              const Icon = t.icon;
-              return (
-                <div key={t.id} className={`rounded-2xl border ${t.color.border} ${t.color.bg} p-4 sm:p-5 opacity-50 cursor-not-allowed select-none`}>
-                  <div className="flex items-start gap-3">
-                    <div className={`w-10 h-10 rounded-xl ${t.color.icon} flex items-center justify-center shrink-0`}>
-                      <Icon size={18} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <h3 className={`font-bold text-base ${t.color.accent}`}>{t.title}</h3>
-                        <span className="text-[10px] text-slate-500 border border-slate-700 rounded px-2 py-0.5">בקרוב</span>
+            {initialUnits === "3" || initialUnits === "5" ? (
+              comingSoonTopics.map(t => {
+                const Icon = t.icon;
+                return (
+                  <div key={t.id} className={`rounded-2xl border ${t.color.border} ${t.color.bg} p-4 sm:p-5 opacity-50 cursor-not-allowed select-none`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl ${t.color.icon} flex items-center justify-center shrink-0`}>
+                        <Icon size={18} />
                       </div>
-                      <p className="text-slate-500 text-xs leading-relaxed">{t.subtitle}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <h3 className={`font-bold text-base ${t.color.accent}`}>{t.title}</h3>
+                          <span className="text-[10px] text-slate-500 border border-slate-700 rounded px-2 py-0.5">בקרוב</span>
+                        </div>
+                        <p className="text-slate-500 text-xs leading-relaxed">{t.subtitle}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              gradeTopics.map(t => <TopicCard key={t.id} topic={t} />)
+            )}
           </div>
         </section>
 

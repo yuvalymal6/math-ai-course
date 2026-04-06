@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Brain, ChevronRight, TrendingUp, GitMerge } from "lucide-react";
+import { Brain, ChevronRight, TrendingUp, GitMerge, Repeat } from "lucide-react";
 
 // ─── Sub-topic definitions ────────────────────────────────────────────────────
 
@@ -35,6 +35,21 @@ const SUBTOPICS = [
     hoverBorder: "hover:border-amber-400/60",
     badgeBg: "bg-amber-400/10 border-amber-400/30", badgeText: "text-amber-300",
     chevronHover: "group-hover:text-amber-300",
+  },
+  {
+    id: "recursion",
+    href: "/topic/grade12/series/recursion",
+    icon: Repeat,
+    title: "כלל נסיגה (רקורסיה)",
+    subtitle: "aₙ₊₁ = f(aₙ) • זיהוי סוג • נוסחה סגורה",
+    description: "כלל נסיגה מגדיר כל איבר לפי קודמו. זיהוי אם הסדרה חשבונית, הנדסית או כללית, ומציאת נוסחה סגורה.",
+    chips: ["aₙ₊₁ = aₙ + d", "aₙ₊₁ = q·aₙ", "aₙ₊₁ = f(aₙ)"],
+    ready: true,
+    glowAnim: false,
+    iconBg: "bg-violet-500/10", iconBorder: "border-violet-500/30", iconText: "text-violet-400",
+    hoverBorder: "hover:border-violet-500/60",
+    badgeBg: "bg-violet-500/10 border-violet-500/30", badgeText: "text-violet-400",
+    chevronHover: "group-hover:text-violet-400",
   },
 ] as const;
 

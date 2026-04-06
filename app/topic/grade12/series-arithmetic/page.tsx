@@ -1,15 +1,31 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle } from "lucide-react";
 import Link from "next/link";
-import { calculatePromptScore, flexMatch, type ScoreResult } from "@/app/lib/prompt-scorer";
+import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
 import LabMessage from "@/app/components/LabMessage";
 import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
+import katex from "katex";
+import "katex/dist/katex.min.css";
+
+// ─── KaTeX helpers ───────────────────────────────────────────────────────────
+
+function InlineMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: false }); }, [children]);
+  return <span ref={ref} />;
+}
+
+function DisplayMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: true }); }, [children]);
+  return <span ref={ref} style={{ display: "block", textAlign: "center" }} />;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -33,21 +49,6 @@ type ExerciseDef = {
   goldenPrompt: string;
   advancedGateQuestion?: string;
   steps: PromptStep[];
-};
-
-// ─── ISLAND STYLE — single source of truth ───────────────────────────────────
-// border: 8px solid #334155  |  background: #020617  |  marginBottom: 300px
-
-const ISLAND: React.CSSProperties = {
-  border: "1px solid rgba(60,54,42,0.15)",
-  borderRadius: "40px",
-  padding: 6,
-  background: "rgba(255,255,255,0.82)",
-  boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)",
-  marginBottom: "2rem",
-  marginLeft: "auto",
-  marginRight: "auto",
-  
 };
 
 // ─── Station config ───────────────────────────────────────────────────────────
@@ -84,9 +85,11 @@ function SeriesDotsSVG() {
           <g key={i}>
             {isEndpoint && <circle cx={x} cy={cy} r={13} fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.3)" strokeWidth={1} />}
             <circle cx={x} cy={cy} r={isEndpoint ? 9 : 7} fill={isEndpoint ? "#10b981" : "#020617"} stroke={isEndpoint ? "#10b981" : "#3b82f6"} strokeWidth={isEndpoint ? 2.5 : 1.8} />
-            <text x={x} y={cy + 22} fill={isEndpoint ? "#10b981" : "#475569"} fontSize={9} textAnchor="middle" fontWeight={isEndpoint ? "bold" : "normal"}>
-              {i === 0 ? "a₁" : i === count - 1 ? "a₇" : `a${i + 1}`}
-            </text>
+            {isEndpoint && (
+              <text x={x} y={cy + 22} fill="#10b981" fontSize={9} textAnchor="middle" fontWeight="bold">
+                {i === 0 ? "a₁" : "aₙ"}
+              </text>
+            )}
           </g>
         );
       })}
@@ -94,52 +97,50 @@ function SeriesDotsSVG() {
   );
 }
 
-// SVG for medium: descending series 100, 94, 88... crossing zero at n=18
+// SVG for medium: generic descending series crossing zero
 function NegativeTermSVG() {
   const W = 260, H = 76;
-  const nCount = 19;
+  const nCount = 15;
   const cx0 = 14, cxEnd = W - 14;
   const step = (cxEnd - cx0) / (nCount - 1);
-  const yZero = 48, scale = 0.33;
+  const yZero = 48;
 
+  // Generic descending dots crossing zero around index 11
   const dots = Array.from({ length: nCount }, (_, i) => {
-    const n = i + 1;
-    const val = 100 + (n - 1) * (-6); // a₁=100, d=-6
+    const val = 10 - i * 0.9;
     const x = cx0 + i * step;
-    const y = yZero - val * scale;
-    const isTarget = n === 18; // first negative
-    const positive = val >= 0;
-    return { x, y, isTarget, positive, n };
+    const y = yZero - val * 3.5;
+    const crossesZero = i >= 11;
+    const isCrossing = i === 11;
+    return { x, y, crossesZero, isCrossing, n: i + 1 };
   });
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", maxWidth: 280, display: "block", margin: "0 auto" }} aria-hidden>
       {/* Zero line */}
       <line x1={cx0} y1={yZero} x2={cxEnd} y2={yZero} stroke="#22c55e" strokeWidth={1.2} strokeDasharray="4,3" opacity={0.6} />
-      <text x={cx0 - 4} y={yZero + 3} fill="#22c55e" fontSize={7} textAnchor="end" opacity={0.8}>0</text>
       {/* Connecting trend line */}
       <polyline
         points={dots.map(d => `${d.x},${d.y}`).join(" ")}
         fill="none" stroke="#334155" strokeWidth={1} opacity={0.5}
       />
       {/* Dots */}
-      {dots.map(({ x, y, isTarget, positive, n }) => (
+      {dots.map(({ x, y, crossesZero, isCrossing, n }) => (
         <g key={n}>
-          {isTarget && (
+          {isCrossing && (
             <circle cx={x} cy={y} r={11} fill="rgba(239,68,68,0.15)" stroke="#ef4444" strokeWidth={1.5} strokeDasharray="3,2" />
           )}
           <circle
-            cx={x} cy={y} r={isTarget ? 5 : 3.5}
-            fill={isTarget ? "#ef4444" : positive ? "#020617" : "#7f1d1d"}
-            stroke={isTarget ? "#ef4444" : positive ? "#3b82f6" : "#ef4444"}
-            strokeWidth={isTarget ? 0 : 1.5}
+            cx={x} cy={y} r={isCrossing ? 5 : 3.5}
+            fill={isCrossing ? "#ef4444" : crossesZero ? "#7f1d1d" : "#020617"}
+            stroke={isCrossing ? "#ef4444" : crossesZero ? "#ef4444" : "#3b82f6"}
+            strokeWidth={isCrossing ? 0 : 1.5}
           />
         </g>
       ))}
-      {/* Labels */}
+      {/* Labels — only a₁ and ? at crossing */}
       <text x={cx0} y={H - 4} fill="#475569" fontSize={7} textAnchor="middle">a₁</text>
-      <text x={dots[17].x} y={H - 4} fill="#ef4444" fontSize={7} textAnchor="middle" fontWeight="bold">a₁₈</text>
-      <text x={W / 2} y={H - 4} fill="#334155" fontSize={7} textAnchor="middle">האיבר השלילי הראשון</text>
+      <text x={dots[11].x} y={H - 4} fill="#ef4444" fontSize={7} textAnchor="middle" fontWeight="bold">?</text>
     </svg>
   );
 }
@@ -147,18 +148,18 @@ function NegativeTermSVG() {
 function TwoPointSeriesSVG() {
   const count = 10, W = 260, cx = 16, cy = 36, step = (W - 2 * cx) / (count - 1);
   return (
-    <svg viewBox={`0 0 ${W} 70`} style={{ width: "100%", maxWidth: 280, display: "block", margin: "0 auto" }} aria-hidden>
+    <svg viewBox={`0 0 ${W} 58`} style={{ width: "100%", maxWidth: 280, display: "block", margin: "0 auto" }} aria-hidden>
       <line x1={cx} y1={cy} x2={W - cx} y2={cy} stroke="#1e3a5f" strokeWidth={1.5} />
       {Array.from({ length: count }, (_, i) => {
-        const x = cx + i * step, a5 = i === 4, a10 = i === 9;
+        const x = cx + i * step, highlighted1 = i === 4, highlighted2 = i === 9;
         return (
           <g key={i}>
-            <circle cx={x} cy={cy} r={a5 || a10 ? 9 : 7} fill={a5 ? "#f59e0b" : a10 ? "#a78bfa" : "#020617"} stroke={a5 ? "#f59e0b" : a10 ? "#a78bfa" : "#3b82f6"} strokeWidth={a5 || a10 ? 2.5 : 1.8} />
-            <text x={x} y={cy + 22} fill={a5 ? "#f59e0b" : a10 ? "#a78bfa" : "#475569"} fontSize={9} textAnchor="middle" fontWeight={a5 || a10 ? "bold" : "normal"}>{a5 ? "a₅" : a10 ? "a₁₀" : ""}</text>
+            <circle cx={x} cy={cy} r={highlighted1 || highlighted2 ? 9 : 7} fill={highlighted1 ? "#f59e0b" : highlighted2 ? "#a78bfa" : "#020617"} stroke={highlighted1 ? "#f59e0b" : highlighted2 ? "#a78bfa" : "#3b82f6"} strokeWidth={highlighted1 || highlighted2 ? 2.5 : 1.8} />
+            {highlighted1 && <text x={x} y={cy + 22} fill="#f59e0b" fontSize={9} textAnchor="middle" fontWeight="bold">aᵢ</text>}
+            {highlighted2 && <text x={x} y={cy + 22} fill="#a78bfa" fontSize={9} textAnchor="middle" fontWeight="bold">aⱼ</text>}
           </g>
         );
       })}
-      <text x={W / 2} y={62} fill="#334155" fontSize={8} textAnchor="middle">שני איברים ידועים — מצא a₁ ו-d</text>
     </svg>
   );
 }
@@ -170,31 +171,29 @@ function SumBarsSVG() {
       <line x1={padX} y1={65} x2={W - padX} y2={65} stroke="#334155" strokeWidth={1} />
       {Array.from({ length: count }, (_, i) => {
         const h = Math.round((maxH * (i + 1)) / count), x = padX + i * ((W - 2 * padX) / count) + 2;
+        const isFirst = i === 0, isLast = i === count - 1;
         return (
           <g key={i}>
             <rect x={x} y={65 - h} width={barW} height={h} fill={`rgba(99,102,241,${0.3 + (i / count) * 0.7})`} rx={2} />
-            <text x={x + barW / 2} y={75} fill="#475569" fontSize={8} textAnchor="middle">a{i + 1}</text>
+            {(isFirst || isLast) && (
+              <text x={x + barW / 2} y={75} fill="#475569" fontSize={8} textAnchor="middle">{isFirst ? "a₁" : "aₙ"}</text>
+            )}
           </g>
         );
       })}
-      <text x={W / 2} y={11} fill="#6366f1" fontSize={8} textAnchor="middle">Sₙ — סכום n האיברים הראשונים</text>
     </svg>
   );
 }
 
 function CombinedSeriesSVG() {
-  // הקטנה 15%: W מ-280 ל-238
   const W = 238, padX = 14, cols = 5, gap = 7;
   const colW = (W - 2 * padX - gap * (cols - 1)) / cols;
   const rowsData = [
-    { label: "A",   color: "#6366f1", heights: [18, 26, 34, 42, 50],
-      itemLabels: ["a₁","a₂","a₃","a₄","a₅"] },
-    { label: "B",   color: "#f59e0b", heights: [12, 18, 24, 30, 36],
-      itemLabels: ["b₁","b₂","b₃","b₄","b₅"] },
-    { label: "A+B", color: "#34d399", heights: [30, 44, 58, 72, 86],
-      itemLabels: ["a₁+b₁","a₂+b₂","a₃+b₃","a₄+b₄","a₅+b₅"] },
+    { label: "A",   color: "#6366f1", heights: [20, 28, 36, 44, 52] },
+    { label: "B",   color: "#f59e0b", heights: [14, 20, 26, 32, 38] },
+    { label: "A+B", color: "#34d399", heights: [34, 48, 62, 76, 90] },
   ];
-  const maxH = 86, rowH = 61, rowGap = 20, topPad = 6, labelH = 12;
+  const maxH = 90, rowH = 61, rowGap = 20, topPad = 6, labelH = 12;
   const totalH = topPad + rowsData.length * (rowH + labelH + rowGap);
   return (
     <svg viewBox={`0 0 ${W} ${totalH}`} className="w-full max-w-xs mx-auto" aria-hidden>
@@ -211,9 +210,6 @@ function CombinedSeriesSVG() {
                 <g key={ci}>
                   <rect x={x} y={baseY - scaledH} width={colW} height={scaledH}
                     fill={row.color} opacity={0.25 + ci * 0.12} rx={3} />
-                  <text x={x + colW / 2} y={baseY + 12} fill="#475569" fontSize={9.5} textAnchor="middle">
-                    {row.itemLabels[ci]}
-                  </text>
                 </g>
               );
             })}
@@ -365,93 +361,6 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
   );
 }
 
-function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep; locked?: boolean; onPass?: () => void }) {
-  const [text, setText]       = useState("");
-  const [result, setResult]   = useState<ScoreResult | null>(null);
-  const [copied, setCopied]   = useState(false);
-  const passed = result?.score !== undefined && result.score >= 90 && !result.blocked;
-
-  const scoreColor = (s: number) => s >= 90 ? "#f87171" : s >= 55 ? "#fbbf24" : "#ef4444";
-  // rose palette for advanced
-  const ROSE = { border: "rgba(244,63,94,0.35)", dim: "rgba(244,63,94,0.2)", text: "#fda4af" };
-
-  if (locked) return (
-    <div style={{ borderRadius: 12, border: "1px solid rgba(139,38,53,0.3)", background: "rgba(255,255,255,0.3)", padding: "12px 16px", opacity: 0.45, userSelect: "none", display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-      <span>🔒</span><span style={{ color: "#6B7280", fontSize: 12 }}>{step.phase} — {step.label}</span>
-    </div>
-  );
-
-  const validate = () => {
-    if (text.trim().length < 20) {
-      setResult({ score: 0, blocked: false, hint: "הניסוח קצר מדי — כתוב לפחות 20 תווים." });
-      return;
-    }
-    const r = calculatePromptScore(text, step.contextWords ?? []);
-    setResult(r);
-    if (!r.blocked && r.score >= 90 && onPass) onPass();
-  };
-
-  return (
-    <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${passed ? "rgba(52,211,153,0.35)" : ROSE.border}`, marginBottom: 8, transition: "border-color 0.3s" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid ${passed ? "rgba(52,211,153,0.2)" : "rgba(244,63,94,0.2)"}` }}>
-        {passed
-          ? <CheckCircle size={14} color="#34d399" />
-          : <span style={{ color: ROSE.text, fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
-        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
-      </div>
-
-      <div style={{ background: "rgba(255,255,255,0.4)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
-        <textarea
-          value={text} rows={3} dir="rtl"
-          readOnly={passed}
-          onChange={(e) => { if (!passed) { setText(e.target.value); setResult(null); } }}
-          placeholder="כתוב את הפרומפט שלך לסעיף זה..."
-          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: passed ? "rgba(6,78,59,0.1)" : "rgba(255,255,255,0.75)", border: `1px solid ${passed ? "rgba(52,211,153,0.25)" : "rgba(139,38,53,0.25)"}`, color: passed ? "#6ee7b7" : "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
-        />
-
-        {/* Score bar */}
-        {result && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#1A1A1A", fontWeight: 600 }}>
-              <span>ציון</span>
-              <span style={{ color: "#1A1A1A", fontWeight: 800 }}>{result.score}/100</span>
-            </div>
-            <div style={{ height: 5, borderRadius: 99, background: "#E5E7EB", overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${result.score}%`, background: result.score >= 90 ? "#16a34a" : result.score >= 55 ? "#d97706" : "#dc2626", borderRadius: 99, transition: "width 0.4s ease" }} />
-            </div>
-          </div>
-        )}
-
-        {/* Feedback */}
-        {result && !passed && result.hint && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            style={{ borderRadius: 12, padding: 12, fontSize: 12, lineHeight: 1.6, color: "#1A1A1A", background: result.blocked ? "rgba(254,226,226,1)" : "rgba(255,251,235,1)", border: `2px solid ${result.blocked ? "#dc2626" : "#d97706"}` }}>
-            {result.blocked ? "⚠️" : "💡"} {result.hint}
-          </motion.div>
-        )}
-
-        {passed && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>✅ ניסוח מעולה! הסעיף הבא נפתח.</div>
-            <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-              style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#14532d", cursor: "pointer", fontWeight: 500 }}>
-              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "הועתק!" : "העתק ניסוח"}
-            </button>
-          </motion.div>
-        )}
-
-        {!passed && (
-          <button onClick={validate}
-            style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.75)", border: `1px solid ${ROSE.border}`, color: "#1A1A1A", cursor: "pointer", fontWeight: 500 }}>
-            בדיקת AI מדומה 🤖
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function LadderBase({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: PromptStep[]; goldenPrompt: string; glowRgb: string; borderRgb: string }) {
   const [completed, setCompleted] = useState<boolean[]>(Array(steps.length).fill(false));
   const unlocked = completed.filter(Boolean).length + 1;
@@ -503,80 +412,6 @@ function LadderMedium({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: Prom
       ))}
     </div>
   );
-}
-
-// ─── Master Gate Scoring ──────────────────────────────────────────────────────
-
-// Golden prompts registered for plagiarism detection
-const REGISTERED_GOLDEN_PROMPTS = [
-  `היי, אני תלמיד י"ב, 4 יחידות לימוד.\nצירפתי לך תמונה של תרגיל בסדרות חשבוניות.\nהנה הפרוטוקול שלנו, תעבוד לפיו ב-100%:\n\n1️⃣ סריקה:\nקודם כל, תסרוק את התמונה ותכתוב לי רק:\n"זיהיתי את הנתונים. מחכה להוראות לסעיף א'."\n(אל תפתור כלום ואל תסביר כלום בשלב הזה!)\n\n2️⃣ תפקיד:\nאתה המורה שלי. זה אומר שאתה לא פותר במקומי.\n\n3️⃣ שיטת עבודה:\nאני אשלח לך כל פעם סעיף (א', ב' או ג').\nבתגובה, אתה שואל אותי רק שאלה אחת מכווינה על הנוסחה או על ההצבה.`,
-  `היי, אני תלמיד 4 יחידות וצירפתי לך תמונה של תרגיל בסדרות. אני רוצה שתהיה המורה הפרטי שלי ותעזור לי לפצח אותו שלב אחרי שלב בלי לגלות לי את התשובות.\nקודם כל, תסרוק רגע את התמונה ורק תאשר לי שראית את כל הנתונים ושאתה מוכן להתחיל לעבוד איתי על סעיף א'. אל תכתוב שום פתרון או הסבר עדיין.\nהמטרה שלי היא להבין את הלוגיקה שמאחורי השאלות האלה, אז בכל פעם שאשלח לך סעיף, אני מבקש שתשאל אותי רק שאלה אחת מכווינה שתעזור לי להבין מה התנאי שצריך לקרות כאן או באיזו נוסחה כדאי להשתמש. אם אשלח לך צילום של החישוב שלי, תגיד לי אם הכיוון נכון, ואם טעיתי פשוט תן לי רמז קטן שיעזור לי לעלות על זה לבד.\nמוכן? תגיד לי שסרקת ונצא לדרך.`,
-];
-
-const MASTER_ROLE_WORDS   = ["מורה", "חונך", "מדריך", "סוקרטס", "מורה פרטי"];
-const MASTER_METHOD_WORDS = [
-  "צעד אחר צעד", "אל תפתור", "רמזים", "תכווין", "שאל אותי",
-  "בלי לגלות", "בלי פתרון", "לא לפתור", "לא לגלות",
-  "תעזור לי לפצח", "פצח", "הכוונה", "תסרוק", "מכווינ",
-  "שלב אחרי שלב", "שאלה מכווינה",
-];
-// Any single word from this list → full 40 context points
-const MASTER_CONTEXT_WORDS = ["סדרות", "סדרה", "חשבונית", "הפרש", "סכום"];
-
-function masterQualityCheck(text: string): { score: number; hint: string } {
-  const hasRole   = MASTER_ROLE_WORDS.some(w => text.includes(w));
-  const hasMethod = MASTER_METHOD_WORDS.some(w => text.includes(w));
-  const score = (hasRole ? 30 : 0) + (hasMethod ? 30 : 0);
-  const hint  = (!hasRole || !hasMethod)
-    ? "⚠️ הפרומפט לא מגדיר ל-AI להיות מורה. וודא שביקשת ממנו להדריך אותך ולא לפתור עבורך."
-    : "";
-  return { score, hint };
-}
-
-function topicContextValidator(text: string): { score: number; hint: string } {
-  const hasContext = MASTER_CONTEXT_WORDS.some(w => flexMatch(text, w));
-  const score = hasContext ? 40 : 0;
-  const hint  = !hasContext
-    ? "ה-AI מוכן להיות מורה, אבל הוא לא יודע שנדבר על סדרות. ציין את נושא התרגיל."
-    : "";
-  return { score, hint };
-}
-
-/**
- * jaccardSimilarity — דמיון ג'קארד על אוצר המילים של שני טקסטים.
- * מחזיר ערך בין 0 (שונה לחלוטין) ל-1 (זהה).
- */
-function tokenize(text: string): Set<string> {
-  return new Set(
-    text
-      .replace(/[.,!?;:'"()[\]{}\n]/g, " ")
-      .split(/\s+/)
-      .map(w => w.trim())
-      .filter(w => w.length > 1)
-  );
-}
-
-function jaccardSimilarity(a: string, b: string): number {
-  const setA = tokenize(a);
-  const setB = tokenize(b);
-  const intersection = [...setA].filter(w => setB.has(w)).length;
-  const union = new Set([...setA, ...setB]).size;
-  return union === 0 ? 0 : intersection / union;
-}
-
-function calculateMasterScore(text: string): { score: number; hint: string } {
-  // Anti-cheat: פסילה ב-50%+ דמיון לפרומפט ראשי קיים
-  if (REGISTERED_GOLDEN_PROMPTS.some(gp => jaccardSimilarity(text, gp) >= 0.5)) {
-    return { score: 0, hint: "זיהוי העתקה — כפי שצוין באזהרה, עליך לנסח פרומפט מקורי." };
-  }
-  const quality = masterQualityCheck(text);
-  const context = topicContextValidator(text);
-  const raw = quality.score + context.score;
-  // Long prompt covering all three layers → floor at 90
-  const score = (text.trim().length > 150 && quality.score === 60 && context.score === 40)
-    ? Math.max(raw, 90)
-    : raw;
-  return { score, hint: quality.hint || context.hint };
 }
 
 // ─── Ladder Advanced ──────────────────────────────────────────────────────────
@@ -632,6 +467,8 @@ const exercises: ExerciseDef[] = [
     diagram: <SeriesDotsSVG />,
     pitfalls: [
       { title: "⚠️ כפל ב-n במקום ב-(n−1)", text: "הנוסחה: aₙ = a₁ + (n−1)·d. בין a₁ ל-a₇ יש 6 קפיצות של d בדיוק — לא 7. תמיד n−1." },
+      { title: "⚠️ בלבול בין שתי נוסחאות הסכום", text: "נוסחה ראשונה דורשת את aₙ, נוסחה שנייה דורשת את d. בחר את הנוסחה שמתאימה לנתונים שכבר יש לך." },
+      { title: "⚠️ a₁ כבר נספר", text: "כשסופרים כמה איברים מ-a₁ עד aₙ, התשובה היא n ולא n−1. האיבר הראשון הוא חלק מהסדרה." },
     ],
     goldenPrompt: "\n\nהיי, אני תלמיד 4 יחידות וצירפתי לך תמונה של תרגיל בסדרות. אני רוצה שתהיה המורה הפרטי שלי ותעזור לי בכל שלב בלי לגלות לי את התשובות.\n\nקודם כל, תסרוק רגע את התמונה, אל תכתוב שום פתרון או הסבר עדיין.\n\nהמטרה שלי היא להבין מה אנחנו עושים. בכל פעם שאשלח לך סעיף, אני מבקש שתשאל אותי רק שאלה אחת מכווינה שתעזור לי להבין מה התנאי שצריך לקרות כאן או באיזו נוסחה כדאי להשתמש. אם אשלח לך צילום של החישוב שלי, תגיד לי אם הכיוון נכון, ואם טעיתי פשוט תן לי רמז קטן שיעזור לי לעלות על זה לבד.\n\nמוכן? תגיד לי שסרקת ונצא לדרך.\nסרוק את התמונה/נתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״",
     steps: [
@@ -648,24 +485,25 @@ const exercises: ExerciseDef[] = [
     pitfalls: [
       { title: "⚠️ משווים לאפס במקום להשתמש באי-שוויון", text: "aₙ=0 נותן את האיבר האחרון הלא-שלילי. כדי למצוא את הראשון השלילי — יש לפתור aₙ<0." },
       { title: "⚠️ n לא חייב להיות שלם", text: "n חייב להיות מספר טבעי. אם n>17.67, הערך הטבעי הראשון הוא n=18." },
+      { title: "⚠️ איברים במקומות זוגיים — סדרה חדשה", text: "האיברים a₂, a₄, a₆... יוצרים סדרה חשבונית חדשה עם הפרש כפול (d'=2d). מספר האיברים והאיבר הראשון משתנים בהתאם." },
     ],
     goldenPrompt: "\n\nהיי, אני תלמיד 4 יחידות וצירפתי לך תמונה של תרגיל בסדרות. אני רוצה שתהיה המורה הפרטי שלי ותעזור לי לפצח אותו שלב אחרי שלב בלי לגלות לי את התשובות.\nקודם כל, תסרוק רגע את התמונה ורק תאשר לי שראית את כל הנתונים ושאתה מוכן להתחיל לעבוד איתי על סעיף א'. אל תכתוב שום פתרון או הסבר עדיין.\nהמטרה שלי היא להבין את הלוגיקה שמאחורי השאלות האלה, אז בכל פעם שאשלח לך סעיף, אני מבקש שתשאל אותי רק שאלה אחת מכווינה שתעזור לי להבין מה התנאי שצריך לקרות כאן או באיזו נוסחה כדאי להשתמש. אם אשלח לך צילום של החישוב שלי, תגיד לי אם הכיוון נכון, ואם טעיתי פשוט תן לי רמז קטן שיעזור לי לעלות על זה לבד.\nמוכן? תגיד לי שסרקת ונצא לדרך.\nסרוק את התמונה/נתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״",
     steps: [
       {
         phase: "סעיף א׳", label: "מצא כמה איברים חיוביים יש בסדרה.",
-        coaching: "", prompt: "\n\n", keywords: [], keywordHint: "",
+        coaching: "", prompt: "סדרה חשבונית a₁=100, d=−6. הנחה אותי למצוא כמה איברים חיוביים על ידי פתרון אי-שוויון.", keywords: [], keywordHint: "",
         contextWords: ["חיוביים", "גדול מאפס", "aₙ > 0", "אי-שוויון", "שלם", "עצירה"],
         stationWords: [],
       },
       {
         phase: "סעיף ב׳", label: "קבע מהו ערכו של האיבר השלילי הראשון.",
-        coaching: "", prompt: "\n\n", keywords: [], keywordHint: "",
+        coaching: "", prompt: "סדרה חשבונית a₁=100, d=−6. מצאתי את מספר האיברים החיוביים. הנחה אותי למצוא את ערך האיבר השלילי הראשון.", keywords: [], keywordHint: "",
         contextWords: ["שלילי", "קטן מאפס", "aₙ < 0", "ראשון שחוצה", "אינדקס", "מיקום"],
         stationWords: [],
       },
       {
         phase: "סעיף ג׳", label: "חשב את סכום כל האיברים החיוביים שנמצאים במקומות הזוגיים בלבד.",
-        coaching: "", prompt: "\n\n", keywords: [], keywordHint: "",
+        coaching: "", prompt: "סדרה חשבונית a₁=100, d=−6. הנחה אותי לחשב סכום האיברים החיוביים במקומות הזוגיים בלבד.", keywords: [], keywordHint: "",
         contextWords: ["סכום", "זוגיים", "קפיצות של 2", "2d", "הפרש כפול", "סדרה חדשה", "בלבד"],
         stationWords: [],
       },
@@ -679,6 +517,7 @@ const exercises: ExerciseDef[] = [
     pitfalls: [
       { title: "💡 שים לב: אי-זוגיים", text: "בחישוב סכום של מקומות אי-זוגיים בלבד, מספר האיברים (n) והפרש הסדרה (d) משתנים. חשוב היטב מהם הערכים החדשים לפני שתמשיך." },
       { title: "⚠️ הפרש הסדרה המשולבת", text: "כשמחברים שתי סדרות חשבוניות איבר-איבר, ההפרש של הסדרה החדשה הוא סכום שני ההפרשים." },
+      { title: "⚠️ חיבור סדרות — איבר ראשון", text: "כשמחברים שתי סדרות, האיבר הראשון של הסדרה החדשה הוא c₁ = a₁ + b₁ (סכום, לא מכפלה)." },
     ],
     goldenPrompt: "\n\n",
     advancedGateQuestion: "לפני שמתחילים — כתוב פרומפט שמסביר: כיצד מוצאים a₁ מנתון a₁₀ ו-d? כיצד מחשבים סכום של האיברים האי-זוגיים בלבד? מה קורה להפרש כשמחברים שתי סדרות חשבוניות? (לפחות 80 תווים)",
@@ -686,27 +525,106 @@ const exercises: ExerciseDef[] = [
       {
         phase: "סעיף א׳",
         label: "מצא את האיבר הראשון a₁.",
-        coaching: "", prompt: "\n\n", keywords: [], keywordHint: "",
+        coaching: "", prompt: "סדרה חשבונית A, a₁₀=41, d=4. הנחה אותי למצוא את a₁ מנוסחת האיבר הכללי.", keywords: [], keywordHint: "",
         contextWords: ["איבר ראשון", "נוסחת איבר כללי", "a₁₀", "מיקום 10", "למצוא את a₁"],
         stationWords: [],
       },
       {
         phase: "סעיף ב׳",
         label: "חשב את סכום האיברים במקומות האי-זוגיים בסדרה A.",
-        coaching: "", prompt: "\n\n", keywords: [], keywordHint: "",
+        coaching: "", prompt: "סדרה חשבונית A עם 25 איברים. הנחה אותי לחשב סכום האיברים במקומות האי-זוגיים בלבד.", keywords: [], keywordHint: "",
         contextWords: ["אי-זוגיים", "הפרש 8", "2d", "13 איברים", "סכום"],
         stationWords: [],
       },
       {
         phase: "סעיף ג׳",
         label: "מצא את d של סדרה B כך שסכום הסדרה המשולבת = 1,650.",
-        coaching: "", prompt: "\n\n", keywords: [], keywordHint: "",
+        coaching: "", prompt: "סדרות A ו-B מחוברות איבר-איבר. הנחה אותי למצוא את הפרש הסדרה החדשה ולפתור d כך שהסכום = 1650.", keywords: [], keywordHint: "",
         contextWords: ["סדרה חדשה", "חיבור", "הפרש d+4", "סכום 1650", "למצוא את d"],
         stationWords: [],
       },
     ],
   },
 ];
+
+// ─── FormulaBar ──────────────────────────────────────────────────────────────
+
+function FormulaBar() {
+  const [activeTab, setActiveTab] = useState<"general" | "sum1" | "sum2" | null>(null);
+  const tabs = [
+    { id: "general" as const, label: "איבר כללי", tex: "a_n = a_1 + (n-1)d", color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "sum1" as const, label: "סכום", tex: "S_n = \\frac{n(a_1+a_n)}{2}", color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
+    { id: "sum2" as const, label: "סכום נוסח 2", tex: "S_n = \\frac{n[2a_1+(n-1)d]}{2}", color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
+  ];
+  return (
+    <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: "1.25rem" }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
+      <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
+        {tabs.map(t => {
+          const isActive = activeTab === t.id;
+          return (
+            <button key={t.id} onClick={() => setActiveTab(isActive ? null : t.id)}
+              style={{ flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s", border: `1.5px solid ${isActive ? t.borderColor : "rgba(60,54,42,0.15)"}`, background: isActive ? `${t.color}15` : "rgba(255,255,255,0.5)", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
+              <span style={{ color: isActive ? t.color : "#6B7280" }}><InlineMath>{t.tex}</InlineMath></span>
+            </button>
+          );
+        })}
+      </div>
+      {activeTab === "general" && (
+        <motion.div key="general" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(22,163,74,0.25)", background: "rgba(22,163,74,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}><DisplayMath>{"a_n = a_1 + (n-1) \\cdot d"}</DisplayMath></div>
+            <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> נוסחת האיבר הכללי מחברת את האיבר הראשון עם מספר הקפיצות כפול ההפרש.
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>בין <InlineMath>{"a_1"}</InlineMath> ל-<InlineMath>{"a_n"}</InlineMath> יש <InlineMath>{"n-1"}</InlineMath> קפיצות (לא n!).</li>
+                  <li>אם <InlineMath>{"d > 0"}</InlineMath> הסדרה עולה, אם <InlineMath>{"d < 0"}</InlineMath> הסדרה יורדת.</li>
+                  <li>אפשר לחלץ כל משתנה: <InlineMath>{"a_1, d, n"}</InlineMath> או <InlineMath>{"a_n"}</InlineMath>.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      {activeTab === "sum1" && (
+        <motion.div key="sum1" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(234,88,12,0.25)", background: "rgba(234,88,12,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}><DisplayMath>{"S_n = \\frac{n(a_1 + a_n)}{2}"}</DisplayMath></div>
+            <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> סכום סדרה חשבונית = מספר האיברים כפול ממוצע הראשון והאחרון.
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>משתמשים בנוסחה זו כשידועים <InlineMath>{"a_1"}</InlineMath> ו-<InlineMath>{"a_n"}</InlineMath>.</li>
+                  <li>הממוצע של הסדרה שווה ל-<InlineMath>{"\\frac{a_1 + a_n}{2}"}</InlineMath>.</li>
+                  <li>הנוסחה עובדת גם כשההפרש שלילי.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      {activeTab === "sum2" && (
+        <motion.div key="sum2" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(220,38,38,0.25)", background: "rgba(220,38,38,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}><DisplayMath>{"S_n = \\frac{n[2a_1 + (n-1)d]}{2}"}</DisplayMath></div>
+            <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> נוסחה חלופית לסכום — כשלא ידוע <InlineMath>{"a_n"}</InlineMath> אבל ידוע <InlineMath>{"d"}</InlineMath>.
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>משתמשים בנוסחה זו כשידועים <InlineMath>{"a_1"}</InlineMath>, <InlineMath>{"d"}</InlineMath> ו-<InlineMath>{"n"}</InlineMath> בלבד.</li>
+                  <li>הנוסחה מתקבלת מהצבת <InlineMath>{"a_n = a_1 + (n-1)d"}</InlineMath> בנוסחה הראשונה.</li>
+                  <li>שימושית במיוחד בתרגילים שבהם צריך למצוא את <InlineMath>{"d"}</InlineMath> מתוך הסכום.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
 
 // ─── ExerciseCard ─────────────────────────────────────────────────────────────
 
@@ -721,31 +639,15 @@ function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   return (
     <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
 
-      {/* Formula bar */}
-      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.25rem 1.5rem", marginBottom: "2rem", boxShadow: s.glowShadow }}>
-        <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
-        <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap", justifyContent: "center" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 5, fontSize: 13, color: "#2D3436", lineHeight: 1.7 }}>
-            <span><span style={{ color: s.accentColor, fontFamily: "monospace", fontWeight: 700 }}>a₁</span> – האיבר הראשון</span>
-            <span><span style={{ color: s.accentColor, fontFamily: "monospace", fontWeight: 700 }}>d</span> – הפרש הסדרה</span>
-            <span><span style={{ color: s.accentColor, fontFamily: "monospace", fontWeight: 700 }}>n</span> – כמות איברי הסדרה</span>
-            <span><span style={{ color: s.accentColor, fontFamily: "monospace", fontWeight: 700 }}>aₙ</span> – איבר במקום ה-n</span>
-          </div>
-          <div style={{ width: 1, background: "rgba(60,54,42,0.1)", alignSelf: "stretch" }} />
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, justifyContent: "center" }}>
-            <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>aₙ = a₁ + (n−1)·d</div>
-            <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>Sₙ = n·(a₁ + aₙ) / 2</div>
-            <div style={{ color: s.accentColor, fontFamily: "monospace", fontSize: 14, fontWeight: 700 }}>Sₙ = n·[2a₁ + (n−1)·d] / 2</div>
-          </div>
-        </div>
-      </div>
-
       {/* Title */}
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: "2rem" }}>
         <span className={`text-sm font-black px-4 py-1.5 rounded-full shrink-0 ${s.badgeCls}`}>{s.badge}</span>
         <h2 className={`text-xl font-extrabold uppercase tracking-widest ${s.accentCls}`} style={{ margin: 0 }}>{s.stationName}</h2>
       </div>
       <div style={{ height: 1, background: "rgba(60,54,42,0.1)", marginBottom: "2rem" }} />
+
+      {/* Formula bar */}
+      <FormulaBar />
 
       {/* Diagram */}
       <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>

@@ -7,8 +7,6 @@ import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
-import LabMessage from "@/app/components/LabMessage";
-import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -41,11 +39,6 @@ const TABS = [
   { id: "basic",    label: "מתחיל",  textColor: "text-green-700",   border: "border-green-600",   bg: "bg-green-600/10",   glowColor: "rgba(22,163,74,0.3)"   },
   { id: "medium",   label: "בינוני", textColor: "text-orange-700",  border: "border-orange-600",  bg: "bg-orange-600/10",  glowColor: "rgba(234,88,12,0.3)"   },
   { id: "advanced", label: "מתקדם",  textColor: "text-red-700",     border: "border-red-700",     bg: "bg-red-700/10",     glowColor: "rgba(220,38,38,0.3)"   },
-];
-
-// Subject words for MasterPromptGate (rational-function-specific)
-const RATIONAL_SUBJECT_WORDS = [
-  "פונקציה רציונלית", "אסימפטוטה", "תחום", "מכנה", "מונה", "חור", "גבול", "רציונלית",
 ];
 
 // ─── FunctionGraph ────────────────────────────────────────────────────────────
@@ -123,27 +116,27 @@ function RationalLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
   const asymptoteLabel = k % 1 === 0 ? `x = ${k.toFixed(0)}` : `x = ${k.toFixed(1)}`;
 
   return (
-    <section style={{ border: `1px solid ${st.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", marginLeft: "auto", marginRight: "auto", boxShadow: "0 10px 15px -3px rgba(60,54,42,0.1)" }}>
-      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת פונקציות רציונליות</h3>
-      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
+    <section style={{ border: "8px solid #334155", borderRadius: "40px", padding: "2.5rem", background: "#020617" }}>
+      <h3 style={{ color: "#e2e8f0", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>מעבדת פונקציות רציונליות</h3>
+      <p style={{ color: "#94a3b8", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
         f(x) = 1 / (x − <span style={{ color: st.accentColor, fontFamily: "monospace", fontWeight: 700 }}>{k.toFixed(1)}</span>)
         {" "}— שנה את k וראה כיצד האסימפטוטה זזה
       </p>
 
       {/* Slider */}
-      <div style={{ background: "rgba(255,255,255,0.75)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.4)", padding: "1.25rem", boxShadow: "0 4px 16px rgba(60,54,42,0.12)", marginBottom: "2rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+      <div style={{ background: "#0f172a", borderRadius: 16, border: "1px solid #334155", padding: "1.25rem", marginBottom: "2rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#e2e8f0", marginBottom: 4 }}>
           <span>מיקום האסימפטוטה <span style={{ color: st.accentColor, fontFamily: "monospace", fontWeight: 600 }}>k</span></span>
           <span style={{ color: st.accentColor, fontFamily: "monospace", fontWeight: 700 }}>{k.toFixed(1)}</span>
         </div>
         <input type="range" min="-4" max="4" step="0.5" value={k} onChange={(e) => setK(parseFloat(e.target.value))} style={{ width: "100%", accentColor: st.accentColor }} />
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#9CA3AF", marginTop: 2 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#64748b", marginTop: 2 }}>
           <span>−4</span><span>0</span><span>+4</span>
         </div>
       </div>
 
       {/* SVG */}
-      <div style={{ borderRadius: 16, border: `1px solid ${st.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: st.glowShadow }}>
+      <div style={{ borderRadius: 16, border: `1px solid ${st.glowBorder}`, background: "#0f172a", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", maxWidth: 320 }} aria-hidden>
           {[...Array(5)].map((_, i) => {
             const gy = (H / 4) * i;
@@ -162,20 +155,20 @@ function RationalLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
 
       {/* Output tiles */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, textAlign: "center" }}>
-        <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: `1px solid rgba(${st.glowRgb},0.4)`, padding: 14, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-          <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>אסימפטוטה</div>
-          <div style={{ color: "#dc2626", fontWeight: 700, fontSize: 13 }}>{asymptoteLabel}</div>
+        <div style={{ borderRadius: 16, background: "#0f172a", border: "1px solid #334155", padding: 14 }}>
+          <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 6 }}>אסימפטוטה</div>
+          <div style={{ color: "#f87171", fontWeight: 700, fontSize: 13 }}>{asymptoteLabel}</div>
         </div>
-        <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: `1px solid rgba(${st.glowRgb},0.4)`, padding: 14, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-          <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>תחום</div>
-          <div style={{ color: "#1A1A1A", fontWeight: 700, fontSize: 13 }}>{domain}</div>
+        <div style={{ borderRadius: 16, background: "#0f172a", border: "1px solid #334155", padding: 14 }}>
+          <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 6 }}>תחום</div>
+          <div style={{ color: "#e2e8f0", fontWeight: 700, fontSize: 13 }}>{domain}</div>
         </div>
-        <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.75)", border: `1px solid rgba(${st.glowRgb},0.4)`, padding: 14, boxShadow: "0 4px 16px rgba(60,54,42,0.06)" }}>
-          <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>שטח אדום</div>
-          <div style={{ color: "#dc2626", fontWeight: 700, fontSize: 13 }}>לא מוגדרת</div>
+        <div style={{ borderRadius: 16, background: "#0f172a", border: "1px solid #334155", padding: 14 }}>
+          <div style={{ color: "#94a3b8", fontSize: 10, marginBottom: 6 }}>שטח אדום</div>
+          <div style={{ color: "#f87171", fontWeight: 700, fontSize: 13 }}>לא מוגדרת</div>
         </div>
       </div>
-      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "1rem" }}>
+      <p style={{ color: "#64748b", fontSize: 12, textAlign: "center", marginTop: "1rem" }}>
         האסימפטוטה האנכית זזה בהתאם לערך k — שינוי k מזיז את נקודת חוסר ההגדרה
       </p>
     </section>
@@ -514,7 +507,7 @@ const exercises: ExerciseDef[] = [
       { title: "⚠️ מבלבלים בין חור לאסימפטוטה", text: "חור מתקבל כשגורם משותף מצטמצם. אסימפטוטה מתקבלת כשהמכנה = 0 ואין צמצום. כאן אין גורם משותף → אסימפטוטה." },
       { title: "⚠️ מחשבים אסימפטוטה אופקית לפי b", text: "האסימפטוטה האופקית נקבעת לפי יחס המקדמים המובילים (a/1), לא לפי b." },
     ],
-    goldenPrompt: "\n\n",
+    goldenPrompt: `אני תלמיד כיתה י"א ומצרף תרגיל על פונקציה רציונלית עם פרמטרים.\nf(x) = (ax+4)/(x−b), ונתונות שתי אסימפטוטות.\n\nאתה המורה שלי — אל תפתור עבורי. שאל אותי שאלות מכווינות בלבד.\n\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.`,
     steps: [
       {
         phase: "שלב א׳",

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle2, Lock } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
@@ -9,318 +10,347 @@ import MarkComplete from "@/app/components/MarkComplete";
 import LabMessage from "@/app/components/LabMessage";
 import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
-// ─── Global style ─────────────────────────────────────────────────────────────
+// ─── KaTeX helpers ───────────────────────────────────────────────────────────
 
-const GLOBAL_CSS = `*:focus{outline:none!important;box-shadow:none!important;}`;
+function InlineMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: false }); }, [children]);
+  return <span ref={ref} />;
+}
+
+function DisplayMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: true }); }, [children]);
+  return <span ref={ref} style={{ display: "block", textAlign: "center" }} />;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type PromptStep = {
   phase: string;
   label: string;
-  prompt?: string;
+  coaching: string;
+  prompt: string;
+  keywords: string[];
+  keywordHint: string;
   contextWords?: string[];
+  stationWords?: string[];
 };
 
 type ExerciseDef = {
   id: "basic" | "medium" | "advanced";
+  title: string;
   problem: string;
   diagram: React.ReactNode;
   pitfalls: { title: string; text: string }[];
   goldenPrompt: string;
+  advancedGateQuestion?: string;
   steps: PromptStep[];
 };
 
 // ─── Station config ───────────────────────────────────────────────────────────
 
 const STATION = {
-  basic: {
-    stationName: "תחנה ראשונה", badge: "מתחיל",
-    badgeCls: "bg-green-600 text-white", accentCls: "text-green-700",
-    glowBorder: "rgba(22,163,74,0.35)", glowShadow: "0 4px 16px rgba(22,163,74,0.12)",
-    glowRgb: "22,163,74", accentColor: "#16A34A", borderRgb: "45,90,39",
-  },
-  medium: {
-    stationName: "תחנה שנייה", badge: "בינוני",
-    badgeCls: "bg-orange-600 text-white", accentCls: "text-orange-700",
-    glowBorder: "rgba(234,88,12,0.35)", glowShadow: "0 4px 16px rgba(234,88,12,0.12)",
-    glowRgb: "234,88,12", accentColor: "#EA580C", borderRgb: "163,79,38",
-  },
-  advanced: {
-    stationName: "תחנה שלישית", badge: "מתקדם",
-    badgeCls: "bg-red-700 text-white", accentCls: "text-red-700",
-    glowBorder: "rgba(220,38,38,0.35)", glowShadow: "0 4px 16px rgba(220,38,38,0.12)",
-    glowRgb: "220,38,38", accentColor: "#DC2626", borderRgb: "139,38,53",
-  },
+  basic:    { stationName: "תחנה ראשונה", badge: "מתחיל",  badgeCls: "bg-green-600 text-white",  accentCls: "text-green-700",   glowBorder: "rgba(22,163,74,0.35)",  glowShadow: "0 4px 16px rgba(22,163,74,0.12)",  glowRgb: "22,163,74",  accentColor: "#16A34A", borderRgb: "45,90,39"   },
+  medium:   { stationName: "תחנה שנייה",  badge: "בינוני",  badgeCls: "bg-orange-600 text-white", accentCls: "text-orange-700",  glowBorder: "rgba(234,88,12,0.35)",  glowShadow: "0 4px 16px rgba(234,88,12,0.12)",  glowRgb: "234,88,12", accentColor: "#EA580C", borderRgb: "163,79,38"  },
+  advanced: { stationName: "תחנה שלישית", badge: "מתקדם",  badgeCls: "bg-red-700 text-white",    accentCls: "text-red-700",     glowBorder: "rgba(220,38,38,0.35)",  glowShadow: "0 4px 16px rgba(220,38,38,0.12)",  glowRgb: "220,38,38", accentColor: "#DC2626", borderRgb: "139,38,53" },
 } as const;
 
-const TABS: { id: "basic" | "medium" | "advanced"; label: string }[] = [
-  { id: "basic",    label: "תחנה א׳ — מתחיל" },
-  { id: "medium",   label: "תחנה ב׳ — בינוני" },
-  { id: "advanced", label: "תחנה ג׳ — מתקדם" },
+const TABS = [
+  { id: "basic" as const,    label: "מתחיל",  textColor: "text-green-700",   border: "border-green-600",   bg: "bg-green-600/10",   glowColor: "rgba(22,163,74,0.3)"   },
+  { id: "medium" as const,   label: "בינוני", textColor: "text-orange-700",  border: "border-orange-600",  bg: "bg-orange-600/10",  glowColor: "rgba(234,88,12,0.3)"   },
+  { id: "advanced" as const, label: "מתקדם",  textColor: "text-red-700",     border: "border-red-700",     bg: "bg-red-700/10",     glowColor: "rgba(220,38,38,0.3)"   },
 ];
 
-const CIRCLE_SUBJECT_WORDS = [
-  "מעגל", "רדיוס", "מרכז", "משוואת מעגל", "r²", "d²", "להציב", "מרחק",
-];
+// ─── SVG diagrams (silent — no numbers, no answers) ──────────────────────────
 
-// ─── CircleGraph ──────────────────────────────────────────────────────────────
-
-function CircleGraph({
-  cx, cy, r, xMin, xMax, yMin, yMax,
-  color = "#3b82f6",
-  dots = [],
-}: {
-  cx: number; cy: number; r: number;
-  xMin: number; xMax: number; yMin: number; yMax: number;
-  color?: string;
-  dots?: { x: number; y: number; fill: string }[];
-}) {
-  const S = 180;
-  const toSx = (x: number) => ((x - xMin) / (xMax - xMin)) * S;
-  const toSy = (y: number) => S - ((y - yMin) / (yMax - yMin)) * S;
-  const rS = (r * S) / (xMax - xMin);
-  const ox = toSx(0), oy = toSy(0);
-  const xRange = xMax - xMin;
-  const gridStep = xRange <= 12 ? 2 : 4;
-  const gxVals: number[] = [];
-  const gyVals: number[] = [];
-  for (let v = Math.ceil(xMin / gridStep) * gridStep; v <= xMax; v += gridStep) gxVals.push(v);
-  for (let v = Math.ceil(yMin / gridStep) * gridStep; v <= yMax; v += gridStep) gyVals.push(v);
-
+function BasicSVG() {
   return (
-    <svg viewBox={`0 0 ${S} ${S}`} className="w-full max-w-[210px] mx-auto" aria-hidden>
-      {gxVals.map(v => {
-        const sx = toSx(v);
-        return sx >= 0 && sx <= S ? <line key={`gx${v}`} x1={sx} y1={0} x2={sx} y2={S} stroke="rgba(100,116,139,0.2)" strokeWidth={0.6} /> : null;
-      })}
-      {gyVals.map(v => {
-        const sy = toSy(v);
-        return sy >= 0 && sy <= S ? <line key={`gy${v}`} x1={0} y1={sy} x2={S} y2={sy} stroke="rgba(100,116,139,0.2)" strokeWidth={0.6} /> : null;
-      })}
-      {oy >= 0 && oy <= S && <line x1={0} y1={oy} x2={S} y2={oy} stroke="#94a3b8" strokeWidth={1} />}
-      {ox >= 0 && ox <= S && <line x1={ox} y1={0} x2={ox} y2={S} stroke="#94a3b8" strokeWidth={1} />}
-      <circle cx={toSx(cx)} cy={toSy(cy)} r={rS} fill={color} fillOpacity={0.08} stroke={color} strokeWidth={2.5} />
-      <circle cx={toSx(cx)} cy={toSy(cy)} r={2.5} fill={color} opacity={0.7} />
-      {dots.map((d, i) => <circle key={i} cx={toSx(d.x)} cy={toSy(d.y)} r={3.5} fill={d.fill} />)}
+    <svg viewBox="0 0 260 220" className="w-full max-w-sm mx-auto" aria-hidden>
+      {/* Axes */}
+      <line x1={30} y1={130} x2={240} y2={130} stroke="#94a3b8" strokeWidth={1.2} />
+      <line x1={130} y1={20} x2={130} y2={200} stroke="#94a3b8" strokeWidth={1.2} />
+      <text x={244} y={134} fontSize={10} fill="#94a3b8" fontFamily="sans-serif">x</text>
+      <text x={126} y={16} fontSize={10} fill="#94a3b8" fontFamily="sans-serif">y</text>
+      {/* Circle shape */}
+      <circle cx={160} cy={100} r={55} fill="none" stroke="#f59e0b" strokeWidth={2.2} />
+      {/* Center dot */}
+      <circle cx={160} cy={100} r={4} fill="#a78bfa" />
+      <text x={168} y={96} fontSize={11} fill="#a78bfa" fontFamily="sans-serif" fontWeight={700}>O</text>
+      {/* Radius line */}
+      <line x1={160} y1={100} x2={215} y2={100} stroke="#34d399" strokeWidth={1.8} strokeDasharray="5,3" />
+      <text x={185} y={93} fontSize={10} fill="#34d399" fontFamily="sans-serif" fontWeight={600}>r</text>
     </svg>
   );
 }
 
-// ─── CircleLab ────────────────────────────────────────────────────────────────
-
-function CircleLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
-  const [a, setA] = useState(1.0);
-  const [b, setB] = useState(-1.0);
-  const [R, setR] = useState(3.0);
-  const st = STATION[levelId];
-
-  const S = 260;
-  const xMin = -8, xMax = 8, yMin = -8, yMax = 8;
-  const toSx = (x: number) => ((x - xMin) / (xMax - xMin)) * S;
-  const toSy = (y: number) => S - ((y - yMin) / (yMax - yMin)) * S;
-  const scale = S / (xMax - xMin);
-  const cxS = toSx(a), cyS = toSy(b), rS = R * scale;
-  const ox = toSx(0), oy = toSy(0);
-  const edgeSx = cxS + rS;
-  const edgeInView = a + R <= xMax;
-
-  const xPart = a === 0 ? "x²" : a > 0 ? `(x − ${a.toFixed(1)})²` : `(x + ${Math.abs(a).toFixed(1)})²`;
-  const yPart = b === 0 ? "y²" : b > 0 ? `(y − ${b.toFixed(1)})²` : `(y + ${Math.abs(b).toFixed(1)})²`;
-  const rSqStr = Number.isInteger(R * R) ? (R * R).toString() : (R * R).toFixed(2);
-
+function MediumSVG() {
   return (
-    <section style={{
-      border: `1px solid ${st.glowBorder}`, borderRadius: 24, padding: "2.5rem",
-      background: "rgba(255,255,255,0.82)", boxShadow: st.glowShadow, marginBottom: "2rem",
-    }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, color: st.accentColor, textAlign: "center", marginBottom: 16 }}>מעבדת מעגלים</h3>
-      <p style={{ textAlign: "center", fontSize: 13, fontFamily: "monospace", color: "#334155", marginBottom: 16, direction: "ltr" }}>
-        {xPart} + {yPart} = <span style={{ color: st.accentColor, fontWeight: 700 }}>{rSqStr}</span>
-      </p>
-      <svg viewBox={`0 0 ${S} ${S}`} className="w-full max-w-sm mx-auto mb-4" aria-hidden>
-        {[-6, -4, -2, 0, 2, 4, 6].map(v => {
-          const sx = toSx(v), sy = toSy(v);
-          return <g key={v}><line x1={sx} y1={0} x2={sx} y2={S} stroke="rgba(100,116,139,0.2)" strokeWidth={0.6} /><line x1={0} y1={sy} x2={S} y2={sy} stroke="rgba(100,116,139,0.2)" strokeWidth={0.6} /></g>;
-        })}
-        <line x1={0} y1={oy} x2={S} y2={oy} stroke="#94a3b8" strokeWidth={1.2} />
-        <line x1={ox} y1={0} x2={ox} y2={S} stroke="#94a3b8" strokeWidth={1.2} />
-        <circle cx={cxS} cy={cyS} r={rS} fillOpacity={0.08} fill={st.accentColor} stroke={st.accentColor} strokeWidth={2.5} />
-        <line x1={cxS} y1={cyS} x2={edgeSx} y2={cyS} stroke="#f59e0b" strokeWidth={2} strokeDasharray="5 3" />
-        <circle cx={cxS} cy={cyS} r={5} fill={st.accentColor} />
-        {edgeInView && <circle cx={edgeSx} cy={cyS} r={3.5} fill="#f59e0b" opacity={0.85} />}
-      </svg>
-      <div style={{ display: "flex", justifyContent: "center", gap: 20, fontSize: 12, marginBottom: 16 }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 10, height: 10, borderRadius: "50%", background: st.accentColor, display: "inline-block" }} />
-          <span style={{ color: st.accentColor }}>מרכז ({a.toFixed(1)}, {b.toFixed(1)})</span>
-        </span>
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 20, borderTop: "2px dashed #f59e0b", display: "inline-block" }} />
-          <span style={{ color: "#b45309" }}>r = {R.toFixed(1)}</span>
-        </span>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14, padding: "0 8px", marginBottom: 20 }}>
-        {([
-          { label: "מרכז a (ציר x)", val: a, set: setA, min: -4, max: 4, step: 0.5, color: st.accentColor },
-          { label: "מרכז b (ציר y)", val: b, set: setB, min: -4, max: 4, step: 0.5, color: "#7c3aed" },
-          { label: "רדיוס R",        val: R, set: setR, min:  1, max: 6, step: 0.5, color: "#b45309" },
-        ] as const).map(({ label, val, set, min, max, step, color }) => (
-          <div key={label}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748b", marginBottom: 4 }}>
-              <span>{label}</span><span style={{ color, fontWeight: 700 }}>{val.toFixed(1)}</span>
-            </div>
-            <input type="range" min={min} max={max} step={step} value={val}
-              onChange={e => (set as (v: number) => void)(parseFloat(e.target.value))}
-              style={{ width: "100%", accentColor: color } as React.CSSProperties} />
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, textAlign: "center", fontSize: 12 }}>
-        {[
-          { label: "מרכז", val: `(${a.toFixed(1)}, ${b.toFixed(1)})`, color: st.accentColor },
-          { label: "רדיוס", val: R.toFixed(1), color: "#b45309" },
-          { label: "r²",   val: rSqStr,        color: "#7c3aed" },
-        ].map(({ label, val, color }) => (
-          <div key={label} style={{ borderRadius: 12, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: "10px 8px" }}>
-            <div style={{ color: "#64748b", marginBottom: 4 }}>{label}</div>
-            <div style={{ fontWeight: 700, color, fontSize: 11 }}>{val}</div>
-          </div>
-        ))}
-      </div>
-    </section>
+    <svg viewBox="0 0 260 220" className="w-full max-w-sm mx-auto" aria-hidden>
+      {/* Axes */}
+      <line x1={30} y1={130} x2={240} y2={130} stroke="#94a3b8" strokeWidth={1.2} />
+      <line x1={130} y1={20} x2={130} y2={200} stroke="#94a3b8" strokeWidth={1.2} />
+      <text x={244} y={134} fontSize={10} fill="#94a3b8" fontFamily="sans-serif">x</text>
+      <text x={126} y={16} fontSize={10} fill="#94a3b8" fontFamily="sans-serif">y</text>
+      {/* Circle */}
+      <circle cx={140} cy={110} r={50} fill="none" stroke="#f59e0b" strokeWidth={2.2} />
+      {/* Center with ? */}
+      <circle cx={140} cy={110} r={4} fill="#a78bfa" />
+      <text x={144} y={104} fontSize={13} fill="#a78bfa" fontFamily="sans-serif" fontWeight={700}>?</text>
+      {/* External point with dotted line to center */}
+      <circle cx={210} cy={65} r={4} fill="#64748b" />
+      <text x={216} y={62} fontSize={10} fill="#64748b" fontFamily="sans-serif" fontWeight={600}>Q</text>
+      <line x1={140} y1={110} x2={210} y2={65} stroke="#64748b" strokeWidth={1.2} strokeDasharray="4,3" />
+    </svg>
   );
 }
 
-// ─── CopyBtn ──────────────────────────────────────────────────────────────────
-
-function CopyBtn({ text, label = "העתק פרומפט", accentRgb }: { text: string; label?: string; accentRgb: string }) {
-  const [copied, setCopied] = useState(false);
+function AdvancedSVG() {
   return (
-    <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-      style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10, cursor: "pointer", background: "rgba(255,255,255,0.8)", border: `1.5px solid rgba(${accentRgb},0.4)`, color: `rgb(${accentRgb})`, fontSize: 12, fontWeight: 600, transition: "all 0.2s" }}>
-      {copied ? <Check size={13} /> : <Copy size={13} />}
-      {copied ? "הועתק!" : label}
+    <svg viewBox="0 0 260 220" className="w-full max-w-sm mx-auto" aria-hidden>
+      {/* Axes */}
+      <line x1={30} y1={150} x2={240} y2={150} stroke="#94a3b8" strokeWidth={1.2} />
+      <line x1={50} y1={20} x2={50} y2={200} stroke="#94a3b8" strokeWidth={1.2} />
+      <text x={244} y={154} fontSize={10} fill="#94a3b8" fontFamily="sans-serif">x</text>
+      <text x={46} y={16} fontSize={10} fill="#94a3b8" fontFamily="sans-serif">y</text>
+      {/* Circle through 3 points */}
+      <circle cx={145} cy={105} r={60} fill="none" stroke="#f59e0b" strokeWidth={2.2} />
+      {/* 3 points */}
+      <circle cx={95} cy={135} r={4.5} fill="#34d399" />
+      <text x={82} y={148} fontSize={10} fill="#34d399" fontFamily="sans-serif" fontWeight={700}>A</text>
+      <circle cx={200} cy={120} r={4.5} fill="#34d399" />
+      <text x={206} y={116} fontSize={10} fill="#34d399" fontFamily="sans-serif" fontWeight={700}>B</text>
+      <circle cx={130} cy={48} r={4.5} fill="#34d399" />
+      <text x={136} y={44} fontSize={10} fill="#34d399" fontFamily="sans-serif" fontWeight={700}>C</text>
+      {/* Tangent line at A */}
+      <line x1={60} y1={160} x2={130} y2={110} stroke="#a78bfa" strokeWidth={1.8} />
+      <text x={62} y={172} fontSize={10} fill="#a78bfa" fontFamily="sans-serif" fontWeight={600}>משיק</text>
+    </svg>
+  );
+}
+
+// ─── Prompt Coach Atoms ───────────────────────────────────────────────────────
+
+function CopyBtn({ text, label = "העתק פרומפט", accentRgb = "22,163,74" }: { text: string; label?: string; accentRgb?: string }) {
+  const [c, setC] = useState(false);
+  return (
+    <button
+      onClick={() => { navigator.clipboard.writeText(text); setC(true); setTimeout(() => setC(false), 2000); }}
+      style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10, cursor: "pointer", background: "rgba(255,255,255,0.8)", border: `1.5px solid rgba(${accentRgb},0.4)`, color: `rgb(${accentRgb})`, fontSize: 12, fontWeight: 600, transition: "all 0.2s" }}
+    >
+      {c ? <Check size={13} /> : <Copy size={13} />}{c ? "הועתק!" : label}
     </button>
   );
 }
 
-// ─── GoldenPromptCard ─────────────────────────────────────────────────────────
-
-function GoldenPromptCard({ prompt, accentColor, accentRgb }: { prompt: string; accentColor: string; accentRgb: string }) {
+function GoldenPromptCard({ prompt, glowRgb = "22,163,74", borderRgb = "45,90,39" }: { prompt: string; glowRgb?: string; borderRgb?: string }) {
   return (
-    <div style={{ borderRadius: 16, border: `1.5px solid rgba(${accentRgb},0.4)`, background: `rgba(${accentRgb},0.06)`, padding: "1.2rem" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-        <span style={{ fontSize: 18 }}>✨</span>
-        <span style={{ color: accentColor, fontWeight: 700, fontSize: 13 }}>פרומפט ראשי — העתק לAI שלך</span>
+    <div style={{ borderRadius: 16, background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: 16, border: `2px solid rgba(${borderRgb},0.45)`, boxShadow: `0 0 12px rgba(${borderRgb},0.15), 0 2px 8px rgba(${borderRgb},0.08)` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <span style={{ fontSize: 14 }}>&#10024;</span>
+        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>פרומפט ראשי</span>
       </div>
-      <div style={{ borderRadius: 10, border: "1px solid rgba(100,116,139,0.25)", background: "rgba(255,255,255,0.75)", padding: "10px 14px", fontSize: 12, color: "#1e293b", fontFamily: "monospace", lineHeight: 1.65, marginBottom: 10, direction: "rtl" }}>
-        {prompt}
-      </div>
-      <CopyBtn text={prompt} label="העתק פרומפט מלא" accentRgb={accentRgb} />
+      <p style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.7, marginBottom: 16, whiteSpace: "pre-line", fontWeight: 500 }}>{prompt}</p>
+      <CopyBtn text={prompt} label="העתק פרומפט מלא" accentRgb={glowRgb} />
     </div>
   );
 }
 
-// ─── TutorStepBasic ───────────────────────────────────────────────────────────
-
-function TutorStepBasic({ step, index, accentColor, accentRgb }: { step: PromptStep; index: number; accentColor: string; accentRgb: string }) {
-  const [done, setDone] = useState(false);
+function TutorStepBasic({ step, glowRgb = "22,163,74", borderRgb = "45,90,39" }: { step: PromptStep; glowRgb?: string; borderRgb?: string }) {
   return (
-    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.25)`, background: done ? `rgba(${accentRgb},0.06)` : "rgba(255,255,255,0.7)", padding: "1rem 1.2rem" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-        <span style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, background: done ? accentColor : `rgba(${accentRgb},0.1)`, border: `1.5px solid rgba(${accentRgb},0.4)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: done ? "#fff" : accentColor, fontWeight: 700 }}>
-          {done ? <Check size={13} /> : index + 1}
-        </span>
-        <span style={{ fontWeight: 700, fontSize: 14, color: "#1e293b" }}>{step.label}</span>
+    <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid rgba(${glowRgb},0.45)`, marginBottom: 8, boxShadow: `0 0 14px rgba(${glowRgb},0.18)` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid rgba(${glowRgb},0.25)` }}>
+        <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
-      {step.prompt && (
-        <div style={{ borderRadius: 10, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.8)", padding: "10px 14px", fontSize: 12, color: "#334155", fontFamily: "monospace", lineHeight: 1.65, direction: "rtl", marginBottom: 10 }}>
-          {step.prompt}
+      <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+        <div>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>&#9997;&#65039; הפרומפט המוכן</div>
+          <div style={{ borderRadius: 12, background: "rgba(255,255,255,0.85)", border: `1px solid rgba(${borderRgb},0.35)`, padding: 12, fontSize: 11, color: "#2D3436", lineHeight: 1.6, wordBreak: "break-word" }}>{step.prompt}</div>
         </div>
-      )}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        {step.prompt && <CopyBtn text={step.prompt} label="העתק לצ׳אט" accentRgb={accentRgb} />}
-        <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: accentColor, fontWeight: 600 }}>
-          <input type="checkbox" checked={done} onChange={e => setDone(e.target.checked)} style={{ width: 15, height: 15, accentColor } as React.CSSProperties} />
-          סיימתי עם AI ✓
-        </label>
+        <CopyBtn text={step.prompt} label="העתק פרומפט ממוקד" accentRgb={glowRgb} />
       </div>
     </div>
   );
 }
 
-// ─── TutorStepMedium ──────────────────────────────────────────────────────────
-
-function TutorStepMedium({ step, index, accentColor, accentRgb, locked, onPass }: {
-  step: PromptStep; index: number; accentColor: string; accentRgb: string; locked: boolean; onPass: () => void;
-}) {
-  const [text, setText] = useState("");
+function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" }: { step: PromptStep; locked?: boolean; onPass?: () => void; borderRgb?: string }) {
+  const [text, setText]     = useState("");
   const [result, setResult] = useState<ScoreResult | null>(null);
-  const passed = result !== null && !result.blocked && result.score >= 75;
-
-  if (locked) {
-    return (
-      <div style={{ borderRadius: 16, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.4)", padding: "1rem 1.2rem", opacity: 0.5, display: "flex", alignItems: "center", gap: 10 }}>
-        <Lock size={15} color="#94a3b8" />
-        <span style={{ fontSize: 13, color: "#64748b" }}>{step.label}</span>
-      </div>
-    );
-  }
+  const [copied, setCopied] = useState(false);
+  const passed = !!(result && !result.blocked && result.score >= 75);
 
   const validate = () => {
-    const r = calculatePromptScore(text, step.contextWords ?? []);
-    setResult(r);
-    if (!r.blocked && r.score >= 75) onPass();
+    if (text.trim().length < 20) {
+      setResult({ score: 0, blocked: false, hint: "הניסוח קצר מדי -- כתוב לפחות 20 תווים." });
+      return;
+    }
+    const res = calculatePromptScore(text, step.contextWords ?? []);
+    setResult(res);
+    if (!res.blocked && res.score >= 75) onPass?.();
   };
 
-  const scoreColor = !result ? "#9CA3AF" : result.score >= 75 ? "#16a34a" : result.score >= 50 ? "#d97706" : "#dc2626";
+  if (locked) return (
+    <div style={{ borderRadius: 12, border: `1px solid rgba(${borderRgb},0.3)`, background: "rgba(255,255,255,0.6)", padding: "14px 16px", marginBottom: 8, opacity: 0.4, userSelect: "none", display: "flex", alignItems: "center", gap: 10 }}>
+      <Lock size={14} color="#6B7280" />
+      <div>
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
+        <span style={{ color: "#6B7280", fontSize: 11, marginRight: 8 }}>{step.label}</span>
+      </div>
+    </div>
+  );
+
+  const scoreBarColor = !result ? "#9CA3AF" : result.score >= 75 ? "#16a34a" : result.score >= 50 ? "#d97706" : "#dc2626";
 
   return (
-    <div style={{ borderRadius: 16, padding: "1rem 1.2rem", border: passed ? "1.5px solid #16a34a" : `1px solid rgba(${accentRgb},0.3)`, background: passed ? "rgba(220,252,231,0.3)" : "rgba(255,255,255,0.7)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-        {passed
-          ? <CheckCircle2 size={20} color="#16a34a" style={{ flexShrink: 0 }} />
-          : <span style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, background: `rgba(${accentRgb},0.1)`, border: `1.5px solid rgba(${accentRgb},0.4)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: accentColor, fontWeight: 700 }}>{index + 1}</span>
-        }
-        <span style={{ fontWeight: 700, fontSize: 14, color: "#1e293b" }}>{step.label}</span>
+    <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${passed ? "rgba(22,163,74,0.55)" : `rgba(${borderRgb},0.35)`}`, marginBottom: 8, boxShadow: passed ? "0 0 16px rgba(22,163,74,0.15)" : "none", transition: "border-color 0.3s, box-shadow 0.3s" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid ${passed ? "rgba(22,163,74,0.3)" : `rgba(${borderRgb},0.2)`}` }}>
+        {passed ? <CheckCircle2 size={14} color="#16a34a" /> : <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
-      {!passed && (
-        <>
-          <textarea value={text} onChange={e => { setText(e.target.value); setResult(null); }} rows={3} dir="rtl"
-            placeholder="נסח כאן את הפרומפט שתשלח ל-AI..."
-            style={{ width: "100%", borderRadius: 10, resize: "none", boxSizing: "border-box", border: `1.5px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.85)", fontSize: 13, color: "#1e293b", padding: "10px 12px", lineHeight: 1.6, fontFamily: "inherit", marginBottom: 8 }} />
-          {result && (
-            <div style={{ marginBottom: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#64748b", marginBottom: 3 }}>
-                <span>ציון פרומפט</span><span style={{ color: scoreColor, fontWeight: 700 }}>{result.score}/100</span>
-              </div>
-              <div style={{ height: 5, borderRadius: 3, background: "#e2e8f0", overflow: "hidden" }}>
-                <div style={{ height: "100%", borderRadius: 3, width: `${result.score}%`, background: scoreColor, transition: "width 0.4s" }} />
-              </div>
+      <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+        <textarea
+          value={text} rows={3} dir="rtl" disabled={passed}
+          onChange={(e) => { setText(e.target.value); setResult(null); }}
+          placeholder="נסח כאן את השאלה שלך ל-AI (בקש הכוונה, לא פתרון)..."
+          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: "rgba(255,255,255,0.85)", border: `1px solid ${passed ? "rgba(22,163,74,0.4)" : `rgba(${borderRgb},0.25)`}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+        />
+
+        {result && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", marginBottom: 4, fontWeight: 600 }}>
+              <span>ציון הפרומפט</span>
+              <span style={{ fontWeight: 800 }}>{result.score}/100</span>
             </div>
-          )}
-          {result?.blocked && <div style={{ background: "rgba(254,226,226,1)", border: "1px solid #dc2626", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#1A1A1A", marginBottom: 8 }}>{result.hint}</div>}
-          {result && !result.blocked && result.score < 75 && <div style={{ background: "rgba(255,251,235,1)", border: "1px solid #d97706", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#1A1A1A", marginBottom: 8 }}>{result.hint}</div>}
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <button onClick={validate} disabled={text.trim().length < 10}
-              style={{ padding: "7px 16px", borderRadius: 10, cursor: text.trim().length < 10 ? "not-allowed" : "pointer", background: `rgba(${accentRgb},0.1)`, border: `1.5px solid rgba(${accentRgb},0.4)`, color: accentColor, fontSize: 13, fontWeight: 600, opacity: text.trim().length < 10 ? 0.4 : 1 }}>
-              בדיקת AI מדומה 🤖
-            </button>
-            <span style={{ fontSize: 11, color: "#94a3b8" }}>{text.trim().length} תווים</span>
+            <div style={{ height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${result.score}%`, borderRadius: 3, background: scoreBarColor, transition: "width 0.4s ease" }} />
+            </div>
           </div>
-        </>
-      )}
-      {passed && <div style={{ background: "rgba(220,252,231,1)", border: "1px solid #16a34a", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#14532d" }}>{result!.hint || "ניסוח מעולה! הפרומפט שלך ברור ומדויק."}</div>}
+        )}
+
+        {!result && (
+          <button onClick={validate} style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.8)", border: `1px solid rgba(${borderRgb},0.4)`, color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>
+            &#129302; בדיקת AI מדומה
+          </button>
+        )}
+
+        {result && result.blocked && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 12, background: "rgba(254,226,226,1)", border: "2px solid #dc2626", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6 }}>
+            &#9888;&#65039; {result.hint}
+          </motion.div>
+        )}
+
+        {result && !result.blocked && result.score < 75 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ borderRadius: 12, background: "rgba(255,251,235,1)", border: "2px solid #d97706", padding: 12, color: "#1A1A1A", fontSize: 12, lineHeight: 1.6 }}>
+            &#128161; {result.hint}
+          </motion.div>
+        )}
+
+        {passed && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#14532d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>
+              &#9989; פרומפט מצוין! ציון: <strong>{result!.score}/100</strong>
+            </div>
+            <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>
+              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "הועתק!" : "העתק ל-AI"}
+            </button>
+          </motion.div>
+        )}
+
+        {result && !passed && (
+          <button onClick={() => setResult(null)} style={{ fontSize: 12, color: "#6B7280", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}>נסה שוב</button>
+        )}
+      </div>
     </div>
   );
 }
 
-// ─── LadderBase ───────────────────────────────────────────────────────────────
+function TutorStepAdvanced({ step, locked = false, onPass }: { step: PromptStep; locked?: boolean; onPass?: () => void }) {
+  const [text, setText]       = useState("");
+  const [result, setResult]   = useState<ScoreResult | null>(null);
+  const [copied, setCopied]   = useState(false);
+  const passed = result?.score !== undefined && result.score >= 90 && !result.blocked;
 
-function LadderBase({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
-  const steps = ex.steps;
+  if (locked) return (
+    <div style={{ borderRadius: 12, border: "1px solid rgba(139,38,53,0.3)", background: "rgba(255,255,255,0.6)", padding: "12px 16px", opacity: 0.45, userSelect: "none", display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+      <Lock size={14} color="#6B7280" /><span style={{ color: "#6B7280", fontSize: 12 }}>{step.phase} -- {step.label}</span>
+    </div>
+  );
+
+  const validate = () => {
+    if (text.trim().length < 20) {
+      setResult({ score: 0, blocked: false, hint: "הניסוח קצר מדי -- כתוב לפחות 20 תווים." });
+      return;
+    }
+    const r = calculatePromptScore(text, step.contextWords ?? []);
+    setResult(r);
+    if (!r.blocked && r.score >= 90 && onPass) onPass();
+  };
+
+  return (
+    <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${passed ? "rgba(22,163,74,0.35)" : "rgba(220,38,38,0.35)"}`, marginBottom: 8, transition: "border-color 0.3s" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid ${passed ? "rgba(22,163,74,0.2)" : "rgba(220,38,38,0.2)"}` }}>
+        {passed
+          ? <CheckCircle2 size={14} color="#16a34a" />
+          : <span style={{ color: "#dc2626", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
+        <span style={{ color: "#6B7280", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
+      </div>
+
+      <div style={{ background: "rgba(255,255,255,0.65)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+        <textarea
+          value={text} rows={3} dir="rtl"
+          readOnly={passed}
+          onChange={(e) => { if (!passed) { setText(e.target.value); setResult(null); } }}
+          placeholder="כתוב את הפרומפט שלך לסעיף זה..."
+          style={{ minHeight: 80, maxHeight: 160, width: "100%", borderRadius: 12, background: passed ? "rgba(220,252,231,0.3)" : "rgba(255,255,255,0.85)", border: `1px solid ${passed ? "rgba(22,163,74,0.25)" : "rgba(139,38,53,0.25)"}`, color: "#2D3436", fontSize: 14, padding: 12, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+        />
+
+        {result && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#2D3436", fontWeight: 600 }}>
+              <span>ציון</span>
+              <span style={{ fontWeight: 800 }}>{result.score}/100</span>
+            </div>
+            <div style={{ height: 5, borderRadius: 99, background: "#E5E7EB", overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${result.score}%`, background: result.score >= 90 ? "#16a34a" : result.score >= 55 ? "#d97706" : "#dc2626", borderRadius: 99, transition: "width 0.4s ease" }} />
+            </div>
+          </div>
+        )}
+
+        {result && !passed && result.hint && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            style={{ borderRadius: 12, padding: 12, fontSize: 12, lineHeight: 1.6, color: "#1A1A1A", background: result.blocked ? "rgba(254,226,226,1)" : "rgba(255,251,235,1)", border: `2px solid ${result.blocked ? "#dc2626" : "#d97706"}` }}>
+            {result.blocked ? "\u26A0\uFE0F" : "\uD83D\uDCA1"} {result.hint}
+          </motion.div>
+        )}
+
+        {passed && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ borderRadius: 12, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: 12, color: "#14532d", fontSize: 12, lineHeight: 1.6, fontWeight: 600 }}>&#9989; ניסוח מעולה! הסעיף הבא נפתח.</div>
+            <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "transparent", border: "2px solid #16a34a", color: "#15803d", cursor: "pointer", fontWeight: 500 }}>
+              {copied ? <Check size={12} /> : <Copy size={12} />}{copied ? "הועתק!" : "העתק ניסוח"}
+            </button>
+          </motion.div>
+        )}
+
+        {!passed && (
+          <button onClick={validate}
+            style={{ padding: "6px 16px", borderRadius: 12, fontSize: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(220,38,38,0.35)", color: "#2D3436", cursor: "pointer", fontWeight: 500 }}>
+            &#129302; בדיקת AI מדומה
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Ladders ──────────────────────────────────────────────────────────────────
+
+function LadderBase({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: PromptStep[]; goldenPrompt: string; glowRgb: string; borderRgb: string }) {
   const [completed, setCompleted] = useState<boolean[]>(Array(steps.length).fill(false));
   const unlocked = completed.filter(Boolean).length + 1;
   const markDone = (i: number) => {
@@ -330,23 +360,24 @@ function LadderBase({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentCol
   };
   return (
     <div>
-      {steps.map((step, i) => (
+      <GoldenPromptCard prompt={goldenPrompt} glowRgb={glowRgb} borderRgb={borderRgb} />
+      {steps.map((s, i) => (
         <div key={i} id={`basic-step-${i}`}>
           {i < unlocked ? (
             <>
-              <TutorStepBasic key={i} step={step} index={i} accentColor={accentColor} accentRgb={accentRgb} />
+              <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
               {!completed[i] ? (
                 <button onClick={() => markDone(i)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
-                  סיימתי סעיף זה ✓
+                  &#10003; סיימתי סעיף זה
                 </button>
               ) : (
-                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>✅ הושלם</div>
+                <div style={{ textAlign: "center", padding: "6px 0", marginBottom: 10, fontSize: 12, color: "#16a34a", fontWeight: 600 }}>&#9989; הושלם</div>
               )}
             </>
           ) : (
             <div style={{ opacity: 0.35, pointerEvents: "none", position: "relative" }}>
-              <div style={{ position: "absolute", top: 8, right: 8, fontSize: 16, zIndex: 2 }}>🔒</div>
-              <TutorStepBasic key={i} step={step} index={i} accentColor={accentColor} accentRgb={accentRgb} />
+              <div style={{ position: "absolute", top: 8, right: 8, fontSize: 16, zIndex: 2 }}><Lock size={14} color="#6B7280" /></div>
+              <TutorStepBasic step={s} glowRgb={glowRgb} borderRgb={borderRgb} />
             </div>
           )}
         </div>
@@ -355,229 +386,710 @@ function LadderBase({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentCol
   );
 }
 
-// ─── LadderMedium ─────────────────────────────────────────────────────────────
-
-function LadderMedium({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
-  const [passed, setPassed] = useState<boolean[]>(Array(ex.steps.length).fill(false));
+function LadderMedium({ steps, goldenPrompt, glowRgb, borderRgb }: { steps: PromptStep[]; goldenPrompt: string; glowRgb: string; borderRgb: string }) {
+  const [passed, setPassed] = useState<boolean[]>(Array(steps.length).fill(false));
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <GoldenPromptCard prompt={ex.goldenPrompt} accentColor={accentColor} accentRgb={accentRgb} />
-      <div style={{ borderRadius: 12, background: `rgba(${accentRgb},0.07)`, border: `1px solid rgba(${accentRgb},0.2)`, padding: "8px 14px", fontSize: 13, color: accentColor, fontWeight: 600 }}>
-        🎯 עכשיו תורך: נסח כל פרומפט בעצמך, בדוק עם ה-AI המדומה, ואז שלח לAI האמיתי
-      </div>
-      {ex.steps.map((step, i) => (
-        <TutorStepMedium key={i} step={step} index={i} accentColor={accentColor} accentRgb={accentRgb}
+    <div>
+      <GoldenPromptCard prompt={goldenPrompt} glowRgb={glowRgb} borderRgb={borderRgb} />
+      {steps.map((s, i) => (
+        <TutorStepMedium
+          key={i} step={s}
           locked={i > 0 && !passed[i - 1]}
-          onPass={() => setPassed(p => { const n = [...p]; n[i] = true; return n; })} />
+          onPass={() => setPassed(prev => { const next = [...prev]; next[i] = true; return next; })}
+          borderRgb={borderRgb}
+        />
       ))}
     </div>
   );
 }
 
-// ─── LadderAdvanced ───────────────────────────────────────────────────────────
-
-function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accentColor: string; accentRgb: string }) {
-  const steps = ex.steps;
+function LadderAdvanced({ steps }: { steps: PromptStep[] }) {
   const [masterPassed, setMasterPassed] = useState(false);
-  const [unlockedCount, setUnlockedCount] = useState(1);
-  const allPassed = masterPassed && unlockedCount > steps.length;
+  const [passed, setPassed] = useState<boolean[]>(Array(steps.length).fill(false));
+  const unlockedIdx = masterPassed ? (passed.findIndex(p => !p) === -1 ? steps.length : passed.findIndex(p => !p)) : -1;
 
   return (
     <div>
-      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
-
-      {steps.map((step, i) => (
-        <div key={i} style={{ marginBottom: 8 }}>
-          {(!masterPassed || i >= unlockedCount) ? (
-            <div style={{ borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,255,255,0.7)", padding: "14px 16px", opacity: 0.5, pointerEvents: "none" as const, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ color: "#6B7280", fontSize: 13, fontWeight: 600 }}>{ step.phase } — { step.label }</span>
-              <span style={{ fontSize: 16 }}>🔒</span>
-            </div>
-          ) : (
-            <div>
-              <div style={{ borderRadius: 14, border: "1px solid rgba(22,163,74,0.3)", background: "rgba(255,255,255,0.9)", padding: "14px 16px", marginBottom: 8 }}>
-                <div style={{ color: "#15803d", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{ step.phase } — { step.label }</div>
-                <div style={{ color: "#334155", fontSize: 13, lineHeight: 1.6 }}>{ step.prompt }</div>
-              </div>
-              <button onClick={() => setUnlockedCount(v => Math.max(v, i + 2))} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px 0", marginBottom: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, background: "rgba(22,163,74,0.08)", border: "1.5px solid rgba(22,163,74,0.3)", color: "#15803d", cursor: "pointer" }}>
-                סיימתי סעיף זה ✓
-              </button>
-            </div>
-          )}
-        </div>
+      <MasterPromptGate
+        onPass={() => setMasterPassed(true)}
+        accentColor="#991b1b"
+        accentRgb="153,27,27"
+        requiredPhrase="סרוק נתונים ועצור"
+        subjectWords={["מעגל", "מרכז", "רדיוס", "משיק", "משוואה", "השלמה לריבוע"]}
+      />
+      {steps.map((s, i) => (
+        <TutorStepAdvanced
+          key={i} step={s}
+          locked={!masterPassed || i > unlockedIdx}
+          onPass={() => setPassed(prev => { const next = [...prev]; next[i] = true; return next; })}
+        />
       ))}
-
-      {allPassed && (
-        <div style={{ borderRadius: 16, background: "rgba(220,252,231,1)", border: "2px solid #16a34a", padding: "1.25rem 1.5rem", marginTop: 16, textAlign: "center" }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }}>🏆</div>
-          <div style={{ color: "#14532d", fontWeight: 800, fontSize: 16, marginBottom: 4 }}>כל הכבוד — השלמת את הרמה המתקדמת!</div>
-          <div style={{ color: "#166534", fontSize: 13 }}>עברת בהצלחה את כל הסעיפים.</div>
-        </div>
-      )}
     </div>
   );
 }
 
-// ─── FormulaBar ───────────────────────────────────────────────────────────────
+// ─── ExerciseCard ─────────────────────────────────────────────────────────────
 
-function FormulaBar({ accentColor, accentRgb }: { accentColor: string; accentRgb: string }) {
-  const formulas = [
-    { label: "נוסחה סטנדרטית", val: "(x−a)²+(y−b)²=r²" },
-    { label: "מרחק²", val: "d²=(x₀−a)²+(y₀−b)²" },
-    { label: "מיקום נקודה", val: "d²<r²→פנים | d²=r²→על | d²>r²→חוץ" },
-    { label: "מרכז על y=x", val: "מרכז=(a,a)" },
-  ];
+function ExerciseCard({ ex }: { ex: ExerciseDef }) {
+  const s = STATION[ex.id];
+  const [copiedProblem, setCopiedProblem] = useState(false);
+  function handleCopyProblem() {
+    navigator.clipboard.writeText(ex.problem);
+    setCopiedProblem(true);
+    setTimeout(() => setCopiedProblem(false), 2000);
+  }
   return (
-    <div style={{ borderRadius: 14, border: `1px solid rgba(${accentRgb},0.25)`, background: `rgba(${accentRgb},0.04)`, padding: "12px 16px", marginBottom: 16 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: accentColor, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>נוסחאות מרכזיות</p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {formulas.map(f => (
-          <div key={f.label} style={{ borderRadius: 8, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", padding: "4px 10px", fontSize: 11 }}>
-            <span style={{ color: "#64748b", marginLeft: 4 }}>{f.label}:</span>
-            <span style={{ color: "#1e293b", fontFamily: "monospace", fontWeight: 600, direction: "ltr", display: "inline-block" }}>{f.val}</span>
+    <section style={{ border: `1px solid ${s.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", boxShadow: s.glowShadow }}>
+
+      {/* Title */}
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: "2rem" }}>
+        <span className={`text-sm font-black px-4 py-1.5 rounded-full shrink-0 ${s.badgeCls}`}>{s.badge}</span>
+        <h2 className={`text-xl font-extrabold uppercase tracking-widest ${s.accentCls}`} style={{ margin: 0 }}>{s.stationName}</h2>
+      </div>
+      <div style={{ height: 1, background: "rgba(60,54,42,0.15)", marginBottom: "2rem" }} />
+
+      {/* Diagram */}
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: s.glowShadow }}>{ex.diagram}</div>
+
+      {/* Problem */}
+      <div style={{ borderRadius: 16, border: `1px solid rgba(${s.borderRgb},0.35)`, background: "rgba(255,255,255,0.6)", padding: "1.5rem", marginBottom: "2rem" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>&#128221; השאלה</div>
+          <button onClick={handleCopyProblem} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: copiedProblem ? "rgba(22,163,74,0.15)" : "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.2)", color: copiedProblem ? "#16a34a" : "#6B7280", fontSize: 11, fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap" }}>
+            {copiedProblem ? <Check size={11} /> : <Copy size={11} />}
+            {copiedProblem ? "הועתק!" : "העתק"}
+          </button>
+        </div>
+        <pre style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
+      </div>
+
+      {/* Pitfalls */}
+      <div style={{ marginBottom: "2rem" }}>
+        <div style={{ color: "#dc2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>&#9888;&#65039; שגיאות נפוצות</div>
+        {ex.pitfalls.map((p, i) => (
+          <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.25)", background: "rgba(254,226,226,0.25)", padding: "0.85rem 1rem", marginBottom: 8 }}>
+            <div style={{ color: "#b91c1c", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>{p.title}</div>
+            {p.text && <div style={{ color: "#2D3436", fontSize: 13.5, lineHeight: 1.65 }}>{p.text}</div>}
           </div>
         ))}
       </div>
+
+      {/* Prompt Ladder */}
+      <div style={{ borderRadius: 16, border: `1px solid ${s.glowBorder}`, background: "rgba(255,255,255,0.7)", padding: "1.25rem", boxShadow: s.glowShadow }}>
+        <div style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; מדריך הפרומפטים</div>
+        {ex.id === "basic"    && <LadderBase   steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
+        {ex.id === "medium"   && <LadderMedium steps={ex.steps} goldenPrompt={ex.goldenPrompt} glowRgb={s.glowRgb} borderRgb={s.borderRgb} />}
+      </div>
+
+      {/* Advanced gate — outside bordered container */}
+      {ex.id === "advanced" && <LadderAdvanced steps={ex.steps} />}
+
+    </section>
+  );
+}
+
+// ─── Formula Bar ──────────────────────────────────────────────────────────────
+
+function FormulaBar() {
+  const [activeTab, setActiveTab] = useState<"standard" | "general" | "tangent" | null>(null);
+
+  const tabs = [
+    { id: "standard" as const, label: "משוואה תקנית", tex: "(x-a)^2+(y-b)^2=r^2", color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "general" as const,  label: "משוואה כללית",  tex: "x^2+y^2+Dx+Ey+F=0",  color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
+    { id: "tangent" as const,  label: "משיק למעגל",    tex: "m_r \\cdot m_t = -1",  color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
+  ];
+
+  return (
+    <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: "1.25rem" }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
+
+      <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
+        {tabs.map(t => {
+          const isActive = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(isActive ? null : t.id)}
+              style={{
+                flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
+                border: `1.5px solid ${isActive ? t.borderColor : "rgba(60,54,42,0.15)"}`,
+                background: isActive ? `${t.color}15` : "rgba(255,255,255,0.5)",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
+              <span style={{ color: isActive ? t.color : "#6B7280" }}><InlineMath>{t.tex}</InlineMath></span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Expanded: Standard equation */}
+      {activeTab === "standard" && (
+        <motion.div key="standard" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(22,163,74,0.25)", background: "rgba(22,163,74,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"(x-a)^2 + (y-b)^2 = r^2"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> משוואה תקנית של מעגל עם מרכז <InlineMath>{"(a,b)"}</InlineMath> ורדיוס <InlineMath>{"r"}</InlineMath>.
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li><InlineMath>{"a"}</InlineMath> ו-<InlineMath>{"b"}</InlineMath> הם קואורדינטות המרכז.</li>
+                  <li>שימו לב לסימנים: מרכז <InlineMath>{"(3,-2)"}</InlineMath> נותן <InlineMath>{"(x-3)^2+(y+2)^2"}</InlineMath>.</li>
+                  <li>בצד ימין כותבים <InlineMath>{"r^2"}</InlineMath>, לא <InlineMath>{"r"}</InlineMath>.</li>
+                </ol>
+              </div>
+              <div style={{ marginTop: 10, color: "#15803d", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; דוגמה: מרכז <InlineMath>{"(2,-3)"}</InlineMath>, רדיוס 4 &rarr; <InlineMath>{"(x-2)^2+(y+3)^2=16"}</InlineMath>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Expanded: General equation */}
+      {activeTab === "general" && (
+        <motion.div key="general" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(234,88,12,0.25)", background: "rgba(234,88,12,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"x^2+y^2+Dx+Ey+F=0"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> מהמשוואה הכללית מוצאים מרכז ורדיוס ע&quot;י השלמה לריבוע:
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>מרכז: <InlineMath>{"\\left(-\\frac{D}{2},\\;-\\frac{E}{2}\\right)"}</InlineMath></li>
+                  <li>רדיוס: <InlineMath>{"r = \\sqrt{\\frac{D^2}{4}+\\frac{E^2}{4}-F}"}</InlineMath></li>
+                  <li>תנאי קיום: <InlineMath>{"\\frac{D^2}{4}+\\frac{E^2}{4}-F > 0"}</InlineMath></li>
+                </ol>
+              </div>
+              <div style={{ marginTop: 10, color: "#c2410c", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; דוגמה: <InlineMath>{"x^2+y^2-4x+6y-3=0"}</InlineMath> &rarr; מרכז <InlineMath>{"(2,-3)"}</InlineMath>, <InlineMath>{"r=4"}</InlineMath>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Expanded: Tangent */}
+      {activeTab === "tangent" && (
+        <motion.div key="tangent" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(220,38,38,0.25)", background: "rgba(220,38,38,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"m_{\\text{radius}} \\cdot m_{\\text{tangent}} = -1"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> המשיק למעגל בנקודה מסוימת מאונך לרדיוס באותה נקודה:
+                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>חשבו את שיפוע הרדיוס מהמרכז לנקודה.</li>
+                  <li>שיפוע המשיק = <InlineMath>{"-\\frac{1}{m_r}"}</InlineMath> (ניצב).</li>
+                  <li>כתבו משוואת ישר עם השיפוע החדש והנקודה.</li>
+                </ol>
+              </div>
+              <div style={{ marginTop: 10, color: "#dc2626", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; דוגמה: שיפוע רדיוס = 2 &rarr; שיפוע משיק = <InlineMath>{"-\\frac{1}{2}"}</InlineMath>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
 
 // ─── Exercise data ────────────────────────────────────────────────────────────
 
-const EXERCISES: ExerciseDef[] = [
+const exercises: ExerciseDef[] = [
   {
     id: "basic",
-    problem: "נתון מעגל עם:\nמרכז  (3, −2)\nרדיוס  r = 5\n\nכתוב את משוואת המעגל.",
-    diagram: <CircleGraph cx={3} cy={-2} r={5} xMin={-3} xMax={9} yMin={-8} yMax={4} color="#16a34a" />,
+    title: "משוואת מעגל -- מרכז ורדיוס",
+    problem: "נתון מעגל עם מרכז (3, -2) ורדיוס r = 5.\n\nא. כתבו את משוואת המעגל בצורה תקנית.\nב. פתחו את המשוואה לצורה כללית.\nג. בדקו אם הנקודה P(8, -2) נמצאת על המעגל.",
+    diagram: <BasicSVG />,
     pitfalls: [
-      { title: "טעות סימן במרכז — (x − 3)² ≠ (x + 3)²", text: "מרכז (3,−2) נותן (x − 3)² + (y + 2)². הסימן מתהפך: מינוס-a כאשר a חיובי, ועם a שלילי — מקבלים חיבור." },
-      { title: "שוכחים לרבע את r — כותבים r במקום r²", text: "הנוסחה הסטנדרטית היא r², לא r. r=5 → r²=25. טעות נפוצה: לכתוב = 5 במקום = 25." },
+      { title: "טעות סימנים במרכז", text: "כשהמרכז הוא (3,-2), הסימנים מתהפכים בנוסחה: (x-3) ו-(y+2). תלמידים רבים כותבים (x+3) או (y-2) בטעות." },
+      { title: "בלבול בין r ל-r\u00B2", text: "בצד ימין של המשוואה התקנית כותבים את r\u00B2, לא את r. אם r=5 אז כותבים 25, לא 5." },
     ],
-    goldenPrompt: "\n\nנתון מעגל עם מרכז (3,-2) ורדיוס 5. אני צריך: 1. לכתוב את הנוסחה הסטנדרטית (x-a)²+(y-b)²=r². 2. להציב a=3, b=-2, r=5. 3. לפשט ולכתוב את המשוואה הסופית. 4. לאמת שנקודה על המעגל מקיימת אותה.\nסרוק את התמונה/נתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״",
+    goldenPrompt: "אני תלמיד כיתה יא׳. נתון מעגל עם מרכז (3,-2) ורדיוס 5.\nאני צריך:\n1. לכתוב את המשוואה התקנית (x-a)\u00B2+(y-b)\u00B2=r\u00B2\n2. לפתח לצורה כללית x\u00B2+y\u00B2+Dx+Ey+F=0\n3. לבדוק אם P(8,-2) על המעגל\n\nאל תפתור עבורי -- שאל אותי שאלות מכוונות.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.",
     steps: [
-      { phase: "א", label: "שלב א׳ — הנוסחה הסטנדרטית", prompt: "\n\nמה הנוסחה הסטנדרטית של מעגל עם מרכז (a,b) ורדיוס r? הסבר כל מרכיב." },
-      { phase: "ב", label: "שלב ב׳ — הצב a=3, b=−2, r=5", prompt: "\n\nמרכז מעגל (3,-2), רדיוס r=5. הצב בנוסחה (x-a)²+(y-b)²=r². שים לב לסימנים." },
-      { phase: "ג", label: "שלב ג׳ — פשט: חשב r²", prompt: "\n\nפשט: (x-3)²+(y+2)²=5². מה ערך 5²? כתוב את המשוואה הסופית." },
-      { phase: "ד", label: "שלב ד׳ — אמת עם נקודה על המעגל", prompt: "\n\nמעגל: (x-3)²+(y+2)²=25. בדוק אם (8,-2) נמצאת עליו. הצב ואמת." },
+      {
+        phase: "א",
+        label: "שלב א׳ -- כתיבת המשוואה התקנית",
+        coaching: "הצב את ערכי המרכז והרדיוס בנוסחה הכללית",
+        prompt: "נתון מעגל עם מרכז (3,-2) ורדיוס 5. תנחה אותי איך להציב בנוסחה (x-a)\u00B2+(y-b)\u00B2=r\u00B2. שים לב שאני מבין מה קורה עם הסימנים. אל תפתור עבורי.",
+        keywords: ["מרכז", "רדיוס", "נוסחה"],
+        keywordHint: "ציין שמדובר בנוסחה תקנית",
+        contextWords: ["מעגל", "מרכז", "רדיוס", "נוסחה", "תקנית", "הצב"],
+      },
+      {
+        phase: "ב",
+        label: "שלב ב׳ -- פיתוח לצורה כללית",
+        coaching: "פתח סוגריים ואסוף איברים",
+        prompt: "יש לי את המשוואה התקנית של המעגל עם מרכז (3,-2) ורדיוס 5. תדריך אותי איך לפתוח סוגריים ולעבור לצורה x\u00B2+y\u00B2+Dx+Ey+F=0. אל תפתור.",
+        keywords: ["סוגריים", "כללית", "פיתוח"],
+        keywordHint: "ציין שצריך לפתח את הסוגריים",
+        contextWords: ["מעגל", "סוגריים", "כללית", "פיתוח", "D", "E", "F"],
+      },
+      {
+        phase: "ג",
+        label: "שלב ג׳ -- בדיקת נקודה על המעגל",
+        coaching: "הצב את קואורדינטות הנקודה במשוואה",
+        prompt: "משוואת המעגל עם מרכז (3,-2) ורדיוס 5. תנחה אותי איך לבדוק האם הנקודה P(8,-2) נמצאת על המעגל. תסביר מה צריך לבדוק. אל תפתור.",
+        keywords: ["הצב", "נקודה", "מעגל"],
+        keywordHint: "הצב את הנקודה במשוואה",
+        contextWords: ["מעגל", "נקודה", "הצב", "בדוק", "מרחק", "רדיוס"],
+      },
     ],
   },
   {
     id: "medium",
-    problem: "נתון המעגל:\n(x − 1)² + (y + 4)² = 20\n\nהאם הנקודה (3, −8)\nנמצאת בתוך המעגל, מחוצה לו, או עליו?",
-    diagram: <CircleGraph cx={1} cy={-4} r={Math.sqrt(20)} xMin={-5} xMax={7} yMin={-9} yMax={3} color="#ea580c" dots={[{ x: 3, y: -8, fill: "#f59e0b" }]} />,
+    title: "מציאת מרכז ורדיוס ממשוואה כללית",
+    problem: "נתונה משוואת מעגל בצורה כללית:\nx\u00B2 + y\u00B2 - 6x + 4y - 12 = 0\n\nא. מצאו את מרכז המעגל ואת הרדיוס בעזרת השלמה לריבוע.\nב. קבעו אם הנקודה Q(7, 1) נמצאת בתוך המעגל, מחוצה לו, או עליו.\nג. חשבו את המרחק מהמרכז ל-Q ופרשו את התוצאה.",
+    diagram: <MediumSVG />,
     pitfalls: [
-      { title: "מחשבים d במקום d² — עם שורש מיותר", text: "מספיק להשוות d² ל-r². אם d²<r² — בפנים. d²=r² — על המעגל. d²>r² — בחוץ. אין צורך בשורש." },
-      { title: "טועים במרכז: המרכז הוא (1,−4) לא (−1,4)", text: "מ-(x−1)² קוראים a=+1, ומ-(y+4)²=(y−(−4))² קוראים b=−4. הסימן מתהפך תמיד." },
+      { title: "טעות בהשלמה לריבוע", text: "בהשלמה לריבוע של -6x חייבים להוסיף ולחסר (6/2)\u00B2=9 -- תלמידים שוכחים לחלק ב-2 לפני הריבוע, או שוכחים לחסר." },
+      { title: "בלבול פנים/חוץ", text: "אם d\u00B2 < r\u00B2 הנקודה בפנים, אם d\u00B2 = r\u00B2 על המעגל, אם d\u00B2 > r\u00B2 בחוץ. תלמידים מתבלבלים בכיוון של אי-השוויון." },
     ],
-    goldenPrompt: "\n\nמעגל: (x-1)²+(y+4)²=20. אני בודק אם (3,-8) בפנים/על/מחוץ. שלבים: 1. זהה מרכז (a,b) ו-r². 2. חשב d²=(x₀-a)²+(y₀-b)². 3. השווה d² ל-r². 4. הסיק מסקנה.\nסרוק את התמונה/נתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״",
+    goldenPrompt: "אני תלמיד כיתה יא׳. נתונה משוואת מעגל: x\u00B2+y\u00B2-6x+4y-12=0.\nאני צריך:\n1. לבצע השלמה לריבוע ולמצוא מרכז ורדיוס\n2. לבדוק אם Q(7,1) בפנים/על/מחוץ למעגל\n3. לחשב מרחק מהמרכז ל-Q ולפרש\n\nאל תפתור עבורי -- שאל אותי שאלות מכוונות.\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.",
     steps: [
-      { phase: "א", label: "שלב א׳ — זהה מרכז ו-r²", contextWords: ["מרכז", "r²", "נוסחה", "סטנדרטית", "מעגל"] },
-      { phase: "ב", label: "שלב ב׳ — חשב d² מהנקודה למרכז", contextWords: ["d²", "מרחק", "נוסחה", "מרכז", "נקודה"] },
-      { phase: "ג", label: "שלב ג׳ — השווה d² ל-r²", contextWords: ["d²", "r²", "מעגל", "מיקום", "השווה"] },
-      { phase: "ד", label: "שלב ד׳ — אמת: הצב ישירות במשוואה", contextWords: ["הצב", "אמת", "שוויון", "מעגל"] },
+      {
+        phase: "א",
+        label: "שלב א׳ -- השלמה לריבוע",
+        coaching: "קבץ את איברי x ואת איברי y בנפרד",
+        prompt: "נתונה משוואה x\u00B2+y\u00B2-6x+4y-12=0. תנחה אותי צעד אחר צעד בהשלמה לריבוע כדי למצוא מרכז ורדיוס. אל תפתור.",
+        keywords: ["השלמה", "ריבוע", "מרכז"],
+        keywordHint: "ציין שצריך השלמה לריבוע",
+        contextWords: ["השלמה", "ריבוע", "מרכז", "רדיוס", "קיבוץ", "מעגל"],
+      },
+      {
+        phase: "ב",
+        label: "שלב ב׳ -- מיקום נקודה ביחס למעגל",
+        coaching: "חשב d\u00B2 מהמרכז לנקודה Q",
+        prompt: "מצאתי את מרכז המעגל מהמשוואה x\u00B2+y\u00B2-6x+4y-12=0. תדריך אותי איך לקבוע אם Q(7,1) בפנים, בחוץ, או על המעגל. אל תפתור.",
+        keywords: ["מרחק", "פנים", "חוץ"],
+        keywordHint: "ציין שצריך להשוות מרחקים",
+        contextWords: ["מרחק", "d\u00B2", "r\u00B2", "פנים", "חוץ", "מעגל", "נקודה"],
+      },
+      {
+        phase: "ג",
+        label: "שלב ג׳ -- חישוב מרחק ופרשנות",
+        coaching: "חשב את המרחק המדויק ופרש",
+        prompt: "מצאתי את מרכז ורדיוס המעגל מהמשוואה x\u00B2+y\u00B2-6x+4y-12=0 ואת הנקודה Q(7,1). תנחה אותי לחשב את המרחק מהמרכז ל-Q ולפרש את התוצאה ביחס לרדיוס. אל תפתור.",
+        keywords: ["מרחק", "רדיוס", "פרשנות"],
+        keywordHint: "ציין שצריך לחשב מרחק",
+        contextWords: ["מרחק", "מרכז", "רדיוס", "פרשנות", "השוואה", "מעגל"],
+      },
     ],
   },
   {
     id: "advanced",
-    problem: "מעגל עובר דרך (0, 0) ו-(8, 0).\nמרכז המעגל נמצא על הישר y = x.\n\nמצא את משוואת המעגל.",
-    diagram: <CircleGraph cx={4} cy={4} r={Math.sqrt(32)} xMin={-2} xMax={12} yMin={-2} yMax={12} color="#dc2626" dots={[{ x: 0, y: 0, fill: "#34d399" }, { x: 8, y: 0, fill: "#34d399" }]} />,
+    title: "מעגל דרך 3 נקודות",
+    problem: "מצאו את משוואת המעגל העובר דרך שלוש הנקודות:\nA(1, 3),  B(5, 1),  C(-1, -1)\n\nא. הציבו כל נקודה במשוואה הכללית x\u00B2+y\u00B2+Dx+Ey+F=0 וקבלו 3 משוואות.\nב. פתרו את המערכת ומצאו D, E, F.\nג. כתבו את המרכז והרדיוס.\nד. מצאו את משוואת המשיק למעגל בנקודה A.",
+    diagram: <AdvancedSVG />,
     pitfalls: [
-      { title: "מניחים שהמרכז = נקודת האמצע של (0,0) ו-(8,0)", text: "נקודת האמצע (4,0) אינה בהכרח המרכז. המרכז על y=x מאלץ פתרון מערכת — (4,0) לא על y=x." },
-      { title: "שוכחים שמרכז על y=x: מרכז = (a,a)", text: "תנאי y=x על המרכז אומר שהמרכז הוא (a,a) — קואורדינטת y שווה לקואורדינטת x." },
+      { title: "טעות בהצבת נקודות", text: "כשמציבים A(1,3) חייבים לחשב 1\u00B2+3\u00B2 = 10, לא 1+3=4. תלמידים מתבלבלים בין הצבה לריבוע להצבה ישירה." },
+      { title: "שכחת ניצב במשיק", text: "המשיק ניצב לרדיוס -- חייבים לחשב את שיפוע הרדיוס מהמרכז לנקודה, ואז לקחת את המינוס ההופכי. תלמידים משתמשים בשיפוע הרדיוס עצמו." },
     ],
-    goldenPrompt: "\n\n",
+    goldenPrompt: "",
     steps: [
-      { phase: "א", label: "שלב א׳ — כתוב את המרכז בעזרת תנאי y=x", contextWords: ["y=x", "מרכז", "a", "מעגל"] },
-      { phase: "ב", label: "שלב ב׳ — הגדר תנאי שוויון-מרחקים", contextWords: ["שוויון", "מרחק", "d²", "מרכז"] },
-      { phase: "ג", label: "שלב ג׳ — פתור עבור a", contextWords: ["a", "פתור", "סוגריים", "משוואה"] },
-      { phase: "ד", label: "שלב ד׳ — חשב r² וכתוב משוואה", contextWords: ["r²", "מרכז", "משוואה", "מעגל"] },
+      {
+        phase: "א",
+        label: "שלב א׳ -- הצבת 3 נקודות",
+        coaching: "הציבו כל נקודה בנוסחה הכללית",
+        prompt: "נתונות A(1,3), B(5,1), C(-1,-1). תנחה אותי להציב כל נקודה במשוואה x\u00B2+y\u00B2+Dx+Ey+F=0 כדי לקבל 3 משוואות ב-D,E,F. אל תפתור.",
+        keywords: ["הצב", "משוואה", "נקודה"],
+        keywordHint: "ציין שצריך להציב",
+        contextWords: ["מעגל", "הצב", "משוואה", "D", "E", "F", "נקודה"],
+      },
+      {
+        phase: "ב",
+        label: "שלב ב׳ -- פתרון המערכת",
+        coaching: "פתרו מערכת 3 משוואות ב-3 נעלמים",
+        prompt: "קיבלתי 3 משוואות מהצבת A(1,3), B(5,1), C(-1,-1) במשוואה x\u00B2+y\u00B2+Dx+Ey+F=0. תדריך אותי איך לפתור את המערכת ולמצוא D, E, F. אל תפתור.",
+        keywords: ["מערכת", "פתור", "משוואות"],
+        keywordHint: "ציין שצריך לפתור מערכת",
+        contextWords: ["מערכת", "פתור", "משוואות", "D", "E", "F", "חיסור"],
+      },
+      {
+        phase: "ג",
+        label: "שלב ג׳ -- מרכז ורדיוס",
+        coaching: "חלצו מרכז ורדיוס מ-D, E, F",
+        prompt: "מצאתי D, E, F ממערכת המשוואות שהתקבלה מ-A(1,3), B(5,1), C(-1,-1). תנחה אותי למצוא את המרכז והרדיוס מהנוסחאות. אל תפתור.",
+        keywords: ["מרכז", "רדיוס"],
+        keywordHint: "ציין שצריך למצוא מרכז",
+        contextWords: ["מרכז", "רדיוס", "D", "E", "מעגל", "השלמה"],
+      },
+      {
+        phase: "ד",
+        label: "שלב ד׳ -- משיק בנקודה A",
+        coaching: "מצאו שיפוע רדיוס ואז ניצב",
+        prompt: "מצאתי את מרכז המעגל העובר דרך A(1,3), B(5,1), C(-1,-1). תנחה אותי למצוא את משוואת המשיק למעגל בנקודה A. תסביר למה המשיק ניצב לרדיוס. אל תפתור.",
+        keywords: ["משיק", "ניצב", "שיפוע"],
+        keywordHint: "ציין שצריך משיק",
+        contextWords: ["משיק", "ניצב", "שיפוע", "רדיוס", "מרכז", "משוואה"],
+      },
     ],
   },
 ];
 
+// ─── CircleLab (basic) ────────────────────────────────────────────────────────
+
+function CircleLab() {
+  const [a, setA] = useState(2);
+  const [b, setB] = useState(-1);
+  const [R, setR] = useState(3);
+
+  const S = 260;
+  const xMin = -8, xMax = 8, yMin = -8, yMax = 8;
+  const toSx = (x: number) => ((x - xMin) / (xMax - xMin)) * S;
+  const toSy = (y: number) => S - ((y - yMin) / (yMax - yMin)) * S;
+  const scale = S / (xMax - xMin);
+  const cxS = toSx(a), cyS = toSy(b), rS = R * scale;
+  const ox = toSx(0), oy = toSy(0);
+  const rSq = R * R;
+
+  const xPart = a === 0 ? "x\u00B2" : a > 0 ? `(x - ${a})\u00B2` : `(x + ${Math.abs(a)})\u00B2`;
+  const yPart = b === 0 ? "y\u00B2" : b > 0 ? `(y - ${b})\u00B2` : `(y + ${Math.abs(b)})\u00B2`;
+
+  return (
+    <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; מעבדת מעגלים</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem", fontFamily: "monospace", direction: "ltr" }}>
+        {xPart} + {yPart} = <span style={{ color: "#16A34A", fontWeight: 700 }}>{rSq}</span>
+      </p>
+
+      {/* Sliders */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: "2rem" }}>
+        {[
+          { label: "a (מרכז x)", val: a, min: -5, max: 5, step: 1, set: setA, color: "#16A34A" },
+          { label: "b (מרכז y)", val: b, min: -5, max: 5, step: 1, set: setB, color: "#7c3aed" },
+          { label: "R (רדיוס)",  val: R, min: 1,  max: 6, step: 0.5, set: setR, color: "#b45309" },
+        ].map(sl => (
+          <div key={sl.label} style={{ borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.6)", padding: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+              <span>{sl.label}</span>
+              <span style={{ color: sl.color, fontFamily: "monospace", fontWeight: 700 }}>{sl.val}</span>
+            </div>
+            <input type="range" min={sl.min} max={sl.max} step={sl.step} value={sl.val} onChange={e => sl.set(+e.target.value)} style={{ width: "100%", accentColor: sl.color }} />
+          </div>
+        ))}
+      </div>
+
+      {/* SVG */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(22,163,74,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
+        <svg viewBox={`0 0 ${S} ${S}`} style={{ width: "100%", maxWidth: 320 }} aria-hidden>
+          {[-6, -4, -2, 2, 4, 6].map(v => {
+            const sx = toSx(v), sy = toSy(v);
+            return <g key={v}><line x1={sx} y1={0} x2={sx} y2={S} stroke="rgba(100,116,139,0.15)" strokeWidth={0.6} /><line x1={0} y1={sy} x2={S} y2={sy} stroke="rgba(100,116,139,0.15)" strokeWidth={0.6} /></g>;
+          })}
+          <line x1={0} y1={oy} x2={S} y2={oy} stroke="#94a3b8" strokeWidth={1.2} />
+          <line x1={ox} y1={0} x2={ox} y2={S} stroke="#94a3b8" strokeWidth={1.2} />
+          <circle cx={cxS} cy={cyS} r={rS} fill="rgba(22,163,74,0.08)" stroke="#16A34A" strokeWidth={2.5} />
+          <line x1={cxS} y1={cyS} x2={cxS + rS} y2={cyS} stroke="#f59e0b" strokeWidth={2} strokeDasharray="5 3" />
+          <circle cx={cxS} cy={cyS} r={5} fill="#16A34A" />
+        </svg>
+      </div>
+
+      {/* Output tiles */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, textAlign: "center", marginBottom: 12 }}>
+        {[
+          { label: "מרכז", val: `(${a}, ${b})`, color: "#16A34A" },
+          { label: "רדיוס", val: R.toString(), color: "#b45309" },
+          { label: "r\u00B2", val: rSq.toString(), color: "#7c3aed" },
+        ].map(row => (
+          <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.6)", border: "1px solid rgba(22,163,74,0.25)", padding: 14 }}>
+            <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>{row.label}</div>
+            <div style={{ color: row.color, fontWeight: 700, fontSize: 13, fontFamily: "monospace" }}>{row.val}</div>
+          </div>
+        ))}
+      </div>
+      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "0.5rem" }}>
+        שנו את הסליידרים כדי לראות איך המשוואה התקנית משתנה
+      </p>
+    </section>
+  );
+}
+
+// ─── GeneralFormLab (medium) ──────────────────────────────────────────────────
+
+function GeneralFormLab() {
+  const [D, setD] = useState(-6);
+  const [E, setE] = useState(4);
+  const [F, setF] = useState(-12);
+
+  const cx = -D / 2;
+  const cy = -E / 2;
+  const rSq = (D * D) / 4 + (E * E) / 4 - F;
+  const valid = rSq > 0;
+  const r = valid ? Math.sqrt(rSq) : 0;
+
+  const S = 260;
+  const xMin = -8, xMax = 8, yMin = -8, yMax = 8;
+  const toSx = (x: number) => ((x - xMin) / (xMax - xMin)) * S;
+  const toSy = (y: number) => S - ((y - yMin) / (yMax - yMin)) * S;
+  const scale = S / (xMax - xMin);
+  const cxS = toSx(cx), cyS = toSy(cy), rS = r * scale;
+  const ox = toSx(0), oy = toSy(0);
+
+  const condition = rSq > 0 ? "r\u00B2 > 0 -- מעגל תקין" : rSq === 0 ? "r\u00B2 = 0 -- נקודה" : "r\u00B2 < 0 -- לא קיים";
+
+  return (
+    <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; מעבדת צורה כללית</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem", fontFamily: "monospace", direction: "ltr" }}>
+        x&sup2; + y&sup2; + (<span style={{ color: "#EA580C", fontWeight: 700 }}>{D}</span>)x + (<span style={{ color: "#EA580C", fontWeight: 700 }}>{E}</span>)y + (<span style={{ color: "#EA580C", fontWeight: 700 }}>{F}</span>) = 0
+      </p>
+
+      {/* Sliders */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: "2rem" }}>
+        {[
+          { label: "D", val: D, min: -10, max: 10, step: 1, set: setD },
+          { label: "E", val: E, min: -10, max: 10, step: 1, set: setE },
+          { label: "F", val: F, min: -20, max: 20, step: 1, set: setF },
+        ].map(sl => (
+          <div key={sl.label} style={{ borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.6)", padding: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+              <span>{sl.label}</span>
+              <span style={{ color: "#EA580C", fontFamily: "monospace", fontWeight: 700 }}>{sl.val}</span>
+            </div>
+            <input type="range" min={sl.min} max={sl.max} step={sl.step} value={sl.val} onChange={e => sl.set(+e.target.value)} style={{ width: "100%", accentColor: "#EA580C" }} />
+          </div>
+        ))}
+      </div>
+
+      {/* SVG */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(234,88,12,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
+        <svg viewBox={`0 0 ${S} ${S}`} style={{ width: "100%", maxWidth: 320 }} aria-hidden>
+          {[-6, -4, -2, 2, 4, 6].map(v => {
+            const sx = toSx(v), sy = toSy(v);
+            return <g key={v}><line x1={sx} y1={0} x2={sx} y2={S} stroke="rgba(100,116,139,0.15)" strokeWidth={0.6} /><line x1={0} y1={sy} x2={S} y2={sy} stroke="rgba(100,116,139,0.15)" strokeWidth={0.6} /></g>;
+          })}
+          <line x1={0} y1={oy} x2={S} y2={oy} stroke="#94a3b8" strokeWidth={1.2} />
+          <line x1={ox} y1={0} x2={ox} y2={S} stroke="#94a3b8" strokeWidth={1.2} />
+          {valid && (
+            <>
+              <circle cx={cxS} cy={cyS} r={rS} fill="rgba(234,88,12,0.08)" stroke="#EA580C" strokeWidth={2.5} />
+              <circle cx={cxS} cy={cyS} r={5} fill="#EA580C" />
+            </>
+          )}
+          {!valid && (
+            <text x={S / 2} y={S / 2} fontSize={14} fill="#dc2626" textAnchor="middle" fontFamily="sans-serif" fontWeight={700}>מעגל לא קיים</text>
+          )}
+        </svg>
+      </div>
+
+      {/* Output tiles */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, textAlign: "center" }}>
+        {[
+          { label: "מרכז", val: `(${cx.toFixed(1)}, ${cy.toFixed(1)})`, color: "#EA580C" },
+          { label: "רדיוס", val: valid ? r.toFixed(2) : "--", color: "#b45309" },
+          { label: "תנאי קיום", val: condition, color: valid ? "#16a34a" : "#dc2626" },
+        ].map(row => (
+          <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.6)", border: "1px solid rgba(234,88,12,0.25)", padding: 14 }}>
+            <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>{row.label}</div>
+            <div style={{ color: row.color, fontWeight: 700, fontSize: 11, fontFamily: "monospace" }}>{row.val}</div>
+          </div>
+        ))}
+      </div>
+      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "1rem" }}>
+        שנו D, E, F וראו איך המרכז והרדיוס משתנים. נסו למצוא ערכים שגורמים למעגל להיעלם.
+      </p>
+    </section>
+  );
+}
+
+// ─── TangentLab (advanced) ────────────────────────────────────────────────────
+
+function TangentLab() {
+  const [angle, setAngle] = useState(45);
+  const [R, setR] = useState(4);
+
+  const rad = (angle * Math.PI) / 180;
+  const px = R * Math.cos(rad);
+  const py = R * Math.sin(rad);
+
+  // Slope of radius from (0,0) to (px, py)
+  const slopeR = px !== 0 ? py / px : Infinity;
+  // Slope of tangent = -1/slopeR
+  const slopeT = slopeR === 0 ? Infinity : px !== 0 ? -px / py : 0;
+
+  const S = 260;
+  const range = 8;
+  const xMin = -range, xMax = range, yMin = -range, yMax = range;
+  const toSx = (x: number) => ((x - xMin) / (xMax - xMin)) * S;
+  const toSy = (y: number) => S - ((y - yMin) / (yMax - yMin)) * S;
+  const scale = S / (xMax - xMin);
+  const ox = toSx(0), oy = toSy(0);
+  const rS = R * scale;
+  const pxS = toSx(px), pyS = toSy(py);
+
+  // Tangent line segment
+  const tangLen = 4;
+  let tx1: number, ty1: number, tx2: number, ty2: number;
+  if (slopeT === Infinity || Math.abs(slopeT) > 1000) {
+    tx1 = toSx(px); ty1 = toSy(py - tangLen);
+    tx2 = toSx(px); ty2 = toSy(py + tangLen);
+  } else {
+    tx1 = toSx(px - tangLen / Math.sqrt(1 + slopeT * slopeT));
+    ty1 = toSy(py - slopeT * tangLen / Math.sqrt(1 + slopeT * slopeT));
+    tx2 = toSx(px + tangLen / Math.sqrt(1 + slopeT * slopeT));
+    ty2 = toSy(py + slopeT * tangLen / Math.sqrt(1 + slopeT * slopeT));
+  }
+
+  const slopeRStr = slopeR === Infinity ? "\u221E" : slopeR.toFixed(2);
+  const slopeTStr = slopeT === Infinity ? "\u221E" : slopeT.toFixed(2);
+
+  return (
+    <section style={{ border: "1px solid rgba(60,54,42,0.15)", borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", marginTop: "2rem" }}>
+      <h3 style={{ color: "#2D3436", fontSize: 22, fontWeight: 800, textAlign: "center", marginBottom: 8 }}>&#128300; מעבדת משיק</h3>
+      <p style={{ color: "#6B7280", fontSize: 14, textAlign: "center", marginBottom: "2rem" }}>
+        מעגל ברדיוס <span style={{ color: "#DC2626", fontWeight: 700 }}>{R}</span> עם משיק בזווית <span style={{ color: "#DC2626", fontWeight: 700 }}>{angle}&deg;</span>
+      </p>
+
+      {/* Sliders */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: "2rem" }}>
+        {[
+          { label: "זווית הנקודה (\u00B0)", val: angle, min: 0, max: 355, step: 5, set: setAngle },
+          { label: "רדיוס R", val: R, min: 1, max: 6, step: 0.5, set: setR },
+        ].map(sl => (
+          <div key={sl.label} style={{ borderRadius: 16, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.6)", padding: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6B7280", marginBottom: 4 }}>
+              <span>{sl.label}</span>
+              <span style={{ color: "#DC2626", fontFamily: "monospace", fontWeight: 700 }}>{sl.val}</span>
+            </div>
+            <input type="range" min={sl.min} max={sl.max} step={sl.step} value={sl.val} onChange={e => sl.set(+e.target.value)} style={{ width: "100%", accentColor: "#DC2626" }} />
+          </div>
+        ))}
+      </div>
+
+      {/* SVG */}
+      <div style={{ borderRadius: 16, border: "1px solid rgba(220,38,38,0.35)", background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem" }}>
+        <svg viewBox={`0 0 ${S} ${S}`} style={{ width: "100%", maxWidth: 320 }} aria-hidden>
+          {[-6, -4, -2, 2, 4, 6].map(v => {
+            const sx = toSx(v), sy = toSy(v);
+            return <g key={v}><line x1={sx} y1={0} x2={sx} y2={S} stroke="rgba(100,116,139,0.15)" strokeWidth={0.6} /><line x1={0} y1={sy} x2={S} y2={sy} stroke="rgba(100,116,139,0.15)" strokeWidth={0.6} /></g>;
+          })}
+          <line x1={0} y1={oy} x2={S} y2={oy} stroke="#94a3b8" strokeWidth={1.2} />
+          <line x1={ox} y1={0} x2={ox} y2={S} stroke="#94a3b8" strokeWidth={1.2} />
+          {/* Circle */}
+          <circle cx={ox} cy={oy} r={rS} fill="rgba(220,38,38,0.06)" stroke="#DC2626" strokeWidth={2.5} />
+          {/* Radius line */}
+          <line x1={ox} y1={oy} x2={pxS} y2={pyS} stroke="#f59e0b" strokeWidth={2} strokeDasharray="5 3" />
+          {/* Tangent line */}
+          <line x1={tx1} y1={ty1} x2={tx2} y2={ty2} stroke="#a78bfa" strokeWidth={2.5} />
+          {/* Point on circle */}
+          <circle cx={pxS} cy={pyS} r={5} fill="#DC2626" />
+          {/* Center */}
+          <circle cx={ox} cy={oy} r={4} fill="#64748b" />
+          {/* Right angle marker */}
+          <rect x={pxS - 4} y={pyS - 4} width={8} height={8} fill="none" stroke="#34d399" strokeWidth={1.5} transform={`rotate(${-angle + 45}, ${pxS}, ${pyS})`} />
+        </svg>
+      </div>
+
+      {/* Output tiles */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, textAlign: "center" }}>
+        {[
+          { label: "נקודה", val: `(${px.toFixed(1)}, ${py.toFixed(1)})`, color: "#DC2626" },
+          { label: "שיפוע רדיוס", val: slopeRStr, color: "#f59e0b" },
+          { label: "שיפוע משיק", val: slopeTStr, color: "#a78bfa" },
+        ].map(row => (
+          <div key={row.label} style={{ borderRadius: 16, background: "rgba(255,255,255,0.6)", border: "1px solid rgba(220,38,38,0.25)", padding: 14 }}>
+            <div style={{ color: "#6B7280", fontSize: 10, marginBottom: 6 }}>{row.label}</div>
+            <div style={{ color: row.color, fontWeight: 700, fontSize: 13, fontFamily: "monospace" }}>{row.val}</div>
+          </div>
+        ))}
+      </div>
+      <p style={{ color: "#6B7280", fontSize: 12, textAlign: "center", marginTop: "1rem" }}>
+        שימו לב: מכפלת שיפועי הרדיוס והמשיק תמיד שווה ל-(-1) -- הם ניצבים זה לזה
+      </p>
+    </section>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CirclePage() {
-  const [activeId, setActiveId] = useState<"basic" | "medium" | "advanced">("basic");
-  const ex = EXERCISES.find(e => e.id === activeId)!;
-  const st = STATION[activeId];
+  const [selectedLevel, setSelectedLevel] = useState<"basic" | "medium" | "advanced">("basic");
+  const ex = exercises.find(e => e.id === selectedLevel)!;
+  const lvlRgb = selectedLevel === "basic" ? "22,163,74" : selectedLevel === "medium" ? "234,88,12" : "220,38,38";
 
   return (
-    <>
-      <style>{GLOBAL_CSS}</style>
-      <main dir="rtl" style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px", paddingBottom: "4rem" }}>
-        {/* Header */}
-        <div style={{ background: "#F3EFE0", borderBottom: "1px solid rgba(60,54,42,0.15)", marginBottom: "2rem" }}>
-          <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-            <div>
-              <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>מעגלים במישור עם AI</h1>
-              <p style={{ color: "#64748b", fontSize: 13, margin: "3px 0 0" }}>נוסחה סטנדרטית, מיקום נקודה ומציאת מרכז — ואיך לשאול AI את השאלות הנכונות</p>
-            </div>
-            <Link
-              href="/topic/analytic"
-              style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#4A4A4A", border: "1px solid #333", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#FFFFFF", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#2D2D2D"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#4A4A4A"; }}
-            >
-              <span style={{ fontSize: 16 }}>←</span>
-              חזרה
-            </Link>
+    <main
+      style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px", color: "#2D3436", ["--lvl-rgb" as string]: lvlRgb } as React.CSSProperties}
+      dir="rtl"
+    >
+      <style>{`
+        textarea, input[type="text"], input[type="password"] { outline: none !important; }
+        textarea:focus, input[type="text"]:focus {
+          outline: none !important;
+          border-color: rgba(var(--lvl-rgb), 0.65) !important;
+          box-shadow: 0 0 0 3px rgba(var(--lvl-rgb), 0.12) !important;
+        }
+        input[type="range"] { outline: none !important; }
+        input[type="range"]:focus { outline: none !important; }
+        button:focus, button:focus-visible {
+          outline: none !important;
+          box-shadow: 0 0 0 2px rgba(var(--lvl-rgb), 0.35) !important;
+        }
+        button:focus:not(:focus-visible) { box-shadow: none !important; }
+      `}</style>
+
+      {/* Header */}
+      <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
+        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+          <div>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>משוואת המעגל עם AI</h1>
+            <p style={{ fontSize: 13, color: "#6B7280", margin: "2px 0 0" }}>משוואה תקנית, צורה כללית, מעגל דרך 3 נקודות ומשיק -- ואיך לשאול AI את השאלות הנכונות</p>
           </div>
+          <Link
+            href="/topic/analytic"
+            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(148,163,184,0.1)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#2D3436", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.2)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.1)"; }}
+          >
+            <span style={{ fontSize: 16 }}>{"\u2190"}</span>
+            חזרה
+          </Link>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
+
+        <SubtopicProgress subtopicId="analytic/circle" />
+
+        <FormulaBar />
+
+        {/* Level Selector */}
+        <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
+          {TABS.map(tab => {
+            const active = selectedLevel === tab.id;
+            return (
+              <button key={tab.id} onClick={() => setSelectedLevel(tab.id)}
+                className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-semibold transition-all duration-200 ${active ? `${tab.bg} border ${tab.border} ${tab.textColor}` : "text-slate-500 hover:text-slate-300"}`}
+                style={active ? { boxShadow: `0 0 14px ${tab.glowColor}` } : undefined}>
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
-        <div style={{ margin: "0 auto", padding: "0 1.5rem" }}>
-          {/* Tabs */}
-          <div style={{ display: "flex", gap: 8, marginBottom: "1.5rem" }}>
-            {TABS.map(tab => {
-              const s = STATION[tab.id];
-              const active = activeId === tab.id;
-              return (
-                <button key={tab.id} onClick={() => setActiveId(tab.id)} style={{ flex: 1, padding: "10px 8px", borderRadius: 12, cursor: "pointer", fontWeight: 700, fontSize: 13, border: "2px solid", borderColor: active ? s.accentColor : "rgba(100,116,139,0.2)", background: active ? `rgba(${s.glowRgb},0.1)` : "rgba(255,255,255,0.6)", color: active ? s.accentColor : "#64748b", boxShadow: active ? s.glowShadow : "none", transition: "all 0.2s" }}>
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+        {/* Active card */}
+        <motion.div key={selectedLevel} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
+          <ExerciseCard ex={ex} />
+        </motion.div>
 
-          {/* Island */}
-          <section style={{ border: `1px solid ${st.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", boxShadow: st.glowShadow, marginBottom: "2rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-              <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 12px", borderRadius: 20 }} className={st.badgeCls}>{st.badge}</span>
-              <span style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>{st.stationName}</span>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", alignItems: "center", marginBottom: 24 }}>
-              <pre style={{ fontSize: 14, color: "#1e293b", lineHeight: 1.75, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
-              <div style={{ borderRadius: 16, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: 12 }}>{ex.diagram}</div>
-            </div>
-            <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>⚠️ שגיאות נפוצות</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {ex.pitfalls.map((p, i) => (
-                  <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.2)", background: "rgba(254,226,226,0.25)", padding: "10px 14px" }}>
-                    <div style={{ color: "#b91c1c", fontWeight: 700, fontSize: 13, marginBottom: 3 }}>⚠️ {p.title}</div>
-                    <div style={{ color: "#64748b", fontSize: 13 }}>{p.text}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <FormulaBar accentColor={st.accentColor} accentRgb={st.glowRgb} />
-            <div>
-              <p style={{ fontSize: 11, fontWeight: 700, color: st.accentColor, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>🧠 מדריך הפרומפטים</p>
-              {activeId === "basic"    && <LadderBase     ex={ex} accentColor={st.accentColor} accentRgb={st.glowRgb} />}
-              {activeId === "medium"   && <LadderMedium   ex={ex} accentColor={st.accentColor} accentRgb={st.glowRgb} />}
-              {activeId === "advanced" && <LadderAdvanced ex={ex} accentColor={st.accentColor} accentRgb={st.glowRgb} />}
-            </div>
-          </section>
-
-          <CircleLab levelId={activeId} />
+        {/* Lab per level */}
+        {selectedLevel === "basic" && <CircleLab />}
+        {selectedLevel === "medium" && <GeneralFormLab />}
+        {selectedLevel === "advanced" && <TangentLab />}
 
         {/* Mark as complete */}
         <div style={{ marginTop: "1.5rem" }}>
-          <MarkComplete subtopicId="/analytic/circle" level={activeId} />
+          <MarkComplete subtopicId="analytic/circle" level={selectedLevel} />
         </div>
 
-        </div>
-      </main>
-    </>
+      </div>
+    </main>
   );
 }

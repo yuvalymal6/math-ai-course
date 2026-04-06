@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מפת ניווט — מתמטיקה + AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0a0f1e;color:#e2e8f0;min-height:100vh;overflow-x:auto}
+h1{text-align:center;font-size:1.5rem;padding-top:1.2rem;color:#fff}
+.sub{text-align:center;font-size:.8rem;color:#94a3b8;margin-bottom:1rem}
+.filters{display:flex;justify-content:center;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;padding:0 1rem}
+.filters button{padding:.45rem 1.1rem;border-radius:8px;border:1.5px solid #475569;background:transparent;color:#94a3b8;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
+.filters button.active{color:#fff}
+.filters button[data-f="sys"].active{background:rgba(148,163,184,.2);border-color:#94a3b8}
+.filters button[data-f="g10"].active{background:rgba(52,211,153,.15);border-color:#34d399;color:#6ee7b7}
+.filters button[data-f="g11"].active{background:rgba(96,165,250,.15);border-color:#60a5fa;color:#93c5fd}
+.filters button[data-f="g12"].active{background:rgba(244,114,182,.15);border-color:#f472b6;color:#f9a8d4}
+.canvas-wrap{width:100%;overflow:auto;padding:0 1rem 2rem}
+svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;pointer-events:none}
+.nd{cursor:pointer}
+.nd:hover rect,.nd:hover circle{filter:brightness(1.3)}
+.nd.active rect,.nd.active circle{stroke:#fff;stroke-width:2.5}
+/* Panel */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100}
+.overlay.open{display:block}
+.panel{position:fixed;top:0;left:0;width:min(400px,88vw);height:100vh;background:#1e293b;z-index:101;padding:1.5rem;overflow-y:auto;transform:translateX(-100%);transition:transform .25s;border-right:3px solid #334155}
+.panel.open{transform:translateX(0)}
+.panel h2{font-size:1.05rem;color:#fff;margin-bottom:.2rem}
+.panel .pr{font-family:monospace;font-size:.78rem;color:#94a3b8;direction:ltr;unicode-bidi:embed;margin-bottom:1rem}
+.panel .pd{font-size:.83rem;line-height:1.7;color:#cbd5e1;margin-bottom:1rem;padding:.7rem;background:rgba(255,255,255,.04);border-radius:8px;border:1px solid #334155}
+.panel .ps{margin-bottom:.8rem}
+.panel .ps h3{font-size:.75rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem}
+.panel .ps ul{list-style:none;display:flex;flex-direction:column;gap:.25rem}
+.panel .ps li{font-size:.78rem;color:#e2e8f0;padding:.3rem .55rem;background:rgba(255,255,255,.04);border-radius:6px;font-family:monospace;direction:ltr;unicode-bidi:embed}
+.panel .cb{position:absolute;top:.8rem;left:.8rem;background:none;border:none;color:#94a3b8;font-size:1.3rem;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.panel .cb:hover{background:rgba(255,255,255,.1);color:#fff}
+</style>
+</head>
+<body>
+<h1>מפת ניווט — מתמטיקה + AI</h1>
+<p class="sub">46 נתיבים | לחצו על כל קופסה לפרטים</p>
+<div class="filters">
+  <button data-f="sys" class="active" onclick="toggle('sys')">מערכת</button>
+  <button data-f="g10" class="active" onclick="toggle('g10')">כיתה י</button>
+  <button data-f="g11" class="active" onclick="toggle('g11')">כיתה יא</button>
+  <button data-f="g12" class="active" onclick="toggle('g12')">כיתה יב</button>
+</div>
+<div class="canvas-wrap"><svg id="svg"></svg></div>
+
+<div class="overlay" id="ov" onclick="closeP()"></div>
+<div class="panel" id="pn">
+  <button class="cb" onclick="closeP()">&times;</button>
+  <h2 id="pT"></h2><div class="pr" id="pR"></div><div class="pd" id="pD"></div>
+  <div class="ps"><h3>נכנסים</h3><ul id="pI"></ul></div>
+  <div class="ps"><h3>יוצאים</h3><ul id="pO"></ul></div>
+</div>
+
+<script>
+// ── Data ──
+const D={
+home:{t:"דשבורד ראשי",r:"/",d:"דף הבית. כרטיסיות נושאים לפי כיתה, התקדמות, כפתורי המשך ואקראי.",i:["/login","/onboarding","/wizard","כל דפי הנושאים"],o:["/onboarding","כל נושאי הכיתה"]},
+login:{t:"כניסה",r:"/login",d:"דף כניסה עם email וסיסמה.",i:["/ (logout)"],o:["/","/onboarding"]},
+onboarding:{t:"בחירת כיתה",r:"/onboarding",d:"בחירת כיתה י/יא/יב בפעם הראשונה.",i:["/ (שנה כיתה)","/login"],o:["/"]},
+wizard:{t:"אשף נושא",r:"/wizard",d:"בחירת כיתה ונושא — מנווט ישירות לדף.",i:["/topic/grade10","/topic/grade11","/topic/grade12"],o:["grade10","grade11","grade12"]},
+auth:{t:"כניסה (legacy)",r:"/auth",d:"דף כניסה ישן. אין קישורים ישירים.",i:["אין"],o:["/"]},
+g10:{t:"מרכז כיתה י",r:"/topic/grade10",d:"5 כרטיסיות: פרבולה, אנליטית, גיאומטריה, טריגו, סטטיסטיקה.",i:["/","/wizard"],o:["algebra-parabola","analytic","geometry","trig","statistics"]},
+g10_par:{t:"חקירת פרבולה",r:"/topic/grade10/algebra-parabola",d:"משוואות ריבועיות, גרף אינטראקטיבי. 3 רמות.",i:["grade10","/"],o:["/"]},
+g10_an:{t:"Hub אנליטית",r:"/topic/grade10/analytic",d:"יסודות + בעיות גיאומטריות.",i:["grade10","/"],o:["basics","problems"]},
+g10_bas:{t:"יסודות",r:"/topic/grade10/analytic/basics",d:"מרחק, אמצע, שיפוע. 3 רמות.",i:["analytic","/"],o:["analytic"]},
+g10_pro:{t:"בעיות גיאומטריות",r:"/topic/grade10/analytic/problems",d:"הוכחות מרובעים, מעוין, מקבילית. 3 רמות.",i:["analytic","/"],o:["analytic"]},
+g10_geo:{t:"Hub גיאומטריה",r:"/topic/grade10/geometry",d:"מקבילית ומלבן, מעוין וריבוע.",i:["grade10","/"],o:["parallelogram","rhombus"]},
+g10_pl:{t:"מקבילית ומלבן",r:"/topic/grade10/geo-parallelogram",d:"תכונות, אלכסונים, חפיפה. 3 רמות.",i:["geometry","/"],o:["geometry"]},
+g10_rh:{t:"מעוין וריבוע",r:"/topic/grade10/geo-rhombus",d:"אלכסונים, זוויות, הוכחות. 3 רמות.",i:["geometry","/"],o:["geometry"]},
+g10_tr:{t:"Hub טריגונומטריה",r:"/topic/grade10/trig",d:"יחסים טריגונומטריים + יישומים.",i:["grade10","/"],o:["trig-basics","trig-apps"]},
+g10_tb:{t:"sin/cos/tan",r:"/topic/grade10/trig-basics",d:"יסודות הטריגו במשולש ישר-זווית. 3 רמות.",i:["trig","/"],o:["trig"]},
+g10_ta:{t:"יישומים",r:"/topic/grade10/trig-applications",d:"בעיות גובה ומרחק. 3 רמות.",i:["trig","/"],o:["trig"]},
+g10_st:{t:"Hub סטטיסטיקה",r:"/topic/grade10/statistics",d:"מדדי מרכז + פיזור.",i:["grade10","/"],o:["central","dispersion"]},
+g10_ce:{t:"מדדי מרכז",r:"/topic/grade10/statistics/central",d:"ממוצע, חציון, שכיח. 3 רמות.",i:["statistics","/"],o:["statistics"]},
+g10_di:{t:"מדדי פיזור",r:"/topic/grade10/statistics/dispersion",d:"סטיית תקן, שינוי לינארי. 3 רמות.",i:["statistics","/"],o:["statistics"]},
+g11:{t:"מרכז כיתה יא",r:"/topic/grade11",d:"5 כרטיסיות: חדו\"א, אנליטית, קיצון, הסתברות, סטטיסטיקה.",i:["/","/wizard"],o:["calculus","analytic","kitzun","probability","statistics"]},
+g11_ca:{t:"Hub חדו\"א",r:"/topic/calculus",d:"פולינומים, רציונליות, שורש.",i:["grade11","/"],o:["polynomials","rational","root"]},
+g11_po:{t:"פולינומים",r:"/topic/calculus/polynomials",d:"מונוטוניות, קיצוניים, f'(x). 3 רמות.",i:["calculus","/"],o:["calculus"]},
+g11_ra:{t:"רציונליות",r:"/topic/calculus/rational",d:"אסימפטוטות, חורים, סקיצה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
+g11_ro:{t:"שורש",r:"/topic/calculus/root",d:"תחום, נגזרת, חקירה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
+g11_an:{t:"Hub אנליטית",r:"/topic/analytic",d:"קו ישר, מעגל, משיק.",i:["grade11","/"],o:["line","circle","tangent"]},
+g11_li:{t:"קו ישר",r:"/topic/analytic/line",d:"שיפוע, משוואה, ניצב, מקביל. 3 רמות.",i:["analytic","/"],o:["analytic"]},
+g11_ci:{t:"מעגל",r:"/topic/analytic/circle",d:"משוואה, מרכז, רדיוס. 3 רמות.",i:["analytic","/"],o:["analytic"]},
+g11_tg:{t:"משיק",r:"/topic/analytic/tangent",d:"ניצבות רדיוס-משיק. 3 רמות.",i:["analytic","/"],o:["analytic"]},
+g11_ki:{t:"Hub קיצון",r:"/topic/kitzun",d:"גיאומטריה + פונקציות + 2 תרגילים נוספים.",i:["grade11","/"],o:["geometry","functions"]},
+g11_kg:{t:"קיצון — גיאומטריה",r:"/topic/kitzun/geometry",d:"גידור, חלון נורמן. 3 רמות.",i:["kitzun","/"],o:["kitzun"]},
+g11_kf:{t:"קיצון — פונקציות",r:"/topic/kitzun/functions",d:"מלבן מתחת לפרבולה. 3 רמות.",i:["kitzun","/"],o:["kitzun"]},
+g11_k2:{t:"חלון נורמן",r:"/topic/kitzun-2",d:"קיצון בינוני — מינימום היקף.",i:["kitzun-3"],o:["kitzun","kitzun-3"]},
+g11_k3:{t:"מלבן ופרבולה",r:"/topic/kitzun-3",d:"קיצון מתקדם — מקסום שטח.",i:["kitzun-2"],o:["kitzun-2"]},
+g11_pr:{t:"Hub הסתברות",r:"/topic/probability",d:"עץ + טבלה דו-ממדית.",i:["grade11","/"],o:["tree","table"]},
+g11_pt:{t:"עץ הסתברות",r:"/topic/probability/tree",d:"שליפה, הסתברות מותנית. 3 רמות.",i:["probability","/"],o:["probability"]},
+g11_pb:{t:"טבלה דו-ממדית",r:"/topic/probability/table",d:"בייס, הסתברות מותנית. 3 רמות.",i:["probability","/"],o:["probability"]},
+g11_st:{t:"Hub סטטיסטיקה",r:"/topic/statistics",d:"מדדי מרכז + פיזור.",i:["grade11","/"],o:["central","dispersion"]},
+g11_sc:{t:"מדדי מרכז יא",r:"/topic/statistics/central",d:"ממוצע, חציון, outlier. 3 רמות.",i:["statistics","/"],o:["statistics"]},
+g11_sd:{t:"מדדי פיזור יא",r:"/topic/statistics/dispersion",d:"סטיית תקן, שינוי לינארי. 3 רמות.",i:["statistics","/"],o:["statistics"]},
+g12:{t:"מרכז כיתה יב",r:"/topic/grade12",d:"4 כרטיסיות: סדרות, מרחב, גדילה/דעיכה, חדו\"א.",i:["/","/wizard"],o:["series","space","growth-decay","calculus"]},
+g12_se:{t:"Hub סדרות",r:"/topic/grade12/series",d:"חשבונית, הנדסית, כלל נסיגה.",i:["grade12","/"],o:["arithmetic","geometric","recursion"]},
+g12_ar:{t:"חשבונית",r:"/topic/grade12/series-arithmetic",d:"הפרש d, איבר כללי, Sn. 3 רמות.",i:["series","/"],o:["series"]},
+g12_ge:{t:"הנדסית",r:"/topic/grade12/series-geometric",d:"מנה q, סכום, ריבית דריבית. 3 רמות.",i:["series","/"],o:["series"]},
+g12_re:{t:"כלל נסיגה",r:"/topic/grade12/series/recursion",d:"זיהוי סדרה מנוסחת נסיגה.",i:["/ בלבד"],o:["series"]},
+g12_sp:{t:"Hub מרחב",r:"/topic/grade12/space-geometry",d:"תיבה, פירמידה.",i:["grade12","/"],o:["box","pyramid"]},
+g12_bx:{t:"תיבה",r:"/topic/grade12/space-geometry/box",d:"נפח, שטח, אלכסון מרחבי. 3 רמות.",i:["space","/"],o:["space"]},
+g12_py:{t:"פירמידה",r:"/topic/grade12/space-geometry/pyramid",d:"גובה, נפח, אפותמה. 3 רמות.",i:["space","/"],o:["space"]},
+g12_gr:{t:"גדילה ודעיכה",r:"/topic/grade12/growth-decay",d:"N(t)=N0*a^t. 3 רמות.",i:["grade12","/"],o:["/"]},
+g12_cl:{t:"Hub חדו\"א יב",r:"/topic/grade12/calculus",d:"פולינומים, e^x, ln, אינטגרלים.",i:["grade12","/"],o:["calculus-poly","exponential","ln","integral"]},
+g12_cp:{t:"Hub פולינומים יב",r:"/topic/grade12/calculus-polynomial",d:"חקירה, חקירה מלאה, פרמטרים.",i:["calculus","/"],o:["investigation","full","parameters"]},
+g12_in:{t:"חקירת קיצון",r:"/.../investigation",d:"f'(x)=0, נגזרת שנייה. 3 רמות.",i:["calculus-poly","/"],o:["calculus-poly"]},
+g12_fu:{t:"חקירה מלאה",r:"/.../full-investigation",d:"פיתול, קעירות, סקיצה. 3 רמות.",i:["calculus-poly","/"],o:["calculus-poly"]},
+g12_pm:{t:"פרמטרים",r:"/.../parameters",d:"בידוד פרמטרים מתנאי קיצון. 3 רמות.",i:["calculus-poly","/"],o:["calculus-poly"]},
+g12_ex:{t:"e^x",r:"/topic/grade12/calculus/exponential",d:"(e^x)'=e^x, חקירה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
+g12_ln:{t:"ln(x)",r:"/topic/grade12/calculus/ln",d:"נגזרת ln, תחום, חקירה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
+g12_it:{t:"אינטגרלים",r:"/topic/grade12/calculus/integral",d:"אינטגרל, שטח, נפח סיבוב. 3 רמות.",i:["calculus","/"],o:["calculus"]}
+};
+
+// ── Tree definitions per group ──
+// Each tree: { root, children: [ {id, children?} ] }
+const TREES = {
+sys: {root:"home", children:[{id:"login"},{id:"onboarding"},{id:"wizard"},{id:"auth"}]},
+g10: {root:"g10", children:[
+  {id:"g10_par"},
+  {id:"g10_an", children:[{id:"g10_bas"},{id:"g10_pro"}]},
+  {id:"g10_geo", children:[{id:"g10_pl"},{id:"g10_rh"}]},
+  {id:"g10_tr", children:[{id:"g10_tb"},{id:"g10_ta"}]},
+  {id:"g10_st", children:[{id:"g10_ce"},{id:"g10_di"}]}
+]},
+g11: {root:"g11", children:[
+  {id:"g11_ca", children:[{id:"g11_po"},{id:"g11_ra"},{id:"g11_ro"}]},
+  {id:"g11_an", children:[{id:"g11_li"},{id:"g11_ci"},{id:"g11_tg"}]},
+  {id:"g11_ki", children:[{id:"g11_kg"},{id:"g11_kf"},{id:"g11_k2"},{id:"g11_k3"}]},
+  {id:"g11_pr", children:[{id:"g11_pt"},{id:"g11_pb"}]},
+  {id:"g11_st", children:[{id:"g11_sc"},{id:"g11_sd"}]}
+]},
+g12: {root:"g12", children:[
+  {id:"g12_se", children:[{id:"g12_ar"},{id:"g12_ge"},{id:"g12_re"}]},
+  {id:"g12_sp", children:[{id:"g12_bx"},{id:"g12_py"}]},
+  {id:"g12_gr"},
+  {id:"g12_cl", children:[{id:"g12_cp", children:[{id:"g12_in"},{id:"g12_fu"},{id:"g12_pm"}]},{id:"g12_ex"},{id:"g12_ln"},{id:"g12_it"}]}
+]}
+};
+
+const COLORS = {
+  sys: {hub:"#475569",hubBg:"#1e293b",node:"#334155",nodeBg:"#0f172a",line:"#475569",text:"#cbd5e1"},
+  g10: {hub:"#34d399",hubBg:"#064e3b",node:"#10b981",nodeBg:"#022c22",line:"#059669",text:"#a7f3d0"},
+  g11: {hub:"#60a5fa",hubBg:"#1e3a5f",node:"#3b82f6",nodeBg:"#0c1e3d",line:"#2563eb",text:"#bfdbfe"},
+  g12: {hub:"#f472b6",hubBg:"#701a4e",node:"#ec4899",nodeBg:"#3b0727",line:"#db2777",text:"#fbcfe8"}
+};
+
+// ── Layout engine ──
+const NW=160, NH=42, HW=180, HH=50, PAD=18, LEVEL_GAP=120, SIBLING_GAP=12;
+
+function layoutTree(tree, groupKey) {
+  const nodes = []; // {id, x, y, w, h, isHub, depth, groupKey}
+  const edges = []; // {x1,y1,x2,y2}
+
+  // Measure subtree width recursively
+  function subtreeW(item, depth) {
+    if (!item.children || item.children.length === 0) return NW + PAD;
+    let total = 0;
+    for (const c of item.children) total += subtreeW(c, depth+1);
+    return Math.max(total, (depth===0 ? HW : NW) + PAD);
+  }
+
+  // Place nodes
+  function place(item, depth, xStart, isHub) {
+    const w = isHub ? HW : NW;
+    const h = isHub ? HH : NH;
+    const sw = subtreeW(item, depth);
+    const cx = xStart + sw / 2;
+    const y = depth * LEVEL_GAP + 30;
+    const x = cx - w / 2;
+    nodes.push({id: item.id, x, y, w, h, isHub, depth, groupKey});
+
+    if (item.children) {
+      let childX = xStart;
+      for (const c of item.children) {
+        const csw = subtreeW(c, depth+1);
+        const childIsHub = !!(c.children && c.children.length > 0);
+        place(c, depth+1, childX, childIsHub);
+        // edge from parent center-bottom to child center-top
+        const childCx = childX + csw/2;
+        const childW = childIsHub ? HW : NW;
+        const childH = childIsHub ? HH : NH;
+        const childNodeX = childCx - childW/2;
+        const childY = (depth+1)*LEVEL_GAP + 30;
+        edges.push({
+          x1: x + w/2, y1: y + h,
+          x2: childNodeX + childW/2, y2: childY
+        });
+        childX += csw;
+      }
+    }
+    return sw;
+  }
+
+  // Root
+  const rootItem = {id: tree.root, children: tree.children};
+  const totalW = subtreeW(rootItem, 0);
+  place(rootItem, 0, 0, true);
+
+  return {nodes, edges, totalW, totalH: (maxDepth(rootItem)+1)*LEVEL_GAP + 60};
+}
+
+function maxDepth(item, d=0) {
+  if (!item.children || item.children.length===0) return d;
+  let m = d;
+  for (const c of item.children) m = Math.max(m, maxDepth(c, d+1));
+  return m;
+}
+
+// ── Render ──
+let activeFilters = new Set(["sys","g10","g11","g12"]);
+
+function render() {
+  const svg = document.getElementById("svg");
+  let parts = [];
+  let offsetY = 0;
+
+  const groupLabels = {sys:"מערכת", g10:"כיתה י", g11:"כיתה יא", g12:"כיתה יב"};
+  let maxW = 0;
+
+  for (const gk of ["sys","g10","g11","g12"]) {
+    if (!activeFilters.has(gk)) continue;
+    const tree = TREES[gk];
+    const col = COLORS[gk];
+    const layout = layoutTree(tree, gk);
+    maxW = Math.max(maxW, layout.totalW);
+
+    // Group label
+    parts.push(`<text x="${layout.totalW/2}" y="${offsetY+20}" text-anchor="middle" fill="${col.hub}" font-size="15" font-weight="800">${groupLabels[gk]}</text>`);
+    const gOffY = offsetY + 10;
+
+    // Edges
+    for (const e of layout.edges) {
+      const y1 = e.y1+gOffY, y2 = e.y2+gOffY;
+      const my = (y1+y2)/2;
+      parts.push(`<path d="M${e.x1},${y1} C${e.x1},${my} ${e.x2},${my} ${e.x2},${y2}" fill="none" stroke="${col.line}" stroke-width="2" opacity=".5"/>`);
+      // arrowhead
+      parts.push(`<polygon points="${e.x2-4},${y2-6} ${e.x2+4},${y2-6} ${e.x2},${y2}" fill="${col.line}" opacity=".6"/>`);
+    }
+
+    // Nodes
+    for (const n of layout.nodes) {
+      const ny = n.y + gOffY;
+      const bc = n.isHub ? col.hubBg : col.nodeBg;
+      const sc = n.isHub ? col.hub : col.node;
+      const tc = col.text;
+      const dd = D[n.id];
+      const label = dd ? dd.t : n.id;
+      const rx = n.isHub ? 14 : 10;
+      parts.push(`<g class="nd" data-id="${n.id}" onclick="showP('${n.id}',this)">`);
+      parts.push(`<rect x="${n.x}" y="${ny}" width="${n.w}" height="${n.h}" rx="${rx}" fill="${bc}" stroke="${sc}" stroke-width="1.8"/>`);
+      // Truncate text
+      const maxChars = Math.floor(n.w / 9);
+      const displayLabel = label.length > maxChars ? label.slice(0, maxChars-1) + "…" : label;
+      parts.push(`<text x="${n.x+n.w/2}" y="${ny+n.h/2+1}" text-anchor="middle" dominant-baseline="central" fill="${tc}" font-size="${n.isHub?13:11}" font-weight="${n.isHub?800:600}">${displayLabel}</text>`);
+      parts.push(`</g>`);
+    }
+
+    offsetY += layout.totalH + 40;
+  }
+
+  svg.innerHTML = parts.join("");
+  svg.setAttribute("width", Math.max(maxW+40, 600));
+  svg.setAttribute("height", offsetY+20);
+  svg.setAttribute("viewBox", `0 0 ${Math.max(maxW+40,600)} ${offsetY+20}`);
+}
+
+function toggle(gk) {
+  const btn = document.querySelector(`button[data-f="${gk}"]`);
+  if (activeFilters.has(gk)) { activeFilters.delete(gk); btn.classList.remove("active"); }
+  else { activeFilters.add(gk); btn.classList.add("active"); }
+  render();
+}
+
+function showP(id, el) {
+  const dd = D[id]; if(!dd) return;
+  document.getElementById("pT").textContent = dd.t;
+  document.getElementById("pR").textContent = dd.r;
+  document.getElementById("pD").textContent = dd.d;
+  document.getElementById("pI").innerHTML = dd.i.map(s=>"<li>"+s+"</li>").join("");
+  document.getElementById("pO").innerHTML = dd.o.map(s=>"<li>"+s+"</li>").join("");
+  document.getElementById("pn").classList.add("open");
+  document.getElementById("ov").classList.add("open");
+  document.querySelectorAll(".nd").forEach(n=>n.classList.remove("active"));
+  el.classList.add("active");
+}
+
+function closeP() {
+  document.getElementById("pn").classList.remove("open");
+  document.getElementById("ov").classList.remove("open");
+  document.querySelectorAll(".nd").forEach(n=>n.classList.remove("active"));
+}
+
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeP(); });
+
+render();
+</script>
+</body>
+</html>

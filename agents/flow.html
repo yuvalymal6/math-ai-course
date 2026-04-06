@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מערכת סוכנים — קורס מתמטיקה כיתה י</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0a0f1e;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    direction: rtl;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 2.5rem;
+  }
+
+  /* ── Layout ── */
+  .stage { margin-bottom: 2rem; }
+  .stage-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #475569;
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+  .row {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .connector {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 0;
+  }
+  .connector svg { display: block; }
+
+  /* ── Cards ── */
+  .card {
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 140px;
+    max-width: 200px;
+    text-align: center;
+    position: relative;
+    user-select: none;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+  }
+  .card-file {
+    font-size: 0.65rem;
+    opacity: 0.6;
+    font-family: monospace;
+    direction: ltr;
+  }
+  .card.active { transform: translateY(-2px); }
+
+  /* Colors */
+  .c-purple { background: rgba(139,92,246,0.12); border: 2px solid rgba(139,92,246,0.5); }
+  .c-purple .card-title { color: #a78bfa; }
+  .c-purple:hover, .c-purple.active { box-shadow: 0 0 20px rgba(139,92,246,0.25); }
+
+  .c-teal { background: rgba(20,184,166,0.1); border: 2px solid rgba(20,184,166,0.4); }
+  .c-teal .card-title { color: #2dd4bf; }
+  .c-teal:hover, .c-teal.active { box-shadow: 0 0 20px rgba(20,184,166,0.2); }
+
+  .c-orange { background: rgba(234,88,12,0.1); border: 2px solid rgba(234,88,12,0.4); }
+  .c-orange .card-title { color: #fb923c; }
+  .c-orange:hover, .c-orange.active { box-shadow: 0 0 20px rgba(234,88,12,0.2); }
+
+  .c-amber { background: rgba(245,158,11,0.08); border: 2px solid rgba(245,158,11,0.35); }
+  .c-amber .card-title { color: #fbbf24; }
+  .c-amber:hover, .c-amber.active { box-shadow: 0 0 20px rgba(245,158,11,0.2); }
+
+  .c-blue { background: rgba(59,130,246,0.08); border: 2px solid rgba(59,130,246,0.35); }
+  .c-blue .card-title { color: #60a5fa; }
+  .c-blue:hover, .c-blue.active { box-shadow: 0 0 20px rgba(59,130,246,0.2); }
+
+  .c-green { background: rgba(22,163,74,0.1); border: 2px solid rgba(22,163,74,0.4); }
+  .c-green .card-title { color: #4ade80; }
+  .c-green:hover, .c-green.active { box-shadow: 0 0 20px rgba(22,163,74,0.2); }
+
+  /* ── Detail panel ── */
+  .panel-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+  }
+  .panel-overlay.open { display: block; }
+  .panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(420px, 90vw);
+    height: 100vh;
+    background: #111827;
+    border-right: 2px solid #1e293b;
+    z-index: 101;
+    padding: 2rem 1.5rem;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+  .panel.open { transform: translateX(0); }
+  .panel-close {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: none;
+    border: 1px solid #334155;
+    color: #94a3b8;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .panel-close:hover { background: #1e293b; color: #fff; }
+  .panel h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+  .panel .panel-file {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+    direction: ltr;
+    text-align: left;
+  }
+  .panel .panel-desc {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: #cbd5e1;
+  }
+  .panel .panel-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  /* Sub-agent bracket */
+  .sub-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .sub-group-label {
+    font-size: 0.65rem;
+    color: #475569;
+    font-weight: 600;
+  }
+  .sub-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .sub-card {
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 90px;
+    text-align: center;
+    user-select: none;
+  }
+  .sub-card:hover { transform: translateY(-1px); }
+  .sub-card .card-title { font-size: 0.75rem; margin-bottom: 0.15rem; }
+  .sub-card .card-file { font-size: 0.6rem; }
+</style>
+</head>
+<body>
+
+<h1>מערכת סוכנים</h1>
+<p class="subtitle">קורס מתמטיקה כיתה י — תהליך שדרוג לרמה 100</p>
+
+<!-- Stage 0: Manager -->
+<div class="stage">
+  <div class="stage-label">מנהל ראשי</div>
+  <div class="row">
+    <div class="card c-purple" onclick="showPanel('manager')">
+      <div class="card-title">סוכן מנהל</div>
+      <div class="card-file">manager.md</div>
+    </div>
+  </div>
+</div>
+
+<!-- Arrow down -->
+<div class="connector">
+  <svg width="2" height="28"><line x1="1" y1="0" x2="1" y2="28" stroke="#475569" stroke-width="2" stroke-dasharray="4,3"/></svg>
+</div>
+
+<!-- Stage 1: Diagnosis -->
+<div class="stage">
+  <div class="stage-label">שלב א — אבחון</div>
+  <div class="row">
+    <div class="card c-teal" onclick="showPanel('standard-keeper')">
+      <div class="card-title">שומר רמה 100</div>
+      <div class="card-file">standard-keeper.md</div>
+    </div>
+    <div class="card c-teal" onclick="showPanel('gap-finder')">
+      <div class="card-title">מאבחן חוסרים</div>
+      <div class="card-file">gap-finder.md</div>
+    </div>
+    <div class="card c-teal" onclick="showPanel('architect')">
+      <div class="card-title">ארכיטקטורה</div>
+      <div class="card-file">architect.md</div>
+    </div>
+  </div>
+</div>
+
+<div class="connector">
+  <svg width="2" height="28"><line x1="1" y1="0" x2="1" y2="28" stroke="#475569" stroke-width="2" stroke-dasharray="4,3"/></svg>
+</div>
+
+<!-- Stage 2: Creation -->
+<div class="stage">
+  <div class="stage-label">שלב ב — יצירה</div>
+  <div class="row" style="gap: 2.5rem; align-items: flex-start;">
+
+    <!-- Math department -->
+    <div class="sub-group">
+      <div class="card c-orange" onclick="showPanel('math-genius')">
+        <div class="card-title">מנהל מחלקת מתמטיקה</div>
+        <div class="card-file">math-genius.md</div>
+      </div>
+      <svg width="2" height="16"><line x1="1" y1="0" x2="1" y2="16" stroke="#475569" stroke-width="2" stroke-dasharray="3,2"/></svg>
+      <div class="sub-row">
+        <div class="sub-card c-amber" onclick="showPanel('sub-questions')">
+          <div class="card-title">שאלות</div>
+          <div class="card-file">sub-questions.md</div>
+        </div>
+        <div class="sub-card c-amber" onclick="showPanel('sub-pitfalls')">
+          <div class="card-title">שגיאות</div>
+          <div class="card-file">sub-pitfalls.md</div>
+        </div>
+        <div class="sub-card c-amber" onclick="showPanel('sub-formulas')">
+          <div class="card-title">נוסחאון</div>
+          <div class="card-file">sub-formulas.md</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Creative department -->
+    <div class="sub-group">
+      <div class="card c-orange" onclick="showPanel('creative')">
+        <div class="card-title">מנהל מחלקת יצירתיות</div>
+        <div class="card-file">creative.md</div>
+      </div>
+      <svg width="2" height="16"><line x1="1" y1="0" x2="1" y2="16" stroke="#475569" stroke-width="2" stroke-dasharray="3,2"/></svg>
+      <div class="sub-row">
+        <div class="sub-card c-blue" onclick="showPanel('sub-labs')">
+          <div class="card-title">מעבדות</div>
+          <div class="card-file">sub-labs.md</div>
+        </div>
+        <div class="sub-card c-blue" onclick="showPanel('sub-graphs')">
+          <div class="card-title">גרפים</div>
+          <div class="card-file">sub-graphs.md</div>
+        </div>
+        <div class="sub-card c-blue" onclick="showPanel('sub-prompts')">
+          <div class="card-title">פרומפטים</div>
+          <div class="card-file">sub-prompts.md</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="connector">
+  <svg width="2" height="28"><line x1="1" y1="0" x2="1" y2="28" stroke="#475569" stroke-width="2" stroke-dasharray="4,3"/></svg>
+</div>
+
+<!-- Stage 3: Verification + Deploy -->
+<div class="stage">
+  <div class="stage-label">שלב ג — אימות ופריסה</div>
+  <div class="row">
+    <div class="card c-green" onclick="showPanel('verify')">
+      <div class="card-title">אימות רמה 100 + git push</div>
+      <div class="card-file">manager.md (שלב ג + פריסה)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Panel overlay -->
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <button class="panel-close" onclick="closePanel()">✕</button>
+  <div id="panel-badge"></div>
+  <h2 id="panel-title"></h2>
+  <div class="panel-file" id="panel-file"></div>
+  <div class="panel-desc" id="panel-desc"></div>
+</div>
+
+<script>
+const agents = {
+  "manager": {
+    title: "סוכן מנהל",
+    file: "agents/manager.md",
+    badge: "מנהל ראשי",
+    badgeColor: "#a78bfa",
+    desc: "מנהל איכות. מתאם בין הסוכנים ומחליט אם קובץ עומד ברמה 100.\n\nתהליך:\n1. שלב א — מפעיל 3 סוכני אבחון במקביל\n2. שלב ב — מעביר פערים למחלקת מתמטיקה ויצירתיות\n3. שלב ג — מריץ אימות מחדש\n4. פריסה — git add, commit, push"
+  },
+  "standard-keeper": {
+    title: "סוכן שומר רמה 100",
+    file: "agents/standard-keeper.md",
+    badge: "אבחון",
+    badgeColor: "#2dd4bf",
+    desc: "השומר של הסטנדרט. בודק 7 קריטריונים:\n\n1. מבנה כללי\n2. תיבת נוסחאות\n3. פרומפטים\n4. מלכודות נפוצות\n5. מעבדות\n6. SVG שקט\n7. שפה וסגנון\n\nמדווח בלבד — לא מתקן."
+  },
+  "gap-finder": {
+    title: "סוכן מאבחן חוסרים",
+    file: "agents/gap-finder.md",
+    badge: "אבחון",
+    badgeColor: "#2dd4bf",
+    desc: "מזהה כל פער בין הקובץ הנבדק לרמה 100.\n\nבודק:\n• חוסרים מבניים — רכיב שקיים בסטנדרט אך חסר\n• חוסרים בתוכן — פרומפט, מלכודת, נוסחה\n• חוסרים בלוגיקה — מערכת בדיקות לא מחוברת\n• חוסרים ויזואליים — SVG לא שקט, מעבדה חסרה\n\nממיין: קריטי / משני"
+  },
+  "architect": {
+    title: "סוכן ארכיטקטורה",
+    file: "agents/architect.md",
+    badge: "אבחון",
+    badgeColor: "#2dd4bf",
+    desc: "אחראי על עקביות טכנית ומבנית.\n\nבודק:\n• רספונסיביות\n• קומפוננטים (SubtopicProgress, MarkComplete, calculatePromptScore, MasterPromptGate)\n• עקביות קוד\n• מערכת בדיקות (5 אשכולות: role, restriction, guidance, subject, wait)\n• SVG טכני\n• ביצועים\n\nכיתה י: מעבדות בהירות בלבד — אין Island Protocol"
+  },
+  "math-genius": {
+    title: "מנהל מחלקת מתמטיקה",
+    file: "agents/math-genius.md",
+    badge: "יצירה",
+    badgeColor: "#fb923c",
+    desc: "מנהל מחלקה. לא עושה עבודה בעצמו — מפעיל 3 סוכנים ברצף:\n\n1. סוכן שאלות — איכות השאלות ב-3 רמות\n2. סוכן שגיאות — ניסוח pitfalls\n3. סוכן נוסחאון — בניית הנוסחאון\n\nמרכז תוצאות ומדווח."
+  },
+  "creative": {
+    title: "מנהל מחלקת יצירתיות",
+    file: "agents/creative.md",
+    badge: "יצירה",
+    badgeColor: "#fb923c",
+    desc: "מנהל מחלקה. לא עושה עבודה בעצמו — מפעיל 3 סוכנים ברצף:\n\n1. סוכן מעבדות — שדרוג Labs\n2. סוכן גרפים — דיוק SVG\n3. סוכן פרומפטים — איכות פרומפטים\n\nמרכז תוצאות ומדווח."
+  },
+  "sub-questions": {
+    title: "סוכן שאלות",
+    file: "agents/sub-questions.md",
+    badge: "מתמטיקה",
+    badgeColor: "#fbbf24",
+    desc: "אחראי על איכות השאלות בכל 3 הרמות.\n\nמתחיל: ניסוח פשוט, נתונים מפורשים\nבינוני: חיבור בין מושגים, פרמטרים\nמתקדם: רמת בגרות, הוכחה, סעיפים תלויים"
+  },
+  "sub-pitfalls": {
+    title: "סוכן שגיאות נפוצות",
+    file: "agents/sub-pitfalls.md",
+    badge: "מתמטיקה",
+    badgeColor: "#fbbf24",
+    desc: "אחראי על ניסוח השגיאות הנפוצות (pitfalls).\n\nכללים:\n• מצביע על טעות, לא חושף פתרון\n• ניסוח קצר וברור\n• ספציפי לשאלה, לא כללי\n• 2 שגיאות לכל רמה"
+  },
+  "sub-formulas": {
+    title: "סוכן נוסחאון",
+    file: "agents/sub-formulas.md",
+    badge: "מתמטיקה",
+    badgeColor: "#fbbf24",
+    desc: "אחראי על בניית הנוסחאון לכל נושא.\n\nבודק שהנוסחאון קיים, שלם, ומכיל כרטיסיות לחיצות עם הסבר ודוגמה מספרית."
+  },
+  "sub-labs": {
+    title: "סוכן מעבדות",
+    file: "agents/sub-labs.md",
+    badge: "יצירתיות",
+    badgeColor: "#60a5fa",
+    desc: "אחראי על שדרוג המעבדות האינטראקטיביות.\n\nכל מעבדה: סליידרים + SVG דינמי + אריחי נתונים + תווית פרשנית תחתונה.\nנפתחת בברירת מחדל של נתוני השאלה."
+  },
+  "sub-graphs": {
+    title: "סוכן גרפים",
+    file: "agents/sub-graphs.md",
+    badge: "יצירתיות",
+    badgeColor: "#60a5fa",
+    desc: "אחראי על דיוק הגרפים וה-SVG בקובץ.\n\nכללים:\n• שקט — ללא מספרים, ללא משוואות\n• תוויות אותיות בלבד (A, B, ℓ₁)\n• צירים עם סקאלה הגיונית\n• ללא רמזים לפתרון"
+  },
+  "sub-prompts": {
+    title: "סוכן פרומפטים",
+    file: "agents/sub-prompts.md",
+    badge: "יצירתיות",
+    badgeColor: "#60a5fa",
+    desc: "אחראי על איכות הפרומפטים בכל הרמות.\n\nפרומפט זהב: 3 חלקים (תפקיד + מגבלה + שיטה)\nפרומפט סעיפי: עצמאי, כולל נתוני השאלה\ncontextWords: 5-7 מילות מפתח לכל שלב"
+  },
+  "verify": {
+    title: "אימות + פריסה",
+    file: "agents/manager.md (שלב ג)",
+    badge: "סיום",
+    badgeColor: "#4ade80",
+    desc: "לאחר שני הסוכנים היוצרים סיימו:\n\n1. מריץ מחדש את שומר רמה 100\n2. אם עבר — git add, commit, push\n3. Vercel מפרס אוטומטית\n\nאם נכשל — חוזר לשלב ב עם הפערים שנותרו."
+  }
+};
+
+function showPanel(id) {
+  const a = agents[id];
+  if (!a) return;
+  document.getElementById("panel-title").textContent = a.title;
+  document.getElementById("panel-file").textContent = a.file;
+  document.getElementById("panel-desc").innerHTML = a.desc.replace(/\n/g, "<br>");
+  const badge = document.getElementById("panel-badge");
+  badge.className = "panel-badge";
+  badge.style.background = a.badgeColor + "22";
+  badge.style.border = "1px solid " + a.badgeColor + "66";
+  badge.style.color = a.badgeColor;
+  badge.textContent = a.badge;
+  document.getElementById("panel").classList.add("open");
+  document.getElementById("overlay").classList.add("open");
+  // highlight card
+  document.querySelectorAll(".card, .sub-card").forEach(c => c.classList.remove("active"));
+  event.currentTarget.classList.add("active");
+}
+
+function closePanel() {
+  document.getElementById("panel").classList.remove("open");
+  document.getElementById("overlay").classList.remove("open");
+  document.querySelectorAll(".card, .sub-card").forEach(c => c.classList.remove("active"));
+}
+
+document.addEventListener("keydown", e => { if (e.key === "Escape") closePanel(); });
+</script>
+</body>
+</html>

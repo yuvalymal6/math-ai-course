@@ -4,8 +4,15 @@
 אתה מנהל איכות. תפקידך לתאם בין הסוכנים ולהחליט
 אם קובץ עומד ברמה 100.
 
-## הכנה
-קרא את agents/grade10-quality-standard.md בלבד.
+## הכנה — זיהוי כיתה לפי נתיב הקובץ
+
+לפני הכל, קבע איזה סטנדרט לקרוא:
+
+- אם הנתיב מכיל `grade10` → קרא `agents/grade10-quality-standard.md`
+- אם הנתיב מכיל `grade12` → קרא `agents/grade12-quality-standard.md`
+- אם הנתיב מכיל `grade11`, `calculus`, `analytic` (ללא grade10), `kitzun`, `probability`, או `statistics` (ללא grade10) → קרא `agents/grade11-quality-standard.md`
+
+קרא את הסטנדרט המתאים בלבד.
 
 ## שלב א — אבחון (הפעל במקביל)
 קרא כל אחד מהסוכנים הבאים ופעל לפיו על הקובץ:

@@ -1,16 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle2, Lock } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
+import LabMessage from "@/app/components/LabMessage";
+import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
 // ─── Global style ─────────────────────────────────────────────────────────────
 
 const GLOBAL_CSS = `*:focus{outline:none!important;box-shadow:none!important;}`;
+
+// ─── KaTeX helpers ───────────────────────────────────────────────────────────
+
+function InlineMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: false }); }, [children]);
+  return <span ref={ref} />;
+}
+
+function DisplayMath({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: true }); }, [children]);
+  return <span ref={ref} style={{ display: "block", textAlign: "center" }} />;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -350,24 +369,128 @@ function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accen
 
 // ─── FormulaBar ───────────────────────────────────────────────────────────────
 
-function FormulaBar({ accentColor, accentRgb }: { accentColor: string; accentRgb: string }) {
-  const formulas = [
-    { label: "ממוצע", val: "μ = Σxᵢ / n" },
-    { label: "חציון", val: "ערך אמצעי (אחרי מיון)" },
-    { label: "סטיית תקן", val: "σ = √[Σ(xᵢ−μ)² / n]" },
-    { label: "Y=aX+b", val: "μ→aμ+b, σ→|a|σ" },
+function FormulaBar() {
+  const [activeTab, setActiveTab] = useState<"mean" | "median" | "std" | "transform" | null>(null);
+
+  const tabs = [
+    { id: "mean" as const,      label: "ממוצע",        tex: "\\bar{x} = \\frac{\\Sigma x_i}{n}", color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "median" as const,    label: "חציון",        tex: "\\tilde{x}",                         color: "#3b82f6", borderColor: "rgba(59,130,246,0.35)" },
+    { id: "std" as const,       label: "סטיית תקן",   tex: "\\sigma",                             color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
+    { id: "transform" as const, label: "טרנספורמציה", tex: "Y=aX+b",                             color: "#7C3AED", borderColor: "rgba(124,58,237,0.35)" },
   ];
+
   return (
-    <div style={{ borderRadius: 14, border: `1px solid rgba(${accentRgb},0.25)`, background: `rgba(${accentRgb},0.04)`, padding: "12px 16px", marginBottom: 16 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: accentColor, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>נוסחאות מרכזיות</p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {formulas.map(f => (
-          <div key={f.label} style={{ borderRadius: 8, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", padding: "4px 10px", fontSize: 11 }}>
-            <span style={{ color: "#64748b", marginLeft: 4 }}>{f.label}:</span>
-            <span style={{ color: "#1e293b", fontFamily: "monospace", fontWeight: 600, direction: "ltr", display: "inline-block" }}>{f.val}</span>
-          </div>
-        ))}
+    <div style={{ borderRadius: 12, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.25rem", marginBottom: "1.25rem" }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
+
+      <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
+        {tabs.map(t => {
+          const isActive = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(isActive ? null : t.id)}
+              style={{
+                flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
+                border: `1.5px solid ${isActive ? t.borderColor : "rgba(60,54,42,0.15)"}`,
+                background: isActive ? `${t.color}15` : "rgba(255,255,255,0.02)",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
+              <span style={{ color: isActive ? t.color : "#6B7280" }}><InlineMath>{t.tex}</InlineMath></span>
+            </button>
+          );
+        })}
       </div>
+
+      {activeTab === "mean" && (
+        <motion.div key="mean" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(22,163,74,0.25)", background: "rgba(22,163,74,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"\\bar{x} = \\frac{x_1 + x_2 + \\cdots + x_n}{n}"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> הממוצע הוא סכום כל הערכים חלקי מספרם.
+                <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>רגיש לערכים קיצוניים — ערך גבוה מאוד ימשוך את הממוצע למעלה.</li>
+                  <li>מושפע מכל הנתונים — שונה מחציון שמתעלם מקצוות.</li>
+                </ul>
+              </div>
+              <div style={{ marginTop: 10, color: "#16a34a", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; דוגמה: נתונים 3,5,7 → ממוצע = (3+5+7)/3 = 5
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "median" && (
+        <motion.div key="median" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(59,130,246,0.25)", background: "rgba(59,130,246,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"\\tilde{x} = \\begin{cases} x_{\\frac{n+1}{2}} & n \\text{ odd} \\\\ \\frac{x_{n/2}+x_{n/2+1}}{2} & n \\text{ even} \\end{cases}"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> החציון הוא הערך האמצעי אחרי מיון.
+                <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>n אי-זוגי — הערך במקום <InlineMath>{"\\frac{n+1}{2}"}</InlineMath>.</li>
+                  <li>n זוגי — ממוצע שני הערכים האמצעיים.</li>
+                </ul>
+              </div>
+              <div style={{ marginTop: 10, color: "#3b82f6", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; חובה למיין לפני חישוב! חציון על רשימה לא ממוינת — טעות נפוצה.
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "std" && (
+        <motion.div key="std" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(234,88,12,0.25)", background: "rgba(234,88,12,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"\\sigma = \\sqrt{\\frac{\\sum(x_i - \\bar{x})^2}{n}}"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> סטיית התקן מודדת כמה הנתונים מפוזרים סביב הממוצע.
+                <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>σ קטן = נתונים מרוכזים סביב הממוצע (הומוגני).</li>
+                  <li>σ גדול = נתונים מפוזרים (הטרוגני).</li>
+                </ul>
+              </div>
+              <div style={{ marginTop: 10, color: "#EA580C", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; שלב 1: הפרש מממוצע → שלב 2: ריבוע → שלב 3: ממוצע ריבועים → שלב 4: שורש.
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "transform" && (
+        <motion.div key="transform" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(124,58,237,0.25)", background: "rgba(124,58,237,0.06)", padding: "16px" }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <DisplayMath>{"Y = aX + b \\;\\Rightarrow\\; \\bar{Y}=a\\bar{X}+b,\\;\\sigma_Y=|a|\\sigma_X"}</DisplayMath>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.15)", padding: "12px 14px" }}>
+              <div style={{ color: "#2D3436", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+                <strong>הסבר:</strong> טרנספורמציה לינארית משנה ממוצע וחציון, אבל b לא משפיע על σ.
+                <ul dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                  <li>+b (הוספת קבוע): ממוצע וחציון עולים ב-b, σ <strong>לא משתנה</strong>.</li>
+                  <li>×a (כפל): ממוצע וחציון מוכפלים ב-a, σ מוכפל ב-|a|.</li>
+                </ul>
+              </div>
+              <div style={{ marginTop: 10, color: "#7C3AED", fontSize: 11, fontWeight: 600, lineHeight: 1.7 }}>
+                &#128161; &quot;+5 לכולם&quot; = הזזה. &quot;×1.1 לכולם&quot; = מתיחה. רק מתיחה משנה פיזור!
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -380,15 +503,16 @@ const EXERCISES: ExerciseDef[] = [
     problem: "נתונה רשימת ציונים: 7, 3, 8, 5, 9, 3, 6.\n\nא. סדר את הנתונים ובנה טבלת שכיחויות.\nב. חשב את ממוצע הציונים.\nג. מצא את חציון הציונים והסבר את משמעותו.\nד. קבע מהו הציון השכיח.",
     diagram: <BarChartDiagram />,
     pitfalls: [
-      { title: "מיין לפני חציון — חציון מחושב אחרי מיון", text: "מיין לפני חציון — חציון מחושב אחרי מיון. אל תחשב על רשימה לא ממוינת." },
-      { title: "שכיח ≠ ממוצע", text: "השכיח הוא הערך הנפוץ ביותר, לא בהכרח קרוב לממוצע." },
+      { title: "מיין לפני חציון", text: "חציון מחושב אחרי מיון בלבד. אל תחשב על רשימה לא ממוינת — תקבל ערך שגוי." },
+      { title: "שכיח ≠ ממוצע", text: "השכיח הוא הערך הנפוץ ביותר, לא בהכרח קרוב לממוצע. יכולים להיות גם כמה שכיחים." },
+      { title: "n זוגי vs אי-זוגי", text: "כשמספר הנתונים זוגי, החציון הוא ממוצע שני הערכים האמצעיים — לא אחד מהם." },
     ],
     goldenPrompt: "אני תלמיד כיתה יא׳ ומצרף תרגיל על מדדי מרכז — ממוצע, חציון ושכיח.\nנתונים: 7, 3, 8, 5, 9, 3, 6.\n\nאתה המורה שלי — אל תפתור עבורי. שאל אותי שאלות מכווינות בלבד.\n\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.",
     steps: [
       { phase: "שלב א׳", label: "מיון וטבלת שכיחויות", prompt: "נתונים: 7,3,8,5,9,3,6. מיין מהקטן לגדול. כמה פעמים מופיע כל ציון?" },
       { phase: "שלב ב׳", label: "חישוב ממוצע", prompt: "חבר את כל הציונים הממוינים וחלק ב-7. מהו הממוצע?" },
-      { phase: "שלב ג׳", label: "מציאת חציון", prompt: "ממוין: 3,3,5,6,7,8,9. יש 7 ערכים (אי-זוגי). מהו הערך במקום ה-4?" },
-      { phase: "שלב ד׳", label: "מציאת שכיח", prompt: "מי מופיע יותר מפעם אחת בנתונים? זהו השכיח." },
+      { phase: "שלב ג׳", label: "מציאת חציון", prompt: "נתונים: 7,3,8,5,9,3,6. הנחה אותי למיין ואז למצוא את החציון. הסבר מה עושים כשמספר הערכים אי-זוגי." },
+      { phase: "שלב ד׳", label: "מציאת שכיח", prompt: "נתונים: 7,3,8,5,9,3,6. הנחה אותי למצוא את השכיח — איזה ערך מופיע הכי הרבה פעמים?" },
     ],
   },
   {
@@ -396,8 +520,9 @@ const EXERCISES: ExerciseDef[] = [
     problem: "שתי כיתות נבחנו באותו מבחן. בשתיהן הממוצע 80.\n\nיא׳1 (עקבית): 78, 80, 82, 79, 81\nיא׳2 (קיצונית): 60, 100, 70, 90, 80\n\nא. חשב את סטיית התקן (σ) של כל כיתה.\nב. איזו כיתה הומוגנית יותר? נמק.\nג. מה יקרה ל-σ אם נוסיף 5 נקודות לכל תלמיד ביא׳2?\nד. מה יקרה ל-σ אם נכפיל כל ציון ביא׳2 ב-1.1?",
     diagram: <BellCurvesDiagram />,
     pitfalls: [
-      { title: "הוספת קבוע לא משנה σ", text: "כשמוסיפים 5 לכולם, הממוצע עולה אך σ נשאר זהה." },
-      { title: "כפל משנה σ", text: "כשמכפילים ב-a, סטיית התקן מוכפלת ב-|a|." },
+      { title: "הוספת קבוע לא משנה σ", text: "כשמוסיפים 5 לכולם, הממוצע עולה אך σ נשאר זהה — ההפרשים מהממוצע לא השתנו." },
+      { title: "כפל משנה σ", text: "כשמכפילים ב-a, סטיית התקן מוכפלת ב-|a|. לכן כפל ב-1.1 מגדיל את הפיזור." },
+      { title: "אל תשכח ערך מוחלט", text: "SD(aX+b) = |a|·σ. גם אם a שלילי, σ תמיד חיובי — לכן ערך מוחלט." },
     ],
     goldenPrompt: "אני תלמיד כיתה יא׳ ומצרף תרגיל על סטיית תקן.\nשתי כיתות עם ממוצע 80: יא׳1: 78,80,82,79,81. יא׳2: 60,100,70,90,80.\n\nאתה המורה שלי — אל תפתור עבורי. שאל אותי שאלות מכווינות בלבד.\n\nסרוק את הנתונים בלבד. תעצור אחרי כל שלב ותחכה שאגיד להמשיך.",
     steps: [
@@ -413,12 +538,13 @@ const EXERCISES: ExerciseDef[] = [
     diagram: <TransformDiagram />,
     pitfalls: [
       { title: "הוספה vs כפל", text: "+b משנה מיקום בלבד (ממוצע, חציון עולים, σ לא). ×a משנה פיזור (σ מוכפל ב-|a|)." },
-      { title: "SD(aX+b) = |a|·SD(X)", text: "ה-b נעלם לחלוטין מהפיזור!" },
+      { title: "SD(aX+b) = |a|·SD(X)", text: "ה-b נעלם לחלוטין מהפיזור! הוספת קבוע מזיזה את כולם באותה כמות." },
+      { title: "הוגנות תלויה בנקודת מבט", text: "הוספה מעלה את כולם באופן שווה. כפל מיטיב עם בעלי ציונים גבוהים — שאלה של הוגנות." },
     ],
     goldenPrompt: "",
     steps: [
-      { phase: "שלב א׳", label: "Y = X + 5", contextWords: ["ממוצע", "80", "חציון", "82", "σ", "8", "הוספה", "לא משתנה"] },
-      { phase: "שלב ב׳", label: "Z = 1.1X", contextWords: ["ממוצע", "82.5", "חציון", "84.7", "σ", "8.8", "כפל"] },
+      { phase: "שלב א׳", label: "Y = X + 5", contextWords: ["ממוצע", "חציון", "σ", "הוספה", "קבוע", "לא משתנה", "סטייה"] },
+      { phase: "שלב ב׳", label: "Z = 1.1X", contextWords: ["ממוצע", "חציון", "σ", "כפל", "מוכפל", "סטייה", "פיזור"] },
       { phase: "שלב ג׳", label: "הוגנות", contextWords: ["הוגן", "חלש", "חזק", "שווה", "יחסי", "מוחלט"] },
       { phase: "שלב ד׳", label: "כלל כללי aX+b", contextWords: ["aX+b", "ממוצע", "a·μ+b", "σ", "|a|·σ", "כלל"] },
     ],
@@ -542,10 +668,12 @@ export default function DescriptivePage() {
   const ex = EXERCISES.find(e => e.id === activeId)!;
   const st = STATION[activeId];
 
+  const lvlRgb = activeId === "basic" ? "45,90,39" : activeId === "medium" ? "163,79,38" : "139,38,53";
+
   return (
     <>
       <style>{GLOBAL_CSS}</style>
-      <main dir="rtl" style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px", paddingBottom: "4rem" }}>
+      <main dir="rtl" style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px", paddingBottom: "4rem", ["--lvl-rgb" as string]: lvlRgb }}>
         {/* Header */}
         <div style={{ background: "#F3EFE0", borderBottom: "1px solid rgba(60,54,42,0.15)", marginBottom: "2rem" }}>
           <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
@@ -565,7 +693,7 @@ export default function DescriptivePage() {
           </div>
         </div>
 
-        <div style={{ margin: "0 auto", padding: "0 1.5rem" }}>
+        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0 1.5rem" }}>
           {/* Progress */}
           <SubtopicProgress subtopicId="/statistics/descriptive" />
 
@@ -588,22 +716,30 @@ export default function DescriptivePage() {
               <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 12px", borderRadius: 20 }} className={st.badgeCls}>{st.badge}</span>
               <span style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>{st.stationName}</span>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", alignItems: "center", marginBottom: 24 }}>
+            {/* FormulaBar */}
+            <FormulaBar />
+
+            {/* Diagram */}
+            <div style={{ borderRadius: 16, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: 12, marginBottom: "1.5rem" }}>
+              {ex.diagram}
+            </div>
+
+            {/* Problem */}
+            <div style={{ borderRadius: 16, border: `1px solid rgba(${st.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem" }}>
+              <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 12 }}>📝 השאלה</div>
               <pre style={{ fontSize: 14, color: "#1e293b", lineHeight: 1.75, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
-              <div style={{ borderRadius: 16, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: 12 }}>{ex.diagram}</div>
             </div>
-            <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>⚠️ שגיאות נפוצות</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {ex.pitfalls.map((p, i) => (
-                  <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.2)", background: "rgba(254,226,226,0.25)", padding: "10px 14px" }}>
-                    <div style={{ color: "#b91c1c", fontWeight: 700, fontSize: 13, marginBottom: 3 }}>⚠️ {p.title}</div>
-                    <div style={{ color: "#64748b", fontSize: 13 }}>{p.text}</div>
-                  </div>
-                ))}
-              </div>
+
+            {/* Pitfalls */}
+            <div style={{ marginBottom: "1.5rem" }}>
+              <div style={{ color: "#DC2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>⚠️ שגיאות נפוצות</div>
+              {ex.pitfalls.map((p, i) => (
+                <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.2)", background: "rgba(220,38,38,0.05)", padding: "0.85rem 1rem", marginBottom: 8 }}>
+                  <div style={{ color: "#DC2626", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>⚠️ {p.title}</div>
+                  {p.text && <div style={{ color: "#2D3436", fontSize: 13.5, lineHeight: 1.65 }}>{p.text}</div>}
+                </div>
+              ))}
             </div>
-            <FormulaBar accentColor={st.accentColor} accentRgb={st.glowRgb} />
             <div>
               <p style={{ fontSize: 11, fontWeight: 700, color: st.accentColor, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>🧠 מדריך הפרומפטים</p>
               {activeId === "basic"    && <LadderBase     ex={ex} accentColor={st.accentColor} accentRgb={st.glowRgb} />}

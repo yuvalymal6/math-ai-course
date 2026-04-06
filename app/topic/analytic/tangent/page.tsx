@@ -1,18 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle2, Lock } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
 import LabMessage from "@/app/components/LabMessage";
-import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
+import katex from "katex";
+import "katex/dist/katex.min.css";
+
+// ─── KaTeX renderers ─────────────────────────────────────────────────────────
+
+function Tex({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: false }); }, [children]);
+  return <span ref={ref} dir="ltr" style={{ unicodeBidi: "embed" }} />;
+}
+
+function TexBlock({ children }: { children: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: true }); }, [children]);
+  return <span ref={ref} dir="ltr" style={{ display: "block", textAlign: "center", unicodeBidi: "embed" }} />;
+}
 
 // ─── Global style ─────────────────────────────────────────────────────────────
 
-const GLOBAL_CSS = `*:focus{outline:none!important;box-shadow:none!important;}`;
+const GLOBAL_CSS = `
+  textarea:focus, input[type="text"]:focus {
+    outline: 2px solid rgba(var(--lvl-rgb), 0.55);
+    outline-offset: 1px;
+    border-color: rgba(var(--lvl-rgb), 0.5) !important;
+  }
+  button:focus-visible {
+    outline: 2px solid rgba(var(--lvl-rgb), 0.55);
+    outline-offset: 2px;
+  }
+`;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -30,6 +56,8 @@ type ExerciseDef = {
   pitfalls: { title: string; text: string }[];
   goldenPrompt: string;
   steps: PromptStep[];
+  subjectWords?: string[];
+  subjectHint?: string;
 };
 
 // ─── Station config ───────────────────────────────────────────────────────────
@@ -207,6 +235,8 @@ function TangentLab({ levelId }: { levelId: "basic" | "medium" | "advanced" }) {
           style={{ width: "100%", accentColor: st.accentColor } as React.CSSProperties} />
       </div>
 
+      <LabMessage text="המשיק אופקי — שיפוע 0. הרדיוס אנכי!" type="info" visible={Math.abs(cosT) < 0.015} />
+      <LabMessage text="המשיק אנכי — שיפוע לא מוגדר. הרדיוס אופקי!" type="info" visible={Math.abs(sinT) < 0.015} />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, textAlign: "center", fontSize: 12 }}>
         {[
           { label: "נקודת משיק", val: `(${(R*cosT).toFixed(1)}, ${(R*sinT).toFixed(1)})`, color: "#7c3aed" },
@@ -414,7 +444,7 @@ function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accen
 
   return (
     <div>
-      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
+      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" subjectWords={ex.subjectWords} subjectHint={ex.subjectHint} />
 
       {steps.map((step, i) => (
         <div key={i} style={{ marginBottom: 8 }}>
@@ -448,27 +478,98 @@ function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accen
   );
 }
 
-// ─── FormulaBar ───────────────────────────────────────────────────────────────
+// ─── FormulaBar (interactive clickable tabs with KaTeX) ──────────────────────
 
 function FormulaBar({ accentColor, accentRgb }: { accentColor: string; accentRgb: string }) {
-  const formulas = [
-    { label: "שיפוע רדיוס", val: "m=(y₂−y₁)/(x₂−x₁)" },
-    { label: "ניצבות", val: "m₁×m₂=−1" },
-    { label: "שיפוע משיק", val: "m_t=−1/m_r" },
-    { label: "משוואת ישר", val: "y−y₁=m(x−x₁)" },
-    { label: "מרחק נקודה-לישר", val: "d=|ax₀+by₀+c|/√(a²+b²)" },
+  const [activeTab, setActiveTab] = useState<"slope" | "perp" | "line" | "dist" | null>(null);
+
+  const tabs = [
+    { id: "slope" as const, label: "📐 שיפוע", tex: String.raw`m = \frac{y_2-y_1}{x_2-x_1}`, color: "#3b82f6", borderColor: "rgba(59,130,246,0.35)" },
+    { id: "perp" as const, label: "⊥ ניצבות", tex: String.raw`m_1 \cdot m_2 = -1`, color: "#a78bfa", borderColor: "rgba(167,139,250,0.35)" },
+    { id: "line" as const, label: "📏 משוואת ישר", tex: String.raw`y - y_1 = m(x - x_1)`, color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
+    { id: "dist" as const, label: "📍 מרחק", tex: String.raw`d`, color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
   ];
+
   return (
-    <div style={{ borderRadius: 14, border: `1px solid rgba(${accentRgb},0.25)`, background: `rgba(${accentRgb},0.04)`, padding: "12px 16px", marginBottom: 16 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: accentColor, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>נוסחאות מרכזיות</p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {formulas.map(f => (
-          <div key={f.label} style={{ borderRadius: 8, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", padding: "4px 10px", fontSize: 11 }}>
-            <span style={{ color: "#64748b", marginLeft: 4 }}>{f.label}:</span>
-            <span style={{ color: "#1e293b", fontFamily: "monospace", fontWeight: 600, direction: "ltr", display: "inline-block" }}>{f.val}</span>
-          </div>
-        ))}
+    <div style={{ borderRadius: 12, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.5rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
+
+      <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
+        {tabs.map(t => {
+          const isActive = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(isActive ? null : t.id)}
+              style={{
+                flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
+                border: `1.5px solid ${isActive ? t.borderColor : `rgba(${accentRgb},0.15)`}`,
+                background: isActive ? `${t.color}0D` : `rgba(${accentRgb},0.03)`,
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
+              <span style={{ color: isActive ? t.color : accentColor }}><Tex>{t.tex}</Tex></span>
+            </button>
+          );
+        })}
       </div>
+
+      {activeTab === "slope" && (
+        <motion.div key="slope" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(59,130,246,0.25)", background: "rgba(219,234,254,0.5)", padding: 16 }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <TexBlock>{String.raw`m_{\text{radius}} = \frac{y_P - y_C}{x_P - x_C}`}</TexBlock>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)", padding: "12px 14px", color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+              <strong>שימוש:</strong> מחשבים את שיפוע הרדיוס מהמרכז <Tex>C</Tex> לנקודת המשיקות <Tex>P</Tex>. לאחר מכן מוצאים את שיפוע המשיק דרך תנאי הניצבות.
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "perp" && (
+        <motion.div key="perp" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(167,139,250,0.3)", background: "rgba(237,233,254,0.5)", padding: 16 }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <TexBlock>{String.raw`m_{\text{tangent}} = \frac{-1}{m_{\text{radius}}}`}</TexBlock>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(167,139,250,0.06)", border: "1px solid rgba(167,139,250,0.15)", padding: "12px 14px", color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+              <strong>כלל ברזל:</strong> רדיוס ⊥ משיק בנקודת המשיקות. מכפלת השיפועים תמיד שווה <Tex>{String.raw`-1`}</Tex>.
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "line" && (
+        <motion.div key="line" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(22,163,74,0.25)", background: "rgba(220,252,231,0.4)", padding: 16 }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <TexBlock>{String.raw`y - y_1 = m(x - x_1) \;\Rightarrow\; y = mx + b`}</TexBlock>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px", color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+              <strong>שלבים:</strong>
+              <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                <li>הציבו את שיפוע המשיק ואת נקודת המשיקות.</li>
+                <li>פתחו סוגריים ופשטו לצורה <Tex>{String.raw`y = mx + b`}</Tex>.</li>
+              </ol>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "dist" && (
+        <motion.div key="dist" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+          <div style={{ borderRadius: 12, border: "2px solid rgba(234,88,12,0.3)", background: "rgba(255,251,235,0.6)", padding: 16 }}>
+            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
+              <TexBlock>{String.raw`d = \frac{|ax_0 + by_0 + c|}{\sqrt{a^2 + b^2}}`}</TexBlock>
+            </div>
+            <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.06)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px", color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
+              💡 <strong>להוכחת משיקות:</strong> אם <Tex>{String.raw`d = r`}</Tex> — הישר משיק למעגל. חובה להעביר את הישר לצורה <Tex>{String.raw`ax + by + c = 0`}</Tex> לפני ההצבה.
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -485,8 +586,8 @@ const EXERCISES: ExerciseDef[] = [
         circleColor="#16a34a" tangentColor="#a78bfa" />
     ),
     pitfalls: [
-      { title: "משתמשים בשיפוע הרדיוס כשיפוע המשיק", text: "הרדיוס והמשיק מאונכים זה לזה. שיפוע הרדיוס ל-(3,4) הוא 4/3. שיפוע המשיק הוא ההפכי השלילי: −3/4." },
-      { title: "חישוב ההפכי השלילי: m_tangent = −1/m_radius", text: "תנאי הניצבות: m₁ × m₂ = −1. אם m_radius=4/3, אז m_tangent = −1/(4/3) = −3/4. שוב: לא −4/3 ולא 3/4." },
+      { title: "⚠️ שיפוע הרדיוס ≠ שיפוע המשיק", text: "הרדיוס והמשיק מאונכים זה לזה. אל תשתמש בשיפוע הרדיוס ישירות — חשב את ההפכי השלילי." },
+      { title: "הפכי שלילי — לא סתם מינוס", text: "תנאי הניצבות: m₁ × m₂ = −1. ההפכי השלילי של שבר הוא הפיכת המונה והמכנה + החלפת סימן. שגיאה נפוצה: להפוך רק סימן בלי להפוך את השבר." },
     ],
     goldenPrompt: "\n\nמעגל x²+y²=25 עם מרכז (0,0). נקודת משיקות (3,4). אני צריך: 1. לחשב שיפוע הרדיוס מ-(0,0) ל-(3,4). 2. להשתמש בתנאי ניצבות m₁×m₂=−1 למשיק. 3. לכתוב משוואת המשיק.\nסרוק את התמונה/נתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״",
     steps: [
@@ -505,8 +606,8 @@ const EXERCISES: ExerciseDef[] = [
         circleColor="#ea580c" tangentColor="#a78bfa" />
     ),
     pitfalls: [
-      { title: "שוכחים לזהות נכון את המרכז מהמשוואה", text: "מ-(x-2)²+(y-3)²=25 קוראים מרכז (2,3). טעות נפוצה: לקחת (−2,−3) בגלל הסימן. הסימן מתהפך!" },
-      { title: "משתמשים בשיפוע הרדיוס ישירות במשיק", text: "שיפוע הרדיוס ל-(5,7) הוא 4/3. שיפוע המשיק הוא −3/4 (ניצב). הרדיוס והמשיק שונים לחלוטין." },
+      { title: "⚠️ זיהוי מרכז מהמשוואה הסטנדרטית", text: "בצורה (x−a)²+(y−b)²=r², המרכז הוא (a,b). טעות נפוצה: להחליף את הסימן ולקרוא (−a,−b) במקום (a,b)." },
+      { title: "שיפוע הרדיוס ≠ שיפוע המשיק", text: "הרדיוס והמשיק ניצבים זה לזה. חשב קודם את שיפוע הרדיוס, ואז מצא את ההפכי השלילי — זה שיפוע המשיק." },
     ],
     goldenPrompt: "\n\nמעגל (x-2)²+(y-3)²=25. מצא משוואת המשיק בנקודה (5,7). שלבים: 1. מרכז המעגל? 2. שיפוע הרדיוס ל-(5,7)? 3. שיפוע המשיק (ניצב)? 4. משוואת ישר דרך (5,7).\nסרוק את התמונה/נתונים בלבד.\nאל תמהר, תסביר לי על כל שלב. בסיום הסריקה של הנתונים שהדבקתי, תגיב אך ורק: ״אני מוכן להמשיך.״",
     steps: [
@@ -525,10 +626,12 @@ const EXERCISES: ExerciseDef[] = [
         circleColor="#dc2626" tangentColor="#a78bfa" />
     ),
     pitfalls: [
-      { title: "מנסים לפתור מערכת משוואות במקום להשתמש במרחק", text: "שיטת המרחק מהירה ואלגנטית: d=r → משיק. שיטת ההצבה מורכבת ומסוכנת — קל לטעות." },
-      { title: "טועים בנוסחת המרחק מנקודה לישר", text: "ישר y=x+10 → x−y+10=0. נוסחה: d=|ax₀+by₀+c|/√(a²+b²) = |1·0+(−1)·0+10|/√2 = 10/√2. אל תשכח את הערך המוחלט." },
+      { title: "⚠️ מערכת משוואות במקום נוסחת מרחק", text: "להוכחת משיקות, שיטת המרחק (d = r) מהירה ואלגנטית. שיטת ההצבה מורכבת ומסוכנת — קל לטעות בפתיחת סוגריים." },
+      { title: "שכחת ערך מוחלט או שורש בנוסחת מרחק", text: "בנוסחה d = |ax₀+by₀+c| / √(a²+b²), חובה להעביר את הישר לצורה ax+by+c=0 קודם. אל תשכח את הערך המוחלט במונה ואת השורש במכנה." },
     ],
     goldenPrompt: "\n\n",
+    subjectWords: TANGENT_SUBJECT_WORDS,
+    subjectHint: "משיק / רדיוס / ניצבות / מרחק / מעגל",
     steps: [
       { phase: "א", label: "שלב א׳ — כתוב את הישר בצורת ax+by+c=0", contextWords: ["ישר", "צורה", "מקדמים", "ax+by", "העברה"] },
       { phase: "ב", label: "שלב ב׳ — חשב מרחק מ-(0,0) לישר", contextWords: ["מרחק", "נוסחה", "מרכז", "ישר", "d"] },
@@ -544,11 +647,12 @@ export default function TangentPage() {
   const [activeId, setActiveId] = useState<"basic" | "medium" | "advanced">("basic");
   const ex = EXERCISES.find(e => e.id === activeId)!;
   const st = STATION[activeId];
+  const lvlRgb = activeId === "basic" ? "45,90,39" : activeId === "medium" ? "163,79,38" : "139,38,53";
 
   return (
     <>
       <style>{GLOBAL_CSS}</style>
-      <main dir="rtl" style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px", paddingBottom: "4rem" }}>
+      <main dir="rtl" style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px", paddingBottom: "4rem", ["--lvl-rgb" as string]: lvlRgb }}>
         {/* Header */}
         <div style={{ background: "#F3EFE0", borderBottom: "1px solid rgba(60,54,42,0.15)", marginBottom: "2rem" }}>
           <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
@@ -568,7 +672,11 @@ export default function TangentPage() {
           </div>
         </div>
 
-        <div style={{ margin: "0 auto", padding: "0 1.5rem" }}>
+        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0 1.5rem" }}>
+
+          {/* Sub-topic progress bar */}
+          <SubtopicProgress subtopicId="analytic/tangent" />
+
           {/* Tabs */}
           <div style={{ display: "flex", gap: 8, marginBottom: "1.5rem" }}>
             {TABS.map(tab => {

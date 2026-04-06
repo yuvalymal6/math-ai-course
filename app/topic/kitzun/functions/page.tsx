@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Copy, CheckCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -8,23 +8,8 @@ import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer"
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
 import LabMessage from "@/app/components/LabMessage";
+import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
-import katex from "katex";
-import "katex/dist/katex.min.css";
-
-// ─── KaTeX renderers ─────────────────────────────────────────────────────────
-
-function Tex({ children }: { children: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: false }); }, [children]);
-  return <span ref={ref} dir="ltr" style={{ unicodeBidi: "embed" }} />;
-}
-
-function TexBlock({ children }: { children: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  useEffect(() => { if (ref.current) katex.render(children, ref.current, { throwOnError: false, displayMode: true }); }, [children]);
-  return <span ref={ref} dir="ltr" style={{ display: "block", textAlign: "center", unicodeBidi: "embed" }} />;
-}
 
 // ─── Global CSS ───────────────────────────────────────────────────────────────
 
@@ -79,108 +64,27 @@ const TABS = [
 
 // ─── Formulas ─────────────────────────────────────────────────────────────────
 
-// ─── FormulaBar (interactive clickable tabs with KaTeX) ──────────────────────
+const FORMULAS = [
+  { label: "שטח מלבן",          formula: "A(x) = 2x·f(x)" },
+  { label: "מרחק²",             formula: "D²=(x₁−x₂)²+(y₁−y₂)²" },
+  { label: "קיצון",             formula: "A′(x) = 0" },
+  { label: "נגזרת f(x)=−x²+9", formula: "f′(x) = −2x" },
+];
+
+// ─── FormulaBar ───────────────────────────────────────────────────────────────
 
 function FormulaBar({ accentColor, accentRgb }: { accentColor: string; accentRgb: string }) {
-  const [activeTab, setActiveTab] = useState<"area" | "distance" | "extremum" | "derivative" | null>(null);
-
-  const tabs = [
-    { id: "area" as const, label: "📐 שטח מלבן", tex: String.raw`A = 2x \cdot f(x)`, color: "#16A34A", borderColor: "rgba(22,163,74,0.35)" },
-    { id: "distance" as const, label: "📏 מרחק²", tex: String.raw`D^2`, color: "#EA580C", borderColor: "rgba(234,88,12,0.35)" },
-    { id: "extremum" as const, label: "🎯 קיצון", tex: String.raw`A'(x)=0`, color: "#DC2626", borderColor: "rgba(220,38,38,0.35)" },
-    { id: "derivative" as const, label: "📈 נגזרת", tex: String.raw`f'(x)`, color: "#6366f1", borderColor: "rgba(99,102,241,0.35)" },
-  ];
-
   return (
-    <div style={{ borderRadius: 12, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.5rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
-      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 12, textAlign: "center" }}>נוסחאות</div>
-
-      {/* Tab buttons */}
-      <div style={{ display: "flex", gap: 6, marginBottom: activeTab ? 14 : 0 }}>
-        {tabs.map(t => {
-          const isActive = activeTab === t.id;
-          return (
-            <button
-              key={t.id}
-              onClick={() => setActiveTab(isActive ? null : t.id)}
-              style={{
-                flex: 1, padding: "10px 6px", borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
-                border: `1.5px solid ${isActive ? t.borderColor : `rgba(${accentRgb},0.15)`}`,
-                background: isActive ? `${t.color}0D` : `rgba(${accentRgb},0.03)`,
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-              }}
-            >
-              <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? t.color : "#6B7280" }}>{t.label}</span>
-              <span style={{ color: isActive ? t.color : accentColor }}><Tex>{t.tex}</Tex></span>
-            </button>
-          );
-        })}
+    <div style={{ borderRadius: 16, border: `1px solid rgba(${accentRgb},0.3)`, background: "rgba(255,255,255,0.75)", padding: "1rem 1.25rem", marginBottom: "1.5rem", boxShadow: `0 2px 8px rgba(${accentRgb},0.08)` }}>
+      <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: 10, textAlign: "center" }}>נוסחאות</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem 1.5rem", justifyContent: "center" }}>
+        {FORMULAS.map((f, i) => (
+          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+            <span style={{ color: "#6B7280", fontSize: 10 }}>{f.label}</span>
+            <span style={{ color: accentColor, fontFamily: "monospace", fontWeight: 700, fontSize: 13 }}>{f.formula}</span>
+          </div>
+        ))}
       </div>
-
-      {/* Expanded content */}
-      {activeTab === "area" && (
-        <motion.div key="area" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
-          <div style={{ borderRadius: 12, border: "2px solid rgba(22,163,74,0.25)", background: "rgba(220,252,231,0.4)", padding: 16 }}>
-            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
-              <TexBlock>{String.raw`A(x) = 2x \cdot f(x) = 2x(9 - x^2) = 18x - 2x^3`}</TexBlock>
-            </div>
-            <div style={{ borderRadius: 10, background: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.15)", padding: "12px 14px" }}>
-              <div style={{ color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-                <strong>איך בונים?</strong>
-                <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
-                  <li>הגדירו <Tex>x</Tex> כמחצית הרוחב.</li>
-                  <li>הגובה הוא <Tex>{String.raw`f(x)`}</Tex> — ערך הפונקציה.</li>
-                  <li>שטח = רוחב × גובה = <Tex>{String.raw`2x \cdot f(x)`}</Tex>.</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {activeTab === "distance" && (
-        <motion.div key="distance" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
-          <div style={{ borderRadius: 12, border: "2px solid rgba(234,88,12,0.3)", background: "rgba(255,251,235,0.6)", padding: 16 }}>
-            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
-              <TexBlock>{String.raw`D^2 = (x_1 - x_2)^2 + (y_1 - y_2)^2`}</TexBlock>
-            </div>
-            <div style={{ borderRadius: 10, background: "rgba(234,88,12,0.06)", border: "1px solid rgba(234,88,12,0.15)", padding: "12px 14px", color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-              💡 <strong>טיפ:</strong> ממזערים <Tex>{String.raw`D^2`}</Tex> במקום <Tex>D</Tex> — חוסך שורש ומפשט גזירה.
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {activeTab === "extremum" && (
-        <motion.div key="extremum" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
-          <div style={{ borderRadius: 12, border: "2px solid rgba(220,38,38,0.25)", background: "rgba(254,226,226,0.4)", padding: 16 }}>
-            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
-              <TexBlock>{String.raw`A'(x) = 0 \quad \Rightarrow \quad \text{נקודות חשודות לקיצון}`}</TexBlock>
-            </div>
-            <div style={{ borderRadius: 10, background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.15)", padding: "12px 14px", color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-              <strong>שלבים:</strong>
-              <ol dir="rtl" style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
-                <li>גזרו את <Tex>{String.raw`A(x)`}</Tex>.</li>
-                <li>השוו <Tex>{String.raw`A'(x) = 0`}</Tex> ומצאו <Tex>x</Tex>.</li>
-                <li>בדקו עם <Tex>{String.raw`A''(x)`}</Tex> אם מקסימום או מינימום.</li>
-              </ol>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {activeTab === "derivative" && (
-        <motion.div key="derivative" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
-          <div style={{ borderRadius: 12, border: "2px solid rgba(99,102,241,0.25)", background: "rgba(238,242,255,0.6)", padding: 16 }}>
-            <div dir="ltr" style={{ textAlign: "center", marginBottom: 14 }}>
-              <TexBlock>{String.raw`f(x) = x^n \;\Rightarrow\; f'(x) = n \cdot x^{n-1}`}</TexBlock>
-            </div>
-            <div style={{ borderRadius: 10, background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.15)", padding: "12px 14px", color: "#1A1A1A", fontSize: 12, lineHeight: 2, fontWeight: 500 }}>
-              💡 <strong>דוגמה:</strong> <Tex>{String.raw`f(x) = -x^2 + 9 \;\Rightarrow\; f'(x) = -2x`}</Tex>
-            </div>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 }
@@ -527,7 +431,7 @@ function LadderAdvanced({ ex, accentColor, accentRgb }: { ex: ExerciseDef; accen
 
   return (
     <div>
-      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" subjectWords={ex.subjectWords} subjectHint={ex.subjectHint} />
+      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
 
       {steps.map((s, i) => (
         <div key={i} style={{ marginBottom: 8 }}>
@@ -606,11 +510,11 @@ function ParabolaViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
         {atMax && <span className="text-green-400" style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מקסימום!</span>}
       </div>
       <div className="flex gap-3 justify-center flex-wrap">
-        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
           <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>f(x) = −x² + 9</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <line x1={ox - 8} y1={oy} x2={SW - 6} y2={oy} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
-            <line x1={ox} y1={SH - 4} x2={ox} y2={6} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={ox - 8} y1={oy} x2={SW - 6} y2={oy} stroke="#334155" strokeWidth={1} />
+            <line x1={ox} y1={SH - 4} x2={ox} y2={6} stroke="#334155" strokeWidth={1} />
             <polyline points={parPts.join(" ")} fill="none" stroke="#22c55e" strokeWidth={2} opacity={0.9} />
             <motion.rect
               animate={{ x: rLeft, y: rTop, width: rRight - rLeft, height: rBot - rTop }}
@@ -622,24 +526,24 @@ function ParabolaViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
             <motion.text animate={{ x: rRight + 14, y: oy - y * syL / 2 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               textAnchor="start" fill="#f97316" fontSize={9}>y={y.toFixed(2)}</motion.text>
             <motion.circle animate={{ cx: rRight, cy: rTop }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 5 : 3.5} fill={atMax ? "#22c55e" : "#86efac"} stroke="#fff" strokeWidth={1.5} />
+              r={atMax ? 5 : 3.5} fill={atMax ? "#22c55e" : "#86efac"} stroke="#0f172a" strokeWidth={1.5} />
             <motion.circle animate={{ cx: rLeft, cy: rTop }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 5 : 3.5} fill={atMax ? "#22c55e" : "#86efac"} stroke="#fff" strokeWidth={1.5} />
+              r={atMax ? 5 : 3.5} fill={atMax ? "#22c55e" : "#86efac"} stroke="#0f172a" strokeWidth={1.5} />
           </svg>
         </div>
-        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
           <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>A(x) = 2x(9 − x²)</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <polyline points={aPts.join(" ")} fill="none" stroke="#22c55e" strokeWidth={2} opacity={0.8} />
-            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
-            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#334155" strokeWidth={1} />
+            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="#334155" strokeWidth={1} />
             <circle cx={maxDotX} cy={maxDotY} r={9} fill="#22c55e30" />
             <circle cx={maxDotX} cy={maxDotY} r={5} fill="#22c55e" />
             <text x={maxDotX + 8} y={maxDotY - 6} fill="#22c55e" fontSize={9}>max</text>
             <motion.line animate={{ x1: dotX, x2: dotX }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               y1={SH - CP} y2={CP / 2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
             <motion.circle animate={{ cx: dotX, cy: dotY }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 7 : 5} fill={atMax ? "#22c55e" : "#f97316"} stroke="#fff" strokeWidth={2} />
+              r={atMax ? 7 : 5} fill={atMax ? "#22c55e" : "#f97316"} stroke="#0f172a" strokeWidth={2} />
             <motion.text animate={{ x: dotX + 8, y: Math.max(dotY - 4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               fill={atMax ? "#22c55e" : "#f97316"} fontSize={10}>A={A.toFixed(1)}</motion.text>
           </svg>
@@ -654,7 +558,6 @@ function ParabolaViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
           onChange={e => setX(parseFloat(e.target.value))} className="w-full" style={{ accentColor: "#22c55e" }} />
         <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center" }}>גרור לעבר x = √3 ≈ 1.73 כדי למצוא את המקסימום</p>
       </div>
-      <LabMessage text={`מצוין! מצאת את נקודת המקסימום — שטח A = ${AMax.toFixed(2)} 🎯`} type="success" visible={atMax} />
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
         <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12 }}>
           <p style={{ color: "#94a3b8", marginBottom: 4 }}>רוחב 2x</p>
@@ -714,11 +617,11 @@ function DistanceViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
         {atMin && <span className="text-amber-400" style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מינימום!</span>}
       </div>
       <div className="flex gap-3 justify-center flex-wrap">
-        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
           <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>f(x) = √x עם נקודה (4, 0)</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <line x1={ox - 6} y1={oy} x2={SW - 4} y2={oy} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
-            <line x1={ox} y1={SH - 4} x2={ox} y2={8} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={ox - 6} y1={oy} x2={SW - 4} y2={oy} stroke="#334155" strokeWidth={1} />
+            <line x1={ox} y1={SH - 4} x2={ox} y2={8} stroke="#334155" strokeWidth={1} />
             <polyline points={sqrtPts.join(" ")} fill="none" stroke="#f59e0b" strokeWidth={2.2} opacity={0.9} />
             <motion.line
               animate={{ x1: ax, y1: ay, x2: bx, y2: by }}
@@ -728,30 +631,30 @@ function DistanceViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
             <circle cx={bx} cy={by} r={5} fill="#f43f5e" />
             <text x={bx + 6} y={by - 5} fill="#f43f5e" fontSize={9}>(4, 0)</text>
             <motion.circle animate={{ cx: ax, cy: ay }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMin ? 6 : 4.5} fill={atMin ? "#22c55e" : "#f59e0b"} stroke="#fff" strokeWidth={2} />
+              r={atMin ? 6 : 4.5} fill={atMin ? "#22c55e" : "#f59e0b"} stroke="#0f172a" strokeWidth={2} />
             <motion.text animate={{ x: ax - 6, y: ay - 9 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
               textAnchor="end" fill={atMin ? "#22c55e" : "#f59e0b"} fontSize={9}>t={t.toFixed(2)}</motion.text>
             {[1, 2, 3, 4].map(v => (
               <g key={v}>
-                <line x1={ox + v * sxL} y1={oy - 3} x2={ox + v * sxL} y2={oy + 3} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+                <line x1={ox + v * sxL} y1={oy - 3} x2={ox + v * sxL} y2={oy + 3} stroke="#334155" strokeWidth={1} />
                 <text x={ox + v * sxL} y={oy + 11} textAnchor="middle" fill="#475569" fontSize={8}>{v}</text>
               </g>
             ))}
           </svg>
         </div>
-        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
           <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>D²(t) = t² − 7t + 16</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <polyline points={d2Pts.join(" ")} fill="none" stroke="#f59e0b" strokeWidth={2} opacity={0.8} />
-            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
-            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#334155" strokeWidth={1} />
+            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="#334155" strokeWidth={1} />
             <circle cx={minDotXd} cy={minDotYd} r={9} fill="#22c55e30" />
             <circle cx={minDotXd} cy={minDotYd} r={5} fill="#22c55e" />
             <text x={minDotXd + 8} y={minDotYd - 6} fill="#22c55e" fontSize={9}>min</text>
             <motion.line animate={{ x1: dotXd, x2: dotXd }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               y1={SH - CP} y2={CP / 2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
             <motion.circle animate={{ cx: dotXd, cy: dotYd }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMin ? 7 : 5} fill={atMin ? "#22c55e" : "#f97316"} stroke="#fff" strokeWidth={2} />
+              r={atMin ? 7 : 5} fill={atMin ? "#22c55e" : "#f97316"} stroke="#0f172a" strokeWidth={2} />
             <motion.text animate={{ x: dotXd + 8, y: Math.max(dotYd - 4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               fill={atMin ? "#22c55e" : "#f97316"} fontSize={10}>D²={D2.toFixed(2)}</motion.text>
           </svg>
@@ -766,7 +669,6 @@ function DistanceViz({ levelId }: { levelId: "basic" | "medium" | "advanced" }) 
           onChange={e => setT(parseFloat(e.target.value))} className="w-full" style={{ accentColor: "#f59e0b" }} />
         <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center" }}>גרור לעבר t = 3.5 כדי למצוא את המרחק המינימלי</p>
       </div>
-      <LabMessage text={`מצוין! מצאת את נקודת המינימום — d = ${Math.sqrt(D2Min).toFixed(3)} 🎯`} type="success" visible={atMin} />
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
         <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12 }}>
           <p style={{ color: "#94a3b8", marginBottom: 4 }}>נקודה (t, √t)</p>
@@ -836,11 +738,11 @@ function TwoParabolasViz({ levelId }: { levelId: "basic" | "medium" | "advanced"
         {atMax && <span className="text-rose-400" style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}><Sparkles size={14} />מקסימום!</span>}
       </div>
       <div className="flex gap-3 justify-center flex-wrap">
-        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
           <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>f(x)=x² ו-g(x)=−x²+8</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
-            <line x1={10} y1={oy} x2={SW - 6} y2={oy} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
-            <line x1={ox} y1={SH - 6} x2={ox} y2={6} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={10} y1={oy} x2={SW - 6} y2={oy} stroke="#334155" strokeWidth={1} />
+            <line x1={ox} y1={SH - 6} x2={ox} y2={6} stroke="#334155" strokeWidth={1} />
             <polyline points={gPts.join(" ")} fill="none" stroke="#f43f5e" strokeWidth={2} opacity={0.9} />
             <polyline points={fPts.join(" ")} fill="none" stroke="#3b82f6" strokeWidth={2} opacity={0.9} />
             <text x={ox + 2.0 * sxL + 2} y={oy - (-4 + 8) * syL - 3} fill="#f43f5e" fontSize={8}>g(x)</text>
@@ -855,28 +757,28 @@ function TwoParabolasViz({ levelId }: { levelId: "basic" | "medium" | "advanced"
             <motion.text animate={{ x: rRight + 16, y: (rTop + rBot) / 2 + 4 }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
               textAnchor="start" fill="#f97316" fontSize={8}>h={height.toFixed(2)}</motion.text>
             <motion.circle animate={{ cx: rRight, cy: rTop }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMax ? 5 : 3} fill="#f43f5e" stroke="#fff" strokeWidth={1.5} />
+              r={atMax ? 5 : 3} fill="#f43f5e" stroke="#0f172a" strokeWidth={1.5} />
             <motion.circle animate={{ cx: rLeft, cy: rTop }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMax ? 5 : 3} fill="#f43f5e" stroke="#fff" strokeWidth={1.5} />
+              r={atMax ? 5 : 3} fill="#f43f5e" stroke="#0f172a" strokeWidth={1.5} />
             <motion.circle animate={{ cx: rRight, cy: rBot }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMax ? 5 : 3} fill="#3b82f6" stroke="#fff" strokeWidth={1.5} />
+              r={atMax ? 5 : 3} fill="#3b82f6" stroke="#0f172a" strokeWidth={1.5} />
             <motion.circle animate={{ cx: rLeft, cy: rBot }} transition={{ type: "spring", stiffness: 280, damping: 28 }}
-              r={atMax ? 5 : 3} fill="#3b82f6" stroke="#fff" strokeWidth={1.5} />
+              r={atMax ? 5 : 3} fill="#3b82f6" stroke="#0f172a" strokeWidth={1.5} />
           </svg>
         </div>
-        <div style={{ borderRadius: 12, background: "#fff", border: "1px solid rgba(100,116,139,0.2)", overflow: "hidden" }}>
+        <div style={{ borderRadius: 12, background: "#0f172a", border: "1px solid #334155", overflow: "hidden" }}>
           <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", paddingTop: 8, paddingBottom: 4 }}>A(x) = 2x(8 − 2x²)</p>
           <svg width={SW} height={SH} viewBox={`0 0 ${SW} ${SH}`}>
             <polyline points={aPts.join(" ")} fill="none" stroke="#f43f5e" strokeWidth={2} opacity={0.8} />
-            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
-            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="rgba(100,116,139,0.3)" strokeWidth={1} />
+            <line x1={CP} y1={SH - CP} x2={SW - CP / 2} y2={SH - CP} stroke="#334155" strokeWidth={1} />
+            <line x1={CP} y1={CP / 2} x2={CP} y2={SH - CP} stroke="#334155" strokeWidth={1} />
             <circle cx={maxDotXa} cy={maxDotYa} r={9} fill="#f43f5e30" />
             <circle cx={maxDotXa} cy={maxDotYa} r={5} fill="#f43f5e" />
             <text x={maxDotXa + 8} y={maxDotYa - 6} fill="#f43f5e" fontSize={9}>max</text>
             <motion.line animate={{ x1: dotXa, x2: dotXa }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               y1={SH - CP} y2={CP / 2} stroke="#f97316" strokeWidth={1} strokeDasharray="4,3" />
             <motion.circle animate={{ cx: dotXa, cy: dotYa }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              r={atMax ? 7 : 5} fill={atMax ? "#f43f5e" : "#f97316"} stroke="#fff" strokeWidth={2} />
+              r={atMax ? 7 : 5} fill={atMax ? "#f43f5e" : "#f97316"} stroke="#0f172a" strokeWidth={2} />
             <motion.text animate={{ x: dotXa + 8, y: Math.max(dotYa - 4, 12) }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
               fill={atMax ? "#f43f5e" : "#f97316"} fontSize={10}>A={A.toFixed(2)}</motion.text>
           </svg>
@@ -891,7 +793,6 @@ function TwoParabolasViz({ levelId }: { levelId: "basic" | "medium" | "advanced"
           onChange={e => setX(parseFloat(e.target.value))} className="w-full" style={{ accentColor: "#f43f5e" }} />
         <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center" }}>גרור לעבר x = 2/√3 ≈ 1.15 כדי למצוא את המקסימום</p>
       </div>
-      <LabMessage text={`מצוין! מצאת את נקודת המקסימום — שטח A = ${AMax.toFixed(2)} 🎯`} type="success" visible={atMax} />
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: "1rem", textAlign: "center", fontSize: 12 }}>
         <div style={{ background: "rgba(255,255,255,0.75)", border: "1px solid rgba(100,116,139,0.2)", borderRadius: 12, padding: 12 }}>
           <p style={{ color: "#94a3b8", marginBottom: 4 }}>רוחב 2x</p>
@@ -934,7 +835,7 @@ const exercises: ExerciseDef[] = [
       { phase: "שלב 1", label: "הגדר משתנה ותחום", prompt: "\n\nאני פותר בעיית קיצון: מלבן חסום בפרבולה f(x) = −x² + 9. הנחה אותי לבחור את המשתנה x ולקבוע את תחום ההגדרה. שאל אותי ואל תמשיך לפני שאענה." },
       { phase: "שלב 2", label: "פונקציית שטח",     prompt: "\n\nרוחב = 2x, גובה = 9 − x². תסביר לי כיצד לכתוב את פונקציית השטח ולפרוס אותה. שאל אם אני יודע מה השטח של מלבן." },
       { phase: "שלב 3", label: "גזור ומצא קיצון",  prompt: "\n\nA(x) = 18x − 2x³. כיצד לגזור ולמצוא נקודת קיצון? הנחה אותי שלב אחרי שלב ואל תיתן את x המדויק." },
-      { phase: "שלב 4", label: "חשב שטח מקסימלי", prompt: "\n\nמצאתי את ה-x שנותן מקסימום. הנחה אותי לחשב את הרוחב, הגובה, ואת השטח המקסימלי. אל תפתור בשבילי — שאל אותי מה הערכים." },
+      { phase: "שלב 4", label: "חשב שטח מקסימלי", prompt: "\n\nx = √3. הנחה אותי לחשב A(√3), רוחב = 2√3 וגובה = 9 − 3. מה השטח המקסימלי?" },
     ],
   },
   {
@@ -1050,9 +951,6 @@ export default function KitzunFunctionsPage() {
       </div>
 
       <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2rem 1rem 5rem" }}>
-
-        {/* Sub-topic progress bar */}
-        <SubtopicProgress subtopicId="kitzun/functions" />
 
         {/* Tab selector */}
         <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>

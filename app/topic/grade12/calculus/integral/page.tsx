@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Check, Copy, CheckCircle, Lock } from "lucide-react";
+import { Check, Copy, CheckCircle2, Lock, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
 import LabMessage from "@/app/components/LabMessage";
-import { useDefaultToast } from "@/app/lib/useDefaultToast";
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 import katex from "katex";
 import "katex/dist/katex.min.css";
@@ -70,10 +69,10 @@ const STATION = {
   advanced: { stationName: "תחנה שלישית", badge: "מתקדם",  badgeCls: "bg-red-700 text-white",    glowBorder: "rgba(220,38,38,0.35)",  glowShadow: "0 4px 16px rgba(220,38,38,0.12)",  glowRgb: "220,38,38",  accentColor: "#DC2626", borderHex: "#8B2635", borderRgb: "139,38,53"  },
 } as const;
 
-const TABS: { id: "basic" | "medium" | "advanced"; label: string }[] = [
-  { id: "basic",    label: "תחנה א׳ — מתחיל" },
-  { id: "medium",   label: "תחנה ב׳ — בינוני" },
-  { id: "advanced", label: "תחנה ג׳ — מתקדם" },
+const TABS = [
+  { id: "basic" as const,    label: "מתחיל",  textColor: "text-green-700",   border: "border-green-600",   bg: "bg-green-600/10",   glowColor: "rgba(22,163,74,0.3)"   },
+  { id: "medium" as const,   label: "בינוני", textColor: "text-orange-700",  border: "border-orange-600",  bg: "bg-orange-600/10",  glowColor: "rgba(234,88,12,0.3)"   },
+  { id: "advanced" as const, label: "מתקדם",  textColor: "text-red-700",     border: "border-red-700",     bg: "bg-red-700/10",     glowColor: "rgba(220,38,38,0.3)"   },
 ];
 
 // ─── FormulaBar ──────────────────────────────────────────────────────────────
@@ -305,7 +304,7 @@ function TutorStepBasic({ step, glowRgb = "16,185,129", borderRgb = "45,90,39" }
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid rgba(${glowRgb},0.25)` }}>
         <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>
         <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
-        {done && <CheckCircle size={14} color="#34d399" style={{ marginRight: "auto" }} />}
+        {done && <CheckCircle2 size={14} color="#34d399" style={{ marginRight: "auto" }} />}
       </div>
       <div style={{ background: "rgba(255,255,255,0.4)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
@@ -351,7 +350,7 @@ function TutorStepMedium({ step, locked = false, onPass, borderRgb = "45,90,39" 
   return (
     <div style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${passed ? "rgba(22,163,74,0.55)" : `rgba(${borderRgb},0.35)`}`, marginBottom: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.75)", borderBottom: `1px solid rgba(${borderRgb},0.2)` }}>
-        {passed ? <CheckCircle size={14} color="#34d399" /> : <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
+        {passed ? <CheckCircle2 size={14} color="#34d399" /> : <span style={{ color: "#1A1A1A", fontSize: 11, fontWeight: 700 }}>{step.phase}</span>}
         <span style={{ color: "#2D3436", fontSize: 11, fontWeight: 600 }}>{step.label}</span>
       </div>
       <div style={{ background: "rgba(255,255,255,0.4)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
@@ -407,6 +406,7 @@ function LadderBase({ ex }: { ex: ExerciseDef }) {
   };
   return (
     <div>
+      <GoldenPromptCard prompt={ex.goldenPrompt} borderRgb={st.borderRgb} />
       {steps.map((s, i) => (
         <div key={i} id={`basic-step-${i}`}>
           {i < unlocked ? (
@@ -460,7 +460,8 @@ function LadderAdvanced({ ex }: { ex: ExerciseDef }) {
 
   return (
     <div>
-      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור" />
+      <MasterPromptGate onPass={() => setMasterPassed(true)} accentColor="#991b1b" accentRgb="153,27,27" requiredPhrase="סרוק נתונים ועצור"
+        subjectWords={["אינטגרל", "שטח", "פרמטר", "ln", "לוגריתם", "גבולות", "הצבה"]} />
       {steps.map((s, i) => (
         <div key={i} style={{ marginBottom: 8 }}>
           {(!masterPassed || i >= unlockedCount) ? (
@@ -644,7 +645,7 @@ const exercises: ExerciseDef[] = [
 export default function IntegralPage() {
   const [selectedLevel, setSelectedLevel] = useState<"basic" | "medium" | "advanced">("basic");
   const ex = exercises.find(e => e.id === selectedLevel)!;
-  const lvlRgb = selectedLevel === "basic" ? "45,90,39" : selectedLevel === "medium" ? "163,79,38" : "139,38,53";
+  const lvlRgb = selectedLevel === "basic" ? "22,163,74" : selectedLevel === "medium" ? "234,88,12" : "220,38,38";
   const st = STATION[selectedLevel];
 
   return (
@@ -659,9 +660,9 @@ export default function IntegralPage() {
             <p style={{ color: "#64748b", fontSize: 13, margin: "3px 0 0" }}>אינטגרל מסוים, שטחים כלואים ופרמטרים</p>
           </div>
           <Link href="/topic/grade12/calculus"
-            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#4A4A4A", border: "1px solid #333", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#FFFFFF", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#2D2D2D"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#4A4A4A"; }}>
+            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(148,163,184,0.1)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#2D3436", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.15s" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.2)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(148,163,184,0.1)"; }}>
             <span style={{ fontSize: 16 }}>←</span>חזרה
           </Link>
         </div>
@@ -673,68 +674,71 @@ export default function IntegralPage() {
         <SubtopicProgress subtopicId="grade12/calculus/integral" />
 
         {/* Tab selector */}
-        <div style={{ display: "flex", gap: 8, marginBottom: "1.5rem" }}>
+        <div className="flex gap-1 rounded-xl p-1 mb-8" style={{ background: "rgba(255,255,255,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(60,54,42,0.15)" }}>
           {TABS.map(tab => {
-            const s = STATION[tab.id];
             const active = selectedLevel === tab.id;
             return (
               <button key={tab.id} onClick={() => setSelectedLevel(tab.id)}
-                style={{ flex: 1, padding: "10px 8px", borderRadius: 12, cursor: "pointer", fontWeight: 700, fontSize: 13,
-                  border: "2px solid", borderColor: active ? s.accentColor : "rgba(100,116,139,0.2)",
-                  background: active ? `rgba(${s.glowRgb},0.1)` : "rgba(255,255,255,0.6)",
-                  color: active ? s.accentColor : "#64748b", boxShadow: active ? s.glowShadow : "none", transition: "all 0.2s" }}>
+                className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-semibold transition-all duration-200 ${active ? `${tab.bg} border ${tab.border} ${tab.textColor}` : "text-slate-500 hover:text-slate-300"}`}
+                style={active ? { boxShadow: `0 0 14px ${tab.glowColor}` } : undefined}>
                 {tab.label}
               </button>
             );
           })}
         </div>
 
+        {/* FormulaBar — before exercise */}
+        <FormulaBar />
+
         {/* Exercise section */}
+        <motion.div key={selectedLevel} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
         <section style={{ border: `1px solid ${st.glowBorder}`, borderRadius: 24, padding: "2.5rem", background: "rgba(255,255,255,0.82)", boxShadow: st.glowShadow, marginBottom: "2rem" }}>
 
           {/* Badge + title */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1.5rem" }}>
-            <span className={`text-xs font-bold px-3 py-1 rounded-full ${st.badgeCls}`}>{st.badge}</span>
-            <span style={{ fontSize: 20, fontWeight: 800, color: "#1A1A1A" }}>{ex.title}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: "2rem" }}>
+            <span className={`text-sm font-black px-4 py-1.5 rounded-full shrink-0 ${st.badgeCls}`}>{st.badge}</span>
+            <span style={{ fontSize: 20, fontWeight: 800, color: "#2D3436" }}>{st.stationName}</span>
           </div>
-
-          {/* FormulaBar */}
-          <FormulaBar />
+          <div style={{ height: 1, background: "rgba(60,54,42,0.15)", marginBottom: "2rem" }} />
 
           {/* Diagram */}
-          <div style={{ borderRadius: 16, border: "1px solid rgba(100,116,139,0.2)", background: "rgba(255,255,255,0.6)", padding: 12, marginBottom: "1.5rem" }}>
+          <div style={{ borderRadius: 16, border: `1px solid ${st.glowBorder}`, background: "rgba(255,255,255,0.75)", padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "2rem", boxShadow: st.glowShadow }}>
             {ex.diagram}
           </div>
 
           {/* Problem */}
-          <div style={{ borderRadius: 16, border: `1px solid rgba(${st.borderRgb},0.35)`, background: "rgba(255,255,255,0.75)", padding: "1.25rem", marginBottom: "1.25rem" }}>
-            <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 12 }}>📝 השאלה</div>
-            <pre style={{ color: "#1A1A1A", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
+          <div style={{ borderRadius: 16, border: `1px solid rgba(${st.borderRgb},0.35)`, background: "rgba(255,255,255,0.6)", padding: "1.5rem", marginBottom: "2rem" }}>
+            <div style={{ color: "#6B7280", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 12 }}>&#128221; השאלה</div>
+            <pre style={{ color: "#2D3436", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{ex.problem}</pre>
           </div>
 
           {/* Pitfalls */}
-          <div style={{ marginBottom: "1.5rem" }}>
-            <div style={{ color: "#DC2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>⚠️ שגיאות נפוצות</div>
+          <div style={{ marginBottom: "2rem" }}>
+            <div style={{ color: "#dc2626", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>&#9888;&#65039; שגיאות נפוצות</div>
             {ex.pitfalls.map((p, i) => (
-              <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.2)", background: "rgba(220,38,38,0.05)", padding: "0.85rem 1rem", marginBottom: 8 }}>
-                <div style={{ color: "#DC2626", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>{p.title}</div>
+              <div key={i} style={{ borderRadius: 12, border: "1px solid rgba(220,38,38,0.25)", background: "rgba(254,226,226,0.25)", padding: "0.85rem 1rem", marginBottom: 8 }}>
+                <div style={{ color: "#b91c1c", fontWeight: 600, fontSize: 14, marginBottom: p.text ? 4 : 0 }}>{p.title}</div>
                 {p.text && <div style={{ color: "#2D3436", fontSize: 13.5, lineHeight: 1.65 }}>{p.text}</div>}
               </div>
             ))}
           </div>
 
           {/* Ladder */}
-          {selectedLevel === "basic"    && <LadderBase     ex={ex} />}
-          {selectedLevel === "medium"   && <LadderMedium   ex={ex} />}
+          <div style={{ borderRadius: 16, border: `1px solid ${st.glowBorder}`, background: "rgba(255,255,255,0.7)", padding: "1.25rem", boxShadow: st.glowShadow }}>
+            <div style={{ color: "#2D3436", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>&#129504; מדריך הפרומפטים</div>
+            {selectedLevel === "basic"    && <LadderBase     ex={ex} />}
+            {selectedLevel === "medium"   && <LadderMedium   ex={ex} />}
+          </div>
           {selectedLevel === "advanced" && <LadderAdvanced  ex={ex} />}
         </section>
+        </motion.div>
 
         {/* Lab */}
         <IntegralLab />
 
         {/* Mark as complete */}
         <div style={{ marginTop: "1.5rem" }}>
-          <MarkComplete subtopicId="/grade12/calculus/integral" level={selectedLevel} />
+          <MarkComplete subtopicId="grade12/calculus/integral" level={selectedLevel} />
         </div>
       </div>
     </main>

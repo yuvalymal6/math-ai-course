@@ -30,18 +30,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "פרטים שגויים" }, { status: 401 });
   }
 
-  // Fetch saved grade from profiles table
+  // Fetch saved grade and units from profiles table
   let savedGrade: string | null = null;
+  let savedUnits: string | null = null;
   if (userId && userId !== "admin-local") {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("grade")
+      .select("grade, units")
       .eq("id", userId)
       .single();
     savedGrade = profile?.grade || null;
+    savedUnits = profile?.units ? String(profile.units) : null;
   }
 
-  const res = NextResponse.json({ ok: true, userId, grade: savedGrade });
+  const res = NextResponse.json({ ok: true, userId, grade: savedGrade, units: savedUnits });
 
   // Set auth cookie
   res.cookies.set("math-auth", userId!, {
@@ -53,6 +55,15 @@ export async function POST(req: NextRequest) {
   // If grade already saved, set cookie so proxy skips onboarding
   if (savedGrade) {
     res.cookies.set("math-grade", savedGrade, {
+      path: "/",
+      maxAge: 2592000,
+      sameSite: "lax",
+    });
+  }
+
+  // If units already saved, set cookie so proxy skips units selection
+  if (savedUnits) {
+    res.cookies.set("math-units", savedUnits, {
       path: "/",
       maxAge: 2592000,
       sameSite: "lax",

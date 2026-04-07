@@ -33,12 +33,17 @@ export default function LoginPage() {
         return;
       }
 
-      // If grade already saved in Supabase, go straight to dashboard
-      if (data.grade) {
-        try { localStorage.setItem("math-grade", data.grade); } catch {}
-        router.push("/");
-      } else {
+      // Sync saved values to localStorage
+      if (data.grade) { try { localStorage.setItem("math-grade", data.grade); } catch {} }
+      if (data.units) { try { localStorage.setItem("math-units", String(data.units)); } catch {} }
+
+      // Route based on what's missing
+      if (!data.grade) {
         router.push("/onboarding");
+      } else if (!data.units) {
+        router.push("/onboarding/units");
+      } else {
+        router.push("/");
       }
       router.refresh();
     } catch {

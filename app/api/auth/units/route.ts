@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabaseClient";
 
-const VALID_UNITS = [3, 4, 5];
+const VALID_UNITS = ["3", "4", "5"];
 
 export async function POST(req: NextRequest) {
   const { units } = await req.json();
   const userId = req.cookies.get("math-auth")?.value;
+  const unitsStr = String(units);
 
-  if (!VALID_UNITS.includes(units)) {
+  if (!VALID_UNITS.includes(unitsStr)) {
     return NextResponse.json({ error: "יחידות לא תקינות" }, { status: 400 });
   }
 
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     await supabase
       .from("profiles")
       .upsert(
-        { id: userId, units, updated_at: new Date().toISOString() },
+        { id: userId, units: unitsStr, updated_at: new Date().toISOString() },
         { onConflict: "id" }
       );
   }
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
   const res = NextResponse.json({ ok: true });
 
   // Also set cookie for middleware
-  res.cookies.set("math-units", String(units), {
+  res.cookies.set("math-units", unitsStr, {
     path: "/",
     maxAge: 2592000,
     sameSite: "lax",

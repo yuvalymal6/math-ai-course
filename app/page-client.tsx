@@ -253,30 +253,30 @@ const TOPICS_3U: Record<string, typeof TOPICS_3U_10> = {
   "12": TOPICS_3U_12,
 };
 
-// ─── 5-unit topics (coming soon) ──────────────────────────────────────────────
+// ─── 5-unit topics ───────────────────────────────────────────────────────────
 
 const TOPICS_5U_10 = [
-  { id: "5u-10-analytic", title: "גיאומטריה אנליטית", subtitle: "ישר, מעגל, אליפסה והיפרבולה", icon: Circle, color: { bg: "bg-orange-950/40", border: "border-orange-800/50", accent: "text-orange-400", icon: "bg-orange-900/60 text-orange-300" } },
-  { id: "5u-10-geo", title: "גיאומטריה", subtitle: "הוכחות, חפיפה ודמיון", icon: Triangle, color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300" } },
-  { id: "5u-10-preanalysis", title: "קדם אנליזה", subtitle: "גבולות, רציפות והתכנסות", icon: TrendingUp, color: { bg: "bg-blue-950/40", border: "border-blue-800/50", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300" } },
-  { id: "5u-10-trigfunc", title: "פונקציות טריגונומטריות", subtitle: "sin, cos, tan כפונקציות מעגליות", icon: Compass, color: { bg: "bg-amber-950/40", border: "border-amber-800/50", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300" } },
-  { id: "5u-10-trigplane", title: "טריגונומטריה במישור", subtitle: "משפט הסינוסים, קוסינוסים ושטחים", icon: Triangle, color: { bg: "bg-purple-950/40", border: "border-purple-800/50", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300" } },
+  { id: "5u-10-analytic", title: "גיאומטריה אנליטית", subtitle: "ישר, מעגל, אליפסה והיפרבולה", icon: Circle, href: "/5u/topic/grade10/analytic", subtopicLinks: [{ label: "יסודות", href: "/5u/topic/grade10/analytic" }, { label: "ישר ומשוואתו", href: "/5u/topic/grade10/analytic" }, { label: "מעגל", href: "/5u/topic/grade10/analytic" }], color: { bg: "bg-orange-950/40", border: "border-orange-800/50", hover: "hover:border-orange-500/70 hover:shadow-[0_0_32px_rgba(249,115,22,0.18)]", accent: "text-orange-400", icon: "bg-orange-900/60 text-orange-300", bar: "bg-orange-500", badge: "bg-orange-900/60 text-orange-300 border-orange-700/50" } },
+  { id: "5u-10-geo", title: "גיאומטריה", subtitle: "הוכחות, חפיפה ודמיון", icon: Triangle, href: "/5u/topic/grade10/geometry", subtopicLinks: [{ label: "משולשים וחפיפה", href: "/5u/topic/grade10/geometry" }, { label: "דמיון ושטחים", href: "/5u/topic/grade10/geometry" }], color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", hover: "hover:border-emerald-500/70 hover:shadow-[0_0_32px_rgba(52,211,153,0.18)]", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300", bar: "bg-emerald-500", badge: "bg-emerald-900/60 text-emerald-300 border-emerald-700/50" } },
+  { id: "5u-10-preanalysis", title: "קדם אנליזה", subtitle: "גבולות, רציפות והתכנסות", icon: TrendingUp, href: "/5u/topic/grade10/pre-calculus", subtopicLinks: [{ label: "גבולות", href: "/5u/topic/grade10/pre-calculus" }, { label: "רציפות", href: "/5u/topic/grade10/pre-calculus" }], color: { bg: "bg-blue-950/40", border: "border-blue-800/50", hover: "hover:border-blue-500/70 hover:shadow-[0_0_32px_rgba(59,130,246,0.18)]", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300", bar: "bg-blue-500", badge: "bg-blue-900/60 text-blue-300 border-blue-700/50" } },
+  { id: "5u-10-trigfunc", title: "פונקציות טריגונומטריות", subtitle: "sin, cos, tan כפונקציות מעגליות", icon: Compass, href: "/5u/topic/grade10/trig-functions", subtopicLinks: [{ label: "פונקציות מעגליות", href: "/5u/topic/grade10/trig-functions" }, { label: "זהויות טריגונומטריות", href: "/5u/topic/grade10/trig-functions" }], color: { bg: "bg-amber-950/40", border: "border-amber-800/50", hover: "hover:border-amber-500/70 hover:shadow-[0_0_32px_rgba(245,158,11,0.18)]", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300", bar: "bg-amber-500", badge: "bg-amber-900/60 text-amber-300 border-amber-700/50" } },
+  { id: "5u-10-trigplane", title: "טריגונומטריה במישור", subtitle: "משפט הסינוסים, קוסינוסים ושטחים", icon: Triangle, href: "/5u/topic/grade10/trig-plane", subtopicLinks: [{ label: "סינוסים וקוסינוסים", href: "/5u/topic/grade10/trig-plane" }, { label: "שטחים", href: "/5u/topic/grade10/trig-plane" }], color: { bg: "bg-purple-950/40", border: "border-purple-800/50", hover: "hover:border-purple-500/70 hover:shadow-[0_0_32px_rgba(168,85,247,0.18)]", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300", bar: "bg-purple-500", badge: "bg-purple-900/60 text-purple-300 border-purple-700/50" } },
 ];
 
 const TOPICS_5U_11 = [
-  { id: "5u-11-calculus", title: 'חדו"א ואינטגרל', subtitle: "נגזרות, חקירה, אינטגרלים ושטחים", icon: TrendingUp, color: { bg: "bg-blue-950/40", border: "border-blue-800/50", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300" } },
-  { id: "5u-11-series", title: "סדרות", subtitle: "חשבוניות, הנדסיות וכלל נסיגה", icon: Sigma, color: { bg: "bg-amber-950/40", border: "border-amber-800/50", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300" } },
-  { id: "5u-11-prob", title: "הסתברות", subtitle: "הסתברות מותנית, בייס ותמורות", icon: PieChart, color: { bg: "bg-purple-950/40", border: "border-purple-800/50", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300" } },
-  { id: "5u-11-geotrig", title: "גיאומטריה וטריגו", subtitle: "גיאומטריה מרחבית וטריגונומטריה", icon: Triangle, color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300" } },
-  { id: "5u-11-advanalytic", title: "גיאומטריה אנליטית מתקדמת", subtitle: "חרוטים, מקומות גיאומטריים", icon: Circle, color: { bg: "bg-indigo-950/40", border: "border-indigo-800/50", accent: "text-indigo-400", icon: "bg-indigo-900/60 text-indigo-300" } },
+  { id: "5u-11-calculus", title: 'חדו"א ואינטגרל', subtitle: "נגזרות, חקירה, אינטגרלים ושטחים", icon: TrendingUp, href: "/5u/topic/grade11/calculus", subtopicLinks: [{ label: "פונקציות רציונליות ושורש", href: "/5u/topic/grade11/calculus" }, { label: "חקירה מלאה", href: "/5u/topic/grade11/calculus" }, { label: "אינטגרל ושטח", href: "/5u/topic/grade11/calculus" }], color: { bg: "bg-blue-950/40", border: "border-blue-800/50", hover: "hover:border-blue-500/70 hover:shadow-[0_0_32px_rgba(59,130,246,0.18)]", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300", bar: "bg-blue-500", badge: "bg-blue-900/60 text-blue-300 border-blue-700/50" } },
+  { id: "5u-11-series", title: "סדרות", subtitle: "חשבוניות, הנדסיות וכלל נסיגה", icon: Sigma, href: "/5u/topic/grade11/series", subtopicLinks: [{ label: "סדרה חשבונית והנדסית", href: "/5u/topic/grade11/series" }, { label: "אינדוקציה מתמטית", href: "/5u/topic/grade11/series" }], color: { bg: "bg-amber-950/40", border: "border-amber-800/50", hover: "hover:border-amber-500/70 hover:shadow-[0_0_32px_rgba(245,158,11,0.18)]", accent: "text-amber-400", icon: "bg-amber-900/60 text-amber-300", bar: "bg-amber-500", badge: "bg-amber-900/60 text-amber-300 border-amber-700/50" } },
+  { id: "5u-11-prob", title: "הסתברות", subtitle: "הסתברות מותנית, בייס ותמורות", icon: PieChart, href: "/5u/topic/grade11/probability", subtopicLinks: [{ label: "הסתברות בסיסית ועצמאות", href: "/5u/topic/grade11/probability" }, { label: "הסתברות מותנית ובייס", href: "/5u/topic/grade11/probability" }], color: { bg: "bg-purple-950/40", border: "border-purple-800/50", hover: "hover:border-purple-500/70 hover:shadow-[0_0_32px_rgba(168,85,247,0.18)]", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300", bar: "bg-purple-500", badge: "bg-purple-900/60 text-purple-300 border-purple-700/50" } },
+  { id: "5u-11-geo", title: "גיאומטריה", subtitle: "מעגלים, משולשים ומרובעים", icon: Triangle, href: "/5u/topic/grade11/geometry", subtopicLinks: [{ label: "מעגלים", href: "/5u/topic/grade11/geometry" }, { label: "משולשים ומרובעים", href: "/5u/topic/grade11/geometry" }], color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", hover: "hover:border-emerald-500/70 hover:shadow-[0_0_32px_rgba(52,211,153,0.18)]", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300", bar: "bg-emerald-500", badge: "bg-emerald-900/60 text-emerald-300 border-emerald-700/50" } },
+  { id: "5u-11-trig", title: "טריגונומטריה", subtitle: "סינוסים, קוסינוסים ושטחים", icon: Compass, href: "/5u/topic/grade11/trig", subtopicLinks: [{ label: "משפט הסינוסים והקוסינוסים", href: "/5u/topic/grade11/trig" }, { label: "שטחים ובעיות כלליות", href: "/5u/topic/grade11/trig" }], color: { bg: "bg-indigo-950/40", border: "border-indigo-800/50", hover: "hover:border-indigo-500/70 hover:shadow-[0_0_32px_rgba(99,102,241,0.18)]", accent: "text-indigo-400", icon: "bg-indigo-900/60 text-indigo-300", bar: "bg-indigo-500", badge: "bg-indigo-900/60 text-indigo-300 border-indigo-700/50" } },
 ];
 
 const TOPICS_5U_12 = [
-  { id: "5u-12-analytic", title: "גיאומטריה אנליטית", subtitle: "ישר, מעגל, משיק ואליפסה", icon: Circle, color: { bg: "bg-orange-950/40", border: "border-orange-800/50", accent: "text-orange-400", icon: "bg-orange-900/60 text-orange-300" } },
-  { id: "5u-12-vectors", title: "וקטורים במרחב", subtitle: "מכפלה סקלרית, וקטורית ומישורים", icon: Share2, color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300" } },
-  { id: "5u-12-complex", title: "מספרים מרוכבים", subtitle: "צורה קרטזית, טריגונומטרית ודה-מואבר", icon: Calculator, color: { bg: "bg-purple-950/40", border: "border-purple-800/50", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300" } },
-  { id: "5u-12-explog", title: "פונקציות מעריכיות ולוגריתמיות", subtitle: "eˣ, ln x, חקירה ויישומים", icon: TrendingUp, color: { bg: "bg-blue-950/40", border: "border-blue-800/50", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300" } },
-  { id: "5u-12-growth", title: "גדילה ודעיכה", subtitle: "מודלים מעריכיים, ריבית וחצי חיים", icon: LineChart, color: { bg: "bg-rose-950/40", border: "border-rose-800/50", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300" } },
+  { id: "5u-12-analytic", title: "גיאומטריה אנליטית", subtitle: "ישר, מעגל, משיק ואליפסה", icon: Circle, href: "/5u/topic/grade12/analytic", subtopicLinks: [{ label: "מעגל ואליפסה", href: "/5u/topic/grade12/analytic" }, { label: "מקומות גיאומטריים", href: "/5u/topic/grade12/analytic" }], color: { bg: "bg-orange-950/40", border: "border-orange-800/50", hover: "hover:border-orange-500/70 hover:shadow-[0_0_32px_rgba(249,115,22,0.18)]", accent: "text-orange-400", icon: "bg-orange-900/60 text-orange-300", bar: "bg-orange-500", badge: "bg-orange-900/60 text-orange-300 border-orange-700/50" } },
+  { id: "5u-12-vectors", title: "וקטורים במרחב", subtitle: "מכפלה סקלרית, וקטורית ומישורים", icon: Share2, href: "/5u/topic/grade12/vectors", subtopicLinks: [{ label: "וקטורים בסיסיים", href: "/5u/topic/grade12/vectors" }, { label: "פירמידה ומרחב", href: "/5u/topic/grade12/vectors" }], color: { bg: "bg-emerald-950/40", border: "border-emerald-800/50", hover: "hover:border-emerald-500/70 hover:shadow-[0_0_32px_rgba(52,211,153,0.18)]", accent: "text-emerald-400", icon: "bg-emerald-900/60 text-emerald-300", bar: "bg-emerald-500", badge: "bg-emerald-900/60 text-emerald-300 border-emerald-700/50" } },
+  { id: "5u-12-complex", title: "מספרים מרוכבים", subtitle: "צורה קרטזית, טריגונומטרית ודה-מואבר", icon: Calculator, href: "/5u/topic/grade12/complex", subtopicLinks: [{ label: "צורה אלגברית", href: "/5u/topic/grade12/complex" }, { label: "צורה טריגונומטרית", href: "/5u/topic/grade12/complex" }], color: { bg: "bg-purple-950/40", border: "border-purple-800/50", hover: "hover:border-purple-500/70 hover:shadow-[0_0_32px_rgba(168,85,247,0.18)]", accent: "text-purple-400", icon: "bg-purple-900/60 text-purple-300", bar: "bg-purple-500", badge: "bg-purple-900/60 text-purple-300 border-purple-700/50" } },
+  { id: "5u-12-explog", title: "פונקציות מעריכיות ולוגריתמיות", subtitle: "eˣ, ln x, חקירה ויישומים", icon: TrendingUp, href: "/5u/topic/grade12/exponential", subtopicLinks: [{ label: "חקירת פונקציה מעריכית", href: "/5u/topic/grade12/exponential" }, { label: "חקירת פונקציה לוגריתמית", href: "/5u/topic/grade12/exponential" }], color: { bg: "bg-blue-950/40", border: "border-blue-800/50", hover: "hover:border-blue-500/70 hover:shadow-[0_0_32px_rgba(59,130,246,0.18)]", accent: "text-blue-400", icon: "bg-blue-900/60 text-blue-300", bar: "bg-blue-500", badge: "bg-blue-900/60 text-blue-300 border-blue-700/50" } },
+  { id: "5u-12-growth", title: "גדילה ודעיכה", subtitle: "מודלים מעריכיים, ריבית וחצי חיים", icon: LineChart, href: "/5u/topic/grade12/growth-decay", subtopicLinks: [{ label: "מודלים מעריכיים", href: "/5u/topic/grade12/growth-decay" }, { label: "חצי חיים וריבית", href: "/5u/topic/grade12/growth-decay" }], color: { bg: "bg-rose-950/40", border: "border-rose-800/50", hover: "hover:border-rose-500/70 hover:shadow-[0_0_32px_rgba(244,63,94,0.18)]", accent: "text-rose-400", icon: "bg-rose-900/60 text-rose-300", bar: "bg-rose-500", badge: "bg-rose-900/60 text-rose-300 border-rose-700/50" } },
 ];
 
 const TOPICS_5U: Record<string, typeof TOPICS_5U_10> = {
@@ -372,7 +372,7 @@ function TopicCard({ topic }: { topic: typeof TOPICS[number] & { href?: string }
           <Icon size={20} />
         </div>
         <span className={`text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border ${c.badge}`}>
-          {topic.id.startsWith("3u-") ? "3" : "4"} יח&quot;ל
+          {topic.id.startsWith("3u-") ? "3" : topic.id.startsWith("5u-") ? "5" : "4"} יח&quot;ל
         </span>
       </div>
 
@@ -670,25 +670,7 @@ export default function Dashboard({ initialGrade, initialUsername, initialUnits 
             {initialUnits === "3" ? (
               comingSoonTopics.map(t => <TopicCard key={t.id} topic={t as typeof TOPICS[number]} />)
             ) : initialUnits === "5" ? (
-              comingSoonTopics.map(t => {
-                const Icon = t.icon;
-                return (
-                  <div key={t.id} className={`rounded-2xl border ${t.color.border} ${t.color.bg} p-4 sm:p-5 opacity-50 cursor-not-allowed select-none`}>
-                    <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-xl ${t.color.icon} flex items-center justify-center shrink-0`}>
-                        <Icon size={18} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <h3 className={`font-bold text-base ${t.color.accent}`}>{t.title}</h3>
-                          <span className="text-[10px] text-slate-500 border border-slate-700 rounded px-2 py-0.5">בקרוב</span>
-                        </div>
-                        <p className="text-slate-500 text-xs leading-relaxed">{t.subtitle}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
+              comingSoonTopics.map(t => <TopicCard key={t.id} topic={t as typeof TOPICS[number]} />)
             ) : (
               gradeTopics.map(t => <TopicCard key={t.id} topic={t} />)
             )}

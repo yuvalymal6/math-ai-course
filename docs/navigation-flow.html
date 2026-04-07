@@ -16,6 +16,8 @@ h1{text-align:center;font-size:1.5rem;padding-top:1.2rem;color:#fff}
 .filters button[data-f="g10"].active{background:rgba(52,211,153,.15);border-color:#34d399;color:#6ee7b7}
 .filters button[data-f="g11"].active{background:rgba(96,165,250,.15);border-color:#60a5fa;color:#93c5fd}
 .filters button[data-f="g12"].active{background:rgba(244,114,182,.15);border-color:#f472b6;color:#f9a8d4}
+.filters button[data-f="u3"].active{background:rgba(251,146,60,.15);border-color:#fb923c;color:#fdba74}
+.filters button[data-f="u5"].active{background:rgba(34,211,238,.15);border-color:#22d3ee;color:#67e8f9}
 .canvas-wrap{width:100%;overflow:auto;padding:0 1rem 2rem}
 svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;pointer-events:none}
 .nd{cursor:pointer}
@@ -39,12 +41,14 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-ser
 </head>
 <body>
 <h1>מפת ניווט — מתמטיקה + AI</h1>
-<p class="sub">38 נתיבים | לחצו על כל קופסה לפרטים</p>
+<p class="sub">70 נתיבים | לחצו על כל קופסה לפרטים</p>
 <div class="filters">
   <button data-f="sys" class="active" onclick="toggle('sys')">מערכת</button>
-  <button data-f="g10" class="active" onclick="toggle('g10')">כיתה י</button>
-  <button data-f="g11" class="active" onclick="toggle('g11')">כיתה יא</button>
-  <button data-f="g12" class="active" onclick="toggle('g12')">כיתה יב</button>
+  <button data-f="g10" class="active" onclick="toggle('g10')">כיתה י (4יח)</button>
+  <button data-f="g11" class="active" onclick="toggle('g11')">כיתה יא (4יח)</button>
+  <button data-f="g12" class="active" onclick="toggle('g12')">כיתה יב (4יח)</button>
+  <button data-f="u3" class="active" onclick="toggle('u3')">3 יח״ל</button>
+  <button data-f="u5" class="active" onclick="toggle('u5')">5 יח״ל</button>
 </div>
 <div class="canvas-wrap"><svg id="svg"></svg></div>
 
@@ -106,7 +110,41 @@ g12_gr:{t:"גדילה ודעיכה",r:"/topic/grade12/growth-decay",d:"N(t)=N0*a
 g12_cl:{t:"Hub חדו\"א יב",r:"/topic/grade12/calculus",d:"e^x, ln, אינטגרלים.",i:["/"],o:["exponential","ln","integral"]},
 g12_ex:{t:"e^x",r:"/topic/grade12/calculus/exponential",d:"(e^x)'=e^x, חקירה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
 g12_ln:{t:"ln(x)",r:"/topic/grade12/calculus/ln",d:"נגזרת ln, תחום, חקירה. 3 רמות.",i:["calculus","/"],o:["calculus"]},
-g12_it:{t:"אינטגרלים",r:"/topic/grade12/calculus/integral",d:"אינטגרל, שטח, נפח סיבוב. 3 רמות.",i:["calculus","/"],o:["calculus"]}
+g12_it:{t:"אינטגרלים",r:"/topic/grade12/calculus/integral",d:"אינטגרל, שטח, נפח סיבוב. 3 רמות.",i:["calculus","/"],o:["calculus"]},
+// ── 3 יחידות ──
+u3_g10_stats:{t:"סטטיסטיקה (3יח י)",r:"/3u/topic/grade10/statistics",d:"ממוצע, חציון, דיאגרמות, שכיחויות.",i:["/"],o:["/"]},
+u3_g10_prob:{t:"הסתברות (3יח י)",r:"/3u/topic/grade10/probability",d:"הסתברות בסיסית, חיתוך ואיחוד, מותנית.",i:["/"],o:["/"]},
+u3_g10_geo:{t:"גיאומטריה (3יח י)",r:"/3u/topic/grade10/geometry",d:"משולשים, מרובעים, דמיון, שטח.",i:["/"],o:["/"]},
+u3_g10_graphs:{t:"גרפים (3יח י)",r:"/3u/topic/grade10/graphs",d:"פונקציה לינארית, ריבועית, קריאת גרפים.",i:["/"],o:["/"]},
+u3_g10_word:{t:"בעיות מילוליות (3יח י)",r:"/3u/topic/grade10/word-problems",d:"תרגום מילולי, משוואות מהקשר.",i:["/"],o:["/"]},
+u3_g11_growth:{t:"גדילה ודעיכה (3יח יא)",r:"/3u/topic/grade11/growth-decay",d:"גדילה באחוז קבוע, דעיכה, חצי חיים.",i:["/"],o:["/"]},
+u3_g11_prob:{t:"הסתברות (3יח יא)",r:"/3u/topic/grade11/probability",d:"הסתברות מותנית ובייס.",i:["/"],o:["/"]},
+u3_g11_geo:{t:"גיאומטריה (3יח יא)",r:"/3u/topic/grade11/geometry",d:"חפיפה ודמיון.",i:["/"],o:["/"]},
+u3_g11_trig:{t:"טריגונומטריה (3יח יא)",r:"/3u/topic/grade11/trig",d:"משפט הסינוסים והקוסינוסים.",i:["/"],o:["/"]},
+u3_g11_stats:{t:"סטטיסטיקה (3יח יא)",r:"/3u/topic/grade11/statistics",d:"התפלגות נורמלית, ציון תקן.",i:["/"],o:["/"]},
+u3_g11_linear:{t:"אלגברה לינארית (3יח יא)",r:"/3u/topic/grade11/linear-algebra",d:"מערכת משוואות ומטריצות.",i:["/"],o:["/"]},
+u3_g12_lp:{t:"תכנון לינארי (3יח יב)",r:"/3u/topic/grade12/linear-programming",d:"אילוצים, תחום אפשרי, פונקציית מטרה.",i:["/"],o:["/"]},
+u3_g12_analytic:{t:"אנליטית (3יח יב)",r:"/3u/topic/grade12/analytic",d:"ישר, מעגל ומשיק.",i:["/"],o:["/"]},
+u3_g12_stats:{t:"סטטיסטיקה (3יח יב)",r:"/3u/topic/grade12/statistics",d:"התפלגות נורמלית וז-סקור.",i:["/"],o:["/"]},
+u3_g12_parabola:{t:"פרבולה (3יח יב)",r:"/3u/topic/grade12/parabola",d:"קודקוד, מוקד, דירקטריסה.",i:["/"],o:["/"]},
+u3_g12_spatial:{t:"ראייה מרחבית (3יח יב)",r:"/3u/topic/grade12/spatial",d:"חתכים, היטלים ופריסות.",i:["/"],o:["/"]},
+u3_g12_solids:{t:"גופים במרחב (3יח יב)",r:"/3u/topic/grade12/solid-geometry",d:"נפח ושטח פנים של גופים.",i:["/"],o:["/"]},
+// ── 5 יחידות ──
+u5_g10_analytic:{t:"אנליטית (5יח י)",r:"/5u/topic/grade10/analytic",d:"ישר, מעגל, אליפסה והיפרבולה.",i:["/"],o:["/"]},
+u5_g10_geo:{t:"גיאומטריה (5יח י)",r:"/5u/topic/grade10/geometry",d:"הוכחות, חפיפה ודמיון.",i:["/"],o:["/"]},
+u5_g10_precalc:{t:"קדם אנליזה (5יח י)",r:"/5u/topic/grade10/pre-calculus",d:"גבולות, רציפות והתכנסות.",i:["/"],o:["/"]},
+u5_g10_trigfunc:{t:"פונקציות טריגו (5יח י)",r:"/5u/topic/grade10/trig-functions",d:"sin, cos, tan כפונקציות מעגליות.",i:["/"],o:["/"]},
+u5_g10_trigplane:{t:"טריגו במישור (5יח י)",r:"/5u/topic/grade10/trig-plane",d:"סינוסים, קוסינוסים ושטחים.",i:["/"],o:["/"]},
+u5_g11_calc:{t:'חדו"א (5יח יא)',r:"/5u/topic/grade11/calculus",d:"פונקציות רציונליות ושורש, חקירה מלאה, אינטגרל.",i:["/"],o:["/"]},
+u5_g11_series:{t:"סדרות (5יח יא)",r:"/5u/topic/grade11/series",d:"סדרה חשבונית והנדסית, אינדוקציה.",i:["/"],o:["/"]},
+u5_g11_prob:{t:"הסתברות (5יח יא)",r:"/5u/topic/grade11/probability",d:"הסתברות בסיסית ועצמאות, מותנית ובייס.",i:["/"],o:["/"]},
+u5_g11_geo:{t:"גיאומטריה (5יח יא)",r:"/5u/topic/grade11/geometry",d:"מעגלים, משולשים ומרובעים.",i:["/"],o:["/"]},
+u5_g11_trig:{t:"טריגונומטריה (5יח יא)",r:"/5u/topic/grade11/trig",d:"סינוסים, קוסינוסים, שטחים ובעיות.",i:["/"],o:["/"]},
+u5_g12_analytic:{t:"אנליטית (5יח יב)",r:"/5u/topic/grade12/analytic",d:"מעגל ואליפסה, מקומות גיאומטריים.",i:["/"],o:["/"]},
+u5_g12_vectors:{t:"וקטורים (5יח יב)",r:"/5u/topic/grade12/vectors",d:"וקטורים בסיסיים, פירמידה ומרחב.",i:["/"],o:["/"]},
+u5_g12_complex:{t:"מרוכבים (5יח יב)",r:"/5u/topic/grade12/complex",d:"צורה אלגברית, צורה טריגונומטרית.",i:["/"],o:["/"]},
+u5_g12_exp:{t:"מעריכיות ולוג (5יח יב)",r:"/5u/topic/grade12/exponential",d:"חקירת פונקציה מעריכית ולוגריתמית.",i:["/"],o:["/"]},
+u5_g12_growth:{t:"גדילה ודעיכה (5יח יב)",r:"/5u/topic/grade12/growth-decay",d:"מודלים מעריכיים, חצי חיים וריבית.",i:["/"],o:["/"]}
 };
 
 // ── Tree definitions per group ──
@@ -132,6 +170,16 @@ g12: {root:"home", children:[
   {id:"g12_sp", children:[{id:"g12_bx"},{id:"g12_py"}]},
   {id:"g12_gr"},
   {id:"g12_cl", children:[{id:"g12_ex"},{id:"g12_ln"},{id:"g12_it"}]}
+]},
+u3: {root:"home", children:[
+  {id:"u3_g10_stats"},{id:"u3_g10_prob"},{id:"u3_g10_geo"},{id:"u3_g10_graphs"},{id:"u3_g10_word"},
+  {id:"u3_g11_growth"},{id:"u3_g11_prob"},{id:"u3_g11_geo"},{id:"u3_g11_trig"},{id:"u3_g11_stats"},{id:"u3_g11_linear"},
+  {id:"u3_g12_lp"},{id:"u3_g12_analytic"},{id:"u3_g12_stats"},{id:"u3_g12_parabola"},{id:"u3_g12_spatial"},{id:"u3_g12_solids"}
+]},
+u5: {root:"home", children:[
+  {id:"u5_g10_analytic"},{id:"u5_g10_geo"},{id:"u5_g10_precalc"},{id:"u5_g10_trigfunc"},{id:"u5_g10_trigplane"},
+  {id:"u5_g11_calc"},{id:"u5_g11_series"},{id:"u5_g11_prob"},{id:"u5_g11_geo"},{id:"u5_g11_trig"},
+  {id:"u5_g12_analytic"},{id:"u5_g12_vectors"},{id:"u5_g12_complex"},{id:"u5_g12_exp"},{id:"u5_g12_growth"}
 ]}
 };
 
@@ -139,7 +187,9 @@ const COLORS = {
   sys: {hub:"#475569",hubBg:"#1e293b",node:"#334155",nodeBg:"#0f172a",line:"#475569",text:"#cbd5e1"},
   g10: {hub:"#34d399",hubBg:"#064e3b",node:"#10b981",nodeBg:"#022c22",line:"#059669",text:"#a7f3d0"},
   g11: {hub:"#60a5fa",hubBg:"#1e3a5f",node:"#3b82f6",nodeBg:"#0c1e3d",line:"#2563eb",text:"#bfdbfe"},
-  g12: {hub:"#f472b6",hubBg:"#701a4e",node:"#ec4899",nodeBg:"#3b0727",line:"#db2777",text:"#fbcfe8"}
+  g12: {hub:"#f472b6",hubBg:"#701a4e",node:"#ec4899",nodeBg:"#3b0727",line:"#db2777",text:"#fbcfe8"},
+  u3:  {hub:"#fb923c",hubBg:"#7c2d12",node:"#f97316",nodeBg:"#431407",line:"#ea580c",text:"#fdba74"},
+  u5:  {hub:"#22d3ee",hubBg:"#164e63",node:"#06b6d4",nodeBg:"#083344",line:"#0891b2",text:"#67e8f9"}
 };
 
 // ── Layout engine ──
@@ -205,17 +255,17 @@ function maxDepth(item, d=0) {
 }
 
 // ── Render ──
-let activeFilters = new Set(["sys","g10","g11","g12"]);
+let activeFilters = new Set(["sys","g10","g11","g12","u3","u5"]);
 
 function render() {
   const svg = document.getElementById("svg");
   let parts = [];
   let offsetY = 0;
 
-  const groupLabels = {sys:"מערכת", g10:"כיתה י", g11:"כיתה יא", g12:"כיתה יב"};
+  const groupLabels = {sys:"מערכת", g10:"כיתה י (4יח)", g11:"כיתה יא (4יח)", g12:"כיתה יב (4יח)", u3:"3 יחידות", u5:"5 יחידות"};
   let maxW = 0;
 
-  for (const gk of ["sys","g10","g11","g12"]) {
+  for (const gk of ["sys","g10","g11","g12","u3","u5"]) {
     if (!activeFilters.has(gk)) continue;
     const tree = TREES[gk];
     const col = COLORS[gk];

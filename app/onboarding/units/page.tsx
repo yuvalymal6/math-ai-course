@@ -32,10 +32,11 @@ const UNITS = [
     label: "5 יחידות",
     description: "חדו״א מורחב, אינדוקציה, מרוכבים, גיאומטריה מרחבית מתקדמת",
     color: "from-violet-500/20 to-purple-500/20",
-    border: "border-violet-500/30",
+    border: "border-violet-500/30 hover:border-violet-400/60",
+    glow: "hover:shadow-[0_0_30px_rgba(139,92,246,0.15)]",
     accent: "text-violet-400",
     iconBg: "bg-violet-900/50",
-    ready: false,
+    ready: true,
   },
 ];
 

@@ -4,9 +4,9 @@ import Link from "next/link";
 import { Dice5, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
-  { id: "basic", symbol: "P", title: "הסתברות בסיסית", description: "הגדרת הסתברות, מרחב מדגם, אירוע — חישוב הסתברות פשוטה", color: "#16A34A", ready: false },
-  { id: "events", symbol: "\u2229", title: "חיתוך ואיחוד", description: "אירועים זרים, אירועים משלימים, חיתוך ואיחוד — P(A\u222AB) ו-P(A\u2229B)", color: "#EA580C", ready: false },
-  { id: "conditional", symbol: "P|", title: "הסתברות מותנית", description: "P(A|B) — הסתברות בהינתן מידע נוסף, נוסחת בייס הבסיסית", color: "#DC2626", ready: false },
+  { id: "basic", symbol: "P", title: "הסתברות בסיסית", description: "הגדרת הסתברות, מרחב מדגם, אירוע — חישוב הסתברות פשוטה", color: "#16A34A", ready: true },
+  { id: "events", symbol: "\u2229", title: "חיתוך ואיחוד", description: "אירועים זרים, אירועים משלימים, חיתוך ואיחוד — P(A\u222AB) ו-P(A\u2229B)", color: "#EA580C", ready: true },
+  { id: "conditional", symbol: "P|", title: "הסתברות מותנית", description: "P(A|B) — הסתברות בהינתן מידע נוסף, נוסחת בייס הבסיסית", color: "#DC2626", ready: true },
 ];
 
 export default function Probability3UHub() {

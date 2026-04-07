@@ -4,10 +4,10 @@ import Link from "next/link";
 import { Triangle, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
-  { id: "triangles", symbol: "\u25B3", title: "משולשים", description: "סוגי משולשים, סכום זוויות, חישוב שטח והיקף, משפטי חפיפה", color: "#16A34A", ready: false },
-  { id: "quadrilaterals", symbol: "\u25A1", title: "מרובעים", description: "מקבילית, מלבן, מעוין, ריבוע, טרפז — תכונות, שטח והיקף", color: "#7c3aed", ready: false },
-  { id: "similarity", symbol: "\u223C", title: "דמיון", description: "משולשים דומים, יחס דמיון, משפטי דמיון (ז.ז., צ.ז.צ., צ.צ.צ.)", color: "#EA580C", ready: false },
-  { id: "area", symbol: "S", title: "שטח והיקף", description: "נוסחאות שטח למשולש, מרובע, עיגול — ושילובים מורכבים", color: "#DC2626", ready: false },
+  { id: "triangles", symbol: "\u25B3", title: "משולשים", description: "סוגי משולשים, סכום זוויות, חישוב שטח והיקף, משפטי חפיפה", color: "#16A34A", ready: true },
+  { id: "quadrilaterals", symbol: "\u25A1", title: "מרובעים", description: "מקבילית, מלבן, מעוין, ריבוע, טרפז — תכונות, שטח והיקף", color: "#7c3aed", ready: true },
+  { id: "similarity", symbol: "\u223C", title: "דמיון", description: "משולשים דומים, יחס דמיון, משפטי דמיון (ז.ז., צ.ז.צ., צ.צ.צ.)", color: "#EA580C", ready: true },
+  { id: "area", symbol: "S", title: "שטח והיקף", description: "נוסחאות שטח למשולש, מרובע, עיגול — ושילובים מורכבים", color: "#DC2626", ready: true },
 ];
 
 export default function Geometry3UHub() {

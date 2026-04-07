@@ -4,8 +4,8 @@ import Link from "next/link";
 import { FileText, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
-  { id: "translation", symbol: "→", title: "תרגום מילולי", description: "תרגום בעיה מילולית לביטוי אלגברי — זיהוי נעלמים, בניית משוואה", color: "#16A34A", ready: false },
-  { id: "equations", symbol: "=", title: "משוואות מהקשר", description: "בניית משוואות מתוך הקשר מילולי — גילאים, מחירים, מרחקים", color: "#EA580C", ready: false },
+  { id: "translation", symbol: "→", title: "תרגום מילולי", description: "תרגום בעיה מילולית לביטוי אלגברי — זיהוי נעלמים, בניית משוואה", color: "#16A34A", ready: true },
+  { id: "equations", symbol: "=", title: "משוואות מהקשר", description: "בניית משוואות מתוך הקשר מילולי — גילאים, מחירים, מרחקים", color: "#EA580C", ready: true },
 ];
 
 export default function WordProblems3UHub() {

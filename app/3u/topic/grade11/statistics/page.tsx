@@ -1,22 +1,48 @@
 "use client";
+
 import Link from "next/link";
-import { Brain, ChevronRight, BarChart2, Bell } from "lucide-react";
+import { BarChart3, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
-  { id: "descriptive", href: "/3u/topic/grade11/statistics/descriptive", icon: BarChart2, title: "מדדי מרכז ופיזור", subtitle: "ממוצע • חציון • סטיית תקן • שונות", description: "חישוב ממוצע, חציון ושכיח, סטיית תקן ושונות, והשוואת התפלגויות.", chips: ["x̄", "σ", "חציון", "שכיח"], ready: true, glowAnim: true, iconBg: "bg-blue-500/10", iconBorder: "border-blue-500/30", iconText: "text-blue-400", hoverBorder: "hover:border-blue-500/50", badgeBg: "bg-blue-500/10 border-blue-500/30", badgeText: "text-blue-400", chevronHover: "group-hover:text-blue-400" },
-  { id: "normal", href: "/3u/topic/grade11/statistics/normal", icon: Bell, title: "התפלגות נורמלית", subtitle: "עקום פעמון • ציון תקן • טבלת Z", description: "הכרת ההתפלגות הנורמלית, חישוב הסתברויות בעזרת טבלת Z, וכלל 68-95-99.7.", chips: ["Z = (x−μ)/σ", "68-95-99.7", "P(Z<z)"], ready: true, glowAnim: false, iconBg: "bg-sky-500/10", iconBorder: "border-sky-500/30", iconText: "text-sky-400", hoverBorder: "hover:border-sky-500/50", badgeBg: "bg-sky-500/10 border-sky-500/30", badgeText: "text-sky-400", chevronHover: "group-hover:text-sky-400" },
-] as const;
+  { id: "descriptive", symbol: "x̄", title: "מדדי מרכז ופיזור", description: "ממוצע, חציון, שכיח, סטיית תקן ושונות — חישוב והשוואת התפלגויות", color: "#16A34A", ready: true },
+  { id: "normal", symbol: "Z", title: "התפלגות נורמלית", description: "עקום פעמון, ציון תקן Z, טבלת Z, כלל 68-95-99.7", color: "#EA580C", ready: true },
+];
 
 export default function StatisticsHub3u() {
   return (
-    <div className="min-h-screen bg-[#0a0f1e] text-white" dir="rtl">
-      <style>{`@keyframes fadeSlideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0)}50%{box-shadow:0 0 20px 5px rgba(59,130,246,0.13)}}.card-hover{transition:transform .18s ease,border-color .18s ease}.card-hover:hover{transform:translateY(-3px)}`}</style>
-      <header className="bg-[#0f172a] border-b border-slate-800 sticky top-0 z-10"><div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between"><Link href="/" className="flex items-center gap-2 hover:opacity-75 transition-opacity"><Brain size={20} className="text-[#00d4ff]" /><span className="font-bold text-white text-sm">מתמטיקה + AI</span></Link><Link href="/" className="text-slate-400 hover:text-slate-200 text-sm transition-colors flex items-center gap-1"><ChevronRight size={14} className="rotate-180" />כיתה י״א • 3 יח&quot;ל</Link></div></header>
-      <main className="max-w-2xl mx-auto px-4 py-14 space-y-10">
-        <div className="text-center space-y-3 animate-[fadeSlideIn_0.4s_ease_both]"><p className="text-blue-400 text-xs font-semibold uppercase tracking-widest">כיתה י״א • 3 יח&quot;ל</p><h1 className="text-4xl font-extrabold">סטטיסטיקה</h1><p className="text-slate-400 text-sm">ממוצע • חציון • סטיית תקן • התפלגות נורמלית</p></div>
-        <div className="grid gap-5 animate-[fadeSlideIn_0.5s_ease_both]">{SUBTOPICS.map(sub=>{const Icon=sub.icon;return(<Link key={sub.id} href={sub.href} className={`card-hover block bg-[#0f172a] border border-slate-700 ${sub.hoverBorder} rounded-2xl p-6 group`} style={sub.glowAnim?{animation:"pulseGlow 3s ease-in-out infinite"}:undefined}><div className="flex items-start gap-5"><div className={`w-12 h-12 rounded-xl ${sub.iconBg} border ${sub.iconBorder} flex items-center justify-center shrink-0`}><Icon size={22} className={sub.iconText}/></div><div className="flex-1 min-w-0"><div className="flex items-center justify-between mb-0.5"><h2 className="text-white font-bold text-xl">{sub.title}</h2><span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${sub.badgeBg} ${sub.badgeText}`}>תרגול</span></div><p className={`text-xs font-medium mb-2 ${sub.iconText}`}>{sub.subtitle}</p><p className="text-slate-400 text-sm leading-relaxed mb-3">{sub.description}</p><div className="flex flex-wrap gap-2">{sub.chips.map(c=><span key={c} className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400">{c}</span>)}</div></div><ChevronRight size={18} className={`text-slate-600 ${sub.chevronHover} transition-colors shrink-0 mt-1`}/></div></Link>)})}</div>
-        <div className="border-t border-slate-800 pt-6 flex justify-center"><Link href="/" style={{display:"flex",alignItems:"center",gap:6,padding:"8px 14px",background:"#4A4A4A",border:"1px solid #333",borderRadius:10,fontSize:14,fontWeight:600,color:"#FFFFFF",textDecoration:"none"}} onMouseEnter={e=>{(e.currentTarget as HTMLAnchorElement).style.background="#2D2D2D"}} onMouseLeave={e=>{(e.currentTarget as HTMLAnchorElement).style.background="#4A4A4A"}}><span style={{fontSize:16}}>←</span>חזרה</Link></div>
-      </main>
-    </div>
+    <main dir="rtl" style={{ minHeight: "100vh", background: "#F3EFE0", backgroundImage: "radial-gradient(rgba(60,54,42,0.07) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
+      <div style={{ borderBottom: "1px solid rgba(60,54,42,0.15)", background: "#F3EFE0" }}>
+        <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "0.9rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <BarChart3 size={22} color="#16A34A" />
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#2D3436", margin: 0 }}>סטטיסטיקה</h1>
+          </div>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(148,163,184,0.1)", border: "1px solid rgba(60,54,42,0.15)", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#2D3436", textDecoration: "none" }}>
+            <ChevronLeft size={16} />חזרה
+          </Link>
+        </div>
+      </div>
+      <div style={{ maxWidth: "56rem", margin: "0 auto", padding: "2.5rem 1rem 5rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+          <p style={{ color: "#6B7280", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>כיתה י״א • 3 יח״ל</p>
+          <p style={{ color: "#2D3436", fontSize: 16, fontWeight: 500 }}>ממוצע, חציון, סטיית תקן, התפלגות נורמלית — ואיך לשאול AI את השאלות הנכונות</p>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {SUBTOPICS.map(s => (
+            <div key={s.id} style={{ borderRadius: 20, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.75rem", opacity: s.ready ? 1 : 0.6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{ width: 52, height: 52, borderRadius: 14, background: `${s.color}15`, border: `1.5px solid ${s.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, color: s.color, fontFamily: "serif", flexShrink: 0 }}>{s.symbol}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                    <h2 style={{ fontSize: 18, fontWeight: 700, color: "#2D3436", margin: 0 }}>{s.title}</h2>
+                  </div>
+                  <p style={{ color: "#6B7280", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{s.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
   );
 }

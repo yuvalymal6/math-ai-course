@@ -4,9 +4,9 @@ import Link from "next/link";
 import { Compass, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
-  { id: "basics", symbol: "sin", title: "sin, cos, tan", description: "יחסות טריגונומטריות במשולש ישר-זווית, זוויות מיוחדות (30°, 45°, 60°)", color: "#EA580C", ready: true },
-  { id: "laws", symbol: "a/A", title: "משפט סינוסים וקוסינוסים", description: "פתרון משולש כללי — a/sinA = b/sinB, a² = b²+c²−2bc·cosA", color: "#16A34A", ready: true },
-  { id: "area", symbol: "S", title: "שטח משולש", description: "S = ½ab·sinC — חישוב שטח בעזרת שתי צלעות והזווית שביניהן", color: "#7c3aed", ready: true },
+  { id: "basics", href: "/3u/topic/grade11/trig/basic", symbol: "sin", title: "sin, cos, tan", description: "יחסות טריגונומטריות במשולש ישר-זווית, זוויות מיוחדות (30°, 45°, 60°)", color: "#EA580C", ready: true },
+  { id: "laws", href: "/3u/topic/grade11/trig/laws", symbol: "a/A", title: "משפט סינוסים וקוסינוסים", description: "פתרון משולש כללי — a/sinA = b/sinB, a² = b²+c²−2bc·cosA", color: "#16A34A", ready: false },
+  { id: "area", href: "/3u/topic/grade11/trig/area", symbol: "S", title: "שטח משולש", description: "S = ½ab·sinC — חישוב שטח בעזרת שתי צלעות והזווית שביניהן", color: "#7c3aed", ready: false },
 ];
 
 export default function TrigHub3u() {
@@ -29,19 +29,26 @@ export default function TrigHub3u() {
           <p style={{ color: "#2D3436", fontSize: 16, fontWeight: 500 }}>sin / cos / tan, סינוסים, קוסינוסים — ואיך לשאול AI את השאלות הנכונות</p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {SUBTOPICS.map(s => (
-            <div key={s.id} style={{ borderRadius: 20, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.75rem", opacity: s.ready ? 1 : 0.6 }}>
+          {SUBTOPICS.map(s => {
+            const inner = (
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                 <div style={{ width: 52, height: 52, borderRadius: 14, background: `${s.color}15`, border: `1.5px solid ${s.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, color: s.color, fontFamily: "serif", flexShrink: 0 }}>{s.symbol}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
                     <h2 style={{ fontSize: 18, fontWeight: 700, color: "#2D3436", margin: 0 }}>{s.title}</h2>
+                    {!s.ready && <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 99, background: "rgba(100,116,139,0.1)", border: "1px solid rgba(100,116,139,0.2)", color: "#6B7280" }}>בקרוב</span>}
                   </div>
                   <p style={{ color: "#6B7280", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{s.description}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+            const cardStyle = { borderRadius: 20, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.75rem", opacity: s.ready ? 1 : 0.6, textDecoration: "none" as const };
+            return s.ready ? (
+              <Link key={s.id} href={s.href} style={cardStyle}>{inner}</Link>
+            ) : (
+              <div key={s.id} style={{ ...cardStyle, cursor: "not-allowed" }}>{inner}</div>
+            );
+          })}
         </div>
       </div>
     </main>

@@ -5,7 +5,7 @@ import { TrendingUp, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
   { id: "growth", href: "/3u/topic/grade11/growth-decay/exponential", symbol: "↑", title: "גדילה באחוז קבוע", description: "מודל גדילה מעריכי N = N₀·qᵗ כאשר q > 1 — ריבית, אוכלוסייה, זמן הכפלה", color: "#16A34A", ready: true },
-  { id: "decay", href: "/3u/topic/grade11/growth-decay/decay", symbol: "↓", title: "דעיכה באחוז קבוע", description: "מודל דעיכה N = N₀·qᵗ כאשר q < 1 — פחת, חצי חיים, ריכוז יורד", color: "#EA580C", ready: false },
+  { id: "decay", href: "/3u/topic/grade11/growth-decay/decay", symbol: "↓", title: "דעיכה באחוז קבוע", description: "מודל דעיכה N = N₀·qᵗ כאשר q < 1 — פחת, חצי חיים, ריכוז יורד", color: "#EA580C", ready: true },
 ];
 
 export default function GrowthDecayHub3u() {

@@ -5,7 +5,7 @@ import { Dice5, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
   { id: "basic", href: "/3u/topic/grade11/probability/basic", symbol: "P", title: "הסתברות בסיסית", description: "מרחב מדגם, אירועים, חיתוך ואיחוד — P(A∪B) ו-P(A∩B)", color: "#7c3aed", ready: true },
-  { id: "conditional", href: "/3u/topic/grade11/probability/conditional", symbol: "P|", title: "הסתברות מותנית", description: "P(A|B), עצי הסתברות, נוסחת בייס — חישוב עם מידע נוסף", color: "#EA580C", ready: false },
+  { id: "conditional", href: "/3u/topic/grade11/probability/conditional", symbol: "P|", title: "הסתברות מותנית", description: "P(A|B), עצי הסתברות, נוסחת בייס — חישוב עם מידע נוסף", color: "#EA580C", ready: true },
 ];
 
 export default function ProbabilityHub3u() {

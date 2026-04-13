@@ -4,8 +4,8 @@ import Link from "next/link";
 import { FileText, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
-  { id: "translation", symbol: "→", title: "תרגום מילולי", description: "תרגום בעיה מילולית לביטוי אלגברי — זיהוי נעלמים, בניית משוואה", color: "#16A34A", ready: true },
-  { id: "equations", symbol: "=", title: "משוואות מהקשר", description: "בניית משוואות מתוך הקשר מילולי — גילאים, מחירים, מרחקים", color: "#EA580C", ready: true },
+  { id: "translation", href: "/3u/topic/grade10/word-problems/translation", symbol: "→", title: "תרגום מילולי", description: "תרגום בעיה מילולית לביטוי אלגברי — זיהוי נעלמים, בניית משוואה", color: "#16A34A", ready: true },
+  { id: "equations", href: "/3u/topic/grade10/word-problems/equations", symbol: "=", title: "משוואות מהקשר", description: "בניית משוואות מתוך הקשר מילולי — גילאים, מחירים, מרחקים", color: "#EA580C", ready: false },
 ];
 
 export default function WordProblems3UHub() {
@@ -30,8 +30,8 @@ export default function WordProblems3UHub() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {SUBTOPICS.map(s => (
-            <div key={s.id} style={{ borderRadius: 20, border: `1px solid rgba(60,54,42,0.15)`, background: "rgba(255,255,255,0.82)", padding: "1.75rem", opacity: s.ready ? 1 : 0.6 }}>
+          {SUBTOPICS.map(s => {
+            const inner = (
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                 <div style={{ width: 52, height: 52, borderRadius: 14, background: `${s.color}15`, border: `1.5px solid ${s.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, color: s.color, fontFamily: "serif", flexShrink: 0 }}>{s.symbol}</div>
                 <div style={{ flex: 1 }}>
@@ -42,8 +42,14 @@ export default function WordProblems3UHub() {
                   <p style={{ color: "#6B7280", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{s.description}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+            const cardStyle = { borderRadius: 20, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.75rem", opacity: s.ready ? 1 : 0.6, textDecoration: "none" as const };
+            return s.ready ? (
+              <Link key={s.id} href={s.href} style={cardStyle}>{inner}</Link>
+            ) : (
+              <div key={s.id} style={{ ...cardStyle, cursor: "not-allowed" }}>{inner}</div>
+            );
+          })}
         </div>
       </div>
     </main>

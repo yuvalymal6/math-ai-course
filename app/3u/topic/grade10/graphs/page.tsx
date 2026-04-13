@@ -6,7 +6,7 @@ import { TrendingUp, ChevronLeft } from "lucide-react";
 const SUBTOPICS = [
   { id: "linear", href: "/3u/topic/grade10/graphs/linear", symbol: "y=mx", title: "פונקציה לינארית", description: "משוואת ישר, שיפוע וחיתוך עם הצירים — y = mx + b", color: "#16A34A", ready: true },
   { id: "quadratic", href: "/3u/topic/grade10/graphs/quadratic", symbol: "x\u00B2", title: "פונקציה ריבועית", description: "פרבולה, קדקוד, ציר סימטריה, נקודות חיתוך — y = ax\u00B2 + bx + c", color: "#EA580C", ready: true },
-  { id: "reading", href: "/3u/topic/grade10/graphs/reading", symbol: "\u2197", title: "קריאת גרפים", description: "זיהוי תחום, טווח, תחומי עלייה/ירידה, נקודות מיוחדות מתוך גרף נתון", color: "#7c3aed", ready: false },
+  { id: "reading", href: "/3u/topic/grade10/graphs/reading", symbol: "\u2197", title: "קריאת גרפים", description: "זיהוי תחום, טווח, תחומי עלייה/ירידה, נקודות מיוחדות מתוך גרף נתון", color: "#7c3aed", ready: true },
 ];
 
 export default function Graphs3UHub() {

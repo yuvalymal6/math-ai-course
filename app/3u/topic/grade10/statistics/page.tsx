@@ -4,9 +4,9 @@ import Link from "next/link";
 import { BarChart3, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
-  { id: "mean-median", symbol: "x\u0304", title: "ממוצע וחציון", description: "חישוב ממוצע, חציון ושכיח — מתי כל מדד מייצג את הנתונים הכי טוב?", color: "#16A34A", ready: true },
-  { id: "diagrams", symbol: "\u25A0", title: "דיאגרמות", description: "היסטוגרמה, דיאגרמת עוגה, דיאגרמת עמודות — ייצוג חזותי של נתונים", color: "#EA580C", ready: true },
-  { id: "frequency", symbol: "f", title: "טבלת שכיחויות", description: "טבלת שכיחויות, שכיחות יחסית, שכיחות מצטברת — קריאה ובנייה", color: "#7c3aed", ready: true },
+  { id: "mean-median", href: "/3u/topic/grade10/statistics/mean-median", symbol: "x\u0304", title: "ממוצע וחציון", description: "חישוב ממוצע, חציון ושכיח — מתי כל מדד מייצג את הנתונים הכי טוב?", color: "#16A34A", ready: true },
+  { id: "diagrams", href: "/3u/topic/grade10/statistics/diagrams", symbol: "\u25A0", title: "דיאגרמות", description: "היסטוגרמה, דיאגרמת עוגה, דיאגרמת עמודות — ייצוג חזותי של נתונים", color: "#EA580C", ready: false },
+  { id: "frequency", href: "/3u/topic/grade10/statistics/frequency", symbol: "f", title: "טבלת שכיחויות", description: "טבלת שכיחויות, שכיחות יחסית, שכיחות מצטברת — קריאה ובנייה", color: "#7c3aed", ready: false },
 ];
 
 export default function Statistics3UHub() {
@@ -31,8 +31,8 @@ export default function Statistics3UHub() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {SUBTOPICS.map(s => (
-            <div key={s.id} style={{ borderRadius: 20, border: `1px solid rgba(60,54,42,0.15)`, background: "rgba(255,255,255,0.82)", padding: "1.75rem", position: "relative", opacity: s.ready ? 1 : 0.6 }}>
+          {SUBTOPICS.map(s => {
+            const inner = (
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                 <div style={{ width: 52, height: 52, borderRadius: 14, background: `${s.color}15`, border: `1.5px solid ${s.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, color: s.color, fontFamily: "serif", flexShrink: 0 }}>{s.symbol}</div>
                 <div style={{ flex: 1 }}>
@@ -43,8 +43,14 @@ export default function Statistics3UHub() {
                   <p style={{ color: "#6B7280", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{s.description}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+            const cardStyle = { borderRadius: 20, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.75rem", opacity: s.ready ? 1 : 0.6, textDecoration: "none" as const };
+            return s.ready ? (
+              <Link key={s.id} href={s.href} style={cardStyle}>{inner}</Link>
+            ) : (
+              <div key={s.id} style={{ ...cardStyle, cursor: "not-allowed" }}>{inner}</div>
+            );
+          })}
         </div>
       </div>
     </main>

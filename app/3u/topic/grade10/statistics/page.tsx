@@ -5,7 +5,7 @@ import { BarChart3, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
   { id: "mean-median", href: "/3u/topic/grade10/statistics/mean-median", symbol: "x\u0304", title: "ממוצע וחציון", description: "חישוב ממוצע, חציון ושכיח — מתי כל מדד מייצג את הנתונים הכי טוב?", color: "#16A34A", ready: true },
-  { id: "diagrams", href: "/3u/topic/grade10/statistics/diagrams", symbol: "\u25A0", title: "דיאגרמות", description: "היסטוגרמה, דיאגרמת עוגה, דיאגרמת עמודות — ייצוג חזותי של נתונים", color: "#EA580C", ready: false },
+  { id: "diagrams", href: "/3u/topic/grade10/statistics/diagrams", symbol: "\u25A0", title: "דיאגרמות", description: "היסטוגרמה, דיאגרמת עוגה, דיאגרמת עמודות — ייצוג חזותי של נתונים", color: "#EA580C", ready: true },
   { id: "frequency", href: "/3u/topic/grade10/statistics/frequency", symbol: "f", title: "טבלת שכיחויות", description: "טבלת שכיחויות, שכיחות יחסית, שכיחות מצטברת — קריאה ובנייה", color: "#7c3aed", ready: false },
 ];
 

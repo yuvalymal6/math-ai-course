@@ -4,10 +4,10 @@ import Link from "next/link";
 import { Triangle, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
-  { id: "triangles", symbol: "\u25B3", title: "משולשים", description: "סוגי משולשים, סכום זוויות, חישוב שטח והיקף, משפטי חפיפה", color: "#16A34A", ready: true },
-  { id: "quadrilaterals", symbol: "\u25A1", title: "מרובעים", description: "מקבילית, מלבן, מעוין, ריבוע, טרפז — תכונות, שטח והיקף", color: "#7c3aed", ready: true },
-  { id: "similarity", symbol: "\u223C", title: "דמיון", description: "משולשים דומים, יחס דמיון, משפטי דמיון (ז.ז., צ.ז.צ., צ.צ.צ.)", color: "#EA580C", ready: true },
-  { id: "area", symbol: "S", title: "שטח והיקף", description: "נוסחאות שטח למשולש, מרובע, עיגול — ושילובים מורכבים", color: "#DC2626", ready: true },
+  { id: "triangles", href: "/3u/topic/grade10/geometry/triangles", symbol: "\u25B3", title: "משולשים", description: "סוגי משולשים, סכום זוויות, חישוב שטח והיקף, משפטי חפיפה", color: "#16A34A", ready: true },
+  { id: "quadrilaterals", href: "/3u/topic/grade10/geometry/quadrilaterals", symbol: "\u25A1", title: "מרובעים", description: "מקבילית, מלבן, מעוין, ריבוע, טרפז — תכונות, שטח והיקף", color: "#7c3aed", ready: false },
+  { id: "similarity", href: "/3u/topic/grade10/geometry/similarity", symbol: "\u223C", title: "דמיון", description: "משולשים דומים, יחס דמיון, משפטי דמיון (ז.ז., צ.ז.צ., צ.צ.צ.)", color: "#EA580C", ready: false },
+  { id: "area", href: "/3u/topic/grade10/geometry/area", symbol: "S", title: "שטח והיקף", description: "נוסחאות שטח למשולש, מרובע, עיגול — ושילובים מורכבים", color: "#DC2626", ready: false },
 ];
 
 export default function Geometry3UHub() {
@@ -32,8 +32,8 @@ export default function Geometry3UHub() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {SUBTOPICS.map(s => (
-            <div key={s.id} style={{ borderRadius: 20, border: `1px solid rgba(60,54,42,0.15)`, background: "rgba(255,255,255,0.82)", padding: "1.75rem", opacity: s.ready ? 1 : 0.6 }}>
+          {SUBTOPICS.map(s => {
+            const inner = (
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                 <div style={{ width: 52, height: 52, borderRadius: 14, background: `${s.color}15`, border: `1.5px solid ${s.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, color: s.color, fontFamily: "serif", flexShrink: 0 }}>{s.symbol}</div>
                 <div style={{ flex: 1 }}>
@@ -44,8 +44,14 @@ export default function Geometry3UHub() {
                   <p style={{ color: "#6B7280", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{s.description}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+            const cardStyle = { borderRadius: 20, border: "1px solid rgba(60,54,42,0.15)", background: "rgba(255,255,255,0.82)", padding: "1.75rem", opacity: s.ready ? 1 : 0.6, textDecoration: "none" as const };
+            return s.ready ? (
+              <Link key={s.id} href={s.href} style={cardStyle}>{inner}</Link>
+            ) : (
+              <div key={s.id} style={{ ...cardStyle, cursor: "not-allowed" }}>{inner}</div>
+            );
+          })}
         </div>
       </div>
     </main>

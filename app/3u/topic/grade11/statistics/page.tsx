@@ -5,7 +5,7 @@ import { BarChart3, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
   { id: "descriptive", href: "/3u/topic/grade11/statistics/descriptive", symbol: "x̄", title: "מדדי מרכז ופיזור", description: "ממוצע, חציון, שכיח, סטיית תקן ושונות — חישוב והשוואת התפלגויות", color: "#16A34A", ready: true },
-  { id: "normal", href: "/3u/topic/grade11/statistics/normal", symbol: "Z", title: "התפלגות נורמלית", description: "עקום פעמון, ציון תקן Z, טבלת Z, כלל 68-95-99.7", color: "#EA580C", ready: false },
+  { id: "normal", href: "/3u/topic/grade11/statistics/normal", symbol: "Z", title: "התפלגות נורמלית", description: "עקום פעמון, ציון תקן Z, טבלת Z, כלל 68-95-99.7", color: "#EA580C", ready: true },
 ];
 
 export default function StatisticsHub3u() {

@@ -5,7 +5,7 @@ import { FileText, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
   { id: "translation", href: "/3u/topic/grade10/word-problems/translation", symbol: "→", title: "תרגום מילולי", description: "תרגום בעיה מילולית לביטוי אלגברי — זיהוי נעלמים, בניית משוואה", color: "#16A34A", ready: true },
-  { id: "equations", href: "/3u/topic/grade10/word-problems/equations", symbol: "=", title: "משוואות מהקשר", description: "בניית משוואות מתוך הקשר מילולי — גילאים, מחירים, מרחקים", color: "#EA580C", ready: false },
+  { id: "equations", href: "/3u/topic/grade10/word-problems/equations", symbol: "=", title: "משוואות מהקשר", description: "בניית משוואות מתוך הקשר מילולי — גילאים, מחירים, מרחקים", color: "#EA580C", ready: true },
 ];
 
 export default function WordProblems3UHub() {

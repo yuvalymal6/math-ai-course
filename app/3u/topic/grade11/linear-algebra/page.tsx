@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Calculator, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
-  { id: "equations", href: "/3u/topic/grade11/linear-algebra/equations", symbol: "=", title: "מערכת משוואות", description: "פתרון מערכות לינאריות ב-2 ו-3 נעלמים — הצבה, חיסור, קרמר", color: "#6366f1", ready: false },
+  { id: "equations", href: "/3u/topic/grade11/linear-algebra/equations", symbol: "=", title: "מערכת משוואות", description: "פתרון מערכות לינאריות ב-2 ו-3 נעלמים — הצבה, חיסור, קרמר", color: "#6366f1", ready: true },
   { id: "expressions", href: "/3u/topic/grade11/linear-algebra/expressions", symbol: "x²", title: "ביטויים אלגבריים", description: "פישוט, פירוק לגורמים, שברים אלגבריים — כפל מקוצר ותחום הגדרה", color: "#EA580C", ready: true },
 ];
 

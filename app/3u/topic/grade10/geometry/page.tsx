@@ -5,7 +5,7 @@ import { Triangle, ChevronLeft } from "lucide-react";
 
 const SUBTOPICS = [
   { id: "triangles", href: "/3u/topic/grade10/geometry/triangles", symbol: "\u25B3", title: "משולשים", description: "סוגי משולשים, סכום זוויות, חישוב שטח והיקף, משפטי חפיפה", color: "#16A34A", ready: true },
-  { id: "quadrilaterals", href: "/3u/topic/grade10/geometry/quadrilaterals", symbol: "\u25A1", title: "מרובעים", description: "מקבילית, מלבן, מעוין, ריבוע, טרפז — תכונות, שטח והיקף", color: "#7c3aed", ready: false },
+  { id: "quadrilaterals", href: "/3u/topic/grade10/geometry/quadrilaterals", symbol: "\u25A1", title: "מרובעים", description: "מקבילית, מלבן, מעוין, ריבוע, טרפז — תכונות, שטח והיקף", color: "#7c3aed", ready: true },
   { id: "similarity", href: "/3u/topic/grade10/geometry/similarity", symbol: "\u223C", title: "דמיון", description: "משולשים דומים, יחס דמיון, משפטי דמיון (ז.ז., צ.ז.צ., צ.צ.צ.)", color: "#EA580C", ready: false },
   { id: "area", href: "/3u/topic/grade10/geometry/area-perimeter", symbol: "S", title: "שטח והיקף", description: "נוסחאות שטח למשולש, מרובע, עיגול — ושילובים מורכבים", color: "#DC2626", ready: true },
 ];

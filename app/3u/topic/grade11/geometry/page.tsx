@@ -6,7 +6,7 @@ import { Triangle, ChevronLeft } from "lucide-react";
 const SUBTOPICS = [
   { id: "similar", href: "/3u/topic/grade11/geometry/similar-triangles", symbol: "∼", title: "משולשים דומים", description: "תנאי דמיון (AA, SAS, SSS), יחס דמיון, יחס שטחים = k²", color: "#16A34A", ready: true },
   { id: "proofs", href: "/3u/topic/grade11/geometry/proofs", symbol: "∴", title: "הוכחות גיאומטריות", description: "בניית הוכחה שלב אחר שלב — נתון, מבוקש, טענה ונימוק", color: "#EA580C", ready: true },
-  { id: "congruence", href: "/3u/topic/grade11/geometry/congruence", symbol: "≅", title: "חפיפת משולשים", description: "תנאי חפיפה (צ.צ.צ, צ.ז.צ, ז.צ.ז) ושימושיהם בהוכחות", color: "#7c3aed", ready: false },
+  { id: "congruence", href: "/3u/topic/grade11/geometry/congruence", symbol: "≅", title: "חפיפת משולשים", description: "תנאי חפיפה (צ.צ.צ, צ.ז.צ, ז.צ.ז) ושימושיהם בהוכחות", color: "#7c3aed", ready: true },
 ];
 
 export default function GeometryHub3u() {

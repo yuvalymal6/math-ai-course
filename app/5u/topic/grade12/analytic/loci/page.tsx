@@ -7,7 +7,7 @@ import Link from "next/link";
 import { calculatePromptScore, type ScoreResult } from "@/app/lib/prompt-scorer";
 import MasterPromptGate from "@/app/components/MasterPromptGate";
 import MarkComplete from "@/app/components/MarkComplete";
-import { useDefaultToast } from "@/app/lib/useDefaultToast";
+
 import SubtopicProgress from "@/app/components/SubtopicProgress";
 import katex from "katex";
 import "katex/dist/katex.min.css";
@@ -994,7 +994,6 @@ function FormulaBar() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function LociPage() {
-  useDefaultToast();
   const [selectedLevel, setSelectedLevel] = useState<"basic" | "medium" | "advanced">("basic");
   const ex = exercises.find(e => e.id === selectedLevel)!;
   const lvlRgb = selectedLevel === "basic" ? "45,90,39" : selectedLevel === "medium" ? "163,79,38" : "139,38,53";

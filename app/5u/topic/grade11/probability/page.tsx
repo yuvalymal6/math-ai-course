@@ -6,7 +6,7 @@ import { Brain, ChevronRight, Dice5, GitBranch } from "lucide-react";
 const SUBTOPICS = [
   {
     id: "basic-independence",
-    href: "/5u/topic/grade11/probability/basic-independence",
+    href: "/5u/topic/grade11/probability/basic",
     icon: Dice5,
     title: "הסתברות בסיסית ועצמאות",
     subtitle: "מרחב מדגם • אירועים • עצמאות",

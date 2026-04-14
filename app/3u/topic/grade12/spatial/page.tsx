@@ -20,7 +20,7 @@ const SUBTOPICS = [
   },
   {
     id: "number-diagrams",
-    href: "/3u/topic/grade12/spatial/number-diagrams",
+    href: "/3u/topic/grade12/spatial/number-diagram",
     icon: Eye,
     title: "תרשים מספרים",
     subtitle: "ייצוג מבנה • גובה • שחזור",
@@ -57,18 +57,34 @@ export default function SpatialHub3u() {
         <div className="grid gap-5 animate-[fadeSlideIn_0.5s_ease_both]">
           {SUBTOPICS.map((sub) => {
             const Icon = sub.icon;
+            if (!sub.ready) {
+              return (
+                <div key={sub.id} className="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 opacity-50 cursor-not-allowed select-none">
+                  <div className="flex items-start gap-5">
+                    <div className={`w-12 h-12 rounded-xl ${sub.iconBg} border ${sub.iconBorder} flex items-center justify-center shrink-0`}><Icon size={22} className={sub.iconText} /></div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-0.5"><h2 className="text-white font-bold text-xl">{sub.title}</h2><span className="text-[10px] text-slate-500 border border-slate-700 rounded px-2 py-0.5">בקרוב</span></div>
+                      <p className={`text-xs font-medium mb-2 ${sub.iconText}`}>{sub.subtitle}</p>
+                      <p className="text-slate-400 text-sm leading-relaxed mb-3">{sub.description}</p>
+                      <div className="flex flex-wrap gap-2">{sub.chips.map(c => <span key={c} className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-500">{c}</span>)}</div>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
             return (
-              <div key={sub.id} className="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 opacity-50 cursor-not-allowed select-none">
+              <Link key={sub.id} href={sub.href} className={`card-hover block bg-[#0f172a] border border-slate-700 ${sub.hoverBorder} rounded-2xl p-6 group`}>
                 <div className="flex items-start gap-5">
                   <div className={`w-12 h-12 rounded-xl ${sub.iconBg} border ${sub.iconBorder} flex items-center justify-center shrink-0`}><Icon size={22} className={sub.iconText} /></div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-0.5"><h2 className="text-white font-bold text-xl">{sub.title}</h2><span className="text-[10px] text-slate-500 border border-slate-700 rounded px-2 py-0.5">בקרוב</span></div>
+                    <div className="flex items-center justify-between mb-0.5"><h2 className="text-white font-bold text-xl">{sub.title}</h2><span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${sub.badgeBg} ${sub.badgeText}`}>תרגול</span></div>
                     <p className={`text-xs font-medium mb-2 ${sub.iconText}`}>{sub.subtitle}</p>
                     <p className="text-slate-400 text-sm leading-relaxed mb-3">{sub.description}</p>
-                    <div className="flex flex-wrap gap-2">{sub.chips.map(c => <span key={c} className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-500">{c}</span>)}</div>
+                    <div className="flex flex-wrap gap-2">{sub.chips.map(c => <span key={c} className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400">{c}</span>)}</div>
                   </div>
+                  <ChevronRight size={18} className={`text-slate-600 ${sub.chevronHover} transition-colors shrink-0 mt-1`} />
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

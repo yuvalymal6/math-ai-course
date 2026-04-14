@@ -21,7 +21,7 @@ const SUBTOPICS = [
   },
   {
     id: "areas-general",
-    href: "/5u/topic/grade11/trig/areas-general",
+    href: "/5u/topic/grade11/trig/laws-area",
     icon: Maximize2,
     title: "שטחים ובעיות כלליות",
     subtitle: "½ab·sinC • בעיות מילוליות",

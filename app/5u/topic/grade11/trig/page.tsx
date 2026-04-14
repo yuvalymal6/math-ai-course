@@ -12,7 +12,7 @@ const SUBTOPICS = [
     subtitle: "a/sinA • a² = b² + c² − 2bc·cosA",
     description: "משפט הסינוסים — יחס צלע לסינוס הזווית שמולה, משפט הקוסינוסים — הכללה של פיתגורס.",
     chips: ["a/sinA = b/sinB", "a² = b²+c²−2bc·cosA", "משולש כללי"],
-    ready: true,
+    ready: false,
     glowAnim: false,
     iconBg: "bg-amber-500/10", iconBorder: "border-amber-500/30", iconText: "text-amber-400",
     hoverBorder: "hover:border-amber-500/50",

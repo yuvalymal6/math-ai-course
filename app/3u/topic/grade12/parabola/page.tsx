@@ -6,7 +6,7 @@ import { Brain, ChevronRight, TrendingDown, Maximize2 } from "lucide-react";
 const SUBTOPICS = [
   {
     id: "quadratic-model",
-    href: "/3u/topic/grade12/parabola/quadratic-model",
+    href: "/3u/topic/grade12/parabola/model",
     icon: TrendingDown,
     title: "מודל ריבועי",
     subtitle: "f(x) = ax² + bx + c • שורשים • קודקוד",

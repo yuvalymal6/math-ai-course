@@ -12,7 +12,7 @@ const SUBTOPICS = [
     subtitle: "עקום פעמון • ממוצע • סטיית תקן • Z",
     description: "הכרת עקום הפעמון, חישוב הסתברויות בעזרת טבלת Z, כלל 68-95-99.7, ושימוש בציון תקן.",
     chips: ["Z = (x−μ)/σ", "68-95-99.7", "P(a<X<b)"],
-    ready: true, glowAnim: false,
+    ready: false, glowAnim: false,
     iconBg: "bg-rose-500/10", iconBorder: "border-rose-500/30", iconText: "text-rose-400",
     hoverBorder: "hover:border-rose-500/50",
     badgeBg: "bg-rose-500/10 border-rose-500/30", badgeText: "text-rose-400",

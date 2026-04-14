@@ -5,8 +5,8 @@ import { Brain, ChevronRight, Triangle, Compass } from "lucide-react";
 
 const SUBTOPICS = [
   {
-    id: "sin-cos-laws",
-    href: "/5u/topic/grade10/trig-plane/sin-cos-laws",
+    id: "laws",
+    href: "/5u/topic/grade10/trig-plane/laws",
     icon: Triangle,
     title: "משפט סינוסים וקוסינוסים",
     subtitle: "a/sinA = b/sinB • c² = a²+b²−2ab·cosC",

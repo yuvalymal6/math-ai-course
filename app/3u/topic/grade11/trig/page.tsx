@@ -7,6 +7,7 @@ const SUBTOPICS = [
   { id: "basics", href: "/3u/topic/grade11/trig/basic", symbol: "sin", title: "sin, cos, tan", description: "יחסות טריגונומטריות במשולש ישר-זווית, זוויות מיוחדות (30°, 45°, 60°)", color: "#EA580C", ready: true },
   { id: "laws", href: "/3u/topic/grade11/trig/laws", symbol: "a/A", title: "משפט סינוסים וקוסינוסים", description: "פתרון משולש כללי — a/sinA = b/sinB, a² = b²+c²−2bc·cosA", color: "#16A34A", ready: true },
   { id: "area", href: "/3u/topic/grade11/trig/area", symbol: "S", title: "שטח משולש", description: "S = ½ab·sinC — חישוב שטח בעזרת שתי צלעות והזווית שביניהן", color: "#7c3aed", ready: true },
+  { id: "sine-cosine", href: "/3u/topic/grade11/trig/sine-cosine", symbol: "⇌", title: "תרגול סינוסים וקוסינוסים", description: "תרגילים נוספים — שילוב משפט סינוסים וקוסינוסים בבעיות מורכבות", color: "#DC2626", ready: true },
 ];
 
 export default function TrigHub3u() {

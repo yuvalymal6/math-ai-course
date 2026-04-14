@@ -6,7 +6,7 @@ import { Dice5, ChevronLeft } from "lucide-react";
 const SUBTOPICS = [
   { id: "basic", href: "/3u/topic/grade10/probability/basic", symbol: "P", title: "הסתברות בסיסית", description: "הגדרת הסתברות, מרחב מדגם, אירוע — חישוב הסתברות פשוטה", color: "#16A34A", ready: true },
   { id: "events", href: "/3u/topic/grade10/probability/events", symbol: "\u2229", title: "חיתוך ואיחוד", description: "אירועים זרים, אירועים משלימים, חיתוך ואיחוד — P(A\u222AB) ו-P(A\u2229B)", color: "#EA580C", ready: true },
-  { id: "conditional", href: "/3u/topic/grade10/probability/conditional", symbol: "P|", title: "הסתברות מותנית", description: "P(A|B) — הסתברות בהינתן מידע נוסף, נוסחת בייס הבסיסית", color: "#DC2626", ready: false },
+  { id: "conditional", href: "/3u/topic/grade10/probability/conditional", symbol: "P|", title: "הסתברות מותנית", description: "P(A|B) — הסתברות בהינתן מידע נוסף, נוסחת בייס הבסיסית", color: "#DC2626", ready: true },
 ];
 
 export default function Probability3UHub() {

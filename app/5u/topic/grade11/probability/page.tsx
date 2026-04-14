@@ -20,8 +20,8 @@ const SUBTOPICS = [
     chevronHover: "group-hover:text-emerald-400",
   },
   {
-    id: "conditional-bayes",
-    href: "/5u/topic/grade11/probability/conditional-bayes",
+    id: "conditional",
+    href: "/5u/topic/grade11/probability/conditional",
     icon: GitBranch,
     title: "הסתברות מותנית ובייס",
     subtitle: "P(A|B) • עץ הסתברות • בייס",

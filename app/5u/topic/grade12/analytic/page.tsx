@@ -5,8 +5,8 @@ import { Brain, ChevronRight, Circle, MapPin } from "lucide-react";
 
 const SUBTOPICS = [
   {
-    id: "circle-ellipse",
-    href: "/5u/topic/grade12/analytic/circle-ellipse",
+    id: "conic",
+    href: "/5u/topic/grade12/analytic/conic",
     icon: Circle,
     title: "מעגל ואליפסה",
     subtitle: "משוואת מעגל • אליפסה • מוקדים",

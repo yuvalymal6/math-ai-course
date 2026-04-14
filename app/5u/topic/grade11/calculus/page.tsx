@@ -5,8 +5,8 @@ import { Brain, ChevronRight, Sigma, Search, BarChart3 } from "lucide-react";
 
 const SUBTOPICS = [
   {
-    id: "rational-root",
-    href: "/5u/topic/grade11/calculus/rational-root",
+    id: "rational",
+    href: "/5u/topic/grade11/calculus/rational",
     icon: Sigma,
     title: "פונקציות רציונליות ושורש",
     subtitle: "נגזרת • תחום • אסימפטוטות",
@@ -20,8 +20,8 @@ const SUBTOPICS = [
     chevronHover: "group-hover:text-blue-400",
   },
   {
-    id: "full-investigation",
-    href: "/5u/topic/grade11/calculus/full-investigation",
+    id: "investigation",
+    href: "/5u/topic/grade11/calculus/investigation",
     icon: Search,
     title: "חקירה מלאה",
     subtitle: "נקודות קיצון • פיתול • שרטוט",

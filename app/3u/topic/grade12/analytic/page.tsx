@@ -6,7 +6,7 @@ import { Brain, ChevronRight, MapPin, Minus, Circle } from "lucide-react";
 const SUBTOPICS = [
   {
     id: "points-lines",
-    href: "/3u/topic/grade12/analytic/points-lines",
+    href: "/3u/topic/grade12/analytic/lines",
     icon: Minus,
     title: "נקודות וישרים",
     subtitle: "מרחק • אמצע • שיפוע • ניצבות",
